@@ -52,28 +52,37 @@ jobs:
       - name: Salvar token novo no cache (se renovado)
         run: |
           if [ -f /tmp/erp_new_token.txt ]; then
-            NEW_TOKEN=$(cat /tmp/erp_new_token.txt)
-            # Verifica se variável já existe (PUT) ou não existe (POST)
-            STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
-              -H "Authorization: token ${{ secrets.GH_PAT }}" \
-              "https://api.github.com/repos/${{ github.repository }}/actions/variables/ERP_TOKEN_CACHE")
-            if [ "$STATUS" = "200" ]; then
-              curl -s -X PATCH \
-                -H "Authorization: token ${{ secrets.GH_PAT }}" \
-                -H "Content-Type: application/json" \
-                "https://api.github.com/repos/${{ github.repository }}/actions/variables/ERP_TOKEN_CACHE" \
-                -d "{\"name\":\"ERP_TOKEN_CACHE\",\"value\":\"$NEW_TOKEN\"}"
-            else
-              curl -s -X POST \
-                -H "Authorization: token ${{ secrets.GH_PAT }}" \
-                -H "Content-Type: application/json" \
-                "https://api.github.com/repos/${{ github.repository }}/actions/variables/ERP_TOKEN_CACHE" \
-                -d "{\"name\":\"ERP_TOKEN_CACHE\",\"value\":\"$NEW_TOKEN\"}"
-            fi
-            echo "Token cacheado atualizado no repositório"
+            # Usa Python para montar JSON com escape correto (JWT tem +/= que quebram shell)
+            python3 - <<'PYEOF'
+import json, subprocess, os, sys
+
+token = open('/tmp/erp_new_token.txt').read().strip()
+if not token:
+    print("Arquivo de token vazio, ignorando")
+    sys.exit(0)
+
+repo    = os.environ['GITHUB_REPOSITORY']
+pat     = os.environ['GH_PAT']
+api_url = f"https://api.github.com/repos/{repo}/actions/variables/ERP_TOKEN_CACHE"
+headers = ['-H', f'Authorization: token {pat}', '-H', 'Content-Type: application/json']
+payload = json.dumps({"name": "ERP_TOKEN_CACHE", "value": token})
+
+# Verifica se variável já existe
+r = subprocess.run(['curl', '-s', '-o', '/dev/null', '-w', '%{http_code}'] + headers + [api_url],
+                   capture_output=True, text=True)
+status = r.stdout.strip()
+
+method = 'PATCH' if status == '200' else 'POST'
+r2 = subprocess.run(['curl', '-s', '-X', method] + headers + [api_url, '-d', payload],
+                    capture_output=True, text=True)
+print(f"Token salvo ({method}, status anterior: {status})")
+print(r2.stdout[:100] if r2.stdout else "(sem resposta)")
+PYEOF
           else
             echo "Token reutilizado — sem atualização necessária"
           fi
+        env:
+          GH_PAT: ${{ secrets.GH_PAT }}
 
       - name: Verificar se houve alterações
         id: diff

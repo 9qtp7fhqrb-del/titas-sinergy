@@ -2,13 +2,11 @@ name: Atualizar D360 — Vendas
 
 on:
   schedule:
-    # BRT = UTC-3. Cobertura: Seg-Sáb 9h-23h BRT
-    - cron: '*/30 12-23 * * 1-6'   # 9h-20h BRT, Seg-Sáb
-    - cron: '*/30 0-2 * * 2,3,4,5,6,0'  # 21h-23h BRT (já virou UTC)
-    # Domingo: 12h-23h BRT
-    - cron: '*/30 15-23 * * 0'     # 12h-20h BRT, Domingo
-    - cron: '*/30 0-2 * * 1'       # 21h-23h BRT Domingo (virou segunda UTC)
-  workflow_dispatch:                 # Execução manual pelo GitHub
+    - cron: '*/30 12-23 * * 1-6'
+    - cron: '*/30 0-2 * * 2,3,4,5,6,0'
+    - cron: '*/30 15-23 * * 0'
+    - cron: '*/30 0-2 * * 1'
+  workflow_dispatch:
 
 jobs:
   update:
@@ -42,47 +40,18 @@ jobs:
 
       - name: Rodar script de atualização
         env:
-          ERP_LOGIN:         ${{ secrets.ERP_LOGIN }}
-          ERP_PASSWORD:      ${{ secrets.ERP_PASSWORD }}
-          ERP_TOKEN_CACHE:   ${{ steps.load_token.outputs.token }}
-          ERP_TOKEN_OUTPUT:  /tmp/erp_new_token.txt
-          INDEX_HTML:        index.html
+          ERP_LOGIN: ${{ secrets.ERP_LOGIN }}
+          ERP_PASSWORD: ${{ secrets.ERP_PASSWORD }}
+          ERP_TOKEN_CACHE: ${{ steps.load_token.outputs.token }}
+          ERP_TOKEN_OUTPUT: /tmp/erp_new_token.txt
+          INDEX_HTML: index.html
         run: python scripts/update_d360.py
 
-      - name: Salvar token novo no cache (se renovado)
-        run: |
-          if [ -f /tmp/erp_new_token.txt ]; then
-            # Usa Python para montar JSON com escape correto (JWT tem +/= que quebram shell)
-            python3 - <<'PYEOF'
-import json, subprocess, os, sys
-
-token = open('/tmp/erp_new_token.txt').read().strip()
-if not token:
-    print("Arquivo de token vazio, ignorando")
-    sys.exit(0)
-
-repo    = os.environ['GITHUB_REPOSITORY']
-pat     = os.environ['GH_PAT']
-api_url = f"https://api.github.com/repos/{repo}/actions/variables/ERP_TOKEN_CACHE"
-headers = ['-H', f'Authorization: token {pat}', '-H', 'Content-Type: application/json']
-payload = json.dumps({"name": "ERP_TOKEN_CACHE", "value": token})
-
-# Verifica se variável já existe
-r = subprocess.run(['curl', '-s', '-o', '/dev/null', '-w', '%{http_code}'] + headers + [api_url],
-                   capture_output=True, text=True)
-status = r.stdout.strip()
-
-method = 'PATCH' if status == '200' else 'POST'
-r2 = subprocess.run(['curl', '-s', '-X', method] + headers + [api_url, '-d', payload],
-                    capture_output=True, text=True)
-print(f"Token salvo ({method}, status anterior: {status})")
-print(r2.stdout[:100] if r2.stdout else "(sem resposta)")
-PYEOF
-          else
-            echo "Token reutilizado — sem atualização necessária"
-          fi
+      - name: Salvar token no cache (se renovado)
         env:
           GH_PAT: ${{ secrets.GH_PAT }}
+          ERP_TOKEN_OUTPUT: /tmp/erp_new_token.txt
+        run: python scripts/save_erp_token.py
 
       - name: Verificar se houve alterações
         id: diff
@@ -92,7 +61,7 @@ PYEOF
       - name: Commit das alterações
         if: steps.diff.outputs.changed == 'true'
         run: |
-          git config user.name  "D360-Bot"
+          git config user.name "D360-Bot"
           git config user.email "bot@titas-sinergy.web.app"
           git add index.html
           git commit -m "data: vendas $(TZ=America/Sao_Paulo date +'%d/%m/%Y %H:%M')"

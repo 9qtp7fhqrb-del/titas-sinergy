@@ -1,0 +1,59 @@
+name: Atualizar D360 — Vendas
+
+on:
+  schedule:
+    # BRT = UTC-3. Cobertura: Seg-Sáb 9h-23h BRT
+    - cron: '*/30 12-23 * * 1-6'   # 9h-20h BRT, Seg-Sáb
+    - cron: '*/30 0-2 * * 2,3,4,5,6,0'  # 21h-23h BRT (já virou UTC)
+    # Domingo: 12h-23h BRT
+    - cron: '*/30 15-23 * * 0'     # 12h-20h BRT, Domingo
+    - cron: '*/30 0-2 * * 1'       # 21h-23h BRT Domingo (virou segunda UTC)
+  workflow_dispatch:                 # Execução manual pelo GitHub
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Instalar dependências
+        run: pip install requests
+
+      - name: Rodar script de atualização
+        env:
+          ERP_LOGIN:    ${{ secrets.ERP_LOGIN }}
+          ERP_PASSWORD: ${{ secrets.ERP_PASSWORD }}
+          INDEX_HTML:   index.html
+        run: python scripts/update_d360.py
+
+      - name: Verificar se houve alterações
+        id: diff
+        run: |
+          git diff --quiet index.html && echo "changed=false" >> $GITHUB_OUTPUT || echo "changed=true" >> $GITHUB_OUTPUT
+
+      - name: Commit das alterações
+        if: steps.diff.outputs.changed == 'true'
+        run: |
+          git config user.name  "D360-Bot"
+          git config user.email "bot@titas-sinergy.web.app"
+          git add index.html
+          git commit -m "data: vendas $(TZ=America/Sao_Paulo date +'%d/%m/%Y %H:%M')"
+
+      - name: Deploy Firebase Hosting
+        if: steps.diff.outputs.changed == 'true'
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+        run: |
+          npm install -g firebase-tools --silent
+          firebase deploy --only hosting --token "$FIREBASE_TOKEN" --non-interactive
+
+      - name: Push para GitHub
+        if: steps.diff.outputs.changed == 'true'
+        run: git push

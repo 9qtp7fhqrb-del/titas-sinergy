@@ -1,0 +1,36 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // O app usa autenticação própria (não Firebase Auth).
+    // Todas as coleções abertas para leitura e escrita pública.
+
+    match /ts_usuarios/{userId} {
+      allow read, write: if true;
+    }
+
+    match /acad_resultados/{docId} {
+      allow read, write: if true;
+    }
+
+    match /ts_d360/{docId} {
+      allow read, write: if true;
+    }
+
+    match /ts_d360_historico/{mesId} {
+      allow read, write: if true;
+    }
+
+    match /ts_acess_historico/{mesId} {
+      allow read, write: if true;
+    }
+
+    match /ts_metas/{mesId} {
+      allow read, write: if true;
+    }
+
+    match /ts_log_franqueados/{docId} {
+      allow read, write: if true;
+    }
+  }
+}

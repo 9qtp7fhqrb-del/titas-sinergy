@@ -1,0 +1,409 @@
+{
+  "name": "CDC → Firestore D360 Sync",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 1
+            }
+          ]
+        }
+      },
+      "id": "node-schedule-trigger",
+      "name": "Every 1 Minute",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://CDC_API_URL/vendas/dia-atual",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {{$credentials.cdcApiToken}}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 15000,
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "id": "node-cdc-api",
+      "name": "CDC API — Buscar Vendas",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [460, 300],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CREDENTIAL_CDC_API",
+          "name": "CDC API Token"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "cdc-success-check",
+              "leftValue": "={{ $json.statusCode }}",
+              "rightValue": 200,
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "node-if-cdc-ok",
+      "name": "CDC OK?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// ============================================================\n// CDC → Titãs Sinergy D360  —  Field Mapping & Transformation\n// ============================================================\n// This node receives the full CDC API response and:\n//  1. Maps CDC fields to the Sinergy schema\n//  2. Calculates period metadata (diasDecorridos, diasMes)\n//  3. Returns a plain JS object ready to be serialised to\n//     the Firestore typed-value format in the next node.\n//\n// HOW TO ADAPT:\n//   - Find every comment starting with \"CDC field:\" and\n//     replace the placeholder paths with the real field\n//     names from your CDC API response.\n//   - The CDC response is available as $json.body (because\n//     the HTTP Request node was set to return fullResponse).\n// ============================================================\n\nconst cdcData = $input.first().json.body;\n// If CDC returned an array at the root, use cdcData directly;\n// if it's wrapped in a key, adjust accordingly, e.g.:\n//   const cdcData = $input.first().json.body.data;\n\n// ---- Period helpers ----------------------------------------\nconst now = new Date();\nconst year  = now.getFullYear();\nconst month = now.getMonth(); // 0-based\nconst day   = now.getDate();\n\nconst firstDay = new Date(year, month, 1);\nconst lastDay  = new Date(year, month + 1, 0);\n\nconst pad = (n) => String(n).padStart(2, '0');\nconst fmtDate = (d) => `${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()}`;\n\nconst periodo        = `${fmtDate(firstDay)} – ${fmtDate(lastDay)}`;\nconst diasDecorridos = day;\n// CDC field: (calculated locally — not from CDC)\nconst diasMes        = lastDay.getDate();\n\n// ---- Helper: safely read a CDC numeric field ---------------\n// Usage: cdcNum(cdcData, 'vendas.total_bruto')\nfunction cdcNum(obj, path, fallback = 0) {\n  const parts = path.split('.');\n  let cur = obj;\n  for (const p of parts) {\n    if (cur == null || typeof cur !== 'object') return fallback;\n    cur = cur[p];\n  }\n  return typeof cur === 'number' ? cur : (parseFloat(cur) || fallback);\n}\n\nfunction cdcStr(obj, path, fallback = '') {\n  const parts = path.split('.');\n  let cur = obj;\n  for (const p of parts) {\n    if (cur == null || typeof cur !== 'object') return fallback;\n    cur = cur[p];\n  }\n  return cur != null ? String(cur) : fallback;\n}\n\n// ---- Store mapping -----------------------------------------\n// Each entry:\n//   cdcKey    — the key CDC uses to identify the store inside\n//               the response (e.g. inside cdcData.lojas or an\n//               array of store objects).  ADJUST TO YOUR CDC.\n//   siloKey   — the key used in the Sinergy schema.\n//   label     — display name.\n//   meta      — monthly target (keep hardcoded or pull from CDC).\n//\n// Assumed CDC structure per store object:\n//   { id_loja, nome_loja, venda_total, qtd_pedidos,\n//     qtd_cancelamentos, vendedores: [{nome, venda_total,\n//     indice_performance, qtd_pedidos}],\n//     acessorios: { total, vendedores: [{nome, venda_total}] } }\n//\n// ADAPT the cdcKey values and field paths below to match\n// the real CDC response structure.\n\nconst storeMap = [\n  { cdcKey: 'saomateus',    siloKey: 'saomateus',    label: 'São Mateus',     meta: 450000 },\n  { cdcKey: 'cariacica',    siloKey: 'cariacica',    label: 'Cariacica',      meta: 450000 },\n  { cdcKey: 'itabuna',      siloKey: 'itabuna',      label: 'Itabuna',        meta: 390000 },\n  { cdcKey: 'barreiras',    siloKey: 'barreiras',    label: 'Barreiras',      meta: 280000 },\n  { cdcKey: 'moxuara',      siloKey: 'moxuara',      label: 'Moxuara',        meta: 270000 },\n  { cdcKey: 'teixeira',     siloKey: 'teixeira',     label: 'Teixeira',       meta: 225000 },\n  { cdcKey: 'laranjeiras',  siloKey: 'laranjeiras',  label: 'Laranjeiras',    meta: 220000 },\n  { cdcKey: 'serra',        siloKey: 'serra',        label: 'Serra',          meta: 210000 },\n  { cdcKey: 'linhares',     siloKey: 'linhares',     label: 'Linhares',       meta: 210000 },\n  { cdcKey: 'montserrat',   siloKey: 'montserrat',   label: 'Montserrat',     meta: 165000 },\n  { cdcKey: 'praiadacosta', siloKey: 'praiadacosta', label: 'Praia da Costa', meta: 130000 }\n];\n\n// ---- Locate store data in CDC response --------------------\n// CDC may return stores as a dict keyed by store id,\n// or as an array.  Handle both:\nfunction getCdcStore(cdcData, cdcKey) {\n  // Option A: cdcData.lojas is a dict  → cdcData.lojas[cdcKey]\n  if (cdcData.lojas && typeof cdcData.lojas === 'object' && !Array.isArray(cdcData.lojas)) {\n    return cdcData.lojas[cdcKey] || {};\n  }\n  // Option B: cdcData.lojas is an array with id_loja field\n  if (Array.isArray(cdcData.lojas)) {\n    return cdcData.lojas.find(s => s.id_loja === cdcKey || s.nome_loja === cdcKey) || {};\n  }\n  // Option C: root is an array\n  if (Array.isArray(cdcData)) {\n    return cdcData.find(s => s.id_loja === cdcKey || s.nome_loja === cdcKey) || {};\n  }\n  return {};\n}\n\n// ---- Map top sellers for a store --------------------------\nfunction mapTopSellers(cdcStore) {\n  // CDC field: vendedores  → array of top seller objects\n  const sellers = Array.isArray(cdcStore.vendedores) ? cdcStore.vendedores : [];\n  return sellers.slice(0, 5).map(v => ({\n    n: cdcStr(v, 'nome',              ''),   // CDC field: vendedores[].nome → n\n    t: cdcNum(v, 'venda_total',       0),    // CDC field: vendedores[].venda_total → t\n    i: cdcNum(v, 'indice_performance',0),    // CDC field: vendedores[].indice_performance → i\n    p: cdcNum(v, 'qtd_pedidos',       0)     // CDC field: vendedores[].qtd_pedidos → p\n  }));\n}\n\n// ---- Map accessories for a store -------------------------\nfunction mapAcessorios(cdcStore) {\n  // CDC field: acessorios.total → acessorios.total\n  const acc = (cdcStore.acessorios && typeof cdcStore.acessorios === 'object')\n    ? cdcStore.acessorios : {};\n  const topAcc = Array.isArray(acc.vendedores) ? acc.vendedores : [];\n  return {\n    total: cdcNum(acc, 'total', 0),           // CDC field: acessorios.total → acessorios.total\n    top: topAcc.slice(0, 5).map(v => ({\n      n: cdcStr(v, 'nome',       ''),         // CDC field: acessorios.vendedores[].nome → n\n      t: cdcNum(v, 'venda_total', 0)          // CDC field: acessorios.vendedores[].venda_total → t\n    }))\n  };\n}\n\n// ---- Build lojas object -----------------------------------\nconst lojas = {};\nfor (const sm of storeMap) {\n  const cdcStore = getCdcStore(cdcData, sm.cdcKey);\n  lojas[sm.siloKey] = {\n    total:      cdcNum(cdcStore, 'venda_total',        0),   // CDC field: venda_total → total\n    meta:       sm.meta,                                      // hardcoded (or: cdcNum(cdcStore,'meta',sm.meta))\n    ped:        cdcNum(cdcStore, 'qtd_pedidos',        0),   // CDC field: qtd_pedidos → ped\n    cancel:     cdcNum(cdcStore, 'qtd_cancelamentos',  0),   // CDC field: qtd_cancelamentos → cancel\n    label:      sm.label,\n    top:        mapTopSellers(cdcStore),\n    acessorios: mapAcessorios(cdcStore)\n  };\n}\n\n// ---- Subredes (static config — adjust gestores if needed) -\nconst subredes = {\n  titas1: { nome: 'Titãs 1', gestor: 'Gestor T1', meta: 1240000, lojas: ['saomateus','cariacica','praiadacosta'] },\n  titas2: { nome: 'Titãs 2', gestor: 'Gestor T2', meta:  725000, lojas: ['moxuara','laranjeiras','barreiras']    },\n  titas3: { nome: 'Titãs 3', gestor: 'Gestor T3', meta: 1035000, lojas: ['teixeira','montserrat','serra','linhares','itabuna'] }\n};\n\n// ---- CDC network-level fields -----------------------------\n// CDC field: meta_rede or meta_total → meta_rede\nconst meta_rede = cdcNum(cdcData, 'meta_rede', 3000000);\n\n// ---- Final Sinergy document --------------------------------\nconst sinergyDoc = {\n  periodo,\n  diasDecorridos,\n  diasMes,\n  meta_rede,\n  lojas,\n  subredes\n};\n\n// ============================================================\n// Convert plain JS → Firestore REST typed-value format\n// ============================================================\nfunction toFirestoreValue(value) {\n  if (value === null || value === undefined) {\n    return { nullValue: null };\n  }\n  if (typeof value === 'boolean') {\n    return { booleanValue: value };\n  }\n  if (typeof value === 'number') {\n    // Use integerValue for whole numbers, doubleValue otherwise\n    if (Number.isInteger(value)) {\n      return { integerValue: String(value) };\n    }\n    return { doubleValue: value };\n  }\n  if (typeof value === 'string') {\n    return { stringValue: value };\n  }\n  if (Array.isArray(value)) {\n    return {\n      arrayValue: {\n        values: value.map(toFirestoreValue)\n      }\n    };\n  }\n  if (typeof value === 'object') {\n    const fields = {};\n    for (const [k, v] of Object.entries(value)) {\n      fields[k] = toFirestoreValue(v);\n    }\n    return { mapValue: { fields } };\n  }\n  return { stringValue: String(value) };\n}\n\nfunction toFirestoreDocument(obj) {\n  const fields = {};\n  for (const [k, v] of Object.entries(obj)) {\n    fields[k] = toFirestoreValue(v);\n  }\n  return { fields };\n}\n\nconst firestoreBody = toFirestoreDocument(sinergyDoc);\n\nreturn [{ json: { firestoreBody, sinergyDoc } }];\n"
+      },
+      "id": "node-transform",
+      "name": "Transformar Dados CDC → Sinergy",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [900, 220]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://oauth2.googleapis.com/token",
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "grant_type",
+              "value": "urn:ietf:params:oauth2:grant-type:jwt-bearer"
+            },
+            {
+              "name": "assertion",
+              "value": "={{ $json['jwt_assertion'] }}"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 10000,
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "id": "node-firebase-auth",
+      "name": "Firebase Auth — Obter Token",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [900, 380],
+      "notes": "NOTA: Em produção, use a credencial nativa do n8n 'Google Service Account' em vez deste nó. Configure em Credentials → New → Google API → Service Account, adicione o JSON da service account e selecione o escopo https://www.googleapis.com/auth/datastore. Em seguida, remova este nó e use a credencial diretamente no nó de PATCH do Firestore."
+    },
+    {
+      "parameters": {
+        "jsCode": "// ---- Build a signed JWT for Google Service Account ----\n// IMPORTANT: In production use n8n's built-in Google Service\n// Account credential type instead of this node.\n// This node is here as a transparent reference implementation.\n//\n// To use native credentials:\n//   1. Go to n8n Credentials → New → Google API\n//   2. Choose 'Service Account' auth type\n//   3. Paste your service account JSON\n//   4. Set scope: https://www.googleapis.com/auth/datastore\n//   5. Delete this Code node and the 'Firebase Auth' HTTP node\n//   6. In the Firestore PATCH node select that credential.\n\n// Retrieve the service account JSON stored as an n8n credential\n// expression (set the credential value in n8n as a JSON string).\n// For now we use environment / workflow variables as placeholders.\n\n// ---- PLACEHOLDER — replace with real values ----\nconst SERVICE_ACCOUNT_EMAIL  = 'YOUR_SERVICE_ACCOUNT@titas-sinergy.iam.gserviceaccount.com';\nconst PRIVATE_KEY_PEM        = '-----BEGIN RSA PRIVATE KEY-----\\nPASTE_YOUR_PRIVATE_KEY_HERE\\n-----END RSA PRIVATE KEY-----';\n// ------------------------------------------------\n\nconst scope  = 'https://www.googleapis.com/auth/datastore';\nconst aud    = 'https://oauth2.googleapis.com/token';\nconst iat    = Math.floor(Date.now() / 1000);\nconst exp    = iat + 3600;\n\n// Base64URL encode\nconst b64url = (str) => Buffer.from(str).toString('base64')\n  .replace(/\\+/g, '-').replace(/\\//g, '_').replace(/=/g, '');\n\nconst header  = b64url(JSON.stringify({ alg: 'RS256', typ: 'JWT' }));\nconst payload = b64url(JSON.stringify({ iss: SERVICE_ACCOUNT_EMAIL, scope, aud, exp, iat }));\n\n// NOTE: n8n's Code node runs in a sandboxed environment without\n// access to Node's crypto module for RSA signing.\n// The recommended approach is to use the native Google credential.\n// This placeholder returns the unsigned parts so you can verify\n// the structure; the Firebase Auth HTTP node above will not\n// work until you replace it with a proper credential.\nconst jwt_assertion = `${header}.${payload}.SIGNATURE_PLACEHOLDER`;\n\n// Pass through the Firestore body from the previous step\nconst firestoreBody = $('Transformar Dados CDC → Sinergy').first().json.firestoreBody;\n\nreturn [{ json: { jwt_assertion, firestoreBody } }];\n"
+      },
+      "id": "node-build-jwt",
+      "name": "Construir JWT (Service Account)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1120, 380]
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "https://firestore.googleapis.com/v1/projects/titas-sinergy/databases/(default)/documents/ts_d360/dados_ativos",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('Firebase Auth — Obter Token').item.json.body.access_token }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "json",
+        "body": "={{ JSON.stringify($json.firestoreBody) }}",
+        "options": {
+          "timeout": 15000,
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "id": "node-firestore-patch",
+      "name": "Firestore PATCH — dados_ativos",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1340, 300],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "firestore-success-check",
+              "leftValue": "={{ $json.statusCode }}",
+              "rightValue": 200,
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "node-if-firestore-ok",
+      "name": "Firestore OK?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [1560, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://WEBHOOK_URL_OR_SLACK_INCOMING_WEBHOOK",
+        "sendBody": true,
+        "contentType": "json",
+        "body": "={\n  \"text\": \"🔴 *CDC→Firestore Sync ERROR* — Firestore update failed\",\n  \"attachments\": [\n    {\n      \"color\": \"danger\",\n      \"fields\": [\n        { \"title\": \"Timestamp\",      \"value\": \"{{ new Date().toISOString() }}\",            \"short\": true },\n        { \"title\": \"HTTP Status\",    \"value\": \"{{ $json.statusCode }}\",                    \"short\": true },\n        { \"title\": \"Error Message\",  \"value\": \"{{ JSON.stringify($json.body) }}\",           \"short\": false }\n      ]\n    }\n  ]\n}",
+        "options": {}
+      },
+      "id": "node-alert-firestore",
+      "name": "Alerta — Firestore Falhou",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1780, 420],
+      "notes": "Replace the URL with your Slack Incoming Webhook URL or any alerting endpoint (PagerDuty, Teams, email via SMTP node, etc.)"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://WEBHOOK_URL_OR_SLACK_INCOMING_WEBHOOK",
+        "sendBody": true,
+        "contentType": "json",
+        "body": "={\n  \"text\": \"🔴 *CDC→Firestore Sync ERROR* — CDC API unavailable or returned error\",\n  \"attachments\": [\n    {\n      \"color\": \"danger\",\n      \"fields\": [\n        { \"title\": \"Timestamp\",     \"value\": \"{{ new Date().toISOString() }}\", \"short\": true },\n        { \"title\": \"CDC Status\",    \"value\": \"{{ $json.statusCode }}\",          \"short\": true },\n        { \"title\": \"Error Detail\",  \"value\": \"{{ JSON.stringify($json.body) }}\",\"short\": false }\n      ]\n    }\n  ]\n}",
+        "options": {}
+      },
+      "id": "node-alert-cdc",
+      "name": "Alerta — CDC API Falhou",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [900, 480],
+      "notes": "This node fires when the CDC API call fails. Firestore will NOT be updated (safe — no stale overwrite)."
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "status",
+              "value": "success"
+            },
+            {
+              "name": "updatedAt",
+              "value": "={{ new Date().toISOString() }}"
+            },
+            {
+              "name": "document",
+              "value": "projects/titas-sinergy/databases/(default)/documents/ts_d360/dados_ativos"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "node-success-log",
+      "name": "Log Sucesso",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [1780, 220]
+    }
+  ],
+  "connections": {
+    "Every 1 Minute": {
+      "main": [
+        [
+          {
+            "node": "CDC API — Buscar Vendas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CDC API — Buscar Vendas": {
+      "main": [
+        [
+          {
+            "node": "CDC OK?",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Alerta — CDC API Falhou",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CDC OK?": {
+      "main": [
+        [
+          {
+            "node": "Transformar Dados CDC → Sinergy",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Alerta — CDC API Falhou",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transformar Dados CDC → Sinergy": {
+      "main": [
+        [
+          {
+            "node": "Firebase Auth — Obter Token",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Firebase Auth — Obter Token": {
+      "main": [
+        [
+          {
+            "node": "Construir JWT (Service Account)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Construir JWT (Service Account)": {
+      "main": [
+        [
+          {
+            "node": "Firestore PATCH — dados_ativos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Firestore PATCH — dados_ativos": {
+      "main": [
+        [
+          {
+            "node": "Firestore OK?",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Alerta — Firestore Falhou",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Firestore OK?": {
+      "main": [
+        [
+          {
+            "node": "Log Sucesso",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Alerta — Firestore Falhou",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": ""
+  },
+  "staticData": null,
+  "tags": [
+    { "name": "sinergy" },
+    { "name": "cdc" },
+    { "name": "firestore" },
+    { "name": "vendas" }
+  ],
+  "triggerCount": 1,
+  "updatedAt": "2026-05-18T00:00:00.000Z",
+  "versionId": "1"
+}

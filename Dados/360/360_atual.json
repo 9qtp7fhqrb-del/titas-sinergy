@@ -1,0 +1,629 @@
+{
+  "_instrucoes": {
+    "como_usar": "Edite os campos abaixo com os dados do mês atual. Salve o arquivo. Depois peça ao Claude: 'atualize o 360 com os dados da pasta'.",
+    "campos_loja": {
+      "total": "Faturamento total da loja no período (número inteiro, sem R$)",
+      "ped": "Quantidade de pedidos realizados",
+      "cancel": "Quantidade de cancelamentos",
+      "agend": "Taxa de agendamento em decimal — ex: 38% = 0.38",
+      "agendCount": "Quantidade absoluta de agendamentos",
+      "meta": "Meta de faturamento da loja para o mês (número inteiro, sem R$)",
+      "top": "Todos os vendedores com vendas: n=nome, i=iniciais (2 letras), t=total faturado, p=pedidos"
+    }
+  },
+  "periodo": "Mai 2026",
+  "meta_rede": 3000000,
+  "agendFat": 104004.5,
+  "agendMeta": 1000000,
+  "performance": {
+    "mesAnterior": {
+      "nome": "Abr 2026",
+      "diasMes": 30,
+      "rede": 2668870.34,
+      "subredes": {
+        "t1": 1042672.66,
+        "t2": 659810.8,
+        "t3": 966386.88
+      },
+      "lojas": {
+        "saomateus": 453836.93,
+        "cariacica": 356233.15,
+        "itabuna": 327104.92,
+        "barreiras": 277132.06,
+        "moxuara": 259657.6,
+        "teixeira": 226941.59,
+        "laranjeiras": 155737.15,
+        "serra": 181977.96,
+        "linhares": 161060.99,
+        "montserrat": 169511.0,
+        "praiadacosta": 99676.99
+      },
+      "parcial": {
+        "7": {
+          "rede": 717983.12,
+          "subredes": {
+            "t1": 297268.23,
+            "t2": 147352.9,
+            "t3": 273361.99
+          },
+          "lojas": {
+            "saomateus": 117353.0,
+            "cariacica": 90086.15,
+            "itabuna": 103239.0,
+            "barreiras": 69458.0,
+            "moxuara": 73803.09,
+            "teixeira": 42266.9,
+            "laranjeiras": 35628.0,
+            "serra": 48890.99,
+            "linhares": 50268.0,
+            "montserrat": 56850.0,
+            "praiadacosta": 30139.99
+          }
+        }
+      }
+    },
+    "recordHistorico": {
+      "nome": "Abr 2026",
+      "diasMes": 30,
+      "rede": 2668870.34,
+      "subredes": {
+        "t1": 1042672.66,
+        "t2": 659810.8,
+        "t3": 966386.88
+      },
+      "lojas": {
+        "saomateus": 453836.93,
+        "cariacica": 356233.15,
+        "itabuna": 327104.92,
+        "barreiras": 277132.06,
+        "moxuara": 259657.6,
+        "teixeira": 226941.59,
+        "laranjeiras": 155737.15,
+        "serra": 181977.96,
+        "linhares": 161060.99,
+        "montserrat": 169511.0,
+        "praiadacosta": 99676.99
+      },
+      "parcial": {
+        "7": {
+          "rede": 717983.12,
+          "subredes": {
+            "t1": 297268.23,
+            "t2": 147352.9,
+            "t3": 273361.99
+          },
+          "lojas": {
+            "saomateus": 117353.0,
+            "cariacica": 90086.15,
+            "itabuna": 103239.0,
+            "barreiras": 69458.0,
+            "moxuara": 73803.09,
+            "teixeira": 42266.9,
+            "laranjeiras": 35628.0,
+            "serra": 48890.99,
+            "linhares": 50268.0,
+            "montserrat": 56850.0,
+            "praiadacosta": 30139.99
+          }
+        }
+      }
+    }
+  },
+  "diasDecorridos": 10,
+  "diasMes": 31,
+  "subredes": {
+    "t1": {
+      "nome": "Titãs 1",
+      "gestor": "Talysson",
+      "meta": 1240000
+    },
+    "t2": {
+      "nome": "Titãs 2",
+      "gestor": "Adriel",
+      "meta": 725000
+    },
+    "t3": {
+      "nome": "Titãs 3",
+      "gestor": "Arthur",
+      "meta": 1035000
+    }
+  },
+  "lojas": {
+    "saomateus": {
+      "label": "São Mateus",
+      "sigla": "SM",
+      "sub": "t3",
+      "meta": 450000,
+      "total": 163130.76,
+      "ped": 142,
+      "cancel": 3,
+      "agend": 0.087,
+      "agendCount": 4,
+      "agendFat": 7580,
+      "top": [
+        {
+          "n": "Eliza Queiroz De Souza",
+          "i": "EQ",
+          "t": 44270.97,
+          "p": 34
+        },
+        {
+          "n": "Alice Christino Monteiro",
+          "i": "AC",
+          "t": 42797.8,
+          "p": 35
+        },
+        {
+          "n": "Randeclay Mariano Gomes",
+          "i": "RM",
+          "t": 33489.0,
+          "p": 25
+        },
+        {
+          "n": "Leandro Da Cruz Silva",
+          "i": "LC",
+          "t": 18255.0,
+          "p": 12
+        },
+        {
+          "n": "Stefany Sperotto Barcelos",
+          "i": "SS",
+          "t": 17228.0,
+          "p": 13
+        },
+        {
+          "n": "Juliana Cristina Dos Santos",
+          "i": "JC",
+          "t": 7089.99,
+          "p": 23
+        }
+      ]
+    },
+    "cariacica": {
+      "label": "Cariacica",
+      "sigla": "CC",
+      "sub": "t1",
+      "meta": 450000,
+      "total": 144250.0,
+      "ped": 108,
+      "cancel": 2,
+      "agend": 0.0667,
+      "agendCount": 9,
+      "agendFat": 15998,
+      "top": [
+        {
+          "n": "Roberta Felipe Malaquias",
+          "i": "RF",
+          "t": 63473.0,
+          "p": 49
+        },
+        {
+          "n": "Liz Sophia Andrade Pereira",
+          "i": "LS",
+          "t": 40854.0,
+          "p": 27
+        },
+        {
+          "n": "Glaupierre Oliveira Da Silvaa",
+          "i": "GO",
+          "t": 26833.0,
+          "p": 20
+        },
+        {
+          "n": "Wilghyner De Padua Soares",
+          "i": "WD",
+          "t": 9780.0,
+          "p": 7
+        }
+      ]
+    },
+    "itabuna": {
+      "label": "Itabuna",
+      "sigla": "IT",
+      "sub": "t1",
+      "meta": 390000,
+      "total": 91438.0,
+      "ped": 114,
+      "cancel": 1,
+      "agend": 0.0645,
+      "agendCount": 3,
+      "agendFat": 3510,
+      "top": [
+        {
+          "n": "Mikaelle Santos Virgens",
+          "i": "MS",
+          "t": 31220.0,
+          "p": 36
+        },
+        {
+          "n": "Jhonatas Lucas Machado Pereira",
+          "i": "JL",
+          "t": 17580.0,
+          "p": 19
+        },
+        {
+          "n": "Hericles Lisboa De Freitas",
+          "i": "HL",
+          "t": 14900.0,
+          "p": 23
+        },
+        {
+          "n": "Keifit Moreira Dos Santos",
+          "i": "KM",
+          "t": 14074.0,
+          "p": 20
+        },
+        {
+          "n": "Andreza De Jesus Souza",
+          "i": "AD",
+          "t": 13519.0,
+          "p": 14
+        },
+        {
+          "n": "Evelyn Batista Cruz Do Espirito Santos",
+          "i": "EB",
+          "t": 85.0,
+          "p": 1
+        },
+        {
+          "n": "Maikelly Moreira Dos Santos",
+          "i": "MK",
+          "t": 60.0,
+          "p": 1
+        }
+      ]
+    },
+    "barreiras": {
+      "label": "Barreiras",
+      "sigla": "BR",
+      "sub": "t2",
+      "meta": 280000,
+      "total": 85826.99,
+      "ped": 75,
+      "cancel": 1,
+      "agend": 0,
+      "agendCount": 2,
+      "agendFat": 3400,
+      "top": [
+        {
+          "n": "Victor Roberto De Oliveira",
+          "i": "VR",
+          "t": 27746.0,
+          "p": 21
+        },
+        {
+          "n": "Isabela Chagas",
+          "i": "IC",
+          "t": 21669.0,
+          "p": 14
+        },
+        {
+          "n": "Mateus Da Silva Matos",
+          "i": "MM",
+          "t": 13379.99,
+          "p": 11
+        },
+        {
+          "n": "Táine Oliveira Dos Santos",
+          "i": "TO",
+          "t": 10935.0,
+          "p": 7
+        },
+        {
+          "n": "Larisse Ribeiro Dos Santos",
+          "i": "LR",
+          "t": 7840.0,
+          "p": 8
+        },
+        {
+          "n": "Maxwell Cezar Oliveira",
+          "i": "MC",
+          "t": 537.0,
+          "p": 5
+        },
+        {
+          "n": "Gustavo Viera Hansen",
+          "i": "GV",
+          "t": 330.0,
+          "p": 4
+        },
+        {
+          "n": "Daniela Milena Gomes Mares",
+          "i": "DM",
+          "t": 230.0,
+          "p": 2
+        }
+      ]
+    },
+    "moxuara": {
+      "label": "Moxuara",
+      "sigla": "MX",
+      "sub": "t1",
+      "meta": 270000,
+      "total": 111865.5,
+      "ped": 125,
+      "cancel": 0,
+      "agend": 0.1622,
+      "agendCount": 14,
+      "agendFat": 24948.5,
+      "top": [
+        {
+          "n": "Khayllane De Almeida Ferreira",
+          "i": "KA",
+          "t": 38898.0,
+          "p": 43
+        },
+        {
+          "n": "Iasmim Vitoria Medeiros Gaio",
+          "i": "IV",
+          "t": 35229.0,
+          "p": 33
+        },
+        {
+          "n": "Nicolas Santos Borges",
+          "i": "NS",
+          "t": 24218.5,
+          "p": 18
+        },
+        {
+          "n": "Mirelly Vieira Portugal",
+          "i": "MP",
+          "t": 4050.0,
+          "p": 11
+        },
+        {
+          "n": "Ana Carolina Da Silva",
+          "i": "AN",
+          "t": 2580.0,
+          "p": 4
+        }
+      ]
+    },
+    "teixeira": {
+      "label": "Teixeira de Freitas",
+      "sigla": "TF",
+      "sub": "t2",
+      "meta": 225000,
+      "total": 92671.0,
+      "ped": 95,
+      "cancel": 4,
+      "agend": 0.0714,
+      "agendCount": 2,
+      "agendFat": 2999,
+      "top": [
+        {
+          "n": "Gustavo Santana Batista",
+          "i": "GS",
+          "t": 29400.0,
+          "p": 23
+        },
+        {
+          "n": "Amanda Goulart Andrade",
+          "i": "AG",
+          "t": 14980.0,
+          "p": 11
+        },
+        {
+          "n": "Paloma De Jesus Santos",
+          "i": "PD",
+          "t": 14622.0,
+          "p": 11
+        },
+        {
+          "n": "Carla Santos Luiz",
+          "i": "CS",
+          "t": 13246.0,
+          "p": 17
+        },
+        {
+          "n": "Beatriz Hellen Fagundes",
+          "i": "BH",
+          "t": 10298.0,
+          "p": 10
+        },
+        {
+          "n": "Carine Ferreira Franco",
+          "i": "CF",
+          "t": 6805.0,
+          "p": 20
+        }
+      ]
+    },
+    "laranjeiras": {
+      "label": "Laranjeiras",
+      "sigla": "LJ",
+      "sub": "t2",
+      "meta": 220000,
+      "total": 51428.0,
+      "ped": 39,
+      "cancel": 0,
+      "agend": 0.04,
+      "agendCount": 7,
+      "agendFat": 11200,
+      "top": [
+        {
+          "n": "Mayara Kull Rodrigues",
+          "i": "MK",
+          "t": 21353.0,
+          "p": 14
+        },
+        {
+          "n": "Lídia Da Penha Diogo",
+          "i": "LD",
+          "t": 20170.0,
+          "p": 16
+        },
+        {
+          "n": "Nycolly Calazans Paulo",
+          "i": "NC",
+          "t": 9850.0,
+          "p": 7
+        },
+        {
+          "n": "Joyce Sophia Lopes Santos",
+          "i": "JS",
+          "t": 55.0,
+          "p": 2
+        }
+      ]
+    },
+    "serra": {
+      "label": "Serra",
+      "sigla": "SR",
+      "sub": "t3",
+      "meta": 210000,
+      "total": 58970.96,
+      "ped": 74,
+      "cancel": 0,
+      "agend": 0.0714,
+      "agendCount": 2,
+      "agendFat": 4000,
+      "top": [
+        {
+          "n": "Karen Scavelo Souza",
+          "i": "KS",
+          "t": 16719.0,
+          "p": 16
+        },
+        {
+          "n": "Lucas Loyola Araujo",
+          "i": "LL",
+          "t": 15993.99,
+          "p": 22
+        },
+        {
+          "n": "Marcela Da Silva Lopes",
+          "i": "MD",
+          "t": 13873.0,
+          "p": 15
+        },
+        {
+          "n": "Luiz Henrique Viana Da Rocha",
+          "i": "LH",
+          "t": 12224.99,
+          "p": 18
+        },
+        {
+          "n": "Guilherme Souza Nascimento",
+          "i": "GU",
+          "t": 119.99,
+          "p": 2
+        },
+        {
+          "n": "Hismênia Alves Tavares",
+          "i": "HT",
+          "t": 39.99,
+          "p": 1
+        }
+      ]
+    },
+    "linhares": {
+      "label": "Linhares",
+      "sigla": "LH",
+      "sub": "t3",
+      "meta": 210000,
+      "total": 56686.0,
+      "ped": 59,
+      "cancel": 0,
+      "agend": 0,
+      "agendCount": 1,
+      "agendFat": 2000,
+      "top": [
+        {
+          "n": "Natalia Rocha Leonel",
+          "i": "NR",
+          "t": 33249.0,
+          "p": 32
+        },
+        {
+          "n": "Rayca Mendes Morais",
+          "i": "RM",
+          "t": 19637.0,
+          "p": 24
+        },
+        {
+          "n": "Krystian Lincoln Dalfior",
+          "i": "KL",
+          "t": 3800.0,
+          "p": 3
+        }
+      ]
+    },
+    "montserrat": {
+      "label": "Montserrat",
+      "sigla": "MT",
+      "sub": "t3",
+      "meta": 165000,
+      "total": 42709.0,
+      "ped": 91,
+      "cancel": 2,
+      "agend": 0.0455,
+      "agendCount": 7,
+      "agendFat": 7310,
+      "top": [
+        {
+          "n": "Joaquin Emiliano Rodrigo",
+          "i": "JE",
+          "t": 19195.0,
+          "p": 42
+        },
+        {
+          "n": "Adriano Jeremias Cardoso",
+          "i": "AJ",
+          "t": 11960.0,
+          "p": 34
+        },
+        {
+          "n": "Vinicius De Almeida Medeiros Vargas",
+          "i": "VA",
+          "t": 9070.0,
+          "p": 11
+        },
+        {
+          "n": "Jhenifer Goncalves De Souza",
+          "i": "JG",
+          "t": 2484.0,
+          "p": 4
+        }
+      ]
+    },
+    "praiadacosta": {
+      "label": "Praia da Costa",
+      "sigla": "PC",
+      "sub": "t1",
+      "meta": 130000,
+      "total": 50617.0,
+      "ped": 37,
+      "cancel": 0,
+      "agend": 0,
+      "agendCount": 14,
+      "agendFat": 21059,
+      "top": [
+        {
+          "n": "Thauany Da Silva Medeiros",
+          "i": "TD",
+          "t": 38633.0,
+          "p": 29
+        },
+        {
+          "n": "Renato Lembranci Metzke Junior",
+          "i": "RL",
+          "t": 8404.0,
+          "p": 6
+        },
+        {
+          "n": "Liz Sophia Andrade Pereira",
+          "i": "LS",
+          "t": 3500.0,
+          "p": 1
+        },
+        {
+          "n": "Wilghyner De Padua Soares",
+          "i": "WD",
+          "t": 80.0,
+          "p": 1
+        }
+      ]
+    }
+  }
+}

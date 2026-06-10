@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.titas.sinergy.autodeploy</string>
+
+    <!-- Usa osascript → Terminal para ter permissão de acesso a arquivos -->
+    <key>ProgramArguments</key>
+    <array>
+        <string>/usr/bin/osascript</string>
+        <string>-e</string>
+        <string>tell application "Terminal" to do script "nohup /bin/bash '/Users/marcelolima/Documents/Claude/Projects/titas sinergy/auto-deploy.sh' &>> '/Users/marcelolima/Documents/Claude/Projects/titas sinergy/.auto-deploy.log' &"</string>
+    </array>
+
+    <!-- Inicia ao fazer login -->
+    <key>RunAtLoad</key>
+    <true/>
+
+    <!-- Não reinicia (o nohup já mantém o processo vivo) -->
+    <key>KeepAlive</key>
+    <false/>
+
+    <!-- Aguarda 8s após login para o Terminal carregar -->
+    <key>ThrottleInterval</key>
+    <integer>8</integer>
+
+    <key>StandardOutPath</key>
+    <string>/Users/marcelolima/Documents/Claude/Projects/titas sinergy/.launchd.log</string>
+    <key>StandardErrorPath</key>
+    <string>/Users/marcelolima/Documents/Claude/Projects/titas sinergy/.launchd.log</string>
+</dict>
+</plist>

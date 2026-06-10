@@ -125,7 +125,7 @@ def fmt_top(top_list):
     items = [f"{{n:'{e['n']}',i:'{e['i']}',t:{e['t']}}}" for e in top_list]
     return '[' + ', '.join(items) + ']'
 
-def update_store(content, store_key, total, acess_total, agend_total, agend_top, sellers_top=None):
+def update_store(content, store_key, total, acess_total, agend_total, agend_top, sellers_top=None, sellers_today=None):
     start, end = find_section(content, store_key)
     if start is None:
         print(f"  AVISO: seção '{store_key}' não encontrada no HTML")
@@ -182,13 +182,27 @@ def update_store(content, store_key, total, acess_total, agend_total, agend_top,
                         'ds':  int(ds.group(1)) if ds else 0,
                         'ult': ult.group(1) if ult else ''
                     }
+        # Data de hoje em formato dd/mm (para atualizar ult dos que venderam hoje)
+        from datetime import date as _date
+        today_fmt = _date.today().strftime('%d/%m')
+
         # Construir novo top[]
         top_items = []
         for v in sellers_top:
             nm_key = v['n'].lower()
             preserved = ds_ult.get(nm_key, {})
+            old_ult = preserved.get('ult', '')
             ds_val  = preserved.get('ds', 0)
-            ult_val = preserved.get('ult', '')
+
+            # Se o vendedor vendeu hoje, atualiza ult e incrementa ds
+            vendeu_hoje = sellers_today and nm_key in sellers_today
+            if vendeu_hoje:
+                ult_val = today_fmt
+                if old_ult != today_fmt:   # dia novo → +1 dia ativo
+                    ds_val = ds_val + 1
+            else:
+                ult_val = old_ult
+
             item = f"{{n:'{v['n']}',i:'{v['i']}',p:{v['p']},t:{v['t']}"
             if ds_val:   item += f",ds:{ds_val}"
             if ult_val:  item += f",ult:'{ult_val}'"
@@ -236,8 +250,11 @@ def main():
     start = date.today().strftime('%Y-%m-01')
     print(f"Período: {start} → {today}")
 
-    print("Buscando vendas gerais...")
+    print("Buscando vendas gerais (acumulado)...")
     sales_data = fetch_sales(token, start, today)
+
+    print("Buscando vendas do dia (para atualizar ult/ds)...")
+    today_data = fetch_sales(token, today, today)
 
     print("Buscando Central de Agendamentos (canal 6)...")
     agend_data = fetch_sales(token, start, today, channel_id=6)
@@ -245,6 +262,14 @@ def main():
     sales = process(sales_data, lambda c: c.get('total_sold', 0))
     acess = process(sales_data, lambda c: (c.get('group_totals') or {}).get('ACESSÓRIOS', 0))
     agend = process(agend_data, lambda c: (c.get('group_totals') or {}).get('SBON', 0))
+
+    # Set de (store_key, nome_lower) que venderam HOJE
+    today_sellers_proc = process(today_data, lambda c: c.get('total_sold', 0))
+    sellers_today_by_store = {}
+    for sk, sv in today_sellers_proc.items():
+        sellers_today_by_store[sk] = {v['n'].lower() for v in sv['top']}
+    vendas_hoje_total = sum(len(v) for v in sellers_today_by_store.values())
+    print(f"Vendedores com venda hoje: {vendas_hoje_total}")
 
     print("\nTotais por loja:")
     for sk in STORE_MAP.values():
@@ -263,11 +288,12 @@ def main():
             continue
         content = update_store(
             content, sk,
-            total       = sales[sk]['total'],
-            acess_total = acess.get(sk, {}).get('total', 0),
-            agend_total = agend.get(sk, {}).get('total', 0),
-            agend_top   = agend.get(sk, {}).get('top', []),
-            sellers_top = sales[sk]['top'],
+            total          = sales[sk]['total'],
+            acess_total    = acess.get(sk, {}).get('total', 0),
+            agend_total    = agend.get(sk, {}).get('total', 0),
+            agend_top      = agend.get(sk, {}).get('top', []),
+            sellers_top    = sales[sk]['top'],
+            sellers_today  = sellers_today_by_store.get(sk, set()),
         )
         print(f"  {sk}: atualizado")
 

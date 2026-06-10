@@ -21,21 +21,28 @@ if not repo or not pat:
     print("GITHUB_REPOSITORY ou GH_PAT não definidos, pulando cache")
     sys.exit(0)
 
-api_url = f"https://api.github.com/repos/{repo}/actions/variables/ERP_TOKEN_CACHE"
-headers = ['-H', f'Authorization: token {pat}', '-H', 'Content-Type: application/json']
-payload = json.dumps({"name": "ERP_TOKEN_CACHE", "value": token})
+base_url    = f"https://api.github.com/repos/{repo}/actions/variables"
+var_url     = f"{base_url}/ERP_TOKEN_CACHE"
+headers     = ['-H', f'Authorization: token {pat}', '-H', 'Content-Type: application/json']
+payload     = json.dumps({"name": "ERP_TOKEN_CACHE", "value": token})
 
-# Verifica se variável já existe
+# Verifica se variável já existe (GET)
 r = subprocess.run(
-    ['curl', '-s', '-o', '/dev/null', '-w', '%{http_code}'] + headers + [api_url],
+    ['curl', '-s', '-o', '/dev/null', '-w', '%{http_code}'] + headers + [var_url],
     capture_output=True, text=True)
 status = r.stdout.strip()
 
-method = 'PATCH' if status == '200' else 'POST'
+if status == '200':
+    # Variável existe → atualiza com PATCH na URL com nome
+    method, url = 'PATCH', var_url
+else:
+    # Variável não existe → cria com POST na URL base (sem nome)
+    method, url = 'POST', base_url
+
 r2 = subprocess.run(
-    ['curl', '-s', '-X', method] + headers + [api_url, '-d', payload],
+    ['curl', '-s', '-X', method] + headers + [url, '-d', payload],
     capture_output=True, text=True)
 
-print(f"Token salvo ({method}, status anterior: {status})")
+print(f"Token salvo ({method}, status GET: {status})")
 if r2.stdout:
     print(r2.stdout[:200])

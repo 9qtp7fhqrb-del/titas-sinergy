@@ -30,12 +30,50 @@ jobs:
       - name: Instalar dependências
         run: pip install requests
 
+      - name: Carregar token ERP cacheado
+        id: load_token
+        run: |
+          TOKEN=$(curl -s \
+            -H "Authorization: token ${{ secrets.GH_PAT }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            "https://api.github.com/repos/${{ github.repository }}/actions/variables/ERP_TOKEN_CACHE" \
+            | python3 -c "import json,sys; d=json.load(sys.stdin); print(d.get('value',''))" 2>/dev/null || echo "")
+          echo "token=$TOKEN" >> $GITHUB_OUTPUT
+
       - name: Rodar script de atualização
         env:
-          ERP_LOGIN:    ${{ secrets.ERP_LOGIN }}
-          ERP_PASSWORD: ${{ secrets.ERP_PASSWORD }}
-          INDEX_HTML:   index.html
+          ERP_LOGIN:         ${{ secrets.ERP_LOGIN }}
+          ERP_PASSWORD:      ${{ secrets.ERP_PASSWORD }}
+          ERP_TOKEN_CACHE:   ${{ steps.load_token.outputs.token }}
+          ERP_TOKEN_OUTPUT:  /tmp/erp_new_token.txt
+          INDEX_HTML:        index.html
         run: python scripts/update_d360.py
+
+      - name: Salvar token novo no cache (se renovado)
+        run: |
+          if [ -f /tmp/erp_new_token.txt ]; then
+            NEW_TOKEN=$(cat /tmp/erp_new_token.txt)
+            # Verifica se variável já existe (PUT) ou não existe (POST)
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+              -H "Authorization: token ${{ secrets.GH_PAT }}" \
+              "https://api.github.com/repos/${{ github.repository }}/actions/variables/ERP_TOKEN_CACHE")
+            if [ "$STATUS" = "200" ]; then
+              curl -s -X PATCH \
+                -H "Authorization: token ${{ secrets.GH_PAT }}" \
+                -H "Content-Type: application/json" \
+                "https://api.github.com/repos/${{ github.repository }}/actions/variables/ERP_TOKEN_CACHE" \
+                -d "{\"name\":\"ERP_TOKEN_CACHE\",\"value\":\"$NEW_TOKEN\"}"
+            else
+              curl -s -X POST \
+                -H "Authorization: token ${{ secrets.GH_PAT }}" \
+                -H "Content-Type: application/json" \
+                "https://api.github.com/repos/${{ github.repository }}/actions/variables/ERP_TOKEN_CACHE" \
+                -d "{\"name\":\"ERP_TOKEN_CACHE\",\"value\":\"$NEW_TOKEN\"}"
+            fi
+            echo "Token cacheado atualizado no repositório"
+          else
+            echo "Token reutilizado — sem atualização necessária"
+          fi
 
       - name: Verificar se houve alterações
         id: diff

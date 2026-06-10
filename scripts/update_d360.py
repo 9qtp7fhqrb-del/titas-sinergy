@@ -42,6 +42,34 @@ def erp_login(user, password):
         raise ValueError(f"Token não encontrado. Chaves: {list(data.keys())}")
     return token
 
+def erp_token_valid(token):
+    """Verifica se o token ainda é válido sem fazer novo login."""
+    try:
+        today = date.today().strftime('%Y-%m-%d')
+        r = requests.get(f'{ERP_BASE}/reports/sales_by_collaborator',
+            params={'start_date': today, 'end_date': today,
+                    'report_view_mode': 'summary', 'show_insights': 'false',
+                    'include_unassigned_residual': 'false'},
+            headers={'Authorization': f'Bearer {token}', 'Accept': 'application/json'},
+            timeout=15)
+        return r.status_code == 200
+    except Exception:
+        return False
+
+def get_or_refresh_token(user, password):
+    """Reutiliza token cacheado se ainda válido; caso contrário faz novo login."""
+    cached = os.environ.get('ERP_TOKEN_CACHE', '').strip()
+    if cached:
+        print("Verificando token cacheado...")
+        if erp_token_valid(cached):
+            print("Token cacheado ainda válido — sem novo login")
+            return cached, False   # (token, is_new)
+        print("Token expirado, fazendo novo login...")
+    else:
+        print("Sem token cacheado, fazendo login...")
+    token = erp_login(user, password)
+    return token, True   # (token, is_new)
+
 def fetch_sales(token, start, end, channel_id=None):
     params = {
         'start_date': start,
@@ -242,9 +270,16 @@ def main():
         print("ERRO: credenciais do ERP não encontradas")
         sys.exit(1)
 
-    print("Fazendo login no ERP...")
-    token = erp_login(erp_user, erp_password)
-    print("Login OK")
+    token, is_new_token = get_or_refresh_token(erp_user, erp_password)
+    print("Token OK")
+
+    # Se gerou token novo, salva para o workflow persistir no cache
+    if is_new_token:
+        token_out = os.environ.get('ERP_TOKEN_OUTPUT', '')
+        if token_out:
+            with open(token_out, 'w') as f:
+                f.write(token)
+            print(f"Token salvo em {token_out}")
 
     today = date.today().strftime('%Y-%m-%d')
     start = date.today().strftime('%Y-%m-01')

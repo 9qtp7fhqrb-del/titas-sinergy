@@ -184,7 +184,7 @@ def fmt_top(top_list):
     items = [f"{{n:'{e['n']}',i:'{e['i']}',t:{e['t']}}}" for e in top_list]
     return '[' + ', '.join(items) + ']'
 
-def update_store(content, store_key, total, acess_total, agend_total, agend_top, fat_dia=0, sellers_top=None, sellers_today=None):
+def update_store(content, store_key, total, acess_total, agend_total, agend_top, fat_dia=0, top_dia=None, sellers_top=None, sellers_today=None):
     start, end = find_section(content, store_key)
     if start is None:
         print(f"  AVISO: seção '{store_key}' não encontrada no HTML")
@@ -200,6 +200,11 @@ def update_store(content, store_key, total, acess_total, agend_total, agend_top,
 
     # 2b. fat_dia (faturamento do dia vigente)
     sec = re.sub(r'\bfat_dia:\d+(?:\.\d+)?', f'fat_dia:{fat_dia}', sec, count=1)
+
+    # 2c. top_dia (vendedores do dia)
+    if top_dia is not None:
+        top_dia_str = fmt_top(top_dia)
+        sec, n_td = re.subn(r'top_dia:\[[^\]]*\]', f'top_dia:{top_dia_str}', sec, count=1)
 
     # 3. acessorios.total
     sec = re.sub(r'(\bacessorios:\{total:)\d+(?:\.\d+)?', f'\\g<1>{acess_total}', sec, count=1)
@@ -363,6 +368,7 @@ def main():
             agend_total    = agend.get(sk, {}).get('total', 0),
             agend_top      = agend.get(sk, {}).get('top', []),
             fat_dia        = today_sellers_proc.get(sk, {}).get('total', 0),
+            top_dia        = today_sellers_proc.get(sk, {}).get('top', []),
             sellers_top    = sales[sk]['top'],
             sellers_today  = sellers_today_by_store.get(sk, set()),
         )
@@ -381,3 +387,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+

@@ -276,7 +276,7 @@ def fmt_top(top_list):
     items = [f"{{n:'{e['n']}',i:'{e['i']}',t:{e['t']}}}" for e in top_list]
     return '[' + ', '.join(items) + ']'
 
-def update_store(content, store_key, total, acess_total, agend_total, agend_top, fat_dia=0, top_dia=None, fin_dia=0, top_fin=None, sellers_top=None, sellers_today=None):
+def update_store(content, store_key, total, acess_total, agend_total, agend_top, fat_dia=0, top_dia=None, fin_dia=0, top_fin=None, fin_mes=0, sellers_top=None, sellers_today=None):
     start, end = find_section(content, store_key)
     if start is None:
         print(f"  AVISO: seção '{store_key}' não encontrada no HTML")
@@ -305,6 +305,9 @@ def update_store(content, store_key, total, acess_total, agend_total, agend_top,
     if top_fin is not None:
         top_fin_str = fmt_top(top_fin)
         sec = re.sub(r'top_fin:\[[^\]]*\]', f'top_fin:{top_fin_str}', sec, count=1)
+
+    # 2f. fin_mes (financeiras acumulado mensal)
+    sec = re.sub(r'\bfin_mes:\d+(?:\.\d+)?', f'fin_mes:{fin_mes}', sec, count=1)
 
     # 3. acessorios.total
     sec = re.sub(r'(\bacessorios:\{total:)\d+(?:\.\d+)?', f'\\g<1>{acess_total}', sec, count=1)
@@ -440,10 +443,14 @@ def main():
     print("Buscando financeiras do dia...")
     fin_today_data = fetch_gerencial(token, today, today, payment_method_ids=fin_pm_ids)
 
+    print("Buscando financeiras do mês...")
+    fin_mes_data = fetch_gerencial(token, start, today, payment_method_ids=fin_pm_ids)
+
     sales = process(sales_data, lambda c: c.get('total_sold', 0))
     acess = process(sales_data, lambda c: (c.get('group_totals') or {}).get('ACESSÓRIOS', 0))
     agend = process(agend_data, lambda c: (c.get('group_totals') or {}).get('SBON', 0))
-    fin   = process_gerencial(fin_today_data)
+    fin      = process_gerencial(fin_today_data)
+    fin_acum = process_gerencial(fin_mes_data)
 
     # Vendas do dia: totais por loja e set de vendedores
     today_sellers_proc = process(today_data, lambda c: c.get('total_sold', 0))
@@ -460,7 +467,8 @@ def main():
         ag = agend.get(sk, {}).get('total', 0)
         fd = today_sellers_proc.get(sk, {}).get('total', 0)
         fn = fin.get(sk, {}).get('total', 0)
-        print(f"  {sk:<15} total={s:>10,.2f} | acess={a:>8,.2f} | agend={ag:>10,.2f} | fat_dia={fd:>8,.2f} | fin_dia={fn:>8,.2f}")
+        fm = fin_acum.get(sk, {}).get('total', 0)
+        print(f"  {sk:<15} total={s:>10,.2f} | acess={a:>8,.2f} | agend={ag:>10,.2f} | fat_dia={fd:>8,.2f} | fin_dia={fn:>8,.2f} | fin_mes={fm:>8,.2f}")
 
     print(f"\nAtualizando {INDEX_HTML}...")
     with open(INDEX_HTML, 'r', encoding='utf-8') as f:
@@ -480,6 +488,7 @@ def main():
             top_dia        = today_sellers_proc.get(sk, {}).get('top', []),
             fin_dia        = fin.get(sk, {}).get('total', 0),
             top_fin        = fin.get(sk, {}).get('top', []),
+            fin_mes        = fin_acum.get(sk, {}).get('total', 0),
             sellers_top    = sales[sk]['top'],
             sellers_today  = sellers_today_by_store.get(sk, set()),
         )

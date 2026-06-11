@@ -334,7 +334,11 @@ def update_store(content, store_key, total, acess_total, agend_total, agend_top,
     # 2h. fin_bd (breakdown por financeira)
     if fin_bd is not None:
         fin_bd_str = fmt_fin_bd(fin_bd)
-        sec = re.sub(r'fin_bd:\[[^\]]*\]', f'fin_bd:{fin_bd_str}', sec, count=1)
+        if 'fin_bd:' in sec:
+            sec = re.sub(r'fin_bd:\[[^\]]*\]', f'fin_bd:{fin_bd_str}', sec, count=1)
+        else:
+            # Inserir após top_fin_mes se o campo ainda não existe
+            sec = re.sub(r'(top_fin_mes:\[(?:[^\[\]]|\[[^\[\]]*\])*\])', f'\\1, fin_bd:{fin_bd_str}', sec, count=1)
 
     # 3. acessorios.total
     sec = re.sub(r'(\bacessorios:\{total:)\d+(?:\.\d+)?', f'\\g<1>{acess_total}', sec, count=1)

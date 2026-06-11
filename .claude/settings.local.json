@@ -163,7 +163,10 @@
       "Bash(git fetch *)",
       "Bash(git stash *)",
       "Bash(git rebase *)",
-      "Bash(git commit *)"
+      "Bash(git commit *)",
+      "Bash(git checkout *)",
+      "Bash(python3 update_d360.py)",
+      "Bash(grep -o \"top_fin_mes:\\\\[{n:'[^']*',i:'[^']*',t:[0-9.]*,bd:\\\\[\" \"/Users/marcelolima/Documents/Claude/Projects/titas sinergy/index.html\")"
     ]
   }
 }

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 D360 Titãs Sinergy — Atualização automática via API ERP CDC
-Atualiza por loja: total, acessorios.total, agendFat, agendamentos.total, agendamentos.top
+Atualiza por loja: total, acessorios.total, agendFat, agendamentos.total, agendamentos.top, fat_dia
 """
 import re, os, sys
 from datetime import date
@@ -184,7 +184,7 @@ def fmt_top(top_list):
     items = [f"{{n:'{e['n']}',i:'{e['i']}',t:{e['t']}}}" for e in top_list]
     return '[' + ', '.join(items) + ']'
 
-def update_store(content, store_key, total, acess_total, agend_total, agend_top, sellers_top=None, sellers_today=None):
+def update_store(content, store_key, total, acess_total, agend_total, agend_top, fat_dia=0, sellers_top=None, sellers_today=None):
     start, end = find_section(content, store_key)
     if start is None:
         print(f"  AVISO: seção '{store_key}' não encontrada no HTML")
@@ -197,6 +197,9 @@ def update_store(content, store_key, total, acess_total, agend_total, agend_top,
 
     # 2. agendFat
     sec = re.sub(r'\bagendFat:\d+(?:\.\d+)?', f'agendFat:{agend_total}', sec, count=1)
+
+    # 2b. fat_dia (faturamento do dia vigente)
+    sec = re.sub(r'\bfat_dia:\d+(?:\.\d+)?', f'fat_dia:{fat_dia}', sec, count=1)
 
     # 3. acessorios.total
     sec = re.sub(r'(\bacessorios:\{total:)\d+(?:\.\d+)?', f'\\g<1>{acess_total}', sec, count=1)
@@ -319,7 +322,7 @@ def main():
     print("Buscando vendas gerais (acumulado)...")
     sales_data = fetch_sales(token, start, today)
 
-    print("Buscando vendas do dia (para atualizar ult/ds)...")
+    print("Buscando vendas do dia...")
     today_data = fetch_sales(token, today, today)
 
     print("Buscando Central de Agendamentos (canal 6)...")
@@ -329,7 +332,7 @@ def main():
     acess = process(sales_data, lambda c: (c.get('group_totals') or {}).get('ACESSÓRIOS', 0))
     agend = process(agend_data, lambda c: (c.get('group_totals') or {}).get('SBON', 0))
 
-    # Set de (store_key, nome_lower) que venderam HOJE
+    # Vendas do dia: totais por loja e set de vendedores
     today_sellers_proc = process(today_data, lambda c: c.get('total_sold', 0))
     sellers_today_by_store = {}
     for sk, sv in today_sellers_proc.items():
@@ -342,7 +345,8 @@ def main():
         s  = sales.get(sk, {}).get('total', 0)
         a  = acess.get(sk, {}).get('total', 0)
         ag = agend.get(sk, {}).get('total', 0)
-        print(f"  {sk:<15} total={s:>10,.2f} | acess={a:>8,.2f} | agend={ag:>10,.2f}")
+        fd = today_sellers_proc.get(sk, {}).get('total', 0)
+        print(f"  {sk:<15} total={s:>10,.2f} | acess={a:>8,.2f} | agend={ag:>10,.2f} | fat_dia={fd:>8,.2f}")
 
     print(f"\nAtualizando {INDEX_HTML}...")
     with open(INDEX_HTML, 'r', encoding='utf-8') as f:
@@ -358,6 +362,7 @@ def main():
             acess_total    = acess.get(sk, {}).get('total', 0),
             agend_total    = agend.get(sk, {}).get('total', 0),
             agend_top      = agend.get(sk, {}).get('top', []),
+            fat_dia        = today_sellers_proc.get(sk, {}).get('total', 0),
             sellers_top    = sales[sk]['top'],
             sellers_today  = sellers_today_by_store.get(sk, set()),
         )

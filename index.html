@@ -8162,7 +8162,7 @@ function render360(tipo, val) {
 
     // Salão vs Financeiras (visível apenas para Marcelo / diretoria)
     const _salaoFinCard = (() => {
-        const _isMarcelo = user && user.name && user.name.toLowerCase().includes('marcelo');
+        const _isMarcelo = user && user.cargo === 'diretoria';
         if (!_isMarcelo) {
             return `<div class="glass-360 rounded-2xl p-4 card-lift" style="display:flex;flex-direction:column;gap:.35rem;cursor:default;">
                 <div style="display:flex;align-items:center;gap:.5rem;">
@@ -8245,24 +8245,7 @@ function render360(tipo, val) {
                 </div>
                 <p style="font-size:.6rem;color:#6b7280;margin:0;line-height:1.4;">${agPctMeta}% da meta (${brl(agMeta)}) · proj. ${brl(agProj)}</p>
             </div>`;
-        })() +
-        `<div class="glass-360 rounded-2xl p-4" style="display:flex;flex-direction:column;gap:.35rem;opacity:.7;cursor:not-allowed;position:relative;overflow:hidden;">
-            <div style="position:absolute;inset:0;background:repeating-linear-gradient(45deg,rgba(255,180,0,.03) 0px,rgba(255,180,0,.03) 7px,transparent 7px,transparent 14px);pointer-events:none;"></div>
-            <div style="display:flex;align-items:center;justify-content:space-between;gap:.5rem;">
-                <div style="display:flex;align-items:center;gap:.5rem;min-width:0;">
-                    <div style="width:28px;height:28px;border-radius:8px;background:#fbbf2418;border:1px solid #fbbf2435;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                        <i class="fas fa-scissors" style="color:#fbbf24;font-size:.7rem;"></i>
-                    </div>
-                    <span style="font-size:.72rem;font-weight:800;color:#f9fafb;letter-spacing:.03em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Salão vs Financeiras</span>
-                </div>
-                <span style="font-size:.6rem;font-weight:700;padding:.15rem .55rem;border-radius:999px;background:#fbbf2420;color:#fbbf24;white-space:nowrap;flex-shrink:0;">🚧 Em breve</span>
-            </div>
-            <p style="font-size:1.25rem;font-weight:900;color:#fff;line-height:1.2;margin:0;">—</p>
-            <div style="height:3px;background:#1f2937;border-radius:3px;">
-                <div style="height:100%;width:100%;border-radius:3px;background:repeating-linear-gradient(90deg,#fbbf24 0px,#fbbf24 8px,#92400e 8px,#92400e 16px);"></div>
-            </div>
-            <p style="font-size:.6rem;color:#6b7280;margin:0;line-height:1.4;">Salão direto · Parcelado · Financiamento · Canal detalhado</p>
-        </div>`;
+        })();
 
     /* ── Rankings ── */
     if (tipo==='loja') {

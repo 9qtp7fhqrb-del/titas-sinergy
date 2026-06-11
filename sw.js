@@ -1,53 +1,35 @@
-const CACHE_NAME = 'titas-sinergy-v56';
+const CACHE_NAME = 'titas-sinergy-v57';
 
-// Install: skip waiting to activate immediately
+// Install: ativa imediatamente, sem esperar aba fechar
 self.addEventListener('install', event => {
-    self.skipWaiting();
+    event.waitUntil(self.skipWaiting());
 });
 
-// Activate: claim all clients so the new SW controls them right away
+// Activate: apaga TODOS os caches e força reload de todas as abas abertas
 self.addEventListener('activate', event => {
     event.waitUntil(
-        caches.keys().then(keys =>
-            Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)))
-        ).then(() => self.clients.claim())
+        caches.keys()
+            .then(keys => Promise.all(keys.map(k => caches.delete(k))))
+            .then(() => self.clients.claim())
+            .then(() => self.clients.matchAll({ type: 'window', includeUncontrolled: true }))
+            .then(clients => {
+                return Promise.all(clients.map(client => {
+                    // Força reload da aba com a URL atual (busca direto do servidor)
+                    try { return client.navigate(client.url); } catch(e) { return Promise.resolve(); }
+                }));
+            })
     );
 });
 
-// Fetch: network-first for HTML navigation, cache-first for assets
+// Fetch: sempre busca do servidor, sem cache
 self.addEventListener('fetch', event => {
     const req = event.request;
-
-    // Only handle GET requests
     if (req.method !== 'GET') return;
-
-    const url = new URL(req.url);
-
-    // Para HTML: sempre busca do servidor ignorando cache HTTP
-    if (req.mode === 'navigate' || (req.headers.get('accept') || '').includes('text/html')) {
-        event.respondWith(
-            fetch(req, { cache: 'no-store' }).then(resp => {
-                const clone = resp.clone();
-                caches.open(CACHE_NAME).then(cache => cache.put(req, clone));
-                return resp;
-            }).catch(() => caches.match(req))
-        );
-        return;
-    }
-
-    // Para outros recursos: network first, fallback cache
     event.respondWith(
-        fetch(req, { cache: 'no-store' }).then(resp => {
-            if (resp && resp.status === 200) {
-                const clone = resp.clone();
-                caches.open(CACHE_NAME).then(cache => cache.put(req, clone));
-            }
-            return resp;
-        }).catch(() => caches.match(req))
+        fetch(req, { cache: 'no-store' }).catch(() => caches.match(req))
     );
 });
 
-// Message handler: force update on demand
 self.addEventListener('message', event => {
     if (event.data === 'skipWaiting') self.skipWaiting();
 });

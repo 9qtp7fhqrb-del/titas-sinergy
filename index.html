@@ -2,6 +2,20 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
+    <script>
+    // Cache-buster: força reload se a versão mudou
+    (function(){
+      var BUILD = '20260610234140';
+      var stored = localStorage.getItem('d360_build');
+      if (stored && stored !== BUILD) {
+        localStorage.setItem('d360_build', BUILD);
+        var url = location.href.split('?')[0] + '?v=' + BUILD;
+        location.replace(url);
+      } else {
+        localStorage.setItem('d360_build', BUILD);
+      }
+    })();
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
     <title>TITÃS SINERGY — Portal de Acesso</title>
     <!-- build: 2026-06-05 · auto-deploy v2 -->

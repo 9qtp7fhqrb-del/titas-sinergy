@@ -332,10 +332,16 @@ def main():
         )
         print(f"  {sk}: atualizado")
 
+    # Atualiza o timestamp de build (força browsers a recarregar após deploy)
+    from datetime import datetime as _dt
+    build_ts = _dt.now().strftime('%Y%m%d%H%M%S')
+    content = re.sub(r"'__BUILD_TS__'", f"'{build_ts}'", content)
+    content = re.sub(r"'20\d{12}'", f"'{build_ts}'", content)
+
     with open(INDEX_HTML, 'w', encoding='utf-8') as f:
         f.write(content)
 
-    print("\nindex.html salvo com sucesso!")
+    print(f"\nindex.html salvo com sucesso! (build: {build_ts})")
 
 if __name__ == '__main__':
     main()

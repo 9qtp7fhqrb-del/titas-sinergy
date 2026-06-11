@@ -5534,11 +5534,11 @@ function _renderSalaoFin() {
     var _d=D360, filt=window._salaoFinFilter||'all';
     var lojas=Object.values(_d.lojas);
     if(filt!=='all') lojas=lojas.filter(function(l){return l.sub===filt;});
-    lojas=lojas.filter(function(l){return (l.fat_dia||0)>0||(l.fin_dia||0)>0;});
-    lojas.sort(function(a,b){return((b.fat_dia||0)+(b.fin_dia||0))-((a.fat_dia||0)+(a.fin_dia||0));});
-    var totalFatDia=lojas.reduce(function(s,l){return s+(l.fat_dia||0);},0);
-    var totalFin=lojas.reduce(function(s,l){return s+(l.fin_dia||0);},0);
-    var totalSalao=Math.max(0,totalFatDia-totalFin);
+    lojas=lojas.filter(function(l){return (l.total||0)>0||(l.fin_mes||0)>0;});
+    lojas.sort(function(a,b){return((b.total||0))-((a.total||0));});
+    var totalMes=lojas.reduce(function(s,l){return s+(l.total||0);},0);
+    var totalFin=lojas.reduce(function(s,l){return s+(l.fin_mes||0);},0);
+    var totalSalao=Math.max(0,totalMes-totalFin);
     var totalGeral=totalSalao+totalFin;
     var TABS=[{key:'all',label:'Geral'},{key:'t1',label:'Titãs 1'},{key:'t2',label:'Titãs 2'},{key:'t3',label:'Titãs 3'}];
     var tabsHtml='<div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1.1rem;">';
@@ -5563,7 +5563,7 @@ function _renderSalaoFin() {
     var cardsHtml='';
     var MEDALS=['🥇','🥈','🥉'];
     lojas.forEach(function(l,idx){
-        var fatD=l.fat_dia||0,finD=l.fin_dia||0,salao=Math.max(0,fatD-finD);
+        var fatD=l.total||0,finD=l.fin_mes||0,salao=Math.max(0,fatD-finD);
         var pctFinL=fatD>0?Math.round(finD/fatD*100):0,pctSalaoL=fatD>0?100-pctFinL:0;
         var pctDaRede=totalGeral>0?Math.round((salao+finD)/totalGeral*100):0;
         var medal=idx<3?MEDALS[idx]:'<span style="font-size:.75rem;font-weight:800;color:#6b7280;">'+(idx+1)+'</span>';
@@ -17871,7 +17871,7 @@ cursosInit();
         </div>
         <div>
           <div style="font-size:.85rem;font-weight:800;color:#f9fafb;">Salão vs Financeiras</div>
-          <div style="font-size:.6rem;color:#6b7280;">Detalhamento diário por loja</div>
+          <div style="font-size:.6rem;color:#6b7280;">Acumulado mensal por loja</div>
         </div>
       </div>
       <button onclick="fecharSalaoFin()" style="color:#6b7280;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:.5rem;padding:.3rem .65rem;cursor:pointer;font-size:1rem;">✕</button>

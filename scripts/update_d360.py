@@ -276,7 +276,7 @@ def fmt_top(top_list):
     items = [f"{{n:'{e['n']}',i:'{e['i']}',t:{e['t']}}}" for e in top_list]
     return '[' + ', '.join(items) + ']'
 
-def update_store(content, store_key, total, acess_total, agend_total, agend_top, fat_dia=0, top_dia=None, fin_dia=0, top_fin=None, fin_mes=0, sellers_top=None, sellers_today=None):
+def update_store(content, store_key, total, acess_total, agend_total, agend_top, fat_dia=0, top_dia=None, fin_dia=0, top_fin=None, fin_mes=0, top_fin_mes=None, sellers_top=None, sellers_today=None):
     start, end = find_section(content, store_key)
     if start is None:
         print(f"  AVISO: seção '{store_key}' não encontrada no HTML")
@@ -308,6 +308,11 @@ def update_store(content, store_key, total, acess_total, agend_total, agend_top,
 
     # 2f. fin_mes (financeiras acumulado mensal)
     sec = re.sub(r'\bfin_mes:\d+(?:\.\d+)?', f'fin_mes:{fin_mes}', sec, count=1)
+
+    # 2g. top_fin_mes (vendedores financeiras mensais)
+    if top_fin_mes is not None:
+        top_fin_mes_str = fmt_top(top_fin_mes)
+        sec = re.sub(r'top_fin_mes:\[[^\]]*\]', f'top_fin_mes:{top_fin_mes_str}', sec, count=1)
 
     # 3. acessorios.total
     sec = re.sub(r'(\bacessorios:\{total:)\d+(?:\.\d+)?', f'\\g<1>{acess_total}', sec, count=1)
@@ -489,6 +494,7 @@ def main():
             fin_dia        = fin.get(sk, {}).get('total', 0),
             top_fin        = fin.get(sk, {}).get('top', []),
             fin_mes        = fin_acum.get(sk, {}).get('total', 0),
+            top_fin_mes    = fin_acum.get(sk, {}).get('top', []),
             sellers_top    = sales[sk]['top'],
             sellers_today  = sellers_today_by_store.get(sk, set()),
         )

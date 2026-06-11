@@ -1,4 +1,4 @@
-const CACHE_NAME = 'titas-sinergy-v55';
+const CACHE_NAME = 'titas-sinergy-v56';
 
 // Install: skip waiting to activate immediately
 self.addEventListener('install', event => {
@@ -23,11 +23,10 @@ self.addEventListener('fetch', event => {
 
     const url = new URL(req.url);
 
-    // For navigation requests (HTML pages), always go network first
+    // Para HTML: sempre busca do servidor ignorando cache HTTP
     if (req.mode === 'navigate' || (req.headers.get('accept') || '').includes('text/html')) {
         event.respondWith(
-            fetch(req).then(resp => {
-                // Cache a fresh copy
+            fetch(req, { cache: 'no-store' }).then(resp => {
                 const clone = resp.clone();
                 caches.open(CACHE_NAME).then(cache => cache.put(req, clone));
                 return resp;
@@ -36,9 +35,9 @@ self.addEventListener('fetch', event => {
         return;
     }
 
-    // For everything else: network first, fall back to cache
+    // Para outros recursos: network first, fallback cache
     event.respondWith(
-        fetch(req).then(resp => {
+        fetch(req, { cache: 'no-store' }).then(resp => {
             if (resp && resp.status === 200) {
                 const clone = resp.clone();
                 caches.open(CACHE_NAME).then(cache => cache.put(req, clone));

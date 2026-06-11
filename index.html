@@ -4323,7 +4323,7 @@ function proceedToDash() {
                         // (ex: vendas-14 vs vendas-15), o total será menor — descartamos e re-sincronizamos.
                         const _fsTotal  = Object.values(d360Data.lojas||{}).reduce((s,l)=>s+(l.total||0),0);
                         const _hcTotal  = Object.values(D360.lojas||{}).reduce((s,l)=>s+(l.total||0),0);
-                        const _fsDesatualizado = _hcTotal > 0 && _fsTotal < _hcTotal * 0.99;
+                        const _fsDesatualizado = _hcTotal > 0 && _fsTotal < _hcTotal - 0.01;
                         if (_fsDesatualizado) {
                             // Firestore está desatualizado — usa hardcoded e bloqueia onSnapshot
                             window._d360LastSavedAt = Number(d360Data.savedAt || Date.now());
@@ -6046,7 +6046,7 @@ function _d360SetupRealtimeListener() {
             // Rejeita se total remoto for menor que 99% do total atual (dado desatualizado)
             var _totalRemoto = Object.values(data.lojas||{}).reduce(function(s,l){return s+(l.total||0);},0);
             var _totalAtual  = Object.values(D360.lojas||{}).reduce(function(s,l){return s+(l.total||0);},0);
-            if (_totalAtual > 0 && _totalRemoto < _totalAtual * 0.99) return;
+            if (_totalAtual > 0 && _totalRemoto < _totalAtual - 0.01) return;
 
             // Aplica dados e atualiza cache local
             var ok = _aplicarSnap360(data);

@@ -31,16 +31,32 @@ STORE_MAP = {
 
 # ── API ──────────────────────────────────────────────────────────────────────
 
-def erp_login(user, password):
-    r = requests.post(f'{ERP_BASE}/login',
-        json={'user': {'login': user, 'password': password}},
-        timeout=30)
-    r.raise_for_status()
-    data = r.json()
-    token = data.get('token') or (data.get('data') or {}).get('token')
-    if not token:
-        raise ValueError(f"Token não encontrado. Chaves: {list(data.keys())}")
-    return token
+def erp_login(user, password, retries=4, wait=15):
+    """Login com retry automático em caso de erro 5xx (servidor instável)."""
+    import time
+    last_err = None
+    for attempt in range(1, retries + 1):
+        try:
+            r = requests.post(f'{ERP_BASE}/login',
+                json={'user': {'login': user, 'password': password}},
+                timeout=30)
+            r.raise_for_status()
+            data = r.json()
+            token = data.get('token') or (data.get('data') or {}).get('token')
+            if not token:
+                raise ValueError(f"Token não encontrado. Chaves: {list(data.keys())}")
+            return token
+        except requests.exceptions.HTTPError as e:
+            last_err = e
+            if e.response is not None and e.response.status_code < 500:
+                raise  # 4xx: não adianta retry
+            print(f"  Login tentativa {attempt}/{retries} falhou ({e}). Aguardando {wait}s...")
+            time.sleep(wait)
+        except requests.exceptions.RequestException as e:
+            last_err = e
+            print(f"  Login tentativa {attempt}/{retries} falhou ({e}). Aguardando {wait}s...")
+            time.sleep(wait)
+    raise last_err
 
 def erp_token_valid(token):
     """Verifica se o token ainda é válido sem fazer novo login."""
@@ -70,7 +86,8 @@ def get_or_refresh_token(user, password):
     token = erp_login(user, password)
     return token, True   # (token, is_new)
 
-def fetch_sales(token, start, end, channel_id=None):
+def fetch_sales(token, start, end, channel_id=None, retries=4, wait=15):
+    import time
     params = {
         'start_date': start,
         'end_date': end,
@@ -80,12 +97,26 @@ def fetch_sales(token, start, end, channel_id=None):
     }
     if channel_id:
         params['channel_ids[]'] = channel_id
-    r = requests.get(f'{ERP_BASE}/reports/sales_by_collaborator',
-        params=params,
-        headers={'Authorization': f'Bearer {token}', 'Accept': 'application/json'},
-        timeout=60)
-    r.raise_for_status()
-    return r.json()
+    last_err = None
+    for attempt in range(1, retries + 1):
+        try:
+            r = requests.get(f'{ERP_BASE}/reports/sales_by_collaborator',
+                params=params,
+                headers={'Authorization': f'Bearer {token}', 'Accept': 'application/json'},
+                timeout=60)
+            r.raise_for_status()
+            return r.json()
+        except requests.exceptions.HTTPError as e:
+            last_err = e
+            if e.response is not None and e.response.status_code < 500:
+                raise
+            print(f"  fetch_sales tentativa {attempt}/{retries} falhou ({e}). Aguardando {wait}s...")
+            time.sleep(wait)
+        except requests.exceptions.RequestException as e:
+            last_err = e
+            print(f"  fetch_sales tentativa {attempt}/{retries} falhou ({e}). Aguardando {wait}s...")
+            time.sleep(wait)
+    raise last_err
 
 def get_collaborators(data):
     if isinstance(data, list):

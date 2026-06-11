@@ -17570,34 +17570,13 @@ try { localStorage.removeItem('_sinergy_etag'); } catch(_) {}
 
 (function() {
     if (!('serviceWorker' in navigator)) return;
-
-    navigator.serviceWorker.register('/sw.js').then(function(reg) {
-        // Quando um novo SW é encontrado, ativa — mas SEM forçar reload da página.
-        // O novo SW entra em vigor na próxima vez que o usuário abrir/recarregar
-        // a página voluntariamente. Isso evita deslogar usuários ativos.
-        reg.addEventListener('updatefound', function() {
-            var newWorker = reg.installing;
-            if (!newWorker) return;
-            newWorker.addEventListener('statechange', function() {
-                // Só manda skipWaiting se NÃO há sessão ativa (usuário não logado)
-                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                    try {
-                        var sess = sessionStorage.getItem('_ts_sess');
-                        if (!sess) newWorker.postMessage('skipWaiting'); // não tem sessão, pode atualizar
-                        // Se tem sessão ativa, aguarda o usuário fechar a aba para atualizar
-                    } catch(e) {
-                        newWorker.postMessage('skipWaiting');
-                    }
-                }
-            });
-        });
-        // Verifica update ao carregar (apenas 1x, sem polling agressivo)
-        reg.update();
-    }).catch(function() {});
-
-    // ⚠️ NÃO fazemos reload automático no controllerchange.
-    // O reload forçado causava logout de usuários ativos a cada deploy.
-    // O novo SW será usado na próxima vez que o usuário abrir a página.
+    // Desregistra todos os service workers e limpa caches — sem SW, sem cache antigo
+    navigator.serviceWorker.getRegistrations().then(function(regs) {
+        regs.forEach(function(r) { r.unregister(); });
+    });
+    caches.keys().then(function(keys) {
+        keys.forEach(function(k) { caches.delete(k); });
+    });
 })();
 </script>
 

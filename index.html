@@ -8160,22 +8160,8 @@ function render360(tipo, val) {
         </div>`;
     })();
 
-    // Salão vs Financeiras (visível apenas para Marcelo / diretoria)
+    // Salão vs Financeiras
     const _salaoFinCard = (() => {
-        const _isMarcelo = user && user.cargo === 'diretoria';
-        if (!_isMarcelo) {
-            return `<div class="glass-360 rounded-2xl p-4 card-lift" style="display:flex;flex-direction:column;gap:.35rem;cursor:default;">
-                <div style="display:flex;align-items:center;gap:.5rem;">
-                    <div style="width:28px;height:28px;border-radius:8px;background:#8b5cf618;border:1px solid #8b5cf635;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                        <i class="fas fa-store" style="color:#8b5cf6;font-size:.7rem;"></i>
-                    </div>
-                    <span style="font-size:.72rem;font-weight:800;color:#f9fafb;letter-spacing:.03em;text-transform:uppercase;">Salão vs Financeiras</span>
-                </div>
-                <p style="font-size:1rem;font-weight:900;color:#6b7280;margin:0;">— — —</p>
-                <div style="height:3px;background:#1f2937;border-radius:3px;"></div>
-                <p style="font-size:.6rem;color:#6b7280;margin:0;">Em breve</p>
-            </div>`;
-        }
         // Totais mensais
         let _finMes = 0, _totalMes = 0;
         // Totais do dia

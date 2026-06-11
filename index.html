@@ -17685,6 +17685,26 @@ cursosInit();
   </div>
 </div>
 
+<!-- ══ MODAL FATURAMENTO DIÁRIO ══ -->
+<div id="modal-fat-diario" class="fixed inset-0 z-[999] hidden items-center justify-center bg-black/80 p-3"
+     onclick="if(event.target===this)fecharFatDiario()">
+  <div style="background:#0d1117;border:1px solid rgba(245,158,11,.3);border-radius:1.25rem;width:100%;max-width:720px;max-height:90vh;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.7);">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:1rem 1.5rem;border-bottom:1px solid rgba(255,255,255,.07);flex-shrink:0;">
+      <div style="display:flex;align-items:center;gap:.75rem;">
+        <div style="width:2.2rem;height:2.2rem;border-radius:.65rem;background:linear-gradient(135deg,rgba(245,158,11,.35),rgba(245,158,11,.1));border:1px solid rgba(245,158,11,.4);display:flex;align-items:center;justify-content:center;">
+          <i class="fas fa-bolt" style="color:#f59e0b;font-size:.85rem;"></i>
+        </div>
+        <div>
+          <div style="color:#fff;font-weight:800;font-size:.9rem;">Faturamento Diário</div>
+          <div style="color:#6b7280;font-size:.62rem;">Ranking por loja e vendedor · Apenas Vendedores</div>
+        </div>
+      </div>
+      <button onclick="fecharFatDiario()" style="color:#6b7280;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:.5rem;padding:.3rem .65rem;cursor:pointer;font-size:1rem;">✕</button>
+    </div>
+    <div id="modal-fat-diario-body" style="overflow-y:auto;flex:1;padding:1.25rem;"></div>
+  </div>
+</div>
+
 <!-- ══ MODAL CENTRAL DE AGENDAMENTOS ══ -->
 <div id="modal-agendamentos" class="fixed inset-0 z-[999] hidden flex items-center justify-center bg-black/80 p-3"
      onclick="if(event.target===this)fecharAgendamentos()">

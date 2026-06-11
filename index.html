@@ -5546,19 +5546,36 @@ function _renderSalaoFin() {
     tabsHtml+='</div>';
     var pctFin=totalGeral>0?Math.round(totalFin/totalGeral*100):0;
     var pctSalao=totalGeral>0?100-pctFin:0;
+    var finBdTotal={PayJoy:0,OdresCred:0,Outras:0};
+    lojas.forEach(function(l){ (l.fin_bd||[]).forEach(function(b){ if(finBdTotal[b.nm]!==undefined)finBdTotal[b.nm]+=b.t; }); });
+    var pctBdPJ=totalGeral>0?Math.round(finBdTotal.PayJoy/totalGeral*100):0;
+    var pctBdOD=totalGeral>0?Math.round(finBdTotal.OdresCred/totalGeral*100):0;
+    var pctBdOut=totalGeral>0?Math.round(finBdTotal.Outras/totalGeral*100):0;
     var totalHtml='<div style="background:rgba(139,92,246,.07);border:1px solid rgba(139,92,246,.2);border-radius:1rem;padding:1rem 1.1rem;margin-bottom:1.1rem;">'
         +'<div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:.6rem;">'
         +'<div><div style="font-size:.55rem;color:#a78bfa;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px;">Salão</div><div style="font-size:1.45rem;font-weight:900;color:#fff;">'+brl(totalSalao)+'</div></div>'
         +'<div style="font-size:.8rem;color:#4b5563;font-weight:700;">vs</div>'
         +'<div style="text-align:right"><div style="font-size:.55rem;color:#34d399;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px;">Financeiras</div><div style="font-size:1.45rem;font-weight:900;color:#fff;">'+brl(totalFin)+'</div></div>'
         +'</div>'
-        +'<div style="height:10px;background:#1f2937;border-radius:5px;overflow:hidden;display:flex;gap:1px;">'
-        +'<div style="height:100%;width:'+pctSalao+'%;background:linear-gradient(90deg,#7c3aed,#a78bfa);transition:width .4s;"></div>'
-        +'<div style="height:100%;width:'+pctFin+'%;background:linear-gradient(90deg,#059669,#34d399);transition:width .4s;"></div>'
+        +'<div style="height:20px;background:#1f2937;border-radius:5px;overflow:hidden;display:flex;">'
+        +'<div style="height:100%;width:'+pctSalao+'%;background:linear-gradient(90deg,#7c3aed,#a78bfa);display:flex;align-items:center;justify-content:center;overflow:hidden;">'
+        +(pctSalao>=12?'<span style="font-size:.48rem;font-weight:700;color:#fff;white-space:nowrap;">Salão '+pctSalao+'%</span>':'')
         +'</div>'
-        +'<div style="display:flex;justify-content:space-between;margin-top:.4rem;">'
+        +'<div style="height:100%;width:'+pctBdPJ+'%;background:#059669;display:flex;align-items:center;justify-content:center;overflow:hidden;">'
+        +(pctBdPJ>=10?'<span style="font-size:.48rem;font-weight:700;color:#fff;white-space:nowrap;">PayJoy '+pctBdPJ+'%</span>':'')
+        +'</div>'
+        +'<div style="height:100%;width:'+pctBdOD+'%;background:#34d399;display:flex;align-items:center;justify-content:center;overflow:hidden;">'
+        +(pctBdOD>=8?'<span style="font-size:.48rem;font-weight:700;color:#065f46;white-space:nowrap;">OdresCred '+pctBdOD+'%</span>':'')
+        +'</div>'
+        +'<div style="height:100%;width:'+pctBdOut+'%;background:#6ee7b7;display:flex;align-items:center;justify-content:center;overflow:hidden;">'
+        +(pctBdOut>=8?'<span style="font-size:.48rem;font-weight:700;color:#065f46;white-space:nowrap;">Outras '+pctBdOut+'%</span>':'')
+        +'</div>'
+        +'</div>'
+        +'<div style="display:flex;justify-content:space-between;margin-top:.4rem;flex-wrap:wrap;gap:.25rem;">'
         +'<span style="font-size:.6rem;color:#a78bfa;font-weight:600;">Salão '+pctSalao+'%</span>'
-        +'<span style="font-size:.6rem;color:#34d399;font-weight:600;">Financeiras '+pctFin+'%</span>'
+        +'<span style="font-size:.6rem;color:#059669;font-weight:600;">PayJoy '+pctBdPJ+'%</span>'
+        +'<span style="font-size:.6rem;color:#34d399;font-weight:600;">OdresCred '+pctBdOD+'%</span>'
+        +'<span style="font-size:.6rem;color:#6ee7b7;font-weight:600;">Outras '+pctBdOut+'%</span>'
         +'</div></div>';
     var cardsHtml='';
     var MEDALS=['🥇','🥈','🥉'];
@@ -5568,9 +5585,24 @@ function _renderSalaoFin() {
         var pctDaRede=totalGeral>0?Math.round(fatD/totalGeral*100):0;
         var medal=idx<3?MEDALS[idx]:'<span style="font-size:.75rem;font-weight:800;color:#6b7280;">'+(idx+1)+'</span>';
 
-        // Monta mapa de financeiras mensais por vendedor
+        // fin_bd por loja (subdivisão da barra de financeiras)
+        var lBdPJ=0,lBdOD=0,lBdOut=0;
+        (l.fin_bd||[]).forEach(function(b){
+            if(b.nm==='PayJoy') lBdPJ=b.t;
+            else if(b.nm==='OdresCred') lBdOD=b.t;
+            else if(b.nm==='Outras') lBdOut=b.t;
+        });
+        var pctLPJ=fatD>0?Math.round(lBdPJ/fatD*100):0;
+        var pctLOD=fatD>0?Math.round(lBdOD/fatD*100):0;
+        var pctLOut=fatD>0?Math.round(lBdOut/fatD*100):0;
+
+        // Monta mapa de financeiras mensais por vendedor (com breakdown bd)
         var finMap={};
-        (l.top_fin_mes||[]).forEach(function(v){ finMap[v.n.toLowerCase()]=v.t; });
+        var finBdMap={};
+        (l.top_fin_mes||[]).forEach(function(v){
+            finMap[v.n.toLowerCase()]=v.t;
+            finBdMap[v.n.toLowerCase()]=v.bd||[];
+        });
 
         // Todos os vendedores mensais
         var topAll=l.top||[];
@@ -5587,12 +5619,32 @@ function _renderSalaoFin() {
                 +'</tr></thead><tbody>';
             topAll.forEach(function(v,vi){
                 var vFin=finMap[v.n.toLowerCase()]||0;
+                var vBd=finBdMap[v.n.toLowerCase()]||[];
                 var vSalao=Math.max(0,v.t-vFin);
                 var vPctSalao=v.t>0?Math.round(vSalao/v.t*100):0;
                 var vPctFin=v.t>0?100-vPctSalao:0;
-                vendHtml+='<tr style="border-bottom:1px solid #111827;">'
+                var hasVBd=vFin>0&&vBd.length>0;
+                // Sub-row com breakdown por financeira
+                var vBdHtml='';
+                if(hasVBd){
+                    vBdHtml='<tr id="sf-vbd-'+idx+'-'+vi+'" style="display:none;background:rgba(52,211,153,.04);border-bottom:1px solid #111827;">'
+                        +'<td colspan="5" style="padding:3px 8px 6px 20px;">'
+                        +'<div style="display:flex;gap:.5rem;flex-wrap:wrap;padding-top:3px;">';
+                    vBd.forEach(function(b){
+                        if(b.t>0){
+                            var bPct=vFin>0?Math.round(b.t/vFin*100):0;
+                            vBdHtml+='<span style="display:inline-flex;align-items:center;gap:3px;background:rgba(52,211,153,.1);border-radius:4px;padding:2px 6px;">'
+                                +'<span style="font-size:.5rem;color:#9ca3af;">'+b.nm+'</span>'
+                                +'<span style="font-size:.55rem;font-weight:700;color:#34d399;">'+brl(b.t)+'</span>'
+                                +'<span style="font-size:.48rem;color:#6b7280;">'+bPct+'%</span>'
+                                +'</span>';
+                        }
+                    });
+                    vBdHtml+='</div></td></tr>';
+                }
+                vendHtml+='<tr '+(hasVBd?'onclick="var el=document.getElementById(\'sf-vbd-'+idx+'-'+vi+'\');el.style.display=el.style.display===\'none\'?\'table-row\':\'none\';" style="border-bottom:1px solid #111827;cursor:pointer;"':'style="border-bottom:1px solid #111827;"')+'>'
                     +'<td style="padding:4px 4px;color:#4b5563;">'+(vi+1)+'</td>'
-                    +'<td style="padding:4px 4px;color:#d1d5db;font-weight:600;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+v.n+'</td>'
+                    +'<td style="padding:4px 4px;color:#d1d5db;font-weight:600;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+(hasVBd?'<span style="color:#34d399;font-size:.55rem;">▾</span> ':'')+v.n+'</td>'
                     +'<td style="padding:4px 4px;text-align:right;color:#a78bfa;font-weight:700;">'+brl(vSalao)+'</td>'
                     +'<td style="padding:4px 4px;text-align:right;color:#34d399;font-weight:700;">'+(vFin>0?brl(vFin):'—')+'</td>'
                     +'<td style="padding:4px 4px;min-width:60px;">'
@@ -5605,7 +5657,7 @@ function _renderSalaoFin() {
                     +    '<span style="font-size:.5rem;color:#34d399;">'+(vPctFin>0?vPctFin+'%':'')+'</span>'
                     +  '</div>'
                     +'</td>'
-                    +'</tr>';
+                    +'</tr>'+vBdHtml;
             });
             vendHtml+='</tbody></table></div>';
         }
@@ -5623,9 +5675,19 @@ function _renderSalaoFin() {
             +'<div style="text-align:right;"><div style="font-size:.5rem;color:#a78bfa;font-weight:700;text-transform:uppercase;">Salão</div><div style="font-size:.85rem;font-weight:800;color:#fff;">'+brl(salaoL)+'</div></div>'
             +'<div style="text-align:right;"><div style="font-size:.5rem;color:#34d399;font-weight:700;text-transform:uppercase;">Fin.</div><div style="font-size:.85rem;font-weight:800;color:#fff;">'+brl(finD)+'</div></div>'
             +'</div></div>'
-            +'<div style="height:6px;background:#1f2937;border-radius:3px;overflow:hidden;display:flex;gap:1px;margin-top:.5rem;">'
-            +'<div style="height:100%;width:'+pctSalaoL+'%;background:linear-gradient(90deg,#7c3aed,#a78bfa);transition:width .4s;"></div>'
-            +'<div style="height:100%;width:'+pctFinL+'%;background:linear-gradient(90deg,#059669,#34d399);transition:width .4s;"></div>'
+            +'<div style="height:14px;background:#1f2937;border-radius:3px;overflow:hidden;display:flex;margin-top:.5rem;">'
+            +'<div style="height:100%;width:'+pctSalaoL+'%;background:linear-gradient(90deg,#7c3aed,#a78bfa);display:flex;align-items:center;justify-content:center;overflow:hidden;">'
+            +(pctSalaoL>=12?'<span style="font-size:.45rem;font-weight:700;color:#fff;white-space:nowrap;">Salão '+pctSalaoL+'%</span>':'')
+            +'</div>'
+            +'<div style="height:100%;width:'+pctLPJ+'%;background:#059669;display:flex;align-items:center;justify-content:center;overflow:hidden;">'
+            +(pctLPJ>=10?'<span style="font-size:.45rem;font-weight:700;color:#fff;white-space:nowrap;">PayJoy '+pctLPJ+'%</span>':'')
+            +'</div>'
+            +'<div style="height:100%;width:'+pctLOD+'%;background:#34d399;display:flex;align-items:center;justify-content:center;overflow:hidden;">'
+            +(pctLOD>=8?'<span style="font-size:.45rem;font-weight:700;color:#065f46;white-space:nowrap;">OdresCred '+pctLOD+'%</span>':'')
+            +'</div>'
+            +'<div style="height:100%;width:'+pctLOut+'%;background:#6ee7b7;display:flex;align-items:center;justify-content:center;overflow:hidden;">'
+            +(pctLOut>=8?'<span style="font-size:.45rem;font-weight:700;color:#065f46;white-space:nowrap;">Outras '+pctLOut+'%</span>':'')
+            +'</div>'
             +'</div>'+vendHtml+'</div>';
     });
     if(lojas.length===0)cardsHtml='<div style="text-align:center;padding:2.5rem 1rem;color:#4b5563;font-size:.8rem;">Sem dados nesta subrede.</div>';
@@ -8211,6 +8273,11 @@ function render360(tipo, val) {
         const _pctSalaoMes = _totalMes > 0 ? 100 - _pctFinMes : 0;
         const _temMes  = _totalMes > 0;
         const _temDia  = (_totalFinDia + _totalSalaoDia) > 0;
+        const _finBd = {PayJoy:0, OdresCred:0, Outras:0};
+        scope.forEach(function(l){ (l.fin_bd||[]).forEach(function(b){ if(_finBd[b.nm]!==undefined)_finBd[b.nm]+=b.t; }); });
+        const _pctBdPJ  = _totalMes>0 ? Math.round(_finBd.PayJoy   /_totalMes*100) : 0;
+        const _pctBdOD  = _totalMes>0 ? Math.round(_finBd.OdresCred/_totalMes*100) : 0;
+        const _pctBdOut = _totalMes>0 ? Math.round(_finBd.Outras    /_totalMes*100) : 0;
         const _mes = (() => { const d=new Date(); return ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'][d.getMonth()]; })();
         return `<div class="glass-360 rounded-2xl p-4 card-lift" style="display:flex;flex-direction:column;gap:.4rem;cursor:pointer;" onclick="abrirSalaoFin()">
             <div style="display:flex;align-items:center;justify-content:space-between;gap:.5rem;">
@@ -8233,11 +8300,13 @@ function render360(tipo, val) {
                     <p style="font-size:1rem;font-weight:900;color:#fff;margin:0;line-height:1;">${_temMes ? brl(_finMes) : '—'}</p>
                 </div>
             </div>
-            <div style="height:5px;background:#1f2937;border-radius:3px;overflow:hidden;display:flex;gap:1px;">
-                <div style="height:100%;width:${_pctSalaoMes}%;background:linear-gradient(90deg,#7c3aed,#a78bfa);transition:width .4s;"></div>
-                <div style="height:100%;width:${_pctFinMes}%;background:linear-gradient(90deg,#059669,#34d399);transition:width .4s;"></div>
+            <div style="height:18px;background:#1f2937;border-radius:4px;overflow:hidden;display:flex;">
+                <div style="height:100%;width:${_pctSalaoMes}%;background:linear-gradient(90deg,#7c3aed,#a78bfa);display:flex;align-items:center;justify-content:center;overflow:hidden;transition:width .4s;">${_pctSalaoMes>=12?'<span style="font-size:.45rem;font-weight:700;color:#fff;white-space:nowrap;">Salão '+_pctSalaoMes+'%</span>':''}</div>
+                <div style="height:100%;width:${_pctBdPJ}%;background:#059669;display:flex;align-items:center;justify-content:center;overflow:hidden;transition:width .4s;">${_pctBdPJ>=10?'<span style="font-size:.45rem;font-weight:700;color:#fff;white-space:nowrap;">PayJoy '+_pctBdPJ+'%</span>':''}</div>
+                <div style="height:100%;width:${_pctBdOD}%;background:#34d399;display:flex;align-items:center;justify-content:center;overflow:hidden;transition:width .4s;">${_pctBdOD>=8?'<span style="font-size:.45rem;font-weight:700;color:#065f46;white-space:nowrap;">OdresCred '+_pctBdOD+'%</span>':''}</div>
+                <div style="height:100%;width:${_pctBdOut}%;background:#6ee7b7;display:flex;align-items:center;justify-content:center;overflow:hidden;transition:width .4s;">${_pctBdOut>=8?'<span style="font-size:.45rem;font-weight:700;color:#065f46;white-space:nowrap;">Outras '+_pctBdOut+'%</span>':''}</div>
             </div>
-            <p style="font-size:.58rem;color:#6b7280;margin:0;line-height:1.4;">${_temMes ? `Salão ${_pctSalaoMes}% · Fin. ${_pctFinMes}%` : '—'} · ${_temDia ? `hoje fin. ${brl(_totalFinDia)}` : 'sem dados hoje'}</p>
+            <p style="font-size:.58rem;color:#6b7280;margin:0;line-height:1.4;">${_temMes ? 'Salão '+_pctSalaoMes+'% · PayJoy '+_pctBdPJ+'% · OD '+_pctBdOD+'%' : '—'} · ${_temDia ? 'hoje fin. '+brl(_totalFinDia) : 'sem dados hoje'}</p>
         </div>`;
     })();
 

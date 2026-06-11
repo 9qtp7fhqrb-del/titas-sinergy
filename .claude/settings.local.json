@@ -151,7 +151,19 @@
       "Bash(python3 scripts/update_d360.py)",
       "Bash(python3 -c \"import ast; ast.parse\\(open\\('scripts/update_d360.py'\\).read\\(\\)\\); print\\('Syntax OK'\\)\")",
       "Bash(git init *)",
-      "Bash(git add *)"
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)",
+      "Bash(INDEX_HTML=\"index.html\" python3 scripts/update_d360.py)",
+      "Bash(git commit -m 'data: financeiras 11/06/2026 19:35 *)",
+      "Bash(git commit -m 'fix: remover card duplicado e corrigir check de diretoria no Salão vs Financeiras *)",
+      "Bash(git commit -m 'fix: corrigir interpolação template literal no card Salão vs Financeiras *)",
+      "Bash(git commit -m 'feat: modal Salão vs Financeiras com dados mensais *)",
+      "Bash(git commit -m 'feat: liberar card Salão vs Financeiras para todos os usuários D360 *)",
+      "Bash(git fetch *)",
+      "Bash(git stash *)",
+      "Bash(git rebase *)",
+      "Bash(git commit *)"
     ]
   }
 }

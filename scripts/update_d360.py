@@ -15,6 +15,12 @@ except ImportError:
 ERP_BASE = 'https://apicdc.casadocelular.com.br/api/v1'
 INDEX_HTML = os.environ.get('INDEX_HTML', 'index.html')
 
+FINANCEIRAS_GROUPS = [
+    {'nm': 'PayJoy',    'ids': [8]},
+    {'nm': 'OdresCred', 'ids': [9]},
+    {'nm': 'Outras',    'ids': [72, 74, 12, 76]},
+]
+
 STORE_MAP = {
     'CDC BARREIRAS':              'barreiras',
     'CDC CARIACICA':              'cariacica',
@@ -272,11 +278,22 @@ def find_section(content, store_key):
             end = pos
     return start, end
 
+def fmt_fin_bd(bd_list):
+    items = [f"{{nm:'{e['nm']}',t:{e['t']}}}" for e in bd_list]
+    return '[' + ','.join(items) + ']'
+
+def fmt_top_with_bd(top_list):
+    items = []
+    for e in top_list:
+        bd_items = ','.join(f"{{nm:'{b['nm']}',t:{b['t']}}}" for b in (e.get('bd') or []))
+        items.append(f"{{n:'{e['n']}',i:'{e['i']}',t:{e['t']},bd:[{bd_items}]}}")
+    return '[' + ','.join(items) + ']'
+
 def fmt_top(top_list):
     items = [f"{{n:'{e['n']}',i:'{e['i']}',t:{e['t']}}}" for e in top_list]
     return '[' + ', '.join(items) + ']'
 
-def update_store(content, store_key, total, acess_total, agend_total, agend_top, fat_dia=0, top_dia=None, fin_dia=0, top_fin=None, fin_mes=0, top_fin_mes=None, sellers_top=None, sellers_today=None):
+def update_store(content, store_key, total, acess_total, agend_total, agend_top, fat_dia=0, top_dia=None, fin_dia=0, top_fin=None, fin_mes=0, top_fin_mes=None, fin_bd=None, sellers_top=None, sellers_today=None):
     start, end = find_section(content, store_key)
     if start is None:
         print(f"  AVISO: seção '{store_key}' não encontrada no HTML")
@@ -309,10 +326,15 @@ def update_store(content, store_key, total, acess_total, agend_total, agend_top,
     # 2f. fin_mes (financeiras acumulado mensal)
     sec = re.sub(r'\bfin_mes:\d+(?:\.\d+)?', f'fin_mes:{fin_mes}', sec, count=1)
 
-    # 2g. top_fin_mes (vendedores financeiras mensais)
+    # 2g. top_fin_mes (vendedores financeiras mensais com bd)
     if top_fin_mes is not None:
-        top_fin_mes_str = fmt_top(top_fin_mes)
-        sec = re.sub(r'top_fin_mes:\[[^\]]*\]', f'top_fin_mes:{top_fin_mes_str}', sec, count=1)
+        top_fin_mes_str = fmt_top_with_bd(top_fin_mes)
+        sec = re.sub(r'top_fin_mes:\[(?:[^\[\]]|\[[^\[\]]*\])*\]', f'top_fin_mes:{top_fin_mes_str}', sec, count=1)
+
+    # 2h. fin_bd (breakdown por financeira)
+    if fin_bd is not None:
+        fin_bd_str = fmt_fin_bd(fin_bd)
+        sec = re.sub(r'fin_bd:\[[^\]]*\]', f'fin_bd:{fin_bd_str}', sec, count=1)
 
     # 3. acessorios.total
     sec = re.sub(r'(\bacessorios:\{total:)\d+(?:\.\d+)?', f'\\g<1>{acess_total}', sec, count=1)
@@ -451,11 +473,17 @@ def main():
     print("Buscando financeiras do mês...")
     fin_mes_data = fetch_gerencial(token, start, today, payment_method_ids=fin_pm_ids)
 
+    print("Buscando breakdown por grupo de financeiras...")
+    fin_groups_data = {}
+    for grp in FINANCEIRAS_GROUPS:
+        fin_groups_data[grp['nm']] = fetch_gerencial(token, start, today, payment_method_ids=grp['ids'])
+
     sales = process(sales_data, lambda c: c.get('total_sold', 0))
     acess = process(sales_data, lambda c: (c.get('group_totals') or {}).get('ACESSÓRIOS', 0))
     agend = process(agend_data, lambda c: (c.get('group_totals') or {}).get('SBON', 0))
     fin      = process_gerencial(fin_today_data)
     fin_acum = process_gerencial(fin_mes_data)
+    fin_grps = {nm: process_gerencial(d) for nm, d in fin_groups_data.items()}
 
     # Vendas do dia: totais por loja e set de vendedores
     today_sellers_proc = process(today_data, lambda c: c.get('total_sold', 0))
@@ -474,6 +502,32 @@ def main():
         fn = fin.get(sk, {}).get('total', 0)
         fm = fin_acum.get(sk, {}).get('total', 0)
         print(f"  {sk:<15} total={s:>10,.2f} | acess={a:>8,.2f} | agend={ag:>10,.2f} | fat_dia={fd:>8,.2f} | fin_dia={fn:>8,.2f} | fin_mes={fm:>8,.2f}")
+
+    # Montar fin_bd por loja e bd por vendedor
+    fin_bd_by_store = {}
+    top_fin_mes_bd_by_store = {}
+    for sk in STORE_MAP.values():
+        bd_store = []
+        ven_fin = {}   # {nome_lower: {nm: valor}}
+        for grp in FINANCEIRAS_GROUPS:
+            nm = grp['nm']
+            gdata = fin_grps.get(nm, {}).get(sk, {})
+            gt = round(gdata.get('total', 0), 2)
+            bd_store.append({'nm': nm, 't': gt})
+            for v in gdata.get('top', []):
+                k = v['n'].lower()
+                if k not in ven_fin: ven_fin[k] = {'n': v['n'], 'i': v['i'], 'total': 0, 'bd': {}}
+                ven_fin[k]['bd'][nm] = v['t']
+                ven_fin[k]['total'] += v['t']
+        fin_bd_by_store[sk] = bd_store
+        # top_fin_mes com bd
+        base_top = fin_acum.get(sk, {}).get('top', [])
+        merged = []
+        for v in base_top:
+            k = v['n'].lower()
+            bd = [{'nm': grp['nm'], 't': round(ven_fin.get(k, {}).get('bd', {}).get(grp['nm'], 0), 2)} for grp in FINANCEIRAS_GROUPS]
+            merged.append({'n': v['n'], 'i': v['i'], 't': v['t'], 'bd': bd})
+        top_fin_mes_bd_by_store[sk] = merged
 
     print(f"\nAtualizando {INDEX_HTML}...")
     with open(INDEX_HTML, 'r', encoding='utf-8') as f:
@@ -494,7 +548,8 @@ def main():
             fin_dia        = fin.get(sk, {}).get('total', 0),
             top_fin        = fin.get(sk, {}).get('top', []),
             fin_mes        = fin_acum.get(sk, {}).get('total', 0),
-            top_fin_mes    = fin_acum.get(sk, {}).get('top', []),
+            top_fin_mes    = top_fin_mes_bd_by_store.get(sk, []),
+            fin_bd         = fin_bd_by_store.get(sk, []),
             sellers_top    = sales[sk]['top'],
             sellers_today  = sellers_today_by_store.get(sk, set()),
         )

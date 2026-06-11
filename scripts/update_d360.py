@@ -118,6 +118,98 @@ def fetch_sales(token, start, end, channel_id=None, retries=4, wait=15):
             time.sleep(wait)
     raise last_err
 
+def fetch_financeiras_ids(token, retries=3, wait=10):
+    """Busca IDs de todos os meios de pagamento do tipo Financeira (modality=finance_company)."""
+    import time
+    for attempt in range(1, retries + 1):
+        try:
+            r = requests.get(f'{ERP_BASE}/payment_methods',
+                headers={'Authorization': f'Bearer {token}', 'Accept': 'application/json'},
+                timeout=20)
+            r.raise_for_status()
+            pms = r.json().get('payment_methods', [])
+            ids = [pm['id'] for pm in pms
+                   if pm.get('active') and (pm.get('modality') or {}).get('key') == 'finance_company']
+            return ids
+        except Exception as e:
+            if attempt < retries:
+                time.sleep(wait)
+            else:
+                print(f"  AVISO: falha ao buscar IDs financeiras ({e}), usando padrão [8,9]")
+                return [8, 9]  # OdresCred, PayJoy — fallback
+
+def fetch_gerencial(token, start, end, payment_method_ids=None, retries=4, wait=15):
+    """Busca relatório gerencial, opcionalmente filtrado por meios de pagamento."""
+    import time
+    params = {'start_date': start, 'end_date': end}
+    last_err = None
+    for attempt in range(1, retries + 1):
+        try:
+            req_params = dict(params)
+            if payment_method_ids:
+                # requests não suporta múltiplos valores diretamente — usar query string manual
+                qs = '&'.join(f'payment_method_ids[]={i}' for i in payment_method_ids)
+                url = f'{ERP_BASE}/reports/gerencial?{qs}'
+                r = requests.get(url,
+                    params=req_params,
+                    headers={'Authorization': f'Bearer {token}', 'Accept': 'application/json'},
+                    timeout=60)
+            else:
+                r = requests.get(f'{ERP_BASE}/reports/gerencial',
+                    params=req_params,
+                    headers={'Authorization': f'Bearer {token}', 'Accept': 'application/json'},
+                    timeout=60)
+            r.raise_for_status()
+            return r.json()
+        except requests.exceptions.HTTPError as e:
+            last_err = e
+            if e.response is not None and e.response.status_code < 500:
+                raise
+            print(f"  fetch_gerencial tentativa {attempt}/{retries} falhou ({e}). Aguardando {wait}s...")
+            time.sleep(wait)
+        except requests.exceptions.RequestException as e:
+            last_err = e
+            print(f"  fetch_gerencial tentativa {attempt}/{retries} falhou ({e}). Aguardando {wait}s...")
+            time.sleep(wait)
+    raise last_err
+
+def process_gerencial(data):
+    """
+    Processa employee_ranking do relatório gerencial.
+    Inclui apenas profile_name == 'Vendedor'.
+    Retorna: {store_key: {'total': float, 'top': [{'n','i','t'}]}}
+    """
+    def parse_brl(s):
+        try:
+            return float(str(s).replace('R$', '').replace('.', '').replace(',', '.').strip())
+        except Exception:
+            return 0.0
+
+    ranking = (data or {}).get('employee_ranking', [])
+    stores = {}
+    for emp in ranking:
+        if (emp.get('profile_name') or '').strip().lower() != 'vendedor':
+            continue
+        raw_name = (emp.get('store_name') or '').upper().strip()
+        store_key = STORE_MAP.get(raw_name)
+        if not store_key:
+            continue
+        val = parse_brl(emp.get('total_sales', 0))
+        if val <= 0:
+            continue
+        if store_key not in stores:
+            stores[store_key] = {'total': 0.0, 'top': []}
+        stores[store_key]['total'] += val
+        name = (emp.get('name') or '').strip()
+        parts = name.split()
+        initials = (parts[0][0] + parts[1][0]).upper() if len(parts) >= 2 else name[:2].upper()
+        stores[store_key]['top'].append({'n': name, 'i': initials, 't': val})
+    for s in stores.values():
+        s['top'].sort(key=lambda x: x['t'], reverse=True)
+        s['total'] = round(s['total'], 2)
+    return stores
+
+
 def get_collaborators(data):
     if isinstance(data, list):
         return data
@@ -184,7 +276,7 @@ def fmt_top(top_list):
     items = [f"{{n:'{e['n']}',i:'{e['i']}',t:{e['t']}}}" for e in top_list]
     return '[' + ', '.join(items) + ']'
 
-def update_store(content, store_key, total, acess_total, agend_total, agend_top, fat_dia=0, top_dia=None, sellers_top=None, sellers_today=None):
+def update_store(content, store_key, total, acess_total, agend_total, agend_top, fat_dia=0, top_dia=None, fin_dia=0, top_fin=None, sellers_top=None, sellers_today=None):
     start, end = find_section(content, store_key)
     if start is None:
         print(f"  AVISO: seção '{store_key}' não encontrada no HTML")
@@ -205,6 +297,14 @@ def update_store(content, store_key, total, acess_total, agend_total, agend_top,
     if top_dia is not None:
         top_dia_str = fmt_top(top_dia)
         sec, n_td = re.subn(r'top_dia:\[[^\]]*\]', f'top_dia:{top_dia_str}', sec, count=1)
+
+    # 2d. fin_dia (financeiras do dia)
+    sec = re.sub(r'\bfin_dia:\d+(?:\.\d+)?', f'fin_dia:{fin_dia}', sec, count=1)
+
+    # 2e. top_fin (vendedores financeiras do dia)
+    if top_fin is not None:
+        top_fin_str = fmt_top(top_fin)
+        sec = re.sub(r'top_fin:\[[^\]]*\]', f'top_fin:{top_fin_str}', sec, count=1)
 
     # 3. acessorios.total
     sec = re.sub(r'(\bacessorios:\{total:)\d+(?:\.\d+)?', f'\\g<1>{acess_total}', sec, count=1)
@@ -333,9 +433,17 @@ def main():
     print("Buscando Central de Agendamentos (canal 6)...")
     agend_data = fetch_sales(token, start, today, channel_id=6)
 
+    print("Buscando IDs de financeiras...")
+    fin_pm_ids = fetch_financeiras_ids(token)
+    print(f"  IDs encontrados: {fin_pm_ids}")
+
+    print("Buscando financeiras do dia...")
+    fin_today_data = fetch_gerencial(token, today, today, payment_method_ids=fin_pm_ids)
+
     sales = process(sales_data, lambda c: c.get('total_sold', 0))
     acess = process(sales_data, lambda c: (c.get('group_totals') or {}).get('ACESSÓRIOS', 0))
     agend = process(agend_data, lambda c: (c.get('group_totals') or {}).get('SBON', 0))
+    fin   = process_gerencial(fin_today_data)
 
     # Vendas do dia: totais por loja e set de vendedores
     today_sellers_proc = process(today_data, lambda c: c.get('total_sold', 0))
@@ -351,7 +459,8 @@ def main():
         a  = acess.get(sk, {}).get('total', 0)
         ag = agend.get(sk, {}).get('total', 0)
         fd = today_sellers_proc.get(sk, {}).get('total', 0)
-        print(f"  {sk:<15} total={s:>10,.2f} | acess={a:>8,.2f} | agend={ag:>10,.2f} | fat_dia={fd:>8,.2f}")
+        fn = fin.get(sk, {}).get('total', 0)
+        print(f"  {sk:<15} total={s:>10,.2f} | acess={a:>8,.2f} | agend={ag:>10,.2f} | fat_dia={fd:>8,.2f} | fin_dia={fn:>8,.2f}")
 
     print(f"\nAtualizando {INDEX_HTML}...")
     with open(INDEX_HTML, 'r', encoding='utf-8') as f:
@@ -369,6 +478,8 @@ def main():
             agend_top      = agend.get(sk, {}).get('top', []),
             fat_dia        = today_sellers_proc.get(sk, {}).get('total', 0),
             top_dia        = today_sellers_proc.get(sk, {}).get('top', []),
+            fin_dia        = fin.get(sk, {}).get('total', 0),
+            top_fin        = fin.get(sk, {}).get('top', []),
             sellers_top    = sales[sk]['top'],
             sellers_today  = sellers_today_by_store.get(sk, set()),
         )

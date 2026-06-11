@@ -4293,6 +4293,47 @@ function _buscarD360Firestore() {
 }
 
 /* ─── Disparar loading, buscar D360, abrir dashboard ─── */
+/* ─── Auto-exclusão de duplicados inativos no login ───────────────────────────
+   Regra: mesmo cargo + mesma loja + mesmo primeiro nome → duplicado.
+   Se o duplicado não acessou há mais de 21 dias (ou nunca acessou), exclui.
+   Roda em background, silenciosamente.                                        */
+async function _excluirDuplicadosInativos(usuarioLogado) {
+    try {
+        const todos = await _usrRestList();
+        if (!todos || !todos.length) return;
+
+        const keyAtual    = userKey(usuarioLogado.cargo, usuarioLogado.name);
+        const primeiroAtual = (usuarioLogado.name || '').trim().toLowerCase().split(' ')[0];
+        const LIMITE_DIAS  = 21;
+        const agora        = Date.now();
+
+        for (const u of todos) {
+            if (u.key === keyAtual) continue;                                  // é o próprio usuário logado
+            if (u.cargo !== usuarioLogado.cargo) continue;                     // cargo diferente
+            if ((u.loja || '') !== (usuarioLogado.loja || '')) continue;       // loja diferente
+
+            const primeiroU = (u.name || u.nome || '').trim().toLowerCase().split(' ')[0];
+            if (!primeiroU || primeiroU !== primeiroAtual) continue;           // primeiro nome diferente
+
+            // É duplicado — verificar inatividade
+            const acesso = u.ultimoAcesso || u.ultimoLogin || '';
+            let diasInativo = Infinity;
+            if (acesso) {
+                try {
+                    diasInativo = (agora - new Date(acesso).getTime()) / 86400000;
+                } catch(e) { diasInativo = Infinity; }
+            }
+
+            if (diasInativo >= LIMITE_DIAS) {
+                await _usrDelete(u.key);
+                console.log(`[auto-dedup] Excluído: ${u.key} (${Math.round(diasInativo)} dias inativo)`);
+            }
+        }
+    } catch(e) {
+        console.warn('[auto-dedup] Erro:', e);
+    }
+}
+
 function proceedToDash() {
     try {
         // Persiste sessão para sobreviver a reloads na mesma aba
@@ -4307,6 +4348,8 @@ function proceedToDash() {
             if (user.cargo === 'franqueado' && FRANQUEADOS.includes(_primeiroNome)) {
                 _registrarAcessoFranqueado(user.name, _now).catch(() => {});
             }
+            // Auto-exclusão de duplicados em background
+            _excluirDuplicadosInativos(user).catch(() => {});
         }
         const ov = document.getElementById('loading-overlay');
         if (!ov) { openDash(); return; }

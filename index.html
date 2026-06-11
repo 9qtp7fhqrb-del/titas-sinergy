@@ -2205,7 +2205,7 @@
             </div>
 
             <!-- ── Conteúdo dinâmico ── -->
-            <div id="360-kpis" class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6"></div>
+            <div id="360-kpis" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-6"></div>
             <div id="360-rankings" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6"></div>
             <div id="360-metas" class="glass-360 rounded-2xl p-5 mb-6"></div>
 
@@ -3664,7 +3664,8 @@ async function renderUsuarios() {
             (u.loja||'').toLowerCase().includes(search) ||
             (u.cargo||'').toLowerCase().includes(search) ||
             (u.subrede||'').toLowerCase().includes(search) ||
-            (u.key||'').toLowerCase().includes(search))
+            (u.key||'').toLowerCase().includes(search) ||
+            (u.codigo||'').includes(search))
         : docs;
 
     // ── Cards de resumo ──
@@ -3804,7 +3805,7 @@ async function renderUsuarios() {
                 <!-- Info -->
                 <div class="flex-1 min-w-0">
                     <div class="flex items-center flex-wrap gap-1">
-                        <span class="text-white text-xs font-semibold truncate">${u.nome||'—'}</span>
+                        <span class="text-white text-xs font-semibold truncate">${u.codigo ? `<span style="color:#d4af37;font-family:monospace;font-weight:800;">${u.codigo}</span><span style="color:rgba(212,175,55,.5);margin:0 .3rem;">—</span>` : ''}${u.nome||'—'}</span>
                         ${aguardBadge}${bloqBadge}
                     </div>
                     <div class="text-gray-500 text-[10px] mt-0.5 truncate">
@@ -3864,6 +3865,7 @@ async function abrirModalEditarUsuario(key) {
         document.getElementById('eu-subrede').value         = u.subrede || '';
         document.getElementById('eu-loja').value            = u.loja    || '';
         document.getElementById('eu-senha').value           = '';
+        document.getElementById('eu-codigo').value          = u.codigo  || '';
 
         const modal = document.getElementById('modal-editar-usuario');
         modal.classList.remove('hidden');
@@ -3884,11 +3886,13 @@ async function salvarEdicaoUsuario() {
     const subrede = document.getElementById('eu-subrede').value.trim();
     const loja    = document.getElementById('eu-loja').value.trim();
     const senha   = document.getElementById('eu-senha').value.trim();
+    const codigo  = document.getElementById('eu-codigo').value.trim();
 
     if (!nome) { toast('Informe o nome do usuário', 'error'); return; }
 
     try {
         const update = { nome, cargo, subrede, loja };
+        if (codigo) update.codigo = codigo;
         if (senha) update.senha = senha;
         const ok = await _usrUpdate(key, update);
         if (!ok) { toast('Erro ao salvar no servidor', 'error'); return; }
@@ -3936,13 +3940,33 @@ async function excluirUsuario(key, nome) {
     setTimeout(renderUsuarios, 400);
 }
 
+/* ─── Sugerir próximo código disponível ─── */
+async function _sugerirCodigo(cargo) {
+    let docs = [];
+    try { docs = await _usrRestList(); } catch(e) { try { if(window._acadFBOk&&window._acadDB){const s=await window._acadDB.collection('ts_usuarios').get();s.forEach(d=>docs.push({key:d.id,...d.data()}));} } catch(e2){} }
+    const usados = new Set(docs.map(u=>u.codigo).filter(Boolean));
+    const isPriority = ['diretoria','franqueado','gerente-senior','gerente-senior-acess'].includes(cargo);
+    const inicio = isPriority ? 1 : 21;
+    const fim    = isPriority ? 20 : 9999;
+    for (let i = inicio; i <= fim; i++) {
+        const c = String(i).padStart(4,'0');
+        if (!usados.has(c)) return c;
+    }
+    return '';
+}
+
 /* ─── Abrir modal CRIAR USUÁRIO ─── */
 function abrirModalCriarUsuario() {
-    ['cu-nome','cu-subrede','cu-loja','cu-senha'].forEach(id => {
+    ['cu-nome','cu-subrede','cu-loja','cu-senha','cu-codigo'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.value = '';
     });
     document.getElementById('cu-cargo').value = '';
+    document.getElementById('cu-cargo').onchange = async function() {
+        const sug = await _sugerirCodigo(this.value);
+        const el  = document.getElementById('cu-codigo');
+        if (el && !el.value) el.value = sug;
+    };
     const modal = document.getElementById('modal-criar-usuario');
     modal.classList.remove('hidden');
     modal.style.display = 'flex';
@@ -3960,6 +3984,7 @@ async function confirmarCriarUsuario() {
     const subrede = document.getElementById('cu-subrede').value.trim();
     const loja    = document.getElementById('cu-loja').value.trim();
     const senha   = document.getElementById('cu-senha').value.trim();
+    const codigo  = document.getElementById('cu-codigo').value.trim();
 
     if (!nome)  { toast('Informe o nome do usuário',  'error'); return; }
     if (!cargo) { toast('Selecione um cargo',          'error'); return; }
@@ -3970,11 +3995,9 @@ async function confirmarCriarUsuario() {
         const existing = await _usrGetOne(key);
         if (existing) { toast('Já existe um usuário com este nome e cargo', 'error'); return; }
 
-        const ok = await _usrSave(key, {
-            nome, cargo, subrede, loja, senha,
-            bloqueado: false,
-            criadoEm: new Date().toISOString()
-        });
+        const dadosNovos = { nome, cargo, subrede, loja, senha, bloqueado: false, criadoEm: new Date().toISOString() };
+        if (codigo) dadosNovos.codigo = codigo;
+        const ok = await _usrSave(key, dadosNovos);
         if (!ok) { toast('Erro ao salvar no servidor', 'error'); return; }
 
         fecharModalCriarUsuario();
@@ -5167,7 +5190,7 @@ const D360 = {
     },
     lojas: {
         // ── Totais acumulados Jun 01–10 · Fonte: API ERP CDC 09/06/2026 ──
-        saomateus:   { label:'São Mateus',         sigla:'SM', sub:'t3', meta:500000,  total:133942.0, ped:123,  cancel:0, agend:0, agendCount:0, agendFat:17668.0,  metaAcess:22000,
+        saomateus:   { label:'São Mateus',         sigla:'SM', sub:'t3', meta:500000,  total:133942.0, ped:123,  cancel:0, agend:0, agendCount:0, agendFat:17668.0,  fat_dia:0, metaAcess:22000,
             agendamentos:{total:17668.0, top:[{n:'LEANDRO DA CRUZ SILVA',i:'LD',t:15668.0}, {n:'RANDECLAY MARIANO GOMES',i:'RM',t:2000.0}]},
             acessorios:{total:7100.0, top:[
                 {n:'Juliana Cristina dos Santos',i:'JC',t:1845,ds:6,ult:'06/06'},
@@ -5183,7 +5206,7 @@ const D360 = {
                 {n:'RANDECLAY MARIANO GOMES',i:'RM',p:14,t:15564.0,ds:9,ult:'11/06'},
                 {n:'STEFANY SPEROTTO BARCELOS',i:'SS',p:12,t:5530.0,ds:8,ult:'10/06'},
                 {n:'JULIANA CRISTINA DOS SANTOS',i:'JC',p:14,t:4605.0,ds:8,ult:'11/06'}]},
-        cariacica:   { label:'Cariacica',          sigla:'CC', sub:'t1', meta:500000,  total:140811.0, ped:103,  cancel:0, agend:0, agendCount:0, agendFat:16648.0,  metaAcess:20000,
+        cariacica:   { label:'Cariacica',          sigla:'CC', sub:'t1', meta:500000,  total:140811.0, ped:103,  cancel:0, agend:0, agendCount:0, agendFat:16648.0,  fat_dia:0, metaAcess:20000,
             agendamentos:{total:16648.0, top:[{n:'Liz Sophia Andrade Pereira',i:'LS',t:9218.0}, {n:'ROBERTA FELIPE MALAQUIAS',i:'RF',t:5830.0}, {n:'Glaupierre oliveira da silvaa',i:'GO',t:1600.0}]},
             acessorios:{total:4940.0, top:[
                 {n:'Roberta Felipe Malaquias',i:'RF',t:2660,ds:7,ult:'08/06'},
@@ -5195,7 +5218,7 @@ const D360 = {
                 {n:'Liz Sophia Andrade Pereira',i:'LS',p:36,t:43274.0,ds:9,ult:'11/06'},
                 {n:'nicolas santos borges',i:'NS',p:12,t:16469.0,ds:9,ult:'11/06'},
                 {n:'Glaupierre oliveira da silvaa',i:'GO',p:6,t:3749.0,ds:6,ult:'06/06'}]},
-        itabuna:     { label:'Itabuna',            sigla:'IT', sub:'t1', meta:400000,  total:101784.0,  ped:133,  cancel:0, agend:0, agendCount:0, agendFat:19920.0,  metaAcess:15000,
+        itabuna:     { label:'Itabuna',            sigla:'IT', sub:'t1', meta:400000,  total:101784.0,  ped:133,  cancel:0, agend:0, agendCount:0, agendFat:19920.0,  fat_dia:0, metaAcess:15000,
             agendamentos:{total:19920.0, top:[{n:'MIKAELLE SANTOS VIRGENS',i:'MS',t:19920.0}]},
             acessorios:{total:5077.0, top:[
                 {n:'Hericles Lisboa de Freitas',i:'HL',t:1297,ds:7,ult:'08/06'},
@@ -5211,7 +5234,7 @@ const D360 = {
                 {n:'jhonatas lucas machado pereira',i:'JL',p:22,t:13708.0,ds:8,ult:'10/06'},
                 {n:'KEIFIT MOREIRA DOS SANTOS',i:'KM',p:11,t:7065.0,ds:8,ult:'10/06'},
                 {n:'SANDY DE ARAUJO SANTOS LIMA',i:'SD',p:5,t:180.0,ds:7,ult:'08/06'}]},
-        barreiras:   { label:'Barreiras',          sigla:'BR', sub:'t2', meta:300000,  total:91110.0,  ped:70,  cancel:0, agend:0, agendCount:0, agendFat:8500.0,   metaAcess:10000,
+        barreiras:   { label:'Barreiras',          sigla:'BR', sub:'t2', meta:300000,  total:91110.0,  ped:70,  cancel:0, agend:0, agendCount:0, agendFat:8500.0,   fat_dia:0, metaAcess:10000,
             agendamentos:{total:8500.0, top:[{n:'TÁINE OLIVEIRA DOS SANTOS',i:'TO',t:7100.0}, {n:'MATEUS DA SILVA MATOS',i:'MD',t:1400.0}]},
             acessorios:{total:2035.0, top:[
                 {n:'Mateus da Silva Matos',i:'MM',t:580,ds:6,ult:'06/06'},
@@ -5225,7 +5248,7 @@ const D360 = {
                 {n:'Larisse Ribeiro Dos Santos',i:'LR',p:11,t:12965.0,ds:8,ult:'10/06'},
                 {n:'ISABELA CHAGAS',i:'IC',p:12,t:12080.0,ds:7,ult:'11/06'},
                 {n:'TÁINE OLIVEIRA DOS SANTOS',i:'TO',p:10,t:9810.0,ds:8,ult:'10/06'}]},
-        moxuara:     { label:'Moxuara',            sigla:'MX', sub:'t1', meta:300000,  total:117077.0,  ped:121, cancel:0, agend:0, agendCount:0, agendFat:32662.0,  metaAcess:22000,
+        moxuara:     { label:'Moxuara',            sigla:'MX', sub:'t1', meta:300000,  total:117077.0,  ped:121, cancel:0, agend:0, agendCount:0, agendFat:32662.0,  fat_dia:0, metaAcess:22000,
             agendamentos:{total:32662.0, top:[{n:'KHAYLLANE DE ALMEIDA FERREIRA',i:'KD',t:12264.0}, {n:'Iasmim vitoria medeiros gaio',i:'IV',t:11099.0}, {n:'LUCCAS DA SILVA MEDEIROS MARTINS',i:'LD',t:9299.0}]},
             acessorios:{total:5320.0, top:[
                 {n:'Khayllane de Almeida Ferreira',i:'KF',t:2250,ds:7,ult:'07/06'},
@@ -5237,7 +5260,7 @@ const D360 = {
                 {n:'Iasmim vitoria medeiros gaio',i:'IV',p:38,t:38527.0,ds:7,ult:'08/06'},
                 {n:'LUCCAS DA SILVA MEDEIROS MARTINS',i:'LD',p:25,t:16329.0,ds:8,ult:'10/06'},
                 {n:'GABRIEL BARRETO PEREIRA',i:'GB',p:4,t:540.0,ds:6,ult:'06/06'}]},
-        teixeira:    { label:'Teixeira de Freitas',sigla:'TF', sub:'t2', meta:260000,  total:86727.0,  ped:87,  cancel:0, agend:0, agendCount:0, agendFat:14130.0,  metaAcess:10000,
+        teixeira:    { label:'Teixeira de Freitas',sigla:'TF', sub:'t2', meta:260000,  total:86727.0,  ped:87,  cancel:0, agend:0, agendCount:0, agendFat:14130.0,  fat_dia:0, metaAcess:10000,
             agendamentos:{total:14130.0, top:[{n:'BEATRIZ HELLEN FAGUNDES',i:'BH',t:7300.0}, {n:'CARLA SANTOS LUIZ',i:'CS',t:5300.0}, {n:'GUSTAVO SANTANA BATISTA',i:'GS',t:1530.0}]},
             acessorios:{total:2631.0, top:[
                 {n:'Wilghyner de Padua Soares de Souza',i:'WS',t:440,ds:7,ult:'08/06'},
@@ -5253,7 +5276,7 @@ const D360 = {
                 {n:'GUSTAVO SANTANA BATISTA',i:'GS',p:9,t:10467.0,ds:8,ult:'10/06'},
                 {n:'BEATRIZ HELLEN FAGUNDES',i:'BH',p:9,t:7690.0,ds:7,ult:'08/06'},
                 {n:'WILGHYNER DE PADUA SOARES DE SOUZA',i:'WD',p:9,t:6490.0,ds:7,ult:'08/06'}]},
-        laranjeiras: { label:'Laranjeiras',        sigla:'LJ', sub:'t2', meta:220000,  total:51783.25,ped:54,  cancel:0, agend:0, agendCount:0, agendFat:3805.0,   metaAcess:10000,
+        laranjeiras: { label:'Laranjeiras',        sigla:'LJ', sub:'t2', meta:220000,  total:51783.25,ped:54,  cancel:0, agend:0, agendCount:0, agendFat:3805.0,   fat_dia:0, metaAcess:10000,
             agendamentos:{total:3805.0, top:[{n:'Nycolly Calazans Paulo',i:'NC',t:2105.0}, {n:'MAYARA KULL RODRIGUES',i:'MK',t:1700.0}]},
             acessorios:{total:1370.0, top:[
                 {n:'Nycolly Calazans Paulo',i:'NC',t:540,ds:7,ult:'08/06'},
@@ -5265,7 +5288,7 @@ const D360 = {
                 {n:'Nycolly Calazans Paulo',i:'NC',p:18,t:14833.25,ds:8,ult:'10/06'},
                 {n:'MAYARA KULL RODRIGUES',i:'MK',p:11,t:14790.0,ds:8,ult:'11/06'},
                 {n:'jhennyfer eduarda rodrigues dos santos',i:'JE',p:6,t:215.0,ds:7,ult:'08/06'}]},
-        serra:       { label:'Serra',              sigla:'SR', sub:'t3', meta:220000,  total:60544.5, ped:70,  cancel:0, agend:0, agendCount:0, agendFat:18463.0,  metaAcess:15000,
+        serra:       { label:'Serra',              sigla:'SR', sub:'t3', meta:220000,  total:60544.5, ped:70,  cancel:0, agend:0, agendCount:0, agendFat:18463.0,  fat_dia:0, metaAcess:15000,
             agendamentos:{total:18463.0, top:[{n:'LUCAS LOYOLA ARAUJO',i:'LL',t:16664.0}, {n:'MARCELA DA SILVA LOPES',i:'MD',t:1799.0}]},
             acessorios:{total:3890.0, top:[
                 {n:'Karen Scavelo Souza',i:'KS',t:1220,ds:7,ult:'08/06'},
@@ -5277,7 +5300,7 @@ const D360 = {
                 {n:'KAREN SCAVELO SOUZA',i:'KS',p:16,t:16470.0,ds:8,ult:'11/06'},
                 {n:'LUIZ HENRIQUE VIANA DA ROCHA',i:'LH',p:16,t:12161.5,ds:7,ult:'08/06'},
                 {n:'MARCELA DA SILVA LOPES',i:'MD',p:14,t:6349.0,ds:8,ult:'10/06'}]},
-        linhares:    { label:'Linhares',           sigla:'LH', sub:'t3', meta:220000,  total:47485.0,  ped:51,  cancel:0, agend:0, agendCount:0, agendFat:17281.0,  metaAcess:10000,
+        linhares:    { label:'Linhares',           sigla:'LH', sub:'t3', meta:220000,  total:47485.0,  ped:51,  cancel:0, agend:0, agendCount:0, agendFat:17281.0,  fat_dia:0, metaAcess:10000,
             agendamentos:{total:17281.0, top:[{n:'RAYCA MENDES MORAIS',i:'RM',t:9177.0}, {n:'NATALIA ROCHA LEONEL',i:'NR',t:6504.0}, {n:'KRYSTIAN LINCOLN DALFIOR GONÇALVES',i:'KL',t:1600.0}]},
             acessorios:{total:1640.0, top:[
                 {n:'Rayca Mendes Morais',i:'RM',t:650,ds:7,ult:'08/06'},
@@ -5286,7 +5309,7 @@ const D360 = {
             top:[{n:'NATALIA ROCHA LEONEL',i:'NR',p:22,t:23293.0,ds:9,ult:'11/06'},
                 {n:'RAYCA MENDES MORAIS',i:'RM',p:26,t:21392.0,ds:8,ult:'10/06'},
                 {n:'KRYSTIAN LINCOLN DALFIOR GONÇALVES',i:'KL',p:3,t:2800.0,ds:6,ult:'06/06'}]},
-        montserrat:  { label:'Montserrat',         sigla:'MT', sub:'t3', meta:170000,  total:43497.0,  ped:67,  cancel:0, agend:0, agendCount:0, agendFat:21047.0,  metaAcess:21000,
+        montserrat:  { label:'Montserrat',         sigla:'MT', sub:'t3', meta:170000,  total:43497.0,  ped:67,  cancel:0, agend:0, agendCount:0, agendFat:21047.0,  fat_dia:0, metaAcess:21000,
             agendamentos:{total:21047.0, top:[{n:'vinicius de almeida medeiros vargas',i:'VD',t:12747.0}, {n:'JOAQUIN EMILIANO RODRIGO',i:'JE',t:6700.0}, {n:'ADRIANO JEREMIAS CARDOSO MONTEIRO',i:'AJ',t:1600.0}]},
             acessorios:{total:5740.0, top:[
                 {n:'Joaquin Emiliano Rodrigo',i:'JE',t:2210,ds:7,ult:'07/06'},
@@ -5296,7 +5319,7 @@ const D360 = {
             top:[{n:'JOAQUIN EMILIANO RODRIGO',i:'JE',p:32,t:22610.0,ds:8,ult:'10/06'},
                 {n:'vinicius de almeida medeiros vargas',i:'VD',p:24,t:15737.0,ds:8,ult:'08/06'},
                 {n:'ADRIANO JEREMIAS CARDOSO MONTEIRO',i:'AJ',p:11,t:5150.0,ds:7,ult:'10/06'}]},
-        praiadacosta:{ label:'Praia da Costa',     sigla:'PC', sub:'t1', meta:140000,  total:37546.0,  ped:24,  cancel:0, agend:0, agendCount:0, agendFat:16141.0,  metaAcess:5000,
+        praiadacosta:{ label:'Praia da Costa',     sigla:'PC', sub:'t1', meta:140000,  total:37546.0,  ped:24,  cancel:0, agend:0, agendCount:0, agendFat:16141.0,  fat_dia:0, metaAcess:5000,
             agendamentos:{total:16141.0, top:[{n:'FILIPE MATTOS QUEIROZ',i:'FM',t:11841.0}, {n:'nicolas santos borges',i:'NS',t:2500.0}, {n:'Renato Lembranci Metzke Junior',i:'RL',t:1800.0}]},
             acessorios:{total:780.0, top:[
                 {n:'Filipe Mattos Queiroz',i:'FQ',t:460,ds:8,ult:'08/06'},
@@ -5445,6 +5468,63 @@ window._histAcessToggle = _histAcessToggle;
    CENTRAL DE AGENDAMENTOS — Ranking por loja / subrede / rede
 ══════════════════════════════════════════════════════════════════ */
 window._agendSubFilter = 'geral';
+
+
+function abrirFatDiario() {
+    var modal = document.getElementById('modal-fat-diario');
+    if (!modal) return;
+    modal.style.display = 'flex';
+    modal.classList.remove('hidden');
+    _renderFatDiario();
+}
+function fecharFatDiario() {
+    var modal = document.getElementById('modal-fat-diario');
+    if (!modal) return;
+    modal.style.display = 'none';
+    modal.classList.add('hidden');
+}
+function _renderFatDiario() {
+    var wrap = document.getElementById('modal-fat-diario-body');
+    if (!wrap) return;
+    var _d   = _360D();
+    var _brl = function(v) { return 'R ' + Number(v).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}); };
+    var hoje = (function(){ var d=new Date(); return String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0'); })();
+    var coresLojas = { moxuara:'#06b6d4', saomateus:'#f59e0b', montserrat:'#a855f7', serra:'#10b981', itabuna:'#84cc16', cariacica:'#ef4444', linhares:'#8b5cf6', barreiras:'#ec4899', teixeira:'#f97316', laranjeiras:'#14b8a6', praiadacosta:'#0ea5e9' };
+    var lojas = Object.entries(_d.lojas || {}).map(function(e) {
+        var lk = e[0]; var l = e[1];
+        var fat = l.fat_dia || 0;
+        if (fat <= 0) return null;
+        return { lk:lk, nome:l.label||lk, sigla:l.sigla||(lk.slice(0,2).toUpperCase()), fat:fat, cor: coresLojas[lk]||'#818cf8' };
+    }).filter(Boolean).sort(function(a,b){ return b.fat - a.fat; });
+    var total = lojas.reduce(function(s,l){ return s+l.fat; },0);
+    var maxFat = lojas.length ? lojas[0].fat : 1;
+    var rows = lojas.map(function(l) {
+        var pct = total > 0 ? Math.round(l.fat/total*100) : 0;
+        var barW = maxFat > 0 ? Math.round(l.fat/maxFat*100) : 0;
+        return '<div style="display:flex;align-items:center;gap:.75rem;padding:.55rem 0;border-bottom:1px solid rgba(255,255,255,.05);">'+
+            '<div style="width:32px;height:32px;border-radius:8px;background:'+l.cor+'22;border:1px solid '+l.cor+'55;display:flex;align-items:center;justify-content:center;flex-shrink:0;">'+
+                '<span style="font-size:.6rem;font-weight:800;color:'+l.cor+';">'+l.sigla+'</span>'+
+            '</div>'+
+            '<div style="flex:1;min-width:0;">'+
+                '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.2rem;">'+
+                    '<span style="font-size:.72rem;font-weight:700;color:#f9fafb;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+l.nome+'</span>'+
+                    '<span style="font-size:.72rem;font-weight:800;color:'+l.cor+';white-space:nowrap;margin-left:.5rem;">'+_brl(l.fat)+'</span>'+
+                '</div>'+
+                '<div style="height:4px;background:#1f2937;border-radius:4px;">'+
+                    '<div style="height:100%;width:'+barW+'%;background:'+l.cor+';border-radius:4px;transition:width .4s;"></div>'+
+                '</div>'+
+                '<span style="font-size:.58rem;color:#6b7280;">'+pct+'% do total da rede</span>'+
+            '</div>'+
+        '</div>';
+    }).join('');
+    wrap.innerHTML =
+        '<div style="text-align:center;padding:.75rem;margin-bottom:1rem;background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.25);border-radius:.75rem;">'+
+            '<p style="font-size:.65rem;color:#9ca3af;margin:0 0 .15rem;">Total hoje ('+hoje+')</p>'+
+            '<p style="font-size:1.6rem;font-weight:900;color:#fff;margin:0;">'+_brl(total)+'</p>'+
+            '<p style="font-size:.6rem;color:#f59e0b;margin:.15rem 0 0;">'+lojas.length+' loja'+(lojas.length!==1?'s':'')+' com dados</p>'+
+        '</div>'+
+        (rows || '<p style="text-align:center;color:#6b7280;font-size:.75rem;padding:1.5rem 0;">Sem dados de vendas para hoje ainda.</p>');
+}
 
 function abrirAgendamentos() {
     var modal = document.getElementById('modal-agendamentos');
@@ -7844,8 +7924,42 @@ function render360(tipo, val) {
         </div>`;
     })();
 
+    const _fatDiaCard = (() => {
+        const _hoje = (() => { const d=new Date(); return String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0'); })();
+        let _totalDia = 0;
+        const _lojasDia = [];
+        scope.forEach(function(l) {
+            const fat = l.fat_dia || 0;
+            if (fat > 0) {
+                _totalDia += fat;
+                _lojasDia.push({ label: l.label||'—', sigla: l.sigla||'?', fat: fat });
+            }
+        });
+        const _temDados = _totalDia > 0;
+        const _subTxt   = _temDados
+            ? `${_lojasDia.length} loja${_lojasDia.length!==1?'s':''} com dados · clique para detalhar`
+            : 'Sem vendas registradas para hoje';
+        return `<div class="glass-360 rounded-2xl p-4 card-lift" style="display:flex;flex-direction:column;gap:.35rem;cursor:pointer;" onclick="abrirFatDiario()">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:.5rem;">
+                <div style="display:flex;align-items:center;gap:.5rem;min-width:0;">
+                    <div style="width:28px;height:28px;border-radius:8px;background:#f59e0b18;border:1px solid #f59e0b35;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                        <i class="fas fa-bolt" style="color:#f59e0b;font-size:.7rem;"></i>
+                    </div>
+                    <span style="font-size:.72rem;font-weight:800;color:#f9fafb;letter-spacing:.03em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Faturamento Diário</span>
+                </div>
+                <span style="font-size:.6rem;font-weight:700;padding:.15rem .55rem;border-radius:999px;background:#f59e0b20;color:#f59e0b;white-space:nowrap;flex-shrink:0;">${_hoje} ↗</span>
+            </div>
+            <p style="font-size:1.25rem;font-weight:900;color:#fff;line-height:1.2;margin:0;">${brl(_totalDia)}</p>
+            <div style="height:3px;background:#1f2937;border-radius:3px;">
+                <div style="height:100%;width:${_temDados?'100':'0'}%;background:linear-gradient(90deg,#f59e0b,#fbbf24);border-radius:3px;transition:width .4s;"></div>
+            </div>
+            <p style="font-size:.6rem;color:#6b7280;margin:0;line-height:1.4;">${_subTxt}</p>
+        </div>`;
+    })();
+
+
     // Central de Agendamentos
-    kpis = _fatCard +
+    kpis = _fatCard + _fatDiaCard +
         (() => {
             const agFat   = scope.reduce((s,l)=>s+(l.agendFat||0),0);
             const agMeta  = scope.length * (_d.agendMetaPorLoja || 90000);
@@ -17645,6 +17759,13 @@ try { localStorage.removeItem('_sinergy_etag'); } catch(_) {}
                        style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);"
                        onfocus="this.style.borderColor='rgba(16,185,129,.5)'" onblur="this.style.borderColor='rgba(255,255,255,.1)'">
             </div>
+            <div>
+                <label class="text-gray-400 text-[10px] font-semibold uppercase tracking-wider mb-1 block">Código interno <span class="text-gray-600">(ex: 0021)</span></label>
+                <input id="eu-codigo" type="text" placeholder="0000" maxlength="4"
+                       class="w-full bg-transparent rounded-xl px-3 py-2.5 text-sm text-white outline-none transition-all"
+                       style="background:rgba(212,175,55,.06);border:1px solid rgba(212,175,55,.2);font-family:monospace;"
+                       onfocus="this.style.borderColor='rgba(212,175,55,.6)'" onblur="this.style.borderColor='rgba(212,175,55,.2)'">
+            </div>
         </div>
         <!-- Botões -->
         <div class="flex gap-2 mt-5">
@@ -17726,6 +17847,13 @@ try { localStorage.removeItem('_sinergy_etag'); } catch(_) {}
                        class="w-full bg-transparent rounded-xl px-3 py-2.5 text-sm text-white outline-none transition-all"
                        style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);"
                        onfocus="this.style.borderColor='rgba(16,185,129,.5)'" onblur="this.style.borderColor='rgba(255,255,255,.1)'">
+            </div>
+            <div>
+                <label class="text-gray-400 text-[10px] font-semibold uppercase tracking-wider mb-1 block">Código interno <span class="text-gray-600">(auto-sugerido pelo cargo)</span></label>
+                <input id="cu-codigo" type="text" placeholder="0000" maxlength="4"
+                       class="w-full bg-transparent rounded-xl px-3 py-2.5 text-sm text-white outline-none transition-all"
+                       style="background:rgba(212,175,55,.06);border:1px solid rgba(212,175,55,.2);font-family:monospace;"
+                       onfocus="this.style.borderColor='rgba(212,175,55,.6)'" onblur="this.style.borderColor='rgba(212,175,55,.2)'">
             </div>
         </div>
         <!-- Botões -->

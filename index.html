@@ -8204,19 +8204,19 @@ function render360(tipo, val) {
             <div style="display:flex;gap:.5rem;align-items:flex-end;">
                 <div style="flex:1;">
                     <div style="font-size:.55rem;color:#a78bfa;font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px;">Salão</div>
-                    <p style="font-size:1rem;font-weight:900;color:#fff;margin:0;line-height:1;">\${_temDados ? brl(_totalSalao) : '—'}</p>
+                    <p style="font-size:1rem;font-weight:900;color:#fff;margin:0;line-height:1;">${_temDados ? brl(_totalSalao) : '—'}</p>
                 </div>
                 <div style="font-size:.75rem;color:#4b5563;font-weight:700;">vs</div>
                 <div style="flex:1;text-align:right;">
                     <div style="font-size:.55rem;color:#34d399;font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px;">Financeiras</div>
-                    <p style="font-size:1rem;font-weight:900;color:#fff;margin:0;line-height:1;">\${_temDados ? brl(_totalFin) : '—'}</p>
+                    <p style="font-size:1rem;font-weight:900;color:#fff;margin:0;line-height:1;">${_temDados ? brl(_totalFin) : '—'}</p>
                 </div>
             </div>
             <div style="height:8px;background:#1f2937;border-radius:4px;overflow:hidden;display:flex;gap:1px;">
-                <div style="height:100%;width:\${_pctSalao}%;background:linear-gradient(90deg,#7c3aed,#a78bfa);border-radius:4px 0 0 4px;transition:width .4s;"></div>
-                <div style="height:100%;width:\${_pctFin}%;background:linear-gradient(90deg,#059669,#34d399);border-radius:0 4px 4px 0;transition:width .4s;"></div>
+                <div style="height:100%;width:${_pctSalao}%;background:linear-gradient(90deg,#7c3aed,#a78bfa);border-radius:4px 0 0 4px;transition:width .4s;"></div>
+                <div style="height:100%;width:${_pctFin}%;background:linear-gradient(90deg,#059669,#34d399);border-radius:0 4px 4px 0;transition:width .4s;"></div>
             </div>
-            <p style="font-size:.6rem;color:#6b7280;margin:0;line-height:1.4;">\${_temDados ? \`Salão \${_pctSalao}% · Fin. \${_pctFin}% · \${_lojasCom} loja\${_lojasCom!==1?'s':''}\` : 'Sem dados para hoje'}</p>
+            <p style="font-size:.6rem;color:#6b7280;margin:0;line-height:1.4;">${_temDados ? `Salão ${_pctSalao}% · Fin. ${_pctFin}% · ${_lojasCom} loja${_lojasCom!==1?'s':''}` : 'Sem dados para hoje'}</p>
         </div>`;
     })();
 

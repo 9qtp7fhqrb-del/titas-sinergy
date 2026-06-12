@@ -282,6 +282,15 @@ def extract_margem_bruta(data):
     return None
 
 
+def update_margem_dia(content, margem):
+    """Atualiza margem_dia (margem bruta do dia) no index.html."""
+    new_val = f'{margem:.2f}'
+    updated = re.sub(r'(\bmargem_dia:\s*)\d+(?:\.\d+)?(?=\s*,)', f'\\g<1>{new_val}', content, count=1)
+    if updated == content:
+        print(f"  AVISO: campo margem_dia não encontrado no HTML")
+    return updated
+
+
 def update_margem_rede(content, margem):
     """Atualiza margem_mes na rede (D360 top-level) no index.html."""
     new_val = f'{margem:.2f}'
@@ -621,6 +630,14 @@ def main():
     print("Buscando IDs de lojas (para filtro gerencial por subrede)...")
     store_id_map = fetch_store_ids(token)
 
+    print("Buscando Relatório Gerencial (margem bruta dia)...")
+    gerencial_dia = fetch_gerencial(token, today, today)
+    margem_dia = extract_margem_bruta(gerencial_dia)
+    if margem_dia is not None:
+        print(f"  Margem Bruta dia: {margem_dia:.2f}%")
+    else:
+        print("  AVISO: margem_dia não extraída")
+
     print("Buscando Relatório Gerencial (margem bruta rede)...")
     gerencial_rede = fetch_gerencial(token, start, today)
     margem_rede = extract_margem_bruta(gerencial_rede)
@@ -727,6 +744,11 @@ def main():
             sellers_today  = sellers_today_by_store.get(sk, set()),
         )
         print(f"  {sk}: atualizado")
+
+    # Atualiza margem_dia (margem bruta do dia)
+    if margem_dia is not None:
+        content = update_margem_dia(content, margem_dia)
+        print(f"  margem_dia atualizado: {margem_dia:.2f}%")
 
     # Atualiza margem_mes da rede
     if margem_rede is not None:

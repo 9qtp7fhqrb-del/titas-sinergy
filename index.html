@@ -5306,6 +5306,7 @@ const D360 = {
     diasMes: 30,          // junho tem 30 dias
 
     // ── Margem Bruta Mensal · Fonte: Relatório Gerencial ERP CDC ──
+    margem_dia: 43.47,    // rede hoje · atualizado automaticamente a cada 30min
     margem_mes: 44.60,    // rede total · atualizar mensalmente com PDF Gerencial
     margem_lojas: {       // por loja — atualizar com relatório por loja quando disponível
         saomateus: 0, cariacica: 0, itabuna: 0, barreiras: 0, moxuara: 0,
@@ -8388,6 +8389,17 @@ function render360(tipo, val) {
         const _subTxt   = _temDados
             ? `${_lojasDia.length} loja${_lojasDia.length!==1?'s':''} com dados · clique para detalhar`
             : 'Sem vendas registradas para hoje';
+        // Margem do dia
+        const _META_MARGEM_DIA = 45;
+        const _mDia = _d.margem_dia || null;
+        const _mDiaCor = !_mDia ? '#6b7280'
+            : _mDia >= _META_MARGEM_DIA       ? '#10b981'
+            : _mDia >= _META_MARGEM_DIA - 2   ? '#f59e0b'
+            : _mDia >= _META_MARGEM_DIA - 4   ? '#f97316'
+            : '#ef4444';
+        const _mDiaLine = _mDia
+            ? `<p style="font-size:.6rem;color:${_mDiaCor};margin:0;line-height:1.4;font-weight:700;">📊 Margem Dia ${_mDia.toFixed(2).replace('.',',')}%${_mDia >= _META_MARGEM_DIA ? ' ✓' : ' · meta 45%'}</p>`
+            : '';
         return `<div class="glass-360 rounded-2xl p-4 card-lift" style="display:flex;flex-direction:column;gap:.35rem;cursor:pointer;" onclick="abrirFatDiario('${tipo}','${val}')">
             <div style="display:flex;align-items:center;justify-content:space-between;gap:.5rem;">
                 <div style="display:flex;align-items:center;gap:.5rem;min-width:0;">
@@ -8403,6 +8415,7 @@ function render360(tipo, val) {
                 <div style="height:100%;width:${_temDados?'100':'0'}%;background:linear-gradient(90deg,#f59e0b,#fbbf24);border-radius:3px;transition:width .4s;"></div>
             </div>
             <p style="font-size:.6rem;color:#6b7280;margin:0;line-height:1.4;">${_subTxt}</p>
+            ${_mDiaLine}
         </div>`;
     })();
 

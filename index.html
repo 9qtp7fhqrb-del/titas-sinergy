@@ -4914,34 +4914,45 @@ async function _rastroAguiar(acao, detalhe) {
 async function _carregarRastrosAguiar() {
     const wrap = document.getElementById('rastros-aguiar-body');
     if (!wrap) return;
-    _usrTryInitFirebase();
-    if (!window._acadFBOk || !window._acadDB) {
-        wrap.innerHTML = '<p style="font-size:.75rem;color:#6b7280;">Firestore indisponível.</p>'; return;
-    }
     wrap.innerHTML = '<p style="font-size:.75rem;color:#6b7280;font-style:italic;">Carregando…</p>';
     try {
         const _5diasAtras = Date.now() - (5 * 24 * 60 * 60 * 1000);
-        // Tenta primeiro últimos 5 dias; se vazio, busca tudo
-        let snap = await window._acadDB.collection('ts_rastros_aguiar')
-            .where('tsMs', '>=', _5diasAtras)
-            .orderBy('tsMs', 'desc').limit(200).get();
-        if (snap.empty) {
-            snap = await window._acadDB.collection('ts_rastros_aguiar')
-                .orderBy('tsMs', 'desc').limit(200).get();
+        // Usa REST API (mesma base de ts_usuarios) — independente do estado do SDK
+        const _queryBody = {
+            structuredQuery: {
+                from: [{ collectionId: 'ts_rastros_aguiar' }],
+                where: { fieldFilter: { field: { fieldPath: 'tsMs' }, op: 'GREATER_THAN_OR_EQUAL', value: { integerValue: String(_5diasAtras) } } },
+                orderBy: [{ field: { fieldPath: 'tsMs' }, direction: 'DESCENDING' }],
+                limit: 200
+            }
+        };
+        let resp = await fetch(`${_USR_BASE}:runQuery?key=${_USR_KEY}`, {
+            method: 'POST', headers: {'Content-Type':'application/json'},
+            body: JSON.stringify(_queryBody)
+        });
+        let data = await resp.json();
+        let docs = (Array.isArray(data) ? data : []).filter(r => r.document).map(r => {
+            const f = r.document.fields || {};
+            return { acao: _usrFSVal(f.acao)||'', detalhe: _usrFSVal(f.detalhe)||'', ts: _usrFSVal(f.ts)||'', tsMs: _usrFSVal(f.tsMs)||0 };
+        });
+        // Se sem dados nos últimos 5 dias, busca tudo
+        if (!docs.length) {
+            const _queryAll = { structuredQuery: { from:[{collectionId:'ts_rastros_aguiar'}], orderBy:[{field:{fieldPath:'tsMs'},direction:'DESCENDING'}], limit:200 } };
+            resp = await fetch(`${_USR_BASE}:runQuery?key=${_USR_KEY}`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(_queryAll) });
+            data = await resp.json();
+            docs = (Array.isArray(data) ? data : []).filter(r => r.document).map(r => {
+                const f = r.document.fields || {};
+                return { acao: _usrFSVal(f.acao)||'', detalhe: _usrFSVal(f.detalhe)||'', ts: _usrFSVal(f.ts)||'', tsMs: _usrFSVal(f.tsMs)||0 };
+            });
         }
-        if (snap.empty) {
+        if (!docs.length) {
             wrap.innerHTML = '<p style="font-size:.75rem;color:#6b7280;font-style:italic;">Nenhum rastro registrado ainda.</p>'; return;
         }
-        const _icones = {
-            'Login':'fa-right-to-bracket', 'Acessou':'fa-arrow-right',
-            'Abriu':'fa-eye', 'Clicou':'fa-hand-pointer', 'Expandiu':'fa-chevron-down'
-        };
-        // Agrupa por dia
+        const _icones = { 'Login':'fa-right-to-bracket','Acessou':'fa-arrow-right','Abriu':'fa-eye','Clicou':'fa-hand-pointer','Expandiu':'fa-chevron-down' };
         const porDia = {};
-        snap.forEach(d => {
-            const r = d.data();
+        docs.forEach(r => {
             const dt = new Date(r.ts);
-            const diaKey = dt.toLocaleDateString('pt-BR', {weekday:'long', day:'2-digit', month:'2-digit', year:'2-digit'});
+            const diaKey = dt.toLocaleDateString('pt-BR', {weekday:'long',day:'2-digit',month:'2-digit',year:'2-digit'});
             if (!porDia[diaKey]) porDia[diaKey] = [];
             porDia[diaKey].push(r);
         });
@@ -4950,7 +4961,7 @@ async function _carregarRastrosAguiar() {
             rows.push(`<div style="padding:.4rem .75rem .2rem;font-size:.6rem;font-weight:800;color:#7c3aed;text-transform:uppercase;letter-spacing:.05em;background:rgba(139,92,246,.06);border-bottom:1px solid rgba(139,92,246,.12);">${dia}</div>`);
             registros.forEach(r => {
                 const dt = new Date(r.ts);
-                const hora = dt.toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit',second:'2-digit'});
+                const hora = dt.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
                 const ico = Object.entries(_icones).find(([k]) => r.acao.includes(k))?.[1] || 'fa-circle-dot';
                 const detalheHtml = r.detalhe ? `<span style="color:#6b7280;font-size:.65rem;margin-left:.5rem;">· ${r.detalhe}</span>` : '';
                 rows.push(`<div style="display:flex;align-items:flex-start;gap:.75rem;padding:.5rem .75rem;border-bottom:1px solid rgba(255,255,255,.03);">

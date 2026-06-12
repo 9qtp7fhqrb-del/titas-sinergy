@@ -35,6 +35,13 @@ STORE_MAP = {
     'CDC TEIXEIRA DE FREITAS NOVO': 'teixeira',
 }
 
+# Lojas de cada subrede (chaves do STORE_MAP)
+SUBREDE_LOJAS = {
+    't1': ['cariacica', 'itabuna', 'moxuara', 'praiadacosta'],
+    't2': ['barreiras', 'teixeira', 'laranjeiras'],
+    't3': ['saomateus', 'serra', 'montserrat', 'linhares'],
+}
+
 # ── API ──────────────────────────────────────────────────────────────────────
 
 def erp_login(user, password, retries=4, wait=15):
@@ -144,27 +151,75 @@ def fetch_financeiras_ids(token, retries=3, wait=10):
                 print(f"  AVISO: falha ao buscar IDs financeiras ({e}), usando padrão [8,9]")
                 return [8, 9]  # OdresCred, PayJoy — fallback
 
-def fetch_gerencial(token, start, end, payment_method_ids=None, retries=4, wait=15):
-    """Busca relatório gerencial, opcionalmente filtrado por meios de pagamento."""
+def fetch_store_ids(token, retries=3, wait=10):
+    """
+    Busca lista de lojas do ERP e retorna mapa {store_key: store_id}.
+    Tenta /stores, /locations e /units — retorna {} se nenhum funcionar.
+    """
+    import time
+    endpoints = ['/stores', '/locations', '/units', '/branches']
+    for ep in endpoints:
+        for attempt in range(1, retries + 1):
+            try:
+                r = requests.get(f'{ERP_BASE}{ep}',
+                    headers={'Authorization': f'Bearer {token}', 'Accept': 'application/json'},
+                    timeout=20)
+                if r.status_code == 404:
+                    break  # endpoint não existe, tentar próximo
+                r.raise_for_status()
+                data = r.json()
+                # Normalizar: pode vir em data.stores, data.locations, data[] etc.
+                items = []
+                if isinstance(data, list):
+                    items = data
+                else:
+                    for k in ('stores', 'locations', 'units', 'branches', 'data'):
+                        if isinstance(data.get(k), list):
+                            items = data[k]
+                            break
+                if not items:
+                    break
+                # Montar mapa nome_upper → id
+                id_map = {}
+                for item in items:
+                    name = (item.get('name') or item.get('store_name') or item.get('label') or '').upper().strip()
+                    sid  = item.get('id') or item.get('store_id')
+                    if name and sid:
+                        key = STORE_MAP.get(name)
+                        if key:
+                            id_map[key] = sid
+                if id_map:
+                    print(f"  IDs de lojas encontrados via {ep}: {id_map}")
+                    return id_map
+                break
+            except Exception as e:
+                if attempt < retries:
+                    time.sleep(wait)
+    print("  AVISO: IDs de lojas não encontrados — gerencial por subrede indisponível")
+    return {}
+
+
+def fetch_gerencial(token, start, end, payment_method_ids=None, store_ids=None, retries=4, wait=15):
+    """Busca relatório gerencial, opcionalmente filtrado por meios de pagamento e/ou lojas."""
     import time
     params = {'start_date': start, 'end_date': end}
     last_err = None
     for attempt in range(1, retries + 1):
         try:
-            req_params = dict(params)
+            # Monta query string manual para suportar arrays (payment_method_ids[] e store_ids[])
+            qs_parts = []
             if payment_method_ids:
-                # requests não suporta múltiplos valores diretamente — usar query string manual
-                qs = '&'.join(f'payment_method_ids[]={i}' for i in payment_method_ids)
-                url = f'{ERP_BASE}/reports/gerencial?{qs}'
-                r = requests.get(url,
-                    params=req_params,
-                    headers={'Authorization': f'Bearer {token}', 'Accept': 'application/json'},
-                    timeout=60)
+                qs_parts += [f'payment_method_ids[]={i}' for i in payment_method_ids]
+            if store_ids:
+                qs_parts += [f'store_ids[]={i}' for i in store_ids]
+            if qs_parts:
+                url = f'{ERP_BASE}/reports/gerencial?' + '&'.join(qs_parts)
             else:
-                r = requests.get(f'{ERP_BASE}/reports/gerencial',
-                    params=req_params,
-                    headers={'Authorization': f'Bearer {token}', 'Accept': 'application/json'},
-                    timeout=60)
+                url = f'{ERP_BASE}/reports/gerencial'
+            r = requests.get(url,
+                params=params,
+                headers={'Authorization': f'Bearer {token}', 'Accept': 'application/json'},
+                timeout=60)
             r.raise_for_status()
             return r.json()
         except requests.exceptions.HTTPError as e:
@@ -230,6 +285,27 @@ def update_margem_rede(content, margem):
     if updated == content:
         print(f"  AVISO: campo margem_mes não encontrado no HTML")
     return updated
+
+
+def update_margem_subredes(content, margens):
+    """
+    Atualiza margem_subredes no index.html.
+    margens: {'t1': 45.17, 't2': 44.20, 't3': 43.80}
+    Substitui apenas subredes com dados novos (>0).
+    """
+    for sub, val in margens.items():
+        if not val:
+            continue
+        # Encontra a chave no objeto margem_subredes: { t1: X, t2: X, t3: X }
+        pattern = rf'(margem_subredes\s*:\s*\{{[^}}]*\b{sub}\s*:\s*)\d+(?:\.\d+)?'
+        new = f'\\g<1>{val:.2f}'
+        updated = re.sub(pattern, new, content, count=1)
+        if updated != content:
+            content = updated
+            print(f"  margem_subredes.{sub} → {val:.2f}%")
+        else:
+            print(f"  AVISO: margem_subredes.{sub} não encontrado no HTML")
+    return content
 
 
 def process_gerencial(data):
@@ -530,6 +606,9 @@ def main():
     print("Buscando financeiras do mês...")
     fin_mes_data = fetch_gerencial(token, start, today, payment_method_ids=fin_pm_ids)
 
+    print("Buscando IDs de lojas (para filtro gerencial por subrede)...")
+    store_id_map = fetch_store_ids(token)
+
     print("Buscando Relatório Gerencial (margem bruta rede)...")
     gerencial_rede = fetch_gerencial(token, start, today)
     margem_rede = extract_margem_bruta(gerencial_rede)
@@ -537,6 +616,23 @@ def main():
         print(f"  Margem Bruta rede: {margem_rede:.2f}%")
     else:
         print("  AVISO: margem_bruta não extraída — campo não será atualizado")
+
+    print("Buscando margem bruta por subrede...")
+    margem_subredes = {}
+    if store_id_map:
+        for sub, lojas in SUBREDE_LOJAS.items():
+            ids = [store_id_map[lk] for lk in lojas if lk in store_id_map]
+            if ids:
+                try:
+                    g = fetch_gerencial(token, start, today, store_ids=ids)
+                    m = extract_margem_bruta(g)
+                    if m:
+                        margem_subredes[sub] = m
+                        print(f"  Margem {sub}: {m:.2f}%")
+                except Exception as e:
+                    print(f"  AVISO: erro ao buscar margem {sub}: {e}")
+    else:
+        print("  IDs de lojas não disponíveis — margem_subredes não será atualizada automaticamente")
 
     print("Buscando breakdown por grupo de financeiras...")
     fin_groups_data = {}
@@ -624,6 +720,10 @@ def main():
     if margem_rede is not None:
         content = update_margem_rede(content, margem_rede)
         print(f"  margem_mes atualizado: {margem_rede:.2f}%")
+
+    # Atualiza margem_subredes
+    if margem_subredes:
+        content = update_margem_subredes(content, margem_subredes)
 
     # Atualiza o timestamp de build (força browsers a recarregar após deploy)
     from datetime import datetime as _dt

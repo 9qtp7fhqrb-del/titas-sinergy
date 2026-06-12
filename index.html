@@ -5311,8 +5311,8 @@ const D360 = {
         saomateus: 0, cariacica: 0, itabuna: 0, barreiras: 0, moxuara: 0,
         teixeira:  0, laranjeiras: 0, serra: 0, linhares: 0, montserrat: 0, praiadacosta: 0
     },
-    margem_subredes: {    // por subrede — calculado a partir das lojas quando disponível
-        t1: 0, t2: 0, t3: 0
+    margem_subredes: {    // por subrede — Fonte: Relatório Gerencial ERP CDC (filtrado por loja)
+        t1: 45.17, t2: 0, t3: 0
     },
 
     subredes: {
@@ -8312,10 +8312,11 @@ function render360(tipo, val) {
     // ── Margem Mês ──────────────────────────────────────────────────────────
     const _META_MARGEM = 45;
     const _margValor = (() => {
-        if (tipo === 'geral') return _d.margem_mes || null;
-        if (tipo === 'sub')   return ((_d.margem_subredes || {})[val]) || null;
-        if (tipo === 'loja')  return ((_d.margem_lojas    || {})[val]) || null;
-        return null;
+        const _redeVal = _d.margem_mes || null;
+        if (tipo === 'geral') return _redeVal;
+        if (tipo === 'sub')   return ((_d.margem_subredes || {})[val]) || _redeVal;
+        if (tipo === 'loja')  return ((_d.margem_lojas    || {})[val]) || _redeVal;
+        return _redeVal;
     })();
     const _margCor = !_margValor ? '#6b7280'
         : _margValor >= _META_MARGEM        ? '#4ade80'   // ≥ 45% — verde

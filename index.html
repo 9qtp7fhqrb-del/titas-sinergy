@@ -5307,6 +5307,7 @@ const D360 = {
 
     // ── Margem Bruta Mensal · Fonte: Relatório Gerencial ERP CDC ──
     margem_dia: 43.47,    // rede hoje · atualizado automaticamente a cada 30min
+    margem_dia_subredes: { t1: 44.77, t2: 0, t3: 0 },  // por subrede hoje · automático
     margem_mes: 44.60,    // rede total · atualizar mensalmente com PDF Gerencial
     margem_lojas: {       // por loja — atualizar com relatório por loja quando disponível
         saomateus: 0, cariacica: 0, itabuna: 0, barreiras: 0, moxuara: 0,
@@ -5786,6 +5787,43 @@ function _renderSalaoFin() {
     });
     if(lojas.length===0)cardsHtml='<div style="text-align:center;padding:2.5rem 1rem;color:#4b5563;font-size:.8rem;">Sem dados nesta subrede.</div>';
     wrap.innerHTML=tabsHtml+totalHtml+cardsHtml;
+}
+
+function abrirDetalhesFat(tipo, val) {
+    var modal = document.getElementById('modal-detalhes-fat');
+    if (!modal) return;
+    var d = window._fatCardDetalhe || {};
+    // período
+    var elPer = document.getElementById('detalhes-fat-periodo');
+    if (elPer) elPer.textContent = d.periodo || '';
+    // corpo
+    var body = document.getElementById('detalhes-fat-body');
+    if (!body) { modal.style.display='flex'; modal.classList.remove('hidden'); return; }
+    var brl = function(v){ return 'R$ '+Number(v).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}); };
+    var BAR = 'linear-gradient(90deg,#7c3aed,#06b6d4)';
+    var html = '';
+    // Valor + projeção
+    html += '<div style="display:flex;flex-direction:column;gap:.2rem;">';
+    html += '<span style="font-size:1.6rem;font-weight:900;color:#fff;line-height:1.1;">' + brl(d.total||0) + '</span>';
+    if (d.projVal) html += '<span style="font-size:.7rem;color:#9ca3af;">↗ Projeção fim do mês: <strong style="color:#c4b5fd;">' + brl(d.projVal) + '</strong></span>';
+    html += '</div>';
+    // Barra de meta
+    html += '<div style="display:flex;flex-direction:column;gap:.3rem;">';
+    html += '<div style="display:flex;justify-content:space-between;"><span style="font-size:.65rem;color:#9ca3af;">Meta</span><span style="font-size:.65rem;color:#a855f7;font-weight:700;">' + (d.barPct||0) + '%</span></div>';
+    html += '<div style="height:5px;background:#1f2937;border-radius:3px;"><div style="height:100%;width:'+(d.barPct||0)+'%;background:'+BAR+';border-radius:3px;"></div></div>';
+    html += '<span style="font-size:.6rem;color:#6b7280;">' + (d.nota||'') + '</span>';
+    html += '</div>';
+    // vs anterior
+    if (d.antLine) html += d.antLine;
+    // margem mês
+    if (d.margLine) html += d.margLine;
+    body.innerHTML = html;
+    modal.style.display = 'flex';
+    modal.classList.remove('hidden');
+}
+function _fecharDetalhesFat() {
+    var modal = document.getElementById('modal-detalhes-fat');
+    if (modal) { modal.style.display='none'; modal.classList.add('hidden'); }
 }
 
 function abrirFatDiario(tipo, val) {
@@ -8351,25 +8389,25 @@ function render360(tipo, val) {
     </div>`;
 
     // Card Faturamento Total (com evolução incorporada)
+    const _fatBarPct  = Math.min(100, pct(total, meta));
+    const _fatNota    = `${pct(total,meta)}% da meta (${brl(meta)})` + (_d.diasDecorridos > 0 ? ` · méd. ${brl(Math.round(total/_d.diasDecorridos))}/dia` : '');
+    const _fatProjVal = _d.diasDecorridos ? Math.round(total / _d.diasDecorridos * _d.diasMes) : 0;
+    // Salva dados para o popup
+    window._fatCardDetalhe = { total, meta, barPct: _fatBarPct, nota: _fatNota, antLine: _antLine, margLine: _margLine, projVal: _fatProjVal, periodo: _d.periodo, tipo, val };
     const _fatCard = (() => {
-        const barPct = Math.min(100, pct(total, meta));
-        const nota   = `${pct(total,meta)}% da meta (${brl(meta)})` + (_d.diasDecorridos > 0 ? ` · méd. ${brl(Math.round(total/_d.diasDecorridos))}/dia` : '');
-        return `<div class="glass-360 rounded-2xl p-4 card-lift" style="display:flex;flex-direction:column;gap:.35rem;">
+        const _projLine = _fatProjVal ? `<p style="font-size:.6rem;color:#9ca3af;margin:0;line-height:1.4;">↗ Projeção mês: <span style="font-weight:700;color:#c4b5fd;">${brl(_fatProjVal)}</span></p>` : '';
+        return `<div class="glass-360 rounded-2xl p-4 card-lift" style="display:flex;flex-direction:column;gap:.35rem;cursor:pointer;" onclick="abrirDetalhesFat('${tipo}','${val}')">
             <div style="display:flex;align-items:center;justify-content:space-between;gap:.5rem;">
                 <div style="display:flex;align-items:center;gap:.5rem;min-width:0;">
                     <div style="width:28px;height:28px;border-radius:8px;background:#a855f718;border:1px solid #a855f735;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
                         <i class="fas fa-sack-dollar" style="color:#a855f7;font-size:.7rem;"></i>
                     </div>
-                    <span style="font-size:.72rem;font-weight:800;color:#f9fafb;letter-spacing:.03em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Faturamento Total da Rede</span>
+                    <span style="font-size:.72rem;font-weight:800;color:#f9fafb;letter-spacing:.03em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Faturamento Total</span>
                 </div>
                 <span style="font-size:.6rem;font-weight:700;padding:.15rem .55rem;border-radius:999px;background:#a855f720;color:#a855f7;white-space:nowrap;flex-shrink:0;">${_d.periodo}</span>
             </div>
-            <p style="font-size:1.25rem;font-weight:900;color:#fff;line-height:1.2;margin:0;">${brl(total)}${metaBatidaRede} ${projecaoMes(total)}</p>
-            <div style="height:3px;background:#1f2937;border-radius:3px;">
-                <div style="height:100%;width:${barPct}%;background:${BAR};border-radius:3px;transition:width .4s;"></div>
-            </div>
-            <p style="font-size:.6rem;color:#6b7280;margin:0;line-height:1.4;">${nota}</p>
-            ${_antLine}
+            <p style="font-size:1.25rem;font-weight:900;color:#fff;line-height:1.2;margin:0;">${brl(total)}${metaBatidaRede}</p>
+            ${_projLine}
             ${_margLine}
         </div>`;
     })();
@@ -8389,17 +8427,22 @@ function render360(tipo, val) {
         const _subTxt   = _temDados
             ? `${_lojasDia.length} loja${_lojasDia.length!==1?'s':''} com dados · clique para detalhar`
             : 'Sem vendas registradas para hoje';
-        // Margem do dia
+        // Margem do dia — usa subrede se disponível, senão rede
         const _META_MARGEM_DIA = 45;
-        const _mDia = _d.margem_dia || null;
-        const _mDiaCor = !_mDia ? '#6b7280'
-            : _mDia >= _META_MARGEM_DIA       ? '#10b981'
-            : _mDia >= _META_MARGEM_DIA - 2   ? '#f59e0b'
-            : _mDia >= _META_MARGEM_DIA - 4   ? '#f97316'
-            : '#ef4444';
-        const _mDiaLine = _mDia
-            ? `<p style="font-size:.6rem;color:${_mDiaCor};margin:0;line-height:1.4;font-weight:700;">📊 Margem Dia ${_mDia.toFixed(2).replace('.',',')}%${_mDia >= _META_MARGEM_DIA ? ' ✓' : ' · meta 45%'}</p>`
-            : '';
+        const _redeValDia = _d.margem_dia || null;
+        const _mDia = tipo === 'sub'
+            ? (((_d.margem_dia_subredes || {})[val]) || _redeValDia)
+            : _redeValDia;
+        const _mDiaCor  = !_mDia ? '#6b7280' : _mDia >= _META_MARGEM_DIA ? '#10b981' : _mDia >= _META_MARGEM_DIA-2 ? '#f59e0b' : _mDia >= _META_MARGEM_DIA-4 ? '#f97316' : '#ef4444';
+        const _mDiaBg   = !_mDia ? '#1f293720' : _mDia >= _META_MARGEM_DIA ? '#10b98115' : _mDia >= _META_MARGEM_DIA-2 ? '#f59e0b15' : _mDia >= _META_MARGEM_DIA-4 ? '#f9731615' : '#ef444415';
+        const _mDiaBord = !_mDia ? '#1f2937' : _mDia >= _META_MARGEM_DIA ? '#10b98130' : _mDia >= _META_MARGEM_DIA-2 ? '#f59e0b30' : _mDia >= _META_MARGEM_DIA-4 ? '#f9731630' : '#ef444430';
+        const _mDiaLine = `<div style="display:flex;justify-content:space-between;align-items:center;padding:.2rem .55rem;border-radius:.5rem;background:${_mDiaBg};border:1px solid ${_mDiaBord};margin-top:.05rem;">
+            <span style="font-size:.6rem;color:#9ca3af;font-weight:600;">📊 Margem Dia</span>
+            ${_mDia
+                ? `<span style="font-size:.72rem;font-weight:800;color:${_mDiaCor};">${_mDia.toFixed(2).replace('.',',')}%<span style="font-size:.55rem;font-weight:500;color:${_mDiaCor}88;margin-left:.3rem;">meta ${_META_MARGEM_DIA}%</span></span>`
+                : `<span style="font-size:.65rem;color:#4b5563;font-style:italic;">aguardando dados</span>`
+            }
+        </div>`;
         return `<div class="glass-360 rounded-2xl p-4 card-lift" style="display:flex;flex-direction:column;gap:.35rem;cursor:pointer;" onclick="abrirFatDiario('${tipo}','${val}')">
             <div style="display:flex;align-items:center;justify-content:space-between;gap:.5rem;">
                 <div style="display:flex;align-items:center;gap:.5rem;min-width:0;">
@@ -18131,6 +18174,26 @@ cursosInit();
       <button onclick="fecharSalaoFin()" style="color:#6b7280;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:.5rem;padding:.3rem .65rem;cursor:pointer;font-size:1rem;">✕</button>
     </div>
     <div id="modal-salao-fin-body" style="overflow-y:auto;flex:1;padding:1.25rem;"></div>
+  </div>
+</div>
+
+<!-- ── Modal Detalhes Faturamento Total ─────────────────────────────── -->
+<div id="modal-detalhes-fat" class="fixed inset-0 z-[999] hidden items-center justify-center bg-black/80 p-3"
+     onclick="if(event.target===this)_fecharDetalhesFat()">
+  <div style="background:#0d1117;border:1px solid rgba(168,85,247,.3);border-radius:1.25rem;width:100%;max-width:480px;max-height:88vh;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.7);">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:1rem 1.5rem;border-bottom:1px solid rgba(255,255,255,.07);flex-shrink:0;">
+      <div style="display:flex;align-items:center;gap:.75rem;">
+        <div style="width:32px;height:32px;border-radius:10px;background:#a855f718;border:1px solid #a855f735;display:flex;align-items:center;justify-content:center;">
+          <i class="fas fa-sack-dollar" style="color:#a855f7;font-size:.8rem;"></i>
+        </div>
+        <div>
+          <div style="font-size:.75rem;font-weight:800;color:#f9fafb;text-transform:uppercase;letter-spacing:.04em;">Faturamento Total</div>
+          <div id="detalhes-fat-periodo" style="font-size:.62rem;color:#a855f7;font-weight:600;"></div>
+        </div>
+      </div>
+      <button onclick="_fecharDetalhesFat()" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:#9ca3af;border-radius:8px;width:30px;height:30px;cursor:pointer;font-size:.85rem;">✕</button>
+    </div>
+    <div id="detalhes-fat-body" style="padding:1.25rem 1.5rem;overflow-y:auto;display:flex;flex-direction:column;gap:.75rem;"></div>
   </div>
 </div>
 

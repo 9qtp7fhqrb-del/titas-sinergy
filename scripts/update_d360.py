@@ -291,6 +291,20 @@ def update_margem_dia(content, margem):
     return updated
 
 
+def update_margem_dia_subredes(content, margens):
+    """Atualiza margem_dia_subredes no index.html. margens: {'t1': 44.77, ...}"""
+    for sub, val in margens.items():
+        if val is None: continue
+        pattern = rf'(margem_dia_subredes\s*:\s*\{{[^}}]*\b{sub}\s*:\s*)\d+(?:\.\d+)?'
+        new_content = re.sub(pattern, f'\\g<1>{val:.2f}', content, count=1)
+        if new_content != content:
+            print(f"  margem_dia_subredes.{sub} → {val:.2f}%")
+            content = new_content
+        else:
+            print(f"  AVISO: margem_dia_subredes.{sub} não encontrado")
+    return content
+
+
 def update_margem_rede(content, margem):
     """Atualiza margem_mes na rede (D360 top-level) no index.html."""
     new_val = f'{margem:.2f}'
@@ -646,8 +660,9 @@ def main():
     else:
         print("  AVISO: margem_bruta não extraída — campo não será atualizado")
 
-    print("Buscando margem bruta por subrede...")
+    print("Buscando margem bruta por subrede (mês e dia)...")
     margem_subredes = {}
+    margem_dia_subredes = {}
     if store_id_map:
         for sub, lojas in SUBREDE_LOJAS.items():
             ids = [store_id_map[lk] for lk in lojas if lk in store_id_map]
@@ -657,9 +672,17 @@ def main():
                     m = extract_margem_bruta(g)
                     if m:
                         margem_subredes[sub] = m
-                        print(f"  Margem {sub}: {m:.2f}%")
+                        print(f"  Margem mês {sub}: {m:.2f}%")
                 except Exception as e:
-                    print(f"  AVISO: erro ao buscar margem {sub}: {e}")
+                    print(f"  AVISO: erro ao buscar margem mês {sub}: {e}")
+                try:
+                    g_dia = fetch_gerencial(token, today, today, store_ids=ids)
+                    m_dia = extract_margem_bruta(g_dia)
+                    if m_dia:
+                        margem_dia_subredes[sub] = m_dia
+                        print(f"  Margem dia  {sub}: {m_dia:.2f}%")
+                except Exception as e:
+                    print(f"  AVISO: erro ao buscar margem dia {sub}: {e}")
     else:
         print("  IDs de lojas não disponíveis — margem_subredes não será atualizada automaticamente")
 
@@ -758,6 +781,10 @@ def main():
     # Atualiza margem_subredes
     if margem_subredes:
         content = update_margem_subredes(content, margem_subredes)
+
+    # Atualiza margem_dia_subredes
+    if margem_dia_subredes:
+        content = update_margem_dia_subredes(content, margem_dia_subredes)
 
     # Atualiza o timestamp de build (força browsers a recarregar após deploy)
     from datetime import datetime as _dt

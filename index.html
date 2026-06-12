@@ -5312,7 +5312,7 @@ const D360 = {
         teixeira:  0, laranjeiras: 0, serra: 0, linhares: 0, montserrat: 0, praiadacosta: 0
     },
     margem_subredes: {    // por subrede — Fonte: Relatório Gerencial ERP CDC (filtrado por loja)
-        t1: 45.17, t2: 0, t3: 0
+        t1: 44.93, t2: 41.91, t3: 46.05
     },
 
     subredes: {
@@ -5787,9 +5787,17 @@ function _renderSalaoFin() {
     wrap.innerHTML=tabsHtml+totalHtml+cardsHtml;
 }
 
-function abrirFatDiario() {
+function abrirFatDiario(tipo, val) {
     var modal = document.getElementById('modal-fat-diario');
     if (!modal) return;
+    // Sincroniza filtro do modal com a view atual do D360
+    if (tipo === 'sub' && val) {
+        window._fatDiaSubFilter = val; // 't1' | 't2' | 't3'
+    } else if (tipo === 'loja' && val) {
+        window._fatDiaSubFilter = '_loja_' + val; // view de loja específica
+    } else {
+        window._fatDiaSubFilter = 'geral';
+    }
     modal.style.display = 'flex';
     modal.classList.remove('hidden');
     _renderFatDiario();
@@ -5824,10 +5832,13 @@ function _renderFatDiario() {
     var subLojasMap = { t1:['cariacica','itabuna','moxuara','praiadacosta'], t2:['barreiras','teixeira','laranjeiras'], t3:['saomateus','serra','montserrat','linhares'] };
     var sf = window._fatDiaSubFilter || 'geral';
     var _vendLoja = (typeof _vendedorLojaKey === 'function') ? _vendedorLojaKey() : null;
+    // filtro de loja específica (view loja do D360)
+    var _lojaEspecifica = (sf.indexOf('_loja_') === 0) ? sf.replace('_loja_', '') : null;
 
     var lojas = Object.entries(_d.lojas || {})
         .filter(function(e) {
             if (_vendLoja) return e[0] === _vendLoja;
+            if (_lojaEspecifica) return e[0] === _lojaEspecifica;
             if (sf !== 'geral' && subLojasMap[sf]) return subLojasMap[sf].indexOf(e[0]) >= 0;
             return true;
         })
@@ -5991,7 +6002,7 @@ function _renderAgendRanking() {
             : 'background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.1);color:#9ca3af;';
     }
 
-    var filterButtons = _vendLoja ? '' :
+    var filterButtons = (_vendLoja || _lojaEspecifica) ? '' :
         '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,.06);">' +
         ['geral','t1','t2','t3'].map(function(k) {
             var lbl = k==='geral'?'🌐 Geral':('⚡ Titãs '+(k==='t1'?1:k==='t2'?2:3));
@@ -8377,7 +8388,7 @@ function render360(tipo, val) {
         const _subTxt   = _temDados
             ? `${_lojasDia.length} loja${_lojasDia.length!==1?'s':''} com dados · clique para detalhar`
             : 'Sem vendas registradas para hoje';
-        return `<div class="glass-360 rounded-2xl p-4 card-lift" style="display:flex;flex-direction:column;gap:.35rem;cursor:pointer;" onclick="abrirFatDiario()">
+        return `<div class="glass-360 rounded-2xl p-4 card-lift" style="display:flex;flex-direction:column;gap:.35rem;cursor:pointer;" onclick="abrirFatDiario('${tipo}','${val}')">
             <div style="display:flex;align-items:center;justify-content:space-between;gap:.5rem;">
                 <div style="display:flex;align-items:center;gap:.5rem;min-width:0;">
                     <div style="width:28px;height:28px;border-radius:8px;background:#f59e0b18;border:1px solid #f59e0b35;display:flex;align-items:center;justify-content:center;flex-shrink:0;">

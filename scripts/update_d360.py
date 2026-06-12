@@ -397,18 +397,26 @@ def process(data, value_fn):
 # ── Atualização do HTML ───────────────────────────────────────────────────────
 
 def find_section(content, store_key):
-    """Retorna (start, end) da seção do store no HTML."""
-    marker = f'\n        {store_key}:'
-    start = content.find(marker)
-    if start == -1:
+    """Retorna (start, end) da seção do store no HTML.
+    Busca especificamente a linha que inicia o objeto da loja: '        key:   { label:'
+    Ignora ocorrências em margem_lojas (que têm apenas um número, ex: 'key: 0,').
+    """
+    import re as _re
+    # Padrão: newline + 8 espaços + chave + : + espaços* + { (início de objeto)
+    pattern = f'\n        {store_key}:\\s*\\{{'
+    m = _re.search(pattern, content)
+    if not m:
         return None, None
+    start = m.start()
     end = len(content)
     for sk in STORE_MAP.values():
         if sk == store_key:
             continue
-        pos = content.find(f'\n        {sk}:', start + 1)
-        if 0 < pos < end:
-            end = pos
+        m2 = _re.search(f'\n        {sk}:\\s*\\{{', content[start + 1:])
+        if m2:
+            pos = start + 1 + m2.start()
+            if 0 < pos < end:
+                end = pos
     return start, end
 
 def fmt_fin_bd(bd_list):

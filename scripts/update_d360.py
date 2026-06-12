@@ -4,7 +4,11 @@ D360 Titãs Sinergy — Atualização automática via API ERP CDC
 Atualiza por loja: total, acessorios.total, agendFat, agendamentos.total, agendamentos.top, fat_dia
 """
 import re, os, sys
-from datetime import date
+from datetime import date, datetime, timezone, timedelta
+
+# Fuso horário de Brasília (BRT = UTC-3) — garante data correta no GitHub Actions (UTC)
+BRT = timezone(timedelta(hours=-3))
+_now_brt = datetime.now(BRT)
 
 try:
     import requests
@@ -583,9 +587,9 @@ def main():
                 f.write(token)
             print(f"Token salvo em {token_out}")
 
-    today = date.today().strftime('%Y-%m-%d')
-    start = date.today().strftime('%Y-%m-01')
-    print(f"Período: {start} → {today}")
+    today = _now_brt.strftime('%Y-%m-%d')
+    start = _now_brt.strftime('%Y-%m-01')
+    print(f"Período: {start} → {today} (BRT {_now_brt.strftime('%H:%M')})")
 
     print("Buscando vendas gerais (acumulado)...")
     sales_data = fetch_sales(token, start, today)

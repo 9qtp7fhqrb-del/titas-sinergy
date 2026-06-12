@@ -768,10 +768,10 @@ def main():
         )
         print(f"  {sk}: atualizado")
 
-    # Atualiza margem_dia (margem bruta do dia)
-    if margem_dia is not None:
-        content = update_margem_dia(content, margem_dia)
-        print(f"  margem_dia atualizado: {margem_dia:.2f}%")
+    # Atualiza margem_dia (margem bruta do dia) — zera se não houver vendas ainda
+    margem_dia_final = margem_dia if margem_dia is not None else 0.0
+    content = update_margem_dia(content, margem_dia_final)
+    print(f"  margem_dia atualizado: {margem_dia_final:.2f}%")
 
     # Atualiza margem_mes da rede
     if margem_rede is not None:
@@ -782,9 +782,11 @@ def main():
     if margem_subredes:
         content = update_margem_subredes(content, margem_subredes)
 
-    # Atualiza margem_dia_subredes
-    if margem_dia_subredes:
-        content = update_margem_dia_subredes(content, margem_dia_subredes)
+    # Atualiza margem_dia_subredes — zera subredes sem vendas no dia
+    for sub in SUBREDE_LOJAS:
+        if sub not in margem_dia_subredes:
+            margem_dia_subredes[sub] = 0.0
+    content = update_margem_dia_subredes(content, margem_dia_subredes)
 
     # Atualiza o timestamp de build (força browsers a recarregar após deploy)
     from datetime import datetime as _dt

@@ -6437,12 +6437,19 @@ function _zerarFatDia() {
         l.top_dia  = [];
         l.top_fin  = [];
     });
+    // Zera também margens diárias — serão recalculadas pelo script conforme vendas do novo dia
+    D360.margem_dia = 0;
+    if (D360.margem_dia_subredes) {
+        Object.keys(D360.margem_dia_subredes).forEach(function(k) {
+            D360.margem_dia_subredes[k] = 0;
+        });
+    }
     try { atualizarTodasAbas(); } catch(e) {}
     try {
         var pill = document.querySelector('#d360-pills .pill-360.active');
         render360(pill ? pill.dataset.tipo : 'geral', pill ? pill.dataset.val : '');
     } catch(e) {}
-    console.log('[D360] fat_dia zerado automaticamente às 23:59');
+    console.log('[D360] fat_dia e margem_dia zerados automaticamente às 23:59');
 }
 
 function _agendarZerarFatDia() {

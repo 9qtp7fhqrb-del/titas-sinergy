@@ -4921,11 +4921,16 @@ async function _carregarRastrosAguiar() {
     wrap.innerHTML = '<p style="font-size:.75rem;color:#6b7280;font-style:italic;">Carregando…</p>';
     try {
         const _5diasAtras = Date.now() - (5 * 24 * 60 * 60 * 1000);
-        const snap = await window._acadDB.collection('ts_rastros_aguiar')
+        // Tenta primeiro últimos 5 dias; se vazio, busca tudo
+        let snap = await window._acadDB.collection('ts_rastros_aguiar')
             .where('tsMs', '>=', _5diasAtras)
             .orderBy('tsMs', 'desc').limit(200).get();
         if (snap.empty) {
-            wrap.innerHTML = '<p style="font-size:.75rem;color:#6b7280;font-style:italic;">Nenhum rastro nos últimos 5 dias.</p>'; return;
+            snap = await window._acadDB.collection('ts_rastros_aguiar')
+                .orderBy('tsMs', 'desc').limit(200).get();
+        }
+        if (snap.empty) {
+            wrap.innerHTML = '<p style="font-size:.75rem;color:#6b7280;font-style:italic;">Nenhum rastro registrado ainda.</p>'; return;
         }
         const _icones = {
             'Login':'fa-right-to-bracket', 'Acessou':'fa-arrow-right',

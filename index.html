@@ -3823,6 +3823,12 @@ async function renderUsuarios() {
                 <div class="flex-shrink-0">${shortBadge}</div>
                 <!-- Ações -->
                 <div class="flex items-center gap-1.5 flex-shrink-0">
+                    ${u.cargo === 'franqueado' && (u.nome||'').toLowerCase().includes('aguiar') ? `<button onclick="_abrirRastrosAguiar()" title="Ver rastros de Aguiar"
+                            class="w-7 h-7 rounded-lg flex items-center justify-center transition-all"
+                            style="background:rgba(139,92,246,.1);border:1px solid rgba(139,92,246,.3);color:#a78bfa;"
+                            onmouseenter="this.style.color='#c4b5fd'" onmouseleave="this.style.color='#a78bfa'">
+                        <i class="fas fa-shoe-prints text-[10px]"></i>
+                    </button>` : ''}
                     <button onclick="abrirModalEditarUsuario('${u.key}')" title="Editar usuário"
                             class="w-7 h-7 rounded-lg flex items-center justify-center transition-all"
                             style="background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.2);color:#6b7280;"

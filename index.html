@@ -4899,6 +4899,7 @@ function _isAguiar() {
 }
 async function _rastroAguiar(acao, detalhe) {
     if (!_isAguiar()) return;
+    _usrTryInitFirebase();
     if (!window._acadFBOk || !window._acadDB) return;
     try {
         await window._acadDB.collection('ts_rastros_aguiar').add({
@@ -4913,6 +4914,7 @@ async function _rastroAguiar(acao, detalhe) {
 async function _carregarRastrosAguiar() {
     const wrap = document.getElementById('rastros-aguiar-body');
     if (!wrap) return;
+    _usrTryInitFirebase();
     if (!window._acadFBOk || !window._acadDB) {
         wrap.innerHTML = '<p style="font-size:.75rem;color:#6b7280;">Firestore indisponível.</p>'; return;
     }

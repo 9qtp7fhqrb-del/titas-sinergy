@@ -179,6 +179,59 @@ def fetch_gerencial(token, start, end, payment_method_ids=None, retries=4, wait=
             time.sleep(wait)
     raise last_err
 
+def extract_margem_bruta(data):
+    """
+    Extrai a Margem Bruta (%) do relatório gerencial completo da rede.
+    Tenta múltiplos campos possíveis da API CDC.
+    Retorna float (ex: 44.60) ou None se não encontrado.
+    """
+    if not data:
+        return None
+    # Campos candidatos da API CDC (em ordem de preferência)
+    candidates = [
+        'gross_margin', 'margem_bruta', 'gross_margin_percentage',
+        'gross_profit_margin', 'margin', 'brute_margin',
+    ]
+    for key in candidates:
+        val = data.get(key)
+        if val is not None:
+            try:
+                # Pode vir como float (44.60), string ("44.60") ou string BR ("44,60")
+                v = float(str(val).replace(',', '.').replace('%', '').strip())
+                # Se vier como decimal (0.4460), converter para percentual
+                if 0 < v <= 1:
+                    v = round(v * 100, 2)
+                if 0 < v < 100:
+                    return round(v, 2)
+            except Exception:
+                pass
+    # Fallback: calcular a partir de gross_revenue + gross_profit se disponíveis
+    try:
+        rev_keys    = ['gross_revenue', 'receita_bruta', 'total_revenue', 'revenue']
+        profit_keys = ['gross_profit', 'lucro_bruto', 'brute_profit', 'profit']
+        rev = next((data[k] for k in rev_keys if data.get(k)), None)
+        prf = next((data[k] for k in profit_keys if data.get(k)), None)
+        if rev and prf:
+            rev = float(str(rev).replace(',', '.'))
+            prf = float(str(prf).replace(',', '.'))
+            if rev > 0:
+                return round(prf / rev * 100, 2)
+    except Exception:
+        pass
+    # Debug: imprimir chaves disponíveis para auxiliar futura manutenção
+    print(f"  AVISO: margem_bruta não encontrada. Chaves da API: {list(data.keys())[:20]}")
+    return None
+
+
+def update_margem_rede(content, margem):
+    """Atualiza margem_mes na rede (D360 top-level) no index.html."""
+    new_val = f'{margem:.2f}'
+    updated = re.sub(r'(\bmargem_mes:\s*)\d+(?:\.\d+)?(?=\s*,)', f'\\g<1>{new_val}', content, count=1)
+    if updated == content:
+        print(f"  AVISO: campo margem_mes não encontrado no HTML")
+    return updated
+
+
 def process_gerencial(data):
     """
     Processa employee_ranking do relatório gerencial.
@@ -477,6 +530,14 @@ def main():
     print("Buscando financeiras do mês...")
     fin_mes_data = fetch_gerencial(token, start, today, payment_method_ids=fin_pm_ids)
 
+    print("Buscando Relatório Gerencial (margem bruta rede)...")
+    gerencial_rede = fetch_gerencial(token, start, today)
+    margem_rede = extract_margem_bruta(gerencial_rede)
+    if margem_rede is not None:
+        print(f"  Margem Bruta rede: {margem_rede:.2f}%")
+    else:
+        print("  AVISO: margem_bruta não extraída — campo não será atualizado")
+
     print("Buscando breakdown por grupo de financeiras...")
     fin_groups_data = {}
     for grp in FINANCEIRAS_GROUPS:
@@ -558,6 +619,11 @@ def main():
             sellers_today  = sellers_today_by_store.get(sk, set()),
         )
         print(f"  {sk}: atualizado")
+
+    # Atualiza margem_mes da rede
+    if margem_rede is not None:
+        content = update_margem_rede(content, margem_rede)
+        print(f"  margem_mes atualizado: {margem_rede:.2f}%")
 
     # Atualiza o timestamp de build (força browsers a recarregar após deploy)
     from datetime import datetime as _dt

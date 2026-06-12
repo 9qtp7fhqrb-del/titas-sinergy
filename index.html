@@ -2493,6 +2493,11 @@
                     <h2 class="text-white font-bold text-sm">Usuários <span style="color:#10b981;">Cadastrados</span></h2>
                     <p class="text-gray-400 text-xs mt-0.5">Controle de acesso — exclusivo à Diretoria</p>
                 </div>
+                <button id="btn-rastros-aguiar" onclick="_abrirRastrosAguiar()" title="Rastros de Aguiar" class="hidden items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold transition-all"
+                        style="background:rgba(139,92,246,.12);border:1px solid rgba(139,92,246,.3);color:#a78bfa;">
+                    <i class="fas fa-shoe-prints text-[11px]"></i>
+                    <span class="hidden sm:inline">Rastros — Aguiar</span>
+                </button>
                 <button onclick="abrirModalCriarUsuario()" title="Criar novo usuário"
                         class="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold transition-all"
                         style="background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.3);color:#10b981;">
@@ -4850,6 +4855,9 @@ function switchTab(tab) {
         // Exibir painel confidencial de acessos de franqueados
         const _pnl = document.getElementById('painel-log-franqueados');
         if (_pnl) { _pnl.classList.remove('hidden'); _carregarLogFranqueados(); }
+        // Exibir botão rastros Aguiar só para Melo/Neto
+        const _btnRastros = document.getElementById('btn-rastros-aguiar');
+        if (_btnRastros) _btnRastros.classList.replace('hidden','flex');
     } } catch(e) { console.warn('renderUsuarios:', e); }
     try { if (tab === 'dicta')     _dictaInit();               } catch(e) { console.warn('dictaInit:', e); }
     try { if (tab === 'diario')    _diarioInit();              } catch(e) { console.warn('diarioInit:', e); }
@@ -4872,6 +4880,79 @@ function _registrarAcao(desc) {
     } catch(e) {}
     // Firestore via REST (não bloqueante)
     _usrUpdate(userKey(user.cargo, user.name), { ultimaAcao: now, ultimaAcaoDesc: desc }).catch(() => {});
+    // Rastro detalhado de Aguiar
+    _rastroAguiar(desc);
+}
+
+/* ════════════════════════════════════════════════════════
+   RASTREAMENTO AGUIAR (0003) — histórico completo de ações
+   Coleção: ts_rastros_aguiar  |  visível só para Melo/Neto
+════════════════════════════════════════════════════════ */
+function _isAguiar() {
+    return user && user.cargo === 'franqueado' && (user.name || '').toLowerCase().includes('aguiar');
+}
+async function _rastroAguiar(acao, detalhe) {
+    if (!_isAguiar()) return;
+    if (!window._acadFBOk || !window._acadDB) return;
+    try {
+        await window._acadDB.collection('ts_rastros_aguiar').add({
+            acao: acao || '',
+            detalhe: detalhe || '',
+            ts: new Date().toISOString(),
+            tsMs: Date.now(),
+            pagina: (typeof window !== 'undefined' ? window.location.pathname : '')
+        });
+    } catch(e) { console.warn('_rastroAguiar:', e.message); }
+}
+async function _carregarRastrosAguiar() {
+    const wrap = document.getElementById('rastros-aguiar-body');
+    if (!wrap) return;
+    if (!window._acadFBOk || !window._acadDB) {
+        wrap.innerHTML = '<p style="font-size:.75rem;color:#6b7280;">Firestore indisponível.</p>'; return;
+    }
+    wrap.innerHTML = '<p style="font-size:.75rem;color:#6b7280;font-style:italic;">Carregando…</p>';
+    try {
+        const snap = await window._acadDB.collection('ts_rastros_aguiar')
+            .orderBy('tsMs', 'desc').limit(100).get();
+        if (snap.empty) {
+            wrap.innerHTML = '<p style="font-size:.75rem;color:#6b7280;font-style:italic;">Nenhum rastro registrado ainda.</p>'; return;
+        }
+        const _icones = {
+            'Login':'fa-right-to-bracket', 'Acessou':'fa-arrow-right',
+            'Abriu':'fa-eye', 'Clicou':'fa-hand-pointer', 'Expandiu':'fa-chevron-down'
+        };
+        const rows = [];
+        snap.forEach(d => {
+            const r = d.data();
+            const dt = new Date(r.ts);
+            const data = dt.toLocaleDateString('pt-BR', {day:'2-digit',month:'2-digit',year:'2-digit'});
+            const hora = dt.toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit',second:'2-digit'});
+            const ico = Object.entries(_icones).find(([k]) => r.acao.includes(k))?.[1] || 'fa-circle-dot';
+            const detalheHtml = r.detalhe ? `<span style="color:#6b7280;font-size:.65rem;margin-left:.5rem;">· ${r.detalhe}</span>` : '';
+            rows.push(`<div style="display:flex;align-items:flex-start;gap:.75rem;padding:.55rem .75rem;border-bottom:1px solid rgba(255,255,255,.04);">
+                <div style="width:22px;height:22px;border-radius:6px;background:rgba(139,92,246,.12);border:1px solid rgba(139,92,246,.25);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:.05rem;">
+                    <i class="fas ${ico}" style="font-size:.55rem;color:#a78bfa;"></i>
+                </div>
+                <div style="flex:1;min-width:0;">
+                    <div style="font-size:.75rem;font-weight:600;color:#e5e7eb;line-height:1.3;">${r.acao}${detalheHtml}</div>
+                    <div style="font-size:.62rem;color:#4b5563;margin-top:.15rem;">${data} · ${hora}</div>
+                </div>
+            </div>`);
+        });
+        wrap.innerHTML = rows.join('');
+    } catch(e) {
+        wrap.innerHTML = `<p style="font-size:.75rem;color:#f87171;">Erro: ${e.message}</p>`;
+    }
+}
+function _abrirRastrosAguiar() {
+    const m = document.getElementById('modal-rastros-aguiar');
+    if (!m) return;
+    m.style.display = 'flex';
+    _carregarRastrosAguiar();
+}
+function _fecharRastrosAguiar() {
+    const m = document.getElementById('modal-rastros-aguiar');
+    if (m) m.style.display = 'none';
 }
 
 /* ══════════════════════════════════════════════════════════════════
@@ -5223,6 +5304,17 @@ const D360 = {
     },
     diasDecorridos: 8,    // atualizado automaticamente (dia 1 até hoje)
     diasMes: 30,          // junho tem 30 dias
+
+    // ── Margem Bruta Mensal · Fonte: Relatório Gerencial ERP CDC ──
+    margem_mes: 44.60,    // rede total · atualizar mensalmente com PDF Gerencial
+    margem_lojas: {       // por loja — atualizar com relatório por loja quando disponível
+        saomateus: 0, cariacica: 0, itabuna: 0, barreiras: 0, moxuara: 0,
+        teixeira:  0, laranjeiras: 0, serra: 0, linhares: 0, montserrat: 0, praiadacosta: 0
+    },
+    margem_subredes: {    // por subrede — calculado a partir das lojas quando disponível
+        t1: 0, t2: 0, t3: 0
+    },
+
     subredes: {
         t1: { nome:'Titãs 1', gestor:'Talysson', meta:1340000,
               lojas:['cariacica','itabuna','moxuara','praiadacosta'] },
@@ -5519,6 +5611,7 @@ function abrirSalaoFin() {
     modal.style.display = 'flex';
     window._salaoFinFilter = 'all';
     _renderSalaoFin();
+    try { _registrarAcao('Abriu Salão vs Financeiras'); } catch(e) {}
 }
 function fecharSalaoFin() {
     var modal = document.getElementById('modal-salao-fin');
@@ -6282,6 +6375,37 @@ function _renderHistAcessAbr26() {
     // Chave localStorage: v2 força re-fetch do Firestore (invalida cache antigo)
     window._360storageKey = '_360data_v2_' + ano + '_' + (mes + 1);
 })();
+
+/* ══════════════════════════════════════════════════
+   AUTO-ZERO FAT_DIA — zera o card às 23:59 de cada dia
+   Agenda um setTimeout para o próximo 23:59 e re-renderiza
+══════════════════════════════════════════════════ */
+function _zerarFatDia() {
+    Object.values(D360.lojas).forEach(function(l) {
+        l.fat_dia  = 0;
+        l.fin_dia  = 0;
+        l.top_dia  = [];
+        l.top_fin  = [];
+    });
+    try { atualizarTodasAbas(); } catch(e) {}
+    try {
+        var pill = document.querySelector('#d360-pills .pill-360.active');
+        render360(pill ? pill.dataset.tipo : 'geral', pill ? pill.dataset.val : '');
+    } catch(e) {}
+    console.log('[D360] fat_dia zerado automaticamente às 23:59');
+}
+
+function _agendarZerarFatDia() {
+    var now    = new Date();
+    var target = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 0, 0);
+    if (now >= target) target.setDate(target.getDate() + 1); // já passou das 23:59 → amanhã
+    var msAte = target.getTime() - now.getTime();
+    setTimeout(function() {
+        _zerarFatDia();
+        _agendarZerarFatDia(); // reagenda para o dia seguinte
+    }, msAte);
+}
+_agendarZerarFatDia();
 
 /* ── Aplica snapshot ao D360 (usado por restore local e Firestore) ── */
 function _aplicarSnap360(data) {
@@ -8185,15 +8309,33 @@ function render360(tipo, val) {
                <div style="text-align:right;font-size:.6rem;color:#6b7280;line-height:1.3;">${brl(antVal)}</div>
            </div>`
         : `<div style="font-size:.6rem;color:#4b5563;">vs ${antNome}: aguardando dados</div>`;
-    const _recSameAsAnt = (recVal && antVal && recVal === antVal && recNome === antNome);
-    const _recLine = _recSameAsAnt
-        ? ''
-        : recVal
-            ? `<div style="display:flex;justify-content:space-between;align-items:center;">
-                   <span style="font-size:.6rem;color:#9ca3af;">🏆 vs Recorde (${recNome})</span>
-                   <span style="font-size:.72rem;font-weight:700;color:${vsRecPct>=0?'#4ade80':'#f87171'};">${vsRecPct>=0?'▲ +':'▼ '}${Math.abs(vsRecPct)}%</span>
-               </div>`
-            : `<div style="font-size:.6rem;color:#4b5563;">🏆 vs Recorde: aguardando dados</div>`;
+    // ── Margem Mês ──────────────────────────────────────────────────────────
+    const _META_MARGEM = 45;
+    const _margValor = (() => {
+        if (tipo === 'geral') return _d.margem_mes || null;
+        if (tipo === 'sub')   return ((_d.margem_subredes || {})[val]) || null;
+        if (tipo === 'loja')  return ((_d.margem_lojas    || {})[val]) || null;
+        return null;
+    })();
+    const _margCor = !_margValor ? '#6b7280'
+        : _margValor >= _META_MARGEM        ? '#4ade80'   // ≥ 45% — verde
+        : _margValor >= _META_MARGEM - 1.5  ? '#fbbf24'   // 43,5–44,9% — âmbar
+        : '#f87171';                                        // < 43,5% — vermelho
+    const _margBgCor = !_margValor ? 'rgba(75,85,99,.12)'
+        : _margValor >= _META_MARGEM       ? 'rgba(74,222,128,.10)'
+        : _margValor >= _META_MARGEM - 1.5 ? 'rgba(251,191,36,.10)'
+        : 'rgba(248,113,113,.10)';
+    const _margBordCor = !_margValor ? 'rgba(75,85,99,.2)'
+        : _margValor >= _META_MARGEM       ? 'rgba(74,222,128,.25)'
+        : _margValor >= _META_MARGEM - 1.5 ? 'rgba(251,191,36,.25)'
+        : 'rgba(248,113,113,.25)';
+    const _margLine = `<div style="display:flex;justify-content:space-between;align-items:center;padding:.2rem .55rem;border-radius:.5rem;background:${_margBgCor};border:1px solid ${_margBordCor};margin-top:.05rem;">
+        <span style="font-size:.6rem;color:#9ca3af;font-weight:600;">📊 Margem Mês</span>
+        ${_margValor
+            ? `<span style="font-size:.72rem;font-weight:800;color:${_margCor};">${_margValor.toFixed(2).replace('.',',')}%<span style="font-size:.55rem;font-weight:500;color:${_margCor}88;margin-left:.3rem;">meta ${_META_MARGEM}%</span></span>`
+            : `<span style="font-size:.65rem;color:#4b5563;font-style:italic;">aguardando dados</span>`
+        }
+    </div>`;
 
     // Card Faturamento Total (com evolução incorporada)
     const _fatCard = (() => {
@@ -8214,7 +8356,8 @@ function render360(tipo, val) {
                 <div style="height:100%;width:${barPct}%;background:${BAR};border-radius:3px;transition:width .4s;"></div>
             </div>
             <p style="font-size:.6rem;color:#6b7280;margin:0;line-height:1.4;">${nota}</p>
-            ${_antLine}${_recLine}
+            ${_antLine}
+            ${_margLine}
         </div>`;
     })();
 
@@ -8410,7 +8553,7 @@ function render360(tipo, val) {
         const maxT = lojasArr[0].total;
         const allVend = [];
         lojasArr.forEach(l => l.top.forEach(v => {
-            const ex = allVend.find(x=>x.i===v.i);
+            const ex = allVend.find(x=>x.i===v.i && x.n===v.n);
             if (ex) {
                 ex.t+=v.t; ex.p+=v.p;
                 if (v.ds) ex.ds = (ex.ds||0) + v.ds;
@@ -22401,6 +22544,36 @@ window._dirDirUpdateTimestamp = _dirDirUpdateTimestamp;
     setTimeout(function() { _check(); setInterval(_check, 30000); }, 6000);
 })();
 </script>
+
+<!-- ══════ MODAL RASTROS AGUIAR ══════ -->
+<div id="modal-rastros-aguiar" onclick="if(event.target===this)_fecharRastrosAguiar()"
+     style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.85);align-items:center;justify-content:center;padding:.75rem;">
+  <div style="background:#0d1117;border:1px solid rgba(139,92,246,.35);border-radius:1.25rem;width:100%;max-width:500px;max-height:88vh;display:flex;flex-direction:column;box-shadow:0 24px 64px rgba(0,0,0,.8);">
+    <!-- Header -->
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:1rem 1.25rem .85rem;border-bottom:1px solid rgba(139,92,246,.15);flex-shrink:0;">
+      <div style="display:flex;align-items:center;gap:.65rem;">
+        <div style="width:34px;height:34px;border-radius:10px;background:rgba(139,92,246,.15);border:1px solid rgba(139,92,246,.3);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <i class="fas fa-shoe-prints" style="color:#a78bfa;font-size:.85rem;"></i>
+        </div>
+        <div>
+          <div style="font-size:.85rem;font-weight:800;color:#f9fafb;line-height:1.2;">Rastros — Aguiar</div>
+          <div style="font-size:.6rem;color:#6b7280;">Histórico completo de navegação · 0003</div>
+        </div>
+        <span style="font-size:.6rem;padding:.2rem .55rem;border-radius:99px;font-weight:700;background:rgba(139,92,246,.15);color:#a78bfa;border:1px solid rgba(139,92,246,.3);margin-left:.25rem;">CONFIDENCIAL</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:.5rem;">
+        <button onclick="_carregarRastrosAguiar()" style="font-size:.7rem;color:#6b7280;background:transparent;border:none;cursor:pointer;padding:.3rem .5rem;border-radius:.4rem;" title="Atualizar">
+          <i class="fas fa-rotate-right"></i>
+        </button>
+        <button onclick="_fecharRastrosAguiar()" style="color:#6b7280;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:.5rem;padding:.3rem .65rem;cursor:pointer;font-size:1rem;line-height:1;">✕</button>
+      </div>
+    </div>
+    <!-- Body -->
+    <div id="rastros-aguiar-body" style="overflow-y:auto;flex:1;padding:.5rem 0;">
+      <p style="font-size:.75rem;color:#6b7280;padding:1rem;font-style:italic;">Carregando…</p>
+    </div>
+  </div>
+</div>
 
 </body>
 </html>

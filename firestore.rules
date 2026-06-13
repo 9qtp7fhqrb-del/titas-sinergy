@@ -36,5 +36,9 @@ service cloud.firestore {
     match /ts_rastros_aguiar/{docId} {
       allow read, write: if true;
     }
+
+    match /ts_d360_config/{docId} {
+      allow read, write: if true;
+    }
   }
 }

@@ -799,6 +799,16 @@ def main():
 
     print(f"\nindex.html salvo com sucesso! (build: {build_ts})")
 
+    # Gravar total do fat_dia para o check_threshold do próximo run
+    fat_dia_total = sum(
+        today_sellers_proc.get(sk, {}).get('total', 0) for sk in STORE_MAP.values()
+    )
+    total_out = os.environ.get('UPDATE_TOTAL_OUTPUT', '')
+    if total_out:
+        with open(total_out, 'w') as f:
+            f.write(str(round(fat_dia_total, 2)))
+        print(f"Total fat_dia salvo: R$ {fat_dia_total:,.2f}")
+
 if __name__ == '__main__':
     main()
 

@@ -1003,6 +1003,11 @@
                      style="background:rgba(212,175,55,.1);border:1px solid rgba(212,175,55,.28);">
                     <i id="nav-avatar-icon" class="fas fa-user text-xs" style="color:#D4AF37;"></i>
                 </div>
+                <button id="btn-d360-update" onclick="triggerD360Update()" title="Atualizar vendas agora"
+                        class="hidden w-8 h-8 rounded-full flex items-center justify-center transition-all flex-shrink-0"
+                        style="color:#D4AF37;background:rgba(212,175,55,.08);border:1px solid rgba(212,175,55,.25);">
+                    <i id="btn-d360-update-icon" class="fas fa-rotate text-xs"></i>
+                </button>
                 <button onclick="doLogout()" title="Sair"
                         class="w-8 h-8 rounded-full flex items-center justify-center text-gray-500 hover:text-red-400 hover:bg-red-900/20 transition-all flex-shrink-0">
                     <i class="fas fa-right-from-bracket text-xs"></i>
@@ -3224,6 +3229,48 @@ function _dictaIsMelo() {
     return user && user.cargo === 'diretoria' && user.name && user.name.toLowerCase().includes('melo');
 }
 
+async function triggerD360Update() {
+    const btn  = document.getElementById('btn-d360-update');
+    const icon = document.getElementById('btn-d360-update-icon');
+    if (!btn || btn.disabled) return;
+
+    btn.disabled = true;
+    icon.className = 'fas fa-circle-notch fa-spin text-xs';
+
+    try {
+        if (!window._acadFBOk || !window._acadDB) throw new Error('Firestore não disponível');
+
+        await window._acadDB.collection('ts_d360_config').doc('manual_update_request').set({
+            forced:      true,
+            ts:          firebase.firestore.FieldValue.serverTimestamp(),
+            requestedBy: (user && user.name) || 'melo',
+        });
+
+        icon.className = 'fas fa-check text-xs';
+        btn.style.color = '#34d399';
+        btn.style.borderColor = 'rgba(52,211,153,.4)';
+        btn.title = 'Solicitação enviada — será atualizado no próximo ciclo (até 30 min)';
+
+        setTimeout(() => {
+            icon.className = 'fas fa-rotate text-xs';
+            btn.style.color = '#D4AF37';
+            btn.style.borderColor = 'rgba(212,175,55,.25)';
+            btn.title = 'Atualizar vendas agora';
+            btn.disabled = false;
+        }, 5000);
+
+    } catch (e) {
+        console.error('triggerD360Update:', e);
+        icon.className = 'fas fa-xmark text-xs';
+        btn.style.color = '#f87171';
+        setTimeout(() => {
+            icon.className = 'fas fa-rotate text-xs';
+            btn.style.color = '#D4AF37';
+            btn.disabled = false;
+        }, 3000);
+    }
+}
+
 window._dictaInit = function() {
     const isMelo = _dictaIsMelo();
     document.getElementById('dicta-locked').classList.toggle('hidden',  isMelo);
@@ -4505,6 +4552,7 @@ function openDash() {
     const flowAllowed = hasFlowAccess(user.cargo);
     const allowed360      = has360Access(user.cargo);
     const allowedUsuarios = ['melo', 'neto'].includes((user.name || '').toLowerCase().split(' ')[0]);
+    if (_dictaIsMelo()) _showBtn('btn-d360-update');
 
     const _showBtn = (id) => { const el = document.getElementById(id); if (el) el.classList.remove('hidden'); };
     const _hideEl  = (id) => { const el = document.getElementById(id); if (el) el.classList.add('hidden'); };

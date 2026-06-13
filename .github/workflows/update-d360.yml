@@ -42,13 +42,43 @@ jobs:
             | python3 -c "import json,sys; d=json.load(sys.stdin); print(d.get('value',''))" 2>/dev/null || echo "")
           echo "token=$TOKEN" >> $GITHUB_OUTPUT
 
+      - name: Carregar estado do threshold
+        id: load_threshold
+        run: |
+          TOTAL=$(curl -s \
+            -H "Authorization: token ${{ secrets.GH_PAT }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            "https://api.github.com/repos/${{ github.repository }}/actions/variables/LAST_UPDATE_TOTAL" \
+            | python3 -c "import json,sys; d=json.load(sys.stdin); print(d.get('value','0'))" 2>/dev/null || echo "0")
+          TS=$(curl -s \
+            -H "Authorization: token ${{ secrets.GH_PAT }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            "https://api.github.com/repos/${{ github.repository }}/actions/variables/LAST_UPDATE_TS" \
+            | python3 -c "import json,sys; d=json.load(sys.stdin); print(d.get('value',''))" 2>/dev/null || echo "")
+          echo "total=$TOTAL" >> $GITHUB_OUTPUT
+          echo "ts=$TS"       >> $GITHUB_OUTPUT
+
+      - name: Verificar threshold de atualização
+        id: threshold
+        env:
+          ERP_LOGIN: ${{ secrets.ERP_LOGIN }}
+          ERP_PASSWORD: ${{ secrets.ERP_PASSWORD }}
+          ERP_TOKEN_CACHE: ${{ steps.load_token.outputs.token }}
+          ERP_TOKEN_OUTPUT: /tmp/erp_new_token.txt
+          LAST_UPDATE_TOTAL: ${{ steps.load_threshold.outputs.total }}
+          LAST_UPDATE_TS: ${{ steps.load_threshold.outputs.ts }}
+          IS_MANUAL: ${{ github.event_name == 'workflow_dispatch' }}
+        run: python scripts/check_threshold.py
+
       - name: Rodar script de atualização
+        if: steps.threshold.outputs.should_update == 'true'
         env:
           ERP_LOGIN: ${{ secrets.ERP_LOGIN }}
           ERP_PASSWORD: ${{ secrets.ERP_PASSWORD }}
           ERP_TOKEN_CACHE: ${{ steps.load_token.outputs.token }}
           ERP_TOKEN_OUTPUT: /tmp/erp_new_token.txt
           INDEX_HTML: index.html
+          UPDATE_TOTAL_OUTPUT: /tmp/update_total.txt
         run: python scripts/update_d360.py
 
       - name: Salvar token no cache (se renovado)
@@ -58,12 +88,13 @@ jobs:
         run: python scripts/save_erp_token.py
 
       - name: Verificar se houve alterações
+        if: steps.threshold.outputs.should_update == 'true'
         id: diff
         run: |
           git diff --quiet index.html && echo "changed=false" >> $GITHUB_OUTPUT || echo "changed=true" >> $GITHUB_OUTPUT
 
       - name: Commit das alterações
-        if: steps.diff.outputs.changed == 'true'
+        if: steps.threshold.outputs.should_update == 'true' && steps.diff.outputs.changed == 'true'
         run: |
           git config user.name "D360-Bot"
           git config user.email "bot@titas-sinergy.web.app"
@@ -71,23 +102,30 @@ jobs:
           git commit -m "data: vendas $(TZ=America/Sao_Paulo date +'%d/%m/%Y %H:%M')"
 
       - name: Instalar Firebase CLI
-        if: steps.diff.outputs.changed == 'true'
+        if: steps.threshold.outputs.should_update == 'true' && steps.diff.outputs.changed == 'true'
         run: npm install -g firebase-tools --silent
 
       - name: Limpar versões antigas do Firebase Hosting
-        if: steps.diff.outputs.changed == 'true'
+        if: steps.threshold.outputs.should_update == 'true' && steps.diff.outputs.changed == 'true'
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
         run: python scripts/cleanup_firebase_versions.py
 
       - name: Deploy Firebase Hosting
-        if: steps.diff.outputs.changed == 'true'
+        if: steps.threshold.outputs.should_update == 'true' && steps.diff.outputs.changed == 'true'
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
         run: firebase deploy --only hosting --token "$FIREBASE_TOKEN" --non-interactive
 
+      - name: Salvar total do fat_dia (threshold próximo run)
+        if: steps.threshold.outputs.should_update == 'true' && steps.diff.outputs.changed == 'true'
+        env:
+          GH_PAT: ${{ secrets.GH_PAT }}
+          UPDATE_TOTAL_OUTPUT: /tmp/update_total.txt
+        run: python scripts/save_update_total.py
+
       - name: Push para GitHub
-        if: steps.diff.outputs.changed == 'true'
+        if: steps.threshold.outputs.should_update == 'true' && steps.diff.outputs.changed == 'true'
         run: |
           git pull --rebase origin main
           git push

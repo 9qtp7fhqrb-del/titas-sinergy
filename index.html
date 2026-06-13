@@ -3345,13 +3345,15 @@ async function _atualizarVendasDireto() {
         const storeName = (c.store_name || '').toUpperCase().trim();
         const storeKey  = STORE_MAP[storeName];
         if (!storeKey) continue;
-        const val = parseFloat(c.total_sold || 0);
+        const val  = parseFloat(c.total_sold || 0);
+        const aVal = parseFloat((c.group_totals || {})['ACESSÓRIOS'] || 0);
         if (val <= 0) continue;
-        if (!byStore[storeKey]) byStore[storeKey] = { total: 0, top: [] };
+        if (!byStore[storeKey]) byStore[storeKey] = { total: 0, acess: 0, top: [] };
         const name   = (c.collaborator_name || '').trim();
         const parts  = name.split(/\s+/).filter(Boolean);
         const initials = parts.length >= 2 ? (parts[0][0] + parts[1][0]).toUpperCase() : name.slice(0, 2).toUpperCase();
-        byStore[storeKey].total = Math.round((byStore[storeKey].total + val) * 100) / 100;
+        byStore[storeKey].total = Math.round((byStore[storeKey].total + val)  * 100) / 100;
+        byStore[storeKey].acess = Math.round((byStore[storeKey].acess + aVal) * 100) / 100;
         byStore[storeKey].top.push({ n: name, i: initials, t: val });
     }
     for (const s of Object.values(byStore)) s.top.sort((a, b) => b.t - a.t);
@@ -3360,8 +3362,9 @@ async function _atualizarVendasDireto() {
     const _d = _360D();
     for (const [storeKey, storeData] of Object.entries(byStore)) {
         if (!_d.lojas[storeKey]) continue;
-        _d.lojas[storeKey].fat_dia = storeData.total;
-        _d.lojas[storeKey].top_dia = storeData.top.slice(0, 10);
+        _d.lojas[storeKey].fat_dia  = storeData.total;
+        _d.lojas[storeKey].acess_dia = storeData.acess;
+        _d.lojas[storeKey].top_dia  = storeData.top.slice(0, 10);
     }
     _d.diasDecorridos = Math.min(new Date().getDate(), _d.diasMes);
 
@@ -6624,6 +6627,7 @@ function _renderHistAcessAbr26() {
 function _zerarFatDia() {
     Object.values(D360.lojas).forEach(function(l) {
         l.fat_dia  = 0;
+        l.acess_dia = 0;
         l.fin_dia  = 0;
         l.top_dia  = [];
         l.top_fin  = [];
@@ -6685,6 +6689,7 @@ function save360ToStorage() {
             agend: v.agend, agendCount: v.agendCount,
             agendFat: v.agendFat || 0,
             fat_dia: v.fat_dia || 0,
+            acess_dia: v.acess_dia || 0,
             fin_dia: v.fin_dia || 0,
             top_dia: JSON.parse(JSON.stringify(v.top_dia || [])),
             top: JSON.parse(JSON.stringify(v.top || [])),
@@ -8645,6 +8650,9 @@ function render360(tipo, val) {
         const _subTxt   = _temDados
             ? `${_lojasDia.length} loja${_lojasDia.length!==1?'s':''} com dados · clique para detalhar`
             : 'Sem vendas registradas para hoje';
+        // Acessórios do dia
+        let _totalAcess = 0;
+        scope.forEach(function(l) { _totalAcess += l.acess_dia || 0; });
         // Margem do dia — média ponderada das subredes pelo fat_dia de cada loja
         const _META_MARGEM_DIA = 45;
         const _calcMargemDia = (lojasFiltro) => {
@@ -8685,6 +8693,13 @@ function render360(tipo, val) {
             </div>
             <p style="font-size:.6rem;color:#6b7280;margin:0;line-height:1.4;">${_subTxt}</p>
             ${_mDiaLine}
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:.2rem .55rem;border-radius:.5rem;background:rgba(16,185,129,.07);border:1px solid rgba(16,185,129,.2);margin-top:.05rem;">
+                <span style="font-size:.6rem;color:#9ca3af;font-weight:600;">🏷️ Acessórios Dia</span>
+                ${_totalAcess > 0
+                    ? `<span style="font-size:.72rem;font-weight:800;color:#10b981;">${brl(_totalAcess)}</span>`
+                    : `<span style="font-size:.65rem;color:#4b5563;font-style:italic;">sem dados</span>`
+                }
+            </div>
         </div>`;
     })();
 

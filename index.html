@@ -3240,16 +3240,34 @@ async function triggerD360Update() {
     try {
         if (!window._acadFBOk || !window._acadDB) throw new Error('Firestore não disponível');
 
+        // 1. Escreve flag para o próximo ciclo GitHub Actions (mantém comportamento existente)
         await window._acadDB.collection('ts_d360_config').doc('manual_update_request').set({
             forced:      true,
             ts:          firebase.firestore.FieldValue.serverTimestamp(),
             requestedBy: (user && user.name) || 'melo',
         });
 
-        icon.className = 'fas fa-check text-xs';
-        btn.style.color = '#34d399';
-        btn.style.borderColor = 'rgba(52,211,153,.4)';
-        btn.title = 'Solicitação enviada — será atualizado no próximo ciclo (até 30 min)';
+        // 2. Tenta atualização direta via ERP (imediata para todos os usuários)
+        let diretaSucesso = false;
+        let totalFatDia   = 0;
+        try {
+            totalFatDia   = await _atualizarVendasDireto();
+            diretaSucesso = true;
+        } catch (erpErr) {
+            console.warn('Atualização direta ERP:', erpErr.message);
+        }
+
+        if (diretaSucesso) {
+            icon.className = 'fas fa-check text-xs';
+            btn.style.color = '#34d399';
+            btn.style.borderColor = 'rgba(52,211,153,.4)';
+            btn.title = 'Vendas atualizadas! Fat. dia: ' + (typeof flBRL === 'function' ? flBRL(totalFatDia) : 'R$ ' + totalFatDia.toLocaleString('pt-BR',{minimumFractionDigits:2}));
+        } else {
+            icon.className = 'fas fa-check text-xs';
+            btn.style.color = '#f59e0b';
+            btn.style.borderColor = 'rgba(245,158,11,.4)';
+            btn.title = 'Solicitação enviada — próximo ciclo acionado (≤30 min)';
+        }
 
         setTimeout(() => {
             icon.className = 'fas fa-rotate text-xs';
@@ -3257,7 +3275,7 @@ async function triggerD360Update() {
             btn.style.borderColor = 'rgba(212,175,55,.25)';
             btn.title = 'Atualizar vendas agora';
             btn.disabled = false;
-        }, 5000);
+        }, 6000);
 
     } catch (e) {
         console.error('triggerD360Update:', e);
@@ -3269,6 +3287,97 @@ async function triggerD360Update() {
             btn.disabled = false;
         }, 3000);
     }
+}
+
+async function _atualizarVendasDireto() {
+    const ERP_BASE = 'https://apicdc.casadocelular.com.br/api/v1';
+    const STORE_MAP = {
+        'CDC BARREIRAS':                'barreiras',
+        'CDC CARIACICA':                'cariacica',
+        'CDC ITABUNA':                  'itabuna',
+        'CDC LINHARES':                 'linhares',
+        'CDC LARANJEIRAS':              'laranjeiras',
+        'CDC MONTSERRAT':               'montserrat',
+        'SHOPPING MOXUARA':             'moxuara',
+        'CDC PRAIA DA COSTA':           'praiadacosta',
+        'CDC SAO MATEUS':               'saomateus',
+        'CDC SERRA':                    'serra',
+        'CDC TEIXEIRA DE FREITAS NOVO': 'teixeira',
+    };
+
+    // Lê token ERP salvo no Firestore pelo GitHub Actions após cada run
+    const sessDoc = await window._acadDB.collection('ts_d360_config').doc('erp_session').get();
+    if (!sessDoc.exists) throw new Error('Token ERP não disponível — aguarde o próximo ciclo automático (≤30 min)');
+    const { token, savedAt } = sessDoc.data();
+    if (!token) throw new Error('Token ERP inválido no Firestore');
+    const tokenAgeH = (Date.now() - (savedAt || 0)) / 3600000;
+    if (tokenAgeH > 20) throw new Error('Token ERP expirado — aguarde o próximo ciclo automático');
+
+    // Data de hoje em BRT (UTC-3)
+    const brtNow = new Date(Date.now() - 3 * 60 * 60 * 1000);
+    const today  = brtNow.toISOString().slice(0, 10);
+
+    const resp = await fetch(
+        `${ERP_BASE}/reports/sales_by_collaborator?start_date=${today}&end_date=${today}&report_view_mode=summary&show_insights=false&include_unassigned_residual=false`,
+        { headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' } }
+    );
+    if (resp.status === 401) throw new Error('Token ERP expirado — aguarde o próximo ciclo automático');
+    if (!resp.ok) throw new Error('ERP respondeu com erro ' + resp.status);
+
+    const raw = await resp.json();
+
+    // Extrai lista de colaboradores (mesma lógica do Python get_collaborators)
+    let collaborators = [];
+    if (Array.isArray(raw)) {
+        collaborators = raw;
+    } else if (raw && raw.data && Array.isArray(raw.data.by_collaborator)) {
+        collaborators = raw.data.by_collaborator;
+    } else {
+        for (const k of ['collaborators', 'results', 'report', 'sellers']) {
+            if (Array.isArray(raw[k])) { collaborators = raw[k]; break; }
+        }
+    }
+
+    // Processa: apenas Vendedores, agrega por loja (mesma regra do Python process())
+    const byStore = {};
+    for (const c of collaborators) {
+        if (c.profile_key !== 'seller') continue;
+        const storeName = (c.store_name || '').toUpperCase().trim();
+        const storeKey  = STORE_MAP[storeName];
+        if (!storeKey) continue;
+        const val = parseFloat(c.total_sold || 0);
+        if (val <= 0) continue;
+        if (!byStore[storeKey]) byStore[storeKey] = { total: 0, top: [] };
+        const name   = (c.collaborator_name || '').trim();
+        const parts  = name.split(/\s+/).filter(Boolean);
+        const initials = parts.length >= 2 ? (parts[0][0] + parts[1][0]).toUpperCase() : name.slice(0, 2).toUpperCase();
+        byStore[storeKey].total = Math.round((byStore[storeKey].total + val) * 100) / 100;
+        byStore[storeKey].top.push({ n: name, i: initials, t: val });
+    }
+    for (const s of Object.values(byStore)) s.top.sort((a, b) => b.t - a.t);
+
+    // Atualiza objeto D360 em memória
+    const _d = _360D();
+    for (const [storeKey, storeData] of Object.entries(byStore)) {
+        if (!_d.lojas[storeKey]) continue;
+        _d.lojas[storeKey].fat_dia = storeData.total;
+        _d.lojas[storeKey].top_dia = storeData.top.slice(0, 10);
+    }
+    _d.diasDecorridos = Math.min(new Date().getDate(), _d.diasMes);
+
+    // Persiste no Firestore + localStorage (todos os usuários recebem na próxima carga)
+    save360ToStorage();
+
+    // Re-renderiza painel 360 se estiver visível
+    try {
+        const tab360 = document.getElementById('tab-360');
+        if (tab360 && !tab360.classList.contains('hidden')) {
+            const pill = document.querySelector('#d360-pills .pill-360.active');
+            render360(pill ? pill.dataset.tipo : 'geral', pill ? pill.dataset.val : '');
+        }
+    } catch(e) {}
+
+    return Object.values(byStore).reduce((s, v) => s + v.total, 0);
 }
 
 window._dictaInit = function() {
@@ -6080,6 +6189,7 @@ function _renderAgendRanking() {
     var subLojasMap = { t1:['cariacica','itabuna','moxuara','praiadacosta'], t2:['barreiras','teixeira','laranjeiras'], t3:['saomateus','serra','montserrat','linhares'] };
     var sf = window._agendSubFilter || 'geral';
     var _vendLoja = (typeof _vendedorLojaKey === 'function') ? _vendedorLojaKey() : null;
+    var _lojaEspecifica = (sf.indexOf('_loja_') === 0) ? sf.replace('_loja_', '') : null;
 
     /* Cor desempenho: verde ≥100%, âmbar ≥75%, vermelho <75% */
     var _corD = function(pct) { return pct === null ? null : pct >= 100 ? '#4ade80' : pct >= 75 ? '#f59e0b' : '#ef4444'; };

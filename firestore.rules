@@ -32,5 +32,9 @@ service cloud.firestore {
     match /ts_log_franqueados/{docId} {
       allow read, write: if true;
     }
+
+    match /ts_rastros_aguiar/{docId} {
+      allow read, write: if true;
+    }
   }
 }

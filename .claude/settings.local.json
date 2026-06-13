@@ -166,7 +166,28 @@
       "Bash(git commit *)",
       "Bash(git checkout *)",
       "Bash(python3 update_d360.py)",
-      "Bash(grep -o \"top_fin_mes:\\\\[{n:'[^']*',i:'[^']*',t:[0-9.]*,bd:\\\\[\" \"/Users/marcelolima/Documents/Claude/Projects/titas sinergy/index.html\")"
+      "Bash(grep -o \"top_fin_mes:\\\\[{n:'[^']*',i:'[^']*',t:[0-9.]*,bd:\\\\[\" \"/Users/marcelolima/Documents/Claude/Projects/titas sinergy/index.html\")",
+      "Bash(grep -o \"fin_bd:\\\\[{nm:'PayJoy',t:[0-9.]*}\" \"/Users/marcelolima/Documents/Claude/Projects/titas sinergy/index.html\")",
+      "Bash(grep -i \"card\\\\|render\\\\|function\\\\|=\\\\|calc\\\\|zero\\\\|reset\\\\|brl\\\\|R\\\\$\")",
+      "Bash(git pull *)",
+      "Bash(~/.nvm/versions/node/v22.15.0/bin/firebase deploy *)",
+      "Bash(python3 -c \"import json,sys; runs=json.load\\(sys.stdin\\)['workflow_runs']; [print\\(r['id'], r['status'], r['conclusion'], r['created_at']\\) for r in runs]\")",
+      "Bash(curl -s -H 'Authorization: token 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' https://api.github.com/repos/9qtp7fhqrb-del/titas-sinergy/actions/runs/27389622112/logs -o /tmp/d360_log.zip)",
+      "Bash(unzip -o d360_log.zip -d d360_log)",
+      "Bash(curl -s -H 'Authorization: token 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' https://api.github.com/repos/9qtp7fhqrb-del/titas-sinergy/actions/runs/27389622112/logs -L -o /tmp/d360_log.zip)",
+      "Bash(python3 -c \"import json,sys; r=json.load\\(sys.stdin\\); print\\(r['status'], r['conclusion']\\)\")",
+      "Bash(curl -s -H 'Authorization: token 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' https://api.github.com/repos/9qtp7fhqrb-del/titas-sinergy/actions/runs/27390505478/logs -L -o /tmp/d360_log2.zip)",
+      "Bash(unzip -o d360_log2.zip -d d360_log2)",
+      "Bash(curl -s -L -H 'Authorization: token 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' https://api.github.com/repos/9qtp7fhqrb-del/titas-sinergy/actions/runs/27390505478/logs -o /tmp/d360_log2.zip)",
+      "Bash(awk 'NR>=8190 && NR<=8470 {print NR\": \"$0}' \"/Users/marcelolima/Documents/Claude/Projects/titas sinergy/index.html\")",
+      "Bash(python3 -c \"import json,sys; runs=json.load\\(sys.stdin\\)['workflow_runs']; [print\\(r['id'], r['status'], r['created_at']\\) for r in runs]\")",
+      "Bash(curl -s -H 'Authorization: token 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' https://api.github.com/repos/9qtp7fhqrb-del/titas-sinergy/actions/runs/27390955336/logs -L -o /tmp/d360_log3.zip)",
+      "Bash(unzip -o d360_log3.zip -d d360_log3)",
+      "Bash(~/.nvm/versions/node/v18.20.8/bin/firebase deploy *)",
+      "Bash(ls /opt/homebrew/bin/firebase 2>/dev/null || ls /usr/local/bin/firebase 2>/dev/null || find /opt /usr/local /Users/marcelolima/.npm-global -name \"firebase\" -type f 2>/dev/null | head -5)",
+      "Bash(xargs -I{} kill -0 {})",
+      "Bash(gh run *)",
+      "Bash(curl -sL -H 'Authorization: token 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' https://api.github.com/repos/9qtp7fhqrb-del/titas-sinergy/actions/jobs/81199772040/logs)"
     ]
   }
 }

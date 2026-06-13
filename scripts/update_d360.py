@@ -16,8 +16,10 @@ except ImportError:
     os.system(f"{sys.executable} -m pip install requests -q")
     import requests
 
-ERP_BASE = 'https://apicdc.casadocelular.com.br/api/v1'
-INDEX_HTML = os.environ.get('INDEX_HTML', 'index.html')
+ERP_BASE      = 'https://apicdc.casadocelular.com.br/api/v1'
+INDEX_HTML    = os.environ.get('INDEX_HTML', 'index.html')
+FIREBASE_KEY  = 'AIzaSyDFrLshzqf8Ct9U1SkM9MSveDNPuy_2--8'
+FIREBASE_PROJ = 'titas-sinergy'
 
 FINANCEIRAS_GROUPS = [
     {'nm': 'PayJoy',    'ids': [8]},
@@ -102,6 +104,26 @@ def get_or_refresh_token(user, password):
         print("Sem token cacheado, fazendo login...")
     token = erp_login(user, password)
     return token, True   # (token, is_new)
+
+def save_erp_token_to_firestore(token):
+    """Salva o token ERP no Firestore para uso direto pelo browser (botão de atualização)."""
+    try:
+        import time as _time
+        saved_at = int(_time.time() * 1000)  # ms desde epoch
+        url = (f'https://firestore.googleapis.com/v1/projects/{FIREBASE_PROJ}'
+               f'/databases/(default)/documents/ts_d360_config/erp_session?key={FIREBASE_KEY}')
+        payload = {'fields': {
+            'token':   {'stringValue': token},
+            'savedAt': {'integerValue': str(saved_at)},
+        }}
+        r = requests.patch(url, json=payload, timeout=15)
+        if r.status_code in (200, 201):
+            print('  Token ERP salvo no Firestore (disponível para atualização direta pelo browser)')
+        else:
+            print(f'  AVISO: erro ao salvar token ERP no Firestore: {r.status_code}')
+    except Exception as e:
+        print(f'  AVISO: erro ao salvar token ERP no Firestore: {e}')
+
 
 def fetch_sales(token, start, end, channel_id=None, retries=4, wait=15):
     import time
@@ -609,6 +631,9 @@ def main():
 
     token, is_new_token = get_or_refresh_token(erp_user, erp_password)
     print("Token OK")
+
+    # Salva token no Firestore para uso direto pelo browser (botão de atualização imediata)
+    save_erp_token_to_firestore(token)
 
     # Se gerou token novo, salva para o workflow persistir no cache
     if is_new_token:

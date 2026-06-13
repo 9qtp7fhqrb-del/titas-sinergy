@@ -479,7 +479,7 @@ def fmt_top(top_list):
     items = [f"{{n:'{e['n']}',i:'{e['i']}',t:{e['t']}}}" for e in top_list]
     return '[' + ', '.join(items) + ']'
 
-def update_store(content, store_key, total, acess_total, agend_total, agend_top, fat_dia=0, top_dia=None, acess_dia=0, fin_dia=0, top_fin=None, fin_mes=0, top_fin_mes=None, fin_bd=None, sellers_top=None, sellers_today=None):
+def update_store(content, store_key, total, acess_total, agend_total, agend_top, fat_dia=0, top_dia=None, acess_dia=0, acess_dia_top=None, fin_dia=0, top_fin=None, fin_mes=0, top_fin_mes=None, fin_bd=None, sellers_top=None, sellers_today=None):
     start, end = find_section(content, store_key)
     if start is None:
         print(f"  AVISO: seção '{store_key}' não encontrada no HTML")
@@ -496,11 +496,19 @@ def update_store(content, store_key, total, acess_total, agend_total, agend_top,
     # 2b. fat_dia (faturamento do dia vigente)
     sec = re.sub(r'\bfat_dia:\d+(?:\.\d+)?', f'fat_dia:{fat_dia}', sec, count=1)
 
-    # 2b2. acess_dia (acessórios do dia)
+    # 2b2. acess_dia (acessórios do dia — total)
     if re.search(r'\bacess_dia:\d+(?:\.\d+)?', sec):
         sec = re.sub(r'\bacess_dia:\d+(?:\.\d+)?', f'acess_dia:{acess_dia}', sec, count=1)
     else:
         sec = re.sub(r'(\bfat_dia:\d+(?:\.\d+)?)', f'\\g<1>, acess_dia:{acess_dia}', sec, count=1)
+
+    # 2b3. acess_dia_top (ranking vendedores acessórios do dia)
+    if acess_dia_top is not None:
+        top_str = fmt_top(acess_dia_top)
+        if re.search(r'acess_dia_top:\[', sec):
+            sec = re.sub(r'acess_dia_top:\[[^\]]*\]', f'acess_dia_top:{top_str}', sec, count=1)
+        else:
+            sec = re.sub(r'(\bacess_dia:\d+(?:\.\d+)?)', f'\\g<1>, acess_dia_top:{top_str}', sec, count=1)
 
     # 2c. top_dia (vendedores do dia)
     if top_dia is not None:
@@ -791,6 +799,7 @@ def main():
             fat_dia        = today_sellers_proc.get(sk, {}).get('total', 0),
             top_dia        = today_sellers_proc.get(sk, {}).get('top', []),
             acess_dia      = acess_dia.get(sk, {}).get('total', 0),
+            acess_dia_top  = acess_dia.get(sk, {}).get('top', []),
             fin_dia        = fin.get(sk, {}).get('total', 0),
             top_fin        = fin.get(sk, {}).get('top', []),
             fin_mes        = fin_acum.get(sk, {}).get('total', 0),

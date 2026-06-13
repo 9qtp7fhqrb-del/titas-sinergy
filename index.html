@@ -3348,23 +3348,28 @@ async function _atualizarVendasDireto() {
         const val  = parseFloat(c.total_sold || 0);
         const aVal = parseFloat((c.group_totals || {})['ACESSÓRIOS'] || 0);
         if (val <= 0) continue;
-        if (!byStore[storeKey]) byStore[storeKey] = { total: 0, acess: 0, top: [] };
+        if (!byStore[storeKey]) byStore[storeKey] = { total: 0, acess: 0, top: [], acessTop: [] };
         const name   = (c.collaborator_name || '').trim();
         const parts  = name.split(/\s+/).filter(Boolean);
         const initials = parts.length >= 2 ? (parts[0][0] + parts[1][0]).toUpperCase() : name.slice(0, 2).toUpperCase();
         byStore[storeKey].total = Math.round((byStore[storeKey].total + val)  * 100) / 100;
         byStore[storeKey].acess = Math.round((byStore[storeKey].acess + aVal) * 100) / 100;
         byStore[storeKey].top.push({ n: name, i: initials, t: val });
+        if (aVal > 0) byStore[storeKey].acessTop.push({ n: name, i: initials, t: aVal });
     }
-    for (const s of Object.values(byStore)) s.top.sort((a, b) => b.t - a.t);
+    for (const s of Object.values(byStore)) {
+        s.top.sort((a, b) => b.t - a.t);
+        s.acessTop.sort((a, b) => b.t - a.t);
+    }
 
     // Atualiza objeto D360 em memória
     const _d = _360D();
     for (const [storeKey, storeData] of Object.entries(byStore)) {
         if (!_d.lojas[storeKey]) continue;
-        _d.lojas[storeKey].fat_dia  = storeData.total;
-        _d.lojas[storeKey].acess_dia = storeData.acess;
-        _d.lojas[storeKey].top_dia  = storeData.top.slice(0, 10);
+        _d.lojas[storeKey].fat_dia      = storeData.total;
+        _d.lojas[storeKey].acess_dia    = storeData.acess;
+        _d.lojas[storeKey].acess_dia_top = storeData.acessTop;
+        _d.lojas[storeKey].top_dia      = storeData.top.slice(0, 10);
     }
     _d.diasDecorridos = Math.min(new Date().getDate(), _d.diasMes);
 
@@ -6076,15 +6081,20 @@ function _renderFatDiario() {
         })
         .map(function(e) {
             var k = e[0]; var l = e[1];
-            var fat = l.fat_dia || 0;
+            var fat  = l.fat_dia  || 0;
+            var acess = l.acess_dia || 0;
             var top  = (l.top_dia || []).filter(function(v){ return v.t > 0; });
+            // mapa nome→acess por vendedor
+            var acessMap = {};
+            (l.acess_dia_top || []).forEach(function(v){ acessMap[v.n.toLowerCase()] = v.t; });
             return { k:k, nome:l.label||k, sigla:l.sigla||k.slice(0,2).toUpperCase(),
-                fat:fat, cor:coresLojas[k]||'#818cf8', top:top };
+                fat:fat, acess:acess, acessMap:acessMap, cor:coresLojas[k]||'#818cf8', top:top };
         })
         .filter(function(l){ return l.fat > 0; })
         .sort(function(a,b){ return b.fat - a.fat; });
 
-    var totalGeral = lojas.reduce(function(s,l){ return s+l.fat; }, 0);
+    var totalGeral      = lojas.reduce(function(s,l){ return s+l.fat;   }, 0);
+    var totalAcessGeral = lojas.reduce(function(s,l){ return s+l.acess; }, 0);
     var rankMedal  = ['\u{1F947}','\u{1F948}','\u{1F949}'];
     var maxFat     = lojas.length ? lojas[0].fat : 1;
 
@@ -6108,11 +6118,13 @@ function _renderFatDiario() {
         var barW    = maxFat > 0 ? Math.min(100, Math.round(l.fat/maxFat*100)) : 0;
 
         var vendRows = l.top.map(function(v, vi) {
-            var vpct = l.fat > 0 ? ((v.t/l.fat)*100).toFixed(0) : '0';
+            var vpct  = l.fat > 0 ? ((v.t/l.fat)*100).toFixed(0) : '0';
+            var vAcess = l.acessMap[v.n.toLowerCase()] || 0;
             return '<tr style="border-bottom:1px solid rgba(255,255,255,.04);">' +
                 '<td style="padding:5px 8px;color:#9ca3af;font-size:10px;">'+(vi+1)+'\u00BA</td>' +
-                '<td style="padding:5px 8px;color:#e5e7eb;font-size:10px;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+v.n+'</td>' +
+                '<td style="padding:5px 8px;color:#e5e7eb;font-size:10px;max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+v.n+'</td>' +
                 '<td style="padding:5px 8px;color:'+l.cor+';font-size:10px;font-weight:700;text-align:right;white-space:nowrap;">'+_brl(v.t)+'</td>' +
+                '<td style="padding:5px 8px;text-align:right;white-space:nowrap;">'+(vAcess>0?'<span style="color:#10b981;font-size:10px;font-weight:700;">'+_brl(vAcess)+'</span>':'<span style="color:#4b5563;font-size:9px;">\u2014</span>')+'</td>' +
                 '<td style="padding:4px 8px;text-align:right;"><span style="font-size:8px;padding:1px 5px;border-radius:999px;background:'+l.cor+'22;color:'+l.cor+';">'+vpct+'%</span></td>' +
                 '</tr>';
         }).join('');
@@ -6122,6 +6134,7 @@ function _renderFatDiario() {
                 '<th style="padding:6px 8px;color:#6b7280;font-size:9px;text-align:left;">#</th>' +
                 '<th style="padding:6px 8px;color:#6b7280;font-size:9px;text-align:left;">Vendedor</th>' +
                 '<th style="padding:6px 8px;color:#6b7280;font-size:9px;text-align:right;">Hoje</th>' +
+                '<th style="padding:6px 8px;color:#6b7280;font-size:9px;text-align:right;">\uD83C\uDFF7\uFE0F Acess.</th>' +
                 '<th style="padding:6px 8px;color:#6b7280;font-size:9px;text-align:right;">Part.</th>' +
                 '</tr></thead><tbody>'+vendRows+'</tbody></table>'
             : '<p style="font-size:10px;color:#6b7280;padding:10px 14px;margin:0;">Detalhamento dispon\u00EDvel ap\u00F3s pr\u00F3xima atualiza\u00E7\u00E3o autom\u00E1tica.</p>';
@@ -6137,6 +6150,7 @@ function _renderFatDiario() {
                 '</div>' +
                 '<div style="text-align:right;flex-shrink:0;margin-left:8px;">' +
                     '<div style="font-size:13px;font-weight:800;color:'+l.cor+';">'+_brl(l.fat)+'</div>' +
+                    (l.acess>0?'<div style="font-size:9px;color:#10b981;font-weight:700;margin-top:1px;">\uD83C\uDFF7\uFE0F '+_brl(l.acess)+'</div>':'') +
                 '</div>' +
                 '<i class="fas fa-chevron-down fd-chev" style="color:#6b7280;font-size:10px;margin-left:4px;transition:transform .22s;"></i>' +
             '</div>' +
@@ -6150,6 +6164,7 @@ function _renderFatDiario() {
             '<p style="font-size:10px;color:#6b7280;margin:2px 0 0;">Vendas do dia \u00B7 Apenas Vendedores \u00B7 Fonte: Sistema CDC</p></div>' +
             '<div style="display:flex;gap:12px;flex-shrink:0;">' +
                 '<div style="text-align:right;"><div style="font-size:14px;font-weight:800;color:#f59e0b;">'+_brl(totalGeral)+'</div><div style="font-size:9px;color:#6b7280;">total hoje</div></div>' +
+                (totalAcessGeral>0?'<div style="text-align:right;"><div style="font-size:14px;font-weight:800;color:#10b981;">'+_brl(totalAcessGeral)+'</div><div style="font-size:9px;color:#6b7280;">🏷️ acessórios</div></div>':'') +
             '</div>' +
         '</div>' +
         filterButtons + lojaRows +
@@ -6626,11 +6641,12 @@ function _renderHistAcessAbr26() {
 ══════════════════════════════════════════════════ */
 function _zerarFatDia() {
     Object.values(D360.lojas).forEach(function(l) {
-        l.fat_dia  = 0;
-        l.acess_dia = 0;
-        l.fin_dia  = 0;
-        l.top_dia  = [];
-        l.top_fin  = [];
+        l.fat_dia      = 0;
+        l.acess_dia    = 0;
+        l.acess_dia_top = [];
+        l.fin_dia      = 0;
+        l.top_dia      = [];
+        l.top_fin      = [];
     });
     // Zera também margens diárias — serão recalculadas pelo script conforme vendas do novo dia
     D360.margem_dia = 0;
@@ -6690,6 +6706,7 @@ function save360ToStorage() {
             agendFat: v.agendFat || 0,
             fat_dia: v.fat_dia || 0,
             acess_dia: v.acess_dia || 0,
+            acess_dia_top: JSON.parse(JSON.stringify(v.acess_dia_top || [])),
             fin_dia: v.fin_dia || 0,
             top_dia: JSON.parse(JSON.stringify(v.top_dia || [])),
             top: JSON.parse(JSON.stringify(v.top || [])),
@@ -8692,7 +8709,6 @@ function render360(tipo, val) {
                 <div style="height:100%;width:${_temDados?'100':'0'}%;background:linear-gradient(90deg,#f59e0b,#fbbf24);border-radius:3px;transition:width .4s;"></div>
             </div>
             <p style="font-size:.6rem;color:#6b7280;margin:0;line-height:1.4;">${_subTxt}</p>
-            ${_mDiaLine}
             <div style="display:flex;justify-content:space-between;align-items:center;padding:.2rem .55rem;border-radius:.5rem;background:rgba(16,185,129,.07);border:1px solid rgba(16,185,129,.2);margin-top:.05rem;">
                 <span style="font-size:.6rem;color:#9ca3af;font-weight:600;">🏷️ Acessórios Dia</span>
                 ${_totalAcess > 0
@@ -8700,6 +8716,7 @@ function render360(tipo, val) {
                     : `<span style="font-size:.65rem;color:#4b5563;font-style:italic;">sem dados</span>`
                 }
             </div>
+            ${_mDiaLine}
         </div>`;
     })();
 

@@ -4552,9 +4552,9 @@ function openDash() {
     const flowAllowed = hasFlowAccess(user.cargo);
     const allowed360      = has360Access(user.cargo);
     const allowedUsuarios = ['melo', 'neto'].includes((user.name || '').toLowerCase().split(' ')[0]);
-    if (_dictaIsMelo()) _showBtn('btn-d360-update');
 
     const _showBtn = (id) => { const el = document.getElementById(id); if (el) el.classList.remove('hidden'); };
+    if (_dictaIsMelo()) _showBtn('btn-d360-update');
     const _hideEl  = (id) => { const el = document.getElementById(id); if (el) el.classList.add('hidden'); };
     if (planAllowed)       _showBtn('btn-planning');
     if (flowAllowed)       _showBtn('btn-matinais');

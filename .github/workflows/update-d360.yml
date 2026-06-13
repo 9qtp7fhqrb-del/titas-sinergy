@@ -9,6 +9,9 @@ concurrency:
   group: d360-update
   cancel-in-progress: true
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   update:
     runs-on: ubuntu-latest
@@ -26,7 +29,7 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Instalar dependências
+      - name: Instalar dependências Python
         run: pip install requests
 
       - name: Carregar token ERP cacheado
@@ -67,13 +70,21 @@ jobs:
           git add index.html
           git commit -m "data: vendas $(TZ=America/Sao_Paulo date +'%d/%m/%Y %H:%M')"
 
+      - name: Instalar Firebase CLI
+        if: steps.diff.outputs.changed == 'true'
+        run: npm install -g firebase-tools --silent
+
+      - name: Limpar versões antigas do Firebase Hosting
+        if: steps.diff.outputs.changed == 'true'
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+        run: python scripts/cleanup_firebase_versions.py
+
       - name: Deploy Firebase Hosting
         if: steps.diff.outputs.changed == 'true'
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
-        run: |
-          npm install -g firebase-tools --silent
-          firebase deploy --only hosting --token "$FIREBASE_TOKEN" --non-interactive
+        run: firebase deploy --only hosting --token "$FIREBASE_TOKEN" --non-interactive
 
       - name: Push para GitHub
         if: steps.diff.outputs.changed == 'true'

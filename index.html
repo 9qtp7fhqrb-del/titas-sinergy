@@ -359,19 +359,29 @@
                         inset 0 1px 0 rgba(255,255,255,.04);
         }
 
-        /* ══ Copa 2026 — Tema Brasil (dias de jogo da Seleção) ══ */
-        body.brasil-joga .glass-360 {
-            border-color: rgba(0,156,59,.3) !important;
-            box-shadow: 0 8px 40px rgba(0,0,0,.6), 0 0 0 1px rgba(0,156,59,.08),
-                        inset 0 1px 0 rgba(255,215,0,.04) !important;
-        }
+        /* ══ Copa 2026 — Tema Brasil (dias de jogo) — Paleta camisa verde ══ */
+        body.brasil-joga { background-color: #010d03 !important; }
         body.brasil-joga .bg-gradient {
             background:
-                radial-gradient(ellipse at 10% 50%, rgba(0,60,12,.5)  0%, transparent 55%),
-                radial-gradient(ellipse at 90% 12%, rgba(0,20,60,.42) 0%, transparent 52%),
-                radial-gradient(ellipse at 50% 90%, rgba(0,35,6,.45)  0%, transparent 55%),
-                linear-gradient(160deg, rgba(3,6,18,.82) 0%, rgba(0,10,3,.68) 55%, rgba(3,6,18,.82) 100%);
+                radial-gradient(ellipse at 10% 40%, rgba(0,130,40,.7)  0%, transparent 52%),
+                radial-gradient(ellipse at 88% 12%, rgba(0,100,28,.6)  0%, transparent 50%),
+                radial-gradient(ellipse at 50% 88%, rgba(0,110,25,.65) 0%, transparent 52%),
+                linear-gradient(160deg, rgba(1,14,4,.94) 0%, rgba(0,55,14,.92) 50%, rgba(1,14,4,.94) 100%);
         }
+        body.brasil-joga .glass {
+            background: rgba(2,22,7,.88) !important;
+            border-color: rgba(34,197,94,.25) !important;
+            box-shadow: 0 8px 40px rgba(0,0,0,.7), inset 0 1px 0 rgba(74,222,128,.06) !important;
+        }
+        body.brasil-joga .glass-360 {
+            background: rgba(4,32,12,.78) !important;
+            border-color: rgba(34,197,94,.55) !important;
+            box-shadow: 0 8px 40px rgba(0,0,0,.65), 0 0 0 1px rgba(34,197,94,.15),
+                        inset 0 1px 0 rgba(74,222,128,.1) !important;
+        }
+        body.brasil-joga #btn-360.active .tab-360-icon,
+        body.brasil-joga #btn-360 .tab-360-label { color: #22c55e !important; }
+        body.brasil-joga #btn-360.active { border-bottom-color: #22c55e !important; }
 
         /* ══════════════════════════════
            FLOW MEETING — estilos
@@ -8496,30 +8506,18 @@ function _brasilJoga() {
 function _ativarTemaBrasil() {
     const joga = _brasilJoga();
     document.body.classList.toggle('brasil-joga', joga);
-    ['brasil-banner','brasil-flags'].forEach(id => { const el = document.getElementById(id); if (el) el.remove(); });
+    ['brasil-flags'].forEach(id => { const el = document.getElementById(id); if (el) el.remove(); });
     if (!joga) return;
 
-    // Banner antes dos cards KPI
-    const kpisEl = document.getElementById('360-kpis');
-    if (kpisEl && !document.getElementById('brasil-banner')) {
-        const banner = document.createElement('div');
-        banner.id = 'brasil-banner';
-        banner.style.cssText = 'display:flex;align-items:center;gap:.65rem;padding:.55rem .9rem;margin-bottom:.75rem;border-radius:.8rem;background:linear-gradient(135deg,rgba(0,156,59,.12),rgba(0,39,118,.09),rgba(0,0,0,.06));border:1px solid rgba(0,156,59,.22);';
-        banner.innerHTML = '<span style="font-size:1.2rem;line-height:1;flex-shrink:0;">🇧🇷</span>'
-            + '<div style="flex:1;min-width:0;"><div style="font-size:.68rem;font-weight:800;color:#00c44a;letter-spacing:.05em;text-transform:uppercase;">Brasil joga hoje!</div>'
-            + '<div style="font-size:.58rem;color:#6b7280;margin-top:1px;">Copa do Mundo 2026 · Vai, Seleção! 🏆</div></div>'
-            + '<span style="font-size:1rem;opacity:.6;flex-shrink:0;">🇧🇷</span>';
-        kpisEl.parentNode.insertBefore(banner, kpisEl);
-    }
-
-    // Bandeirinhas decorativas fixas e sutis
+    // Bandeiras decorativas — mais visíveis
     if (!document.getElementById('brasil-flags')) {
         const flags = document.createElement('div');
         flags.id = 'brasil-flags';
         flags.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:1;overflow:hidden;';
-        flags.innerHTML = '<span style="position:absolute;top:3.8rem;right:.7rem;font-size:1.3rem;opacity:.14;transform:rotate(10deg);">🇧🇷</span>'
-            + '<span style="position:absolute;bottom:5.5rem;left:.5rem;font-size:1.1rem;opacity:.11;transform:rotate(-7deg);">🇧🇷</span>'
-            + '<span style="position:absolute;top:54%;right:.45rem;font-size:.95rem;opacity:.09;transform:rotate(5deg);">🇧🇷</span>';
+        flags.innerHTML = '<span style="position:absolute;top:3.8rem;right:.8rem;font-size:2rem;opacity:.28;transform:rotate(8deg);">🇧🇷</span>'
+            + '<span style="position:absolute;bottom:5rem;left:.6rem;font-size:1.7rem;opacity:.22;transform:rotate(-9deg);">🇧🇷</span>'
+            + '<span style="position:absolute;top:48%;right:.5rem;font-size:1.3rem;opacity:.18;transform:rotate(5deg);">🇧🇷</span>'
+            + '<span style="position:absolute;top:72%;left:.5rem;font-size:1.1rem;opacity:.15;transform:rotate(-4deg);">🇧🇷</span>';
         document.body.appendChild(flags);
     }
 }
@@ -8555,14 +8553,15 @@ function render360(tipo, val) {
 
     // Cores dos cards KPI — paleta normal vs Copa 2026 (dias de jogo)
     const _bm = _brasilJoga();
-    const _C1  = _bm ? '#009c3b' : '#a855f7'; // Card 1 (Fat Total): verde / roxo
-    const _C1L = _bm ? '#00c44a' : '#c4b5fd'; // variante clara
-    const _C2  = _bm ? '#FFD700' : '#f59e0b'; // Card 2 (Fat Dia): amarelo / âmbar
-    const _C2L = _bm ? '#FFE566' : '#fbbf24'; // variante clara
-    const _C3  = _bm ? '#1d4ed8' : '#8b5cf6'; // Card 3 (Salão): azul / violeta
-    const _C3L = _bm ? '#60a5fa' : '#a78bfa'; // variante clara
-    const _C3D = _bm ? '#1e3a8a' : '#7c3aed'; // variante escura
-    const _C4  = _bm ? '#009c3b' : '#06b6d4'; // Card 4 (Agend): verde / ciano
+    // Paleta camisa verde Brasil: verde profundo + verde neon + ouro CBF
+    const _C1  = _bm ? '#22c55e' : '#a855f7'; // Card 1 (Fat Total): verde vivo / roxo
+    const _C1L = _bm ? '#86efac' : '#c4b5fd'; // variante clara
+    const _C2  = _bm ? '#fbbf24' : '#f59e0b'; // Card 2 (Fat Dia): ouro CBF / âmbar
+    const _C2L = _bm ? '#fde68a' : '#fbbf24'; // variante clara
+    const _C3  = _bm ? '#16a34a' : '#8b5cf6'; // Card 3 (Salão): verde médio / violeta
+    const _C3L = _bm ? '#4ade80' : '#a78bfa'; // variante clara (lime)
+    const _C3D = _bm ? '#14532d' : '#7c3aed'; // variante escura (floresta)
+    const _C4  = _bm ? '#4ade80' : '#06b6d4'; // Card 4 (Agend): verde lime / ciano
 
     const total   = scope.reduce((s,l)=>s+l.total,0);
     const pedidos = scope.reduce((s,l)=>s+l.ped,0);

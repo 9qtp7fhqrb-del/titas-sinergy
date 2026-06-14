@@ -360,14 +360,9 @@
         }
 
         /* ══ Copa 2026 — Tema Brasil (dias de jogo) — Paleta camisa verde ══ */
-        body.brasil-joga { background-color: #010d03 !important; }
-        body.brasil-joga .bg-gradient {
-            background:
-                radial-gradient(ellipse at 10% 40%, rgba(0,130,40,.7)  0%, transparent 52%),
-                radial-gradient(ellipse at 88% 12%, rgba(0,100,28,.6)  0%, transparent 50%),
-                radial-gradient(ellipse at 50% 88%, rgba(0,110,25,.65) 0%, transparent 52%),
-                linear-gradient(160deg, rgba(1,14,4,.94) 0%, rgba(0,55,14,.92) 50%, rgba(1,14,4,.94) 100%);
-        }
+        body.brasil-joga { background: #010d03 !important; }
+        body.brasil-joga #bg-canvas { opacity: 0 !important; }
+        body.brasil-joga .bg-gradient { background: rgba(0,0,0,.18) !important; }
         body.brasil-joga .glass {
             background: rgba(2,22,7,.88) !important;
             border-color: rgba(34,197,94,.25) !important;
@@ -8503,23 +8498,106 @@ function _brasilJoga() {
     const s = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
     return _BRASIL_JOGOS_2026.includes(s);
 }
+function _desenharOndulacoesJersey() {
+    const existing = document.getElementById('brasil-waves');
+    if (existing) existing.remove();
+
+    const cvs = document.createElement('canvas');
+    cvs.id = 'brasil-waves';
+    cvs.style.cssText = 'position:fixed;inset:0;z-index:0;pointer-events:none;';
+    const PR = window.devicePixelRatio || 1;
+    const W  = cvs.width  = Math.round(window.innerWidth  * PR);
+    const H  = cvs.height = Math.round(window.innerHeight * PR);
+    cvs.style.width  = window.innerWidth  + 'px';
+    cvs.style.height = window.innerHeight + 'px';
+
+    const bgCvs = document.getElementById('bg-canvas');
+    document.body.insertBefore(cvs, bgCvs || document.body.firstChild);
+
+    const ctx = cvs.getContext('2d');
+
+    // Base: verde floresta escuro
+    ctx.fillStyle = '#071a0a';
+    ctx.fillRect(0, 0, W, H);
+
+    // Bandas diagonais com alto contraste — alternando escuro/médio/claro como na camisa
+    // Paleta: escuro, médio, escuro, médio-claro, escuro, médio, neon (acento raro)
+    const cores = [
+        '#040e06',   // muito escuro
+        '#1a6b32',   // médio-verde
+        '#050f07',   // muito escuro
+        '#22913e',   // verde vivo
+        '#030c04',   // muito escuro
+        '#1e7d38',   // médio-verde
+        '#040e06',   // muito escuro
+        '#26a348',   // verde mais vivo
+        '#030c04',   // muito escuro
+        '#1a6b32',   // médio-verde
+        '#050f07',   // muito escuro
+        '#30c05a',   // verde neon (acento)
+        '#040e06',   // muito escuro
+        '#1e7d38',   // médio-verde
+    ];
+
+    // Rotação ~28° — diagonal suave como na camisa
+    ctx.save();
+    ctx.translate(W / 2, H / 2);
+    ctx.rotate(-0.48); // ~27.5 graus
+    ctx.translate(-W / 2, -H / 2);
+
+    const diag  = Math.ceil(Math.sqrt(W * W + H * H));
+    const nBand = 22;
+    const bw    = (diag * 1.8) / nBand;
+
+    for (let i = 0; i < nBand + 2; i++) {
+        const xBase = -diag * 0.4 + i * bw;
+        const cor   = cores[i % cores.length];
+
+        ctx.beginPath();
+        for (let y = -diag; y <= diag * 2; y += 4) {
+            // Múltiplas frequências para ondulação orgânica da camisa
+            const x = xBase
+                + Math.sin(y / 160 + i * 1.2) * 28
+                + Math.sin(y / 70  + i * 0.9) * 14
+                + Math.sin(y / 320 + i * 0.4) * 40
+                + Math.sin(y / 45  + i * 1.8) * 6;
+            if (y === -diag) ctx.moveTo(x, y);
+            else             ctx.lineTo(x, y);
+        }
+        ctx.lineTo(diag * 2, diag * 2);
+        ctx.lineTo(diag * 2, -diag);
+        ctx.closePath();
+        ctx.fillStyle = cor;
+        ctx.fill();
+    }
+    ctx.restore();
+
+    // Reflexo neon sutil (brilho do tecido)
+    const shine = ctx.createRadialGradient(W * .3, H * .2, 0, W * .5, H * .5, diag * .65);
+    shine.addColorStop(0,  'rgba(34,197,94,.09)');
+    shine.addColorStop(.4, 'rgba(22,163,74,.05)');
+    shine.addColorStop(1,  'rgba(0,0,0,0)');
+    ctx.fillStyle = shine;
+    ctx.fillRect(0, 0, W, H);
+}
+
 function _ativarTemaBrasil() {
     const joga = _brasilJoga();
     document.body.classList.toggle('brasil-joga', joga);
-    ['brasil-flags'].forEach(id => { const el = document.getElementById(id); if (el) el.remove(); });
+    ['brasil-waves','brasil-flags'].forEach(id => { const el = document.getElementById(id); if (el) el.remove(); });
     if (!joga) return;
 
-    // Bandeiras decorativas — mais visíveis
-    if (!document.getElementById('brasil-flags')) {
-        const flags = document.createElement('div');
-        flags.id = 'brasil-flags';
-        flags.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:1;overflow:hidden;';
-        flags.innerHTML = '<span style="position:absolute;top:3.8rem;right:.8rem;font-size:2rem;opacity:.28;transform:rotate(8deg);">🇧🇷</span>'
-            + '<span style="position:absolute;bottom:5rem;left:.6rem;font-size:1.7rem;opacity:.22;transform:rotate(-9deg);">🇧🇷</span>'
-            + '<span style="position:absolute;top:48%;right:.5rem;font-size:1.3rem;opacity:.18;transform:rotate(5deg);">🇧🇷</span>'
-            + '<span style="position:absolute;top:72%;left:.5rem;font-size:1.1rem;opacity:.15;transform:rotate(-4deg);">🇧🇷</span>';
-        document.body.appendChild(flags);
-    }
+    _desenharOndulacoesJersey();
+
+    // Bandeiras decorativas
+    const flags = document.createElement('div');
+    flags.id = 'brasil-flags';
+    flags.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:1;overflow:hidden;';
+    flags.innerHTML = '<span style="position:absolute;top:3.8rem;right:.8rem;font-size:2rem;opacity:.28;transform:rotate(8deg);">🇧🇷</span>'
+        + '<span style="position:absolute;bottom:5rem;left:.6rem;font-size:1.7rem;opacity:.22;transform:rotate(-9deg);">🇧🇷</span>'
+        + '<span style="position:absolute;top:48%;right:.5rem;font-size:1.3rem;opacity:.18;transform:rotate(5deg);">🇧🇷</span>'
+        + '<span style="position:absolute;top:72%;left:.5rem;font-size:1.1rem;opacity:.15;transform:rotate(-4deg);">🇧🇷</span>';
+    document.body.appendChild(flags);
 }
 
 function render360(tipo, val) {

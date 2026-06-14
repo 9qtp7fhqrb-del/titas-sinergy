@@ -358,12 +358,17 @@
             box-shadow: 0 8px 40px rgba(0,0,0,.6), 0 0 0 1px rgba(6,182,212,.06),
                         inset 0 1px 0 rgba(255,255,255,.04);
         }
-        /* Simetria dos cards KPI — fixada em CSS para não depender de inline styles no JS */
+        /* Simetria dos cards KPI — dupla garantia: height:100% preenche célula do grid,
+           flex:1 no topo empurra o bottom section para a borda inferior em qualquer altura */
         #360-kpis > div {
             display: flex !important;
             flex-direction: column !important;
             justify-content: space-between !important;
-            min-height: 100%;
+            height: 100% !important;
+            box-sizing: border-box;
+        }
+        #360-kpis > div > div:first-child {
+            flex: 1 !important;
         }
 
         /* ══ Copa 2026 — Tema Brasil (dias de jogo) — Paleta camisa verde ══ */
@@ -468,6 +473,11 @@
         .reun-notes-section { background:#fff; border:1px solid #e5e7eb; border-radius:.75rem; padding:1rem; }
         .reun-notes-title { font-size:.6rem; letter-spacing:.15em; color:#b45309; text-transform:uppercase; font-weight:700; margin-bottom:.85rem; }
         .reun-notes-line { height:1px; background:#e5e7eb; margin-bottom:.85rem; }
+
+        /* ── Transição suave ao re-renderizar o painel D360 (elimina flash) ── */
+        #360-kpis, #360-rankings, #360-metas {
+            transition: opacity 130ms ease;
+        }
 
         /* ── Cards hover ── */
         .card-lift { transition: transform .3s, border-color .3s, box-shadow .3s; }
@@ -2611,6 +2621,18 @@
 </div>
 <!-- ── end dash-screen ── -->
 
+
+<!-- ════════════════════════════════════════
+     POPUP DETALHES DE LOJA — D360
+════════════════════════════════════════ -->
+<div id="_popup-loja-360" onclick="if(event.target===this)fecharPopupLoja()"
+     style="display:none;position:fixed;inset:0;z-index:900;background:rgba(0,0,0,.75);backdrop-filter:blur(12px);align-items:flex-end;justify-content:center;padding:0;box-sizing:border-box;">
+    <div style="background:#0f172a;border:1px solid rgba(255,255,255,.1);border-top:1px solid rgba(168,85,247,.25);border-radius:1.4rem 1.4rem 0 0;width:100%;max-width:640px;max-height:90vh;overflow-y:auto;padding:1.5rem;box-sizing:border-box;-webkit-overflow-scrolling:touch;">
+        <!-- Alça visual -->
+        <div style="width:40px;height:4px;background:rgba(255,255,255,.15);border-radius:2px;margin:0 auto 1rem;"></div>
+        <div id="_popup-loja-body"></div>
+    </div>
+</div>
 
 <!-- ════════════════════════════════════════
      MODAL 360° — BUSCA E RELATÓRIOS
@@ -5530,17 +5552,35 @@ const D360 = {
     diasDecorridos: 12,   // atualizado automaticamente (dia 1 até hoje)
     diasMes: 30,          // junho tem 30 dias
 
-    // ── Margem Bruta Mensal · Fonte: Relatório Gerencial ERP CDC ──
-    margem_dia: 0.00,    // rede hoje · atualizado automaticamente a cada 30min
-    margem_dia_subredes: { t1: 0.00, t2: 0.00, t3: 0.00 },  // por subrede hoje · automático
-    margem_mes: 44.53,    // rede total · atualizar mensalmente com PDF Gerencial
-    margem_lojas: {       // por loja — atualizar com relatório por loja quando disponível
-        saomateus: 0, cariacica: 0, itabuna: 0, barreiras: 0, moxuara: 0,
-        teixeira:  0, laranjeiras: 0, serra: 0, linhares: 0, montserrat: 0, praiadacosta: 0
+    // ── Margem Bruta Mensal ──────────────────────────────────────────────────────
+    // FONTE PRIMÁRIA: margem_lojas (por loja, do Relatório Gerencial ERP CDC)
+    // O sistema deriva automaticamente: margem por loja → subrede → rede
+    // COMO ATUALIZAR: edite apenas margem_lojas com os valores do ERP por loja
+    // ─────────────────────────────────────────────────────────────────────────────
+    margem_dia: 0.00,              // rede hoje · zerado automaticamente à meia-noite
+    margem_dia_subredes: { t1: 0.00, t2: 0.00, t3: 0.00 },
+    margem_lojas: {
+        // ── FONTE PRIMÁRIA — atualizar aqui com o Relatório Gerencial por Loja ──
+        // T1 — Titãs 1 (Talysson)
+        cariacica:   44.67,
+        itabuna:     44.67,
+        moxuara:     44.67,
+        praiadacosta:44.67,
+        // T2 — Titãs 2 (Adriel)
+        barreiras:   41.88,
+        teixeira:    41.88,
+        laranjeiras: 41.88,
+        // T3 — Titãs 3 (Arthur)
+        saomateus:   46.03,
+        serra:        46.03,
+        montserrat:  46.03,
+        linhares:    46.03,
     },
-    margem_subredes: {    // por subrede — Fonte: Relatório Gerencial ERP CDC (filtrado por loja)
-        t1: 44.93, t2: 41.91, t3: 46.05
+    margem_subredes: {  // fallback quando margem_lojas estiver incompleta
+        t1: 44.67, t2: 41.88, t3: 46.03
     },
+    // margem_mes: derivada automaticamente pelo _calcMargemPonderada (não editar)
+    margem_mes: 44.67,
 
     subredes: {
         t1: { nome:'Titãs 1', gestor:'Talysson', meta:1340000,
@@ -7595,71 +7635,165 @@ function kpiCard(icon, color, badge, badgeColor, value, label, barPct, barColor,
 }
 
 function rankRow(pos, sigla, label, sublabel, rawTotal, lojaMeta, first, metaOk, lojaKey, activeDays, ped, acessPct) {
-    const colors = ['#a855f7','#9ca3af','#06b6d4','#6b7280','#6b7280'];
-    const bgFirst = first ? 'background:rgba(168,85,247,.08);border:1px solid rgba(168,85,247,.2);' : 'border:1px solid rgba(55,65,81,.4);';
+    const colors    = ['#a855f7','#9ca3af','#06b6d4','#6b7280','#6b7280'];
+    const bgFirst   = first ? 'background:rgba(168,85,247,.08);border:1px solid rgba(168,85,247,.2);' : 'border:1px solid rgba(55,65,81,.4);';
     const avatarStyle = first
         ? 'background:rgba(168,85,247,.2);color:#c084fc;'
         : (pos===3 ? 'background:rgba(6,182,212,.15);color:#06b6d4;' : 'background:#1f2937;color:#9ca3af;');
     const metaBadge = metaOk ? '<span style="font-size:.55rem;color:#4ade80;font-weight:700;margin-left:.3rem;">😊</span>' : '';
-    const clickExtra = lojaKey ? `onclick="filtrar360Loja('${lojaKey}')" title="Ver detalhes — ${label}"` : '';
-    const rowClass = lojaKey ? 'rank-row-loja' : '';
+    const clickAttr = lojaKey ? `onclick="abrirPopupLoja('${lojaKey}')" title="Detalhes — ${label}"` : '';
 
-    // Faturado / Meta / % / Projeção
     const p     = lojaMeta ? Math.min(100, Math.round(rawTotal / lojaMeta * 100)) : 0;
     const pCor  = p >= 100 ? '#4ade80' : p >= 80 ? '#10b981' : p >= 60 ? '#c084fc' : '#fbbf24';
     const barGr = p >= 100 ? 'linear-gradient(90deg,#064e3b,#4ade80)'
                 : p >= 80  ? 'linear-gradient(90deg,#065f46,#10b981)'
                 : p >= 60  ? 'linear-gradient(90deg,#7c3aed,#06b6d4)'
                 :             'linear-gradient(90deg,#92400e,#f59e0b)';
-    const projVal  = (() => { const _d=_360D(); if(!_d.diasDecorridos) return ''; return Math.round(rawTotal/_d.diasDecorridos*_d.diasMes); })();
-    const projStr  = projVal ? `<span style="color:#6b7280;font-size:.6rem;">↗ proj. ${brl(projVal)}</span>` : '';
+    const projVal = (() => { const _d=_360D(); if(!_d.diasDecorridos) return 0; return Math.round(rawTotal/_d.diasDecorridos*_d.diasMes); })();
 
-    // Dias úteis de funcionamento decorridos no mês (seg-sab para rua, dom-dom para shopping)
-    const _diasUteisLoja = (() => {
-        const _d = _360D();
-        if (!_d.diasDecorridos) return 1;
-        const isShopping = typeof _LOJAS_SHOPPING !== 'undefined' && _LOJAS_SHOPPING.has(lojaKey);
-        const feriados   = typeof _FERIADOS_BR   !== 'undefined' ? _FERIADOS_BR : new Set();
-        const hoje = new Date();
-        const ano  = hoje.getFullYear();
-        const mes  = hoje.getMonth(); // 0-indexed
-        let count  = 0;
-        for (let dia = 1; dia <= _d.diasDecorridos; dia++) {
-            const d    = new Date(ano, mes, dia);
-            const dow  = d.getDay(); // 0=dom
-            const dstr = `${ano}-${String(mes+1).padStart(2,'0')}-${String(dia).padStart(2,'0')}`;
-            if (feriados.has(dstr)) continue;          // feriado nacional
-            if (!isShopping && dow === 0) continue;    // domingo → loja de rua fechada
-            count++;
-        }
-        return Math.max(1, count);
-    })();
-    const mediaDiaLoja = lojaKey ? `<span style="color:#a78bfa;font-size:.6rem;">📊 ${brl(Math.round(rawTotal/_diasUteisLoja))}/dia</span>` : '';
-
-    return `<div class="flex items-center gap-3 p-3 rounded-xl ${rowClass}" style="${bgFirst}" ${clickExtra}>
+    return `<div class="flex items-center gap-3 p-3 rounded-xl" style="${bgFirst}cursor:${lojaKey?'pointer':'default'};" ${clickAttr}>
         <span class="text-${pos<=3?'base':'xs'} font-${pos<=3?'black':'bold'} w-6 text-center flex-shrink-0" style="color:${colors[pos-1]||'#6b7280'};">${pos}°</span>
         <div class="w-8 h-8 rounded-lg flex items-center justify-center text-[10px] font-bold flex-shrink-0" style="${avatarStyle}">${sigla}</div>
         <div class="flex-1 min-w-0">
             <p class="text-xs ${pos<=3?'text-white font-semibold':'text-gray-400'} truncate">${label}${metaBadge}${sublabel ? `<span class="text-gray-500 font-normal"> · ${sublabel}</span>` : ''}</p>
-            <!-- barra relativa à meta -->
             <div class="flex items-center gap-1.5 mt-1">
                 <div class="flex-1 h-1.5 bg-gray-800 rounded-full">
                     <div class="h-full rounded-full" style="width:${p}%;background:${barGr};"></div>
                 </div>
                 <span class="text-[10px] font-bold flex-shrink-0" style="color:${pCor};min-width:2rem;text-align:right;">${p}%</span>
             </div>
-            <!-- linha info: faturado · meta · proj · media/dia -->
             <div class="flex flex-wrap items-center gap-x-2 gap-y-0.5 mt-0.5">
                 <span class="text-[10px] font-semibold" style="color:${pos<=3?'#d1d5db':'#6b7280'};">${brl(rawTotal)}</span>
                 ${lojaMeta ? `<span class="text-[9px] text-gray-600">meta ${brl(lojaMeta)}</span>` : ''}
-                ${ped ? `<span style="color:#94a3b8;font-size:.6rem;">📦 ${ped} ped.</span>` : ''}
-                ${acessPct != null ? (() => { const pct=Math.round(acessPct); const cor=pct>=5?'#4ade80':pct>=3?'#f59e0b':'#f87171'; return `<span style="color:${cor};font-size:.6rem;" title="Penetração Acessórios">🎧 ${pct}%</span>`; })() : ''}
-                ${projStr}${mediaDiaLoja}
+                ${projVal ? `<span style="color:#6b7280;font-size:.6rem;">↗ proj. ${brl(projVal)}</span>` : ''}
             </div>
         </div>
-        ${first ? '<i class="fas fa-crown flex-shrink-0" style="color:#a855f7;"></i>' : ''}
-        ${lojaKey ? '<i class="fas fa-arrow-right flex-shrink-0 text-[9px]" style="color:#a855f7;opacity:.5;"></i>' : ''}
+        ${first ? '<i class="fas fa-crown flex-shrink-0" style="color:#a855f7;font-size:.8rem;"></i>' : ''}
+        ${lojaKey ? '<i class="fas fa-chevron-right flex-shrink-0" style="color:#6b7280;font-size:.55rem;opacity:.7;"></i>' : ''}
     </div>`;
+}
+
+/* ── Popup de detalhes de loja ── */
+function abrirPopupLoja(lojaKey) {
+    const _d   = _360D();
+    if (!_d || !_d.lojas) return;
+    const l    = _d.lojas[lojaKey];
+    const subs = _d.subredes;
+    if (!l) return;
+    const sub  = subs[l.sub] || {};
+    const meta = l.meta || (sub.meta && sub.lojas ? sub.meta / sub.lojas.length : 0);
+    const p    = meta ? Math.min(100, Math.round(l.total / meta * 100)) : 0;
+    const pCor = p >= 100 ? '#4ade80' : p >= 80 ? '#10b981' : p >= 60 ? '#c084fc' : '#fbbf24';
+    const barGr= p >= 100 ? 'linear-gradient(90deg,#064e3b,#4ade80)'
+               : p >= 80  ? 'linear-gradient(90deg,#065f46,#10b981)'
+               : p >= 60  ? 'linear-gradient(90deg,#7c3aed,#06b6d4)'
+               :             'linear-gradient(90deg,#92400e,#f59e0b)';
+    const projVal  = _d.diasDecorridos ? Math.round(l.total / _d.diasDecorridos * _d.diasMes) : 0;
+    const acessTot = l.acessorios?.total || 0;
+    const acessPct = l.total > 0 ? (acessTot / l.total * 100).toFixed(1) : '0';
+    const acessCor = parseFloat(acessPct) >= 5 ? '#4ade80' : parseFloat(acessPct) >= 3 ? '#f59e0b' : '#f87171';
+    const isShopping = typeof _LOJAS_SHOPPING !== 'undefined' && _LOJAS_SHOPPING.has(lojaKey);
+    const feriados   = typeof _FERIADOS_BR !== 'undefined' ? _FERIADOS_BR : new Set();
+    const hoje = new Date(); const ano = hoje.getFullYear(); const mes = hoje.getMonth();
+    let diasUteis = 0;
+    for (let d = 1; d <= (_d.diasDecorridos || 0); d++) {
+        const dt = new Date(ano, mes, d); const dow = dt.getDay();
+        const ds = `${ano}-${String(mes+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+        if (feriados.has(ds)) continue;
+        if (!isShopping && dow === 0) continue;
+        diasUteis++;
+    }
+    diasUteis = Math.max(1, diasUteis);
+    const mediaDia = Math.round(l.total / diasUteis);
+
+    // Vendedores (top + sem venda no mês)
+    const _norm = s => (s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').split(/\s+/)[0];
+    const topSet = new Set((l.top||[]).map(v => _norm(v.n)));
+    const extras = (typeof _EQUIPE !== 'undefined' ? (_EQUIPE[lojaKey]||[]) : [])
+        .filter(n => !topSet.has(_norm(n)))
+        .map(n => { const pts=n.split(/\s+/).filter(w=>w.length>1); return {n, i:pts.slice(0,2).map(w=>w[0].toUpperCase()).join(''), t:0, p:0, ds:0}; });
+    const todosVend = [...(l.top||[]), ...extras];
+    const vendHtml = todosVend.map((v,i) => vendRow(i+1, v.i, v.n, '', v.t, lojaKey, v.ds, v.ult, v.p)).join('');
+
+    const chip = (lbl, val, cor='#9ca3af') =>
+        `<div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:.6rem;padding:.4rem .6rem;">
+            <div style="font-size:.48rem;color:#6b7280;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.15rem;">${lbl}</div>
+            <div style="font-size:.78rem;font-weight:800;color:${cor};">${val}</div>
+         </div>`;
+
+    document.getElementById('_popup-loja-body').innerHTML = `
+        <!-- Header -->
+        <div style="display:flex;align-items:center;gap:.85rem;margin-bottom:1.1rem;">
+            <div style="width:46px;height:46px;border-radius:12px;background:rgba(168,85,247,.2);color:#c084fc;display:flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:900;flex-shrink:0;border:1px solid rgba(168,85,247,.3);">${l.sigla}</div>
+            <div style="flex:1;min-width:0;">
+                <div style="font-size:1.05rem;font-weight:900;color:#fff;line-height:1.2;">${l.label}</div>
+                <div style="font-size:.6rem;color:#9ca3af;">${sub.nome||''} · Gestor ${sub.gestor||''}</div>
+            </div>
+            <button onclick="fecharPopupLoja()" style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:.55rem;padding:.3rem .7rem;color:#9ca3af;font-size:1rem;cursor:pointer;flex-shrink:0;line-height:1;">✕</button>
+        </div>
+
+        <!-- Faturamento + barra -->
+        <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:.9rem;padding:.9rem 1rem;margin-bottom:.75rem;">
+            <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:.4rem;">
+                <div>
+                    <div style="font-size:.5rem;color:#6b7280;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:.15rem;">Faturamento Mensal</div>
+                    <div style="font-size:1.5rem;font-weight:900;color:#fff;line-height:1;">${brl(l.total)}</div>
+                </div>
+                <span style="font-size:1.1rem;font-weight:900;color:${pCor};">${p}%</span>
+            </div>
+            <div style="height:6px;background:#1f2937;border-radius:4px;margin-bottom:.4rem;">
+                <div style="height:100%;width:${p}%;background:${barGr};border-radius:4px;transition:width .4s;"></div>
+            </div>
+            <div style="display:flex;gap:1.5rem;font-size:.6rem;color:#6b7280;">
+                <span>Meta <span style="color:#d1d5db;font-weight:700;">${brl(meta)}</span></span>
+                ${projVal ? `<span>↗ Projeção <span style="color:#a78bfa;font-weight:700;">${brl(projVal)}</span></span>` : ''}
+                ${l.fat_dia > 0 ? `<span>Hoje <span style="color:#fbbf24;font-weight:700;">${brl(l.fat_dia)}</span></span>` : ''}
+            </div>
+        </div>
+
+        <!-- Destaque: Pedidos + Acessórios -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:.5rem;">
+            <div style="background:rgba(148,163,184,.07);border:1px solid rgba(148,163,184,.15);border-radius:.9rem;padding:.75rem 1rem;">
+                <div style="font-size:.5rem;color:#94a3b8;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:.2rem;"><i class="fas fa-box" style="margin-right:.3rem;"></i>Pedidos</div>
+                <div style="font-size:1.4rem;font-weight:900;color:#e2e8f0;">${(l.ped||0).toLocaleString('pt-BR')}</div>
+                <div style="font-size:.55rem;color:#6b7280;margin-top:.1rem;">no mês</div>
+            </div>
+            <div style="background:rgba(${parseFloat(acessPct)>=5?'74,222,128':'250,204,21'},0.07);border:1px solid rgba(${parseFloat(acessPct)>=5?'74,222,128':'250,204,21'},.18);border-radius:.9rem;padding:.75rem 1rem;">
+                <div style="font-size:.5rem;color:${acessCor};font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:.2rem;"><i class="fas fa-headphones" style="margin-right:.3rem;"></i>Acessórios</div>
+                <div style="font-size:1.4rem;font-weight:900;color:${acessCor};">${acessPct}%</div>
+                <div style="font-size:.55rem;color:#6b7280;margin-top:.1rem;">${acessTot > 0 ? brl(acessTot) : '—'} em vendas</div>
+            </div>
+        </div>
+
+        <!-- KPIs secundários -->
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.4rem;margin-bottom:.9rem;">
+            ${chip('Média/dia', brl(mediaDia), '#a78bfa')}
+            ${chip('Financeiras', l.fin_mes > 0 ? brl(l.fin_mes) : '—', '#34d399')}
+            ${chip('Fat. Hoje', l.fat_dia > 0 ? brl(l.fat_dia) : '—', '#fbbf24')}
+        </div>
+
+        <!-- Ranking vendedores -->
+        <div style="font-size:.55rem;font-weight:800;color:#6b7280;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.5rem;display:flex;align-items:center;gap:.4rem;">
+            <i class="fas fa-medal" style="color:#06b6d4;"></i>Ranking de Vendedores
+        </div>
+        <div class="space-y-1">${vendHtml}</div>
+
+        <!-- Footer -->
+        <div style="margin-top:1rem;padding-top:.75rem;border-top:1px solid rgba(255,255,255,.06);">
+            <button onclick="fecharPopupLoja();filtrar360Loja('${lojaKey}')"
+                style="width:100%;background:linear-gradient(135deg,rgba(168,85,247,.2),rgba(6,182,212,.2));border:1px solid rgba(168,85,247,.35);border-radius:.85rem;padding:.7rem;color:#c084fc;font-size:.72rem;font-weight:800;cursor:pointer;letter-spacing:.05em;">
+                <i class="fas fa-chart-line" style="margin-right:.45rem;"></i>VER ANÁLISE COMPLETA
+            </button>
+        </div>`;
+
+    const modal = document.getElementById('_popup-loja-360');
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+}
+function fecharPopupLoja() {
+    const m = document.getElementById('_popup-loja-360');
+    if (m) m.style.display = 'none';
+    document.body.style.overflow = '';
 }
 
 /* ── Feriados nacionais BR 2026 ── */
@@ -8749,27 +8883,45 @@ function render360(tipo, val) {
         : `<div style="font-size:.6rem;color:#4b5563;">vs ${antNome}: aguardando dados</div>`;
     // ── Margem Mês ──────────────────────────────────────────────────────────
     const _META_MARGEM = 45;
-    // Calcula margem como média ponderada das subredes pelo faturamento acumulado + dia
-    const _calcMargemPonderada = (lojasFiltro) => {
+    const _allLojaEntries = Object.entries(_d.lojas || {});
+    // Margem ponderada: usa margem_lojas[key] quando > 0, senão margem_subredes[sub]
+    // Aceita entries ([key, loja][]) para ter acesso à chave da loja
+    const _calcMargemPonderada = (entries) => {
         const ms = _d.margem_subredes || {};
+        const ml = _d.margem_lojas || {};
         let totalFat = 0, soma = 0;
-        lojasFiltro.forEach(function(l) {
-            const m = ms[l.sub];
-            if (m) {
+        entries.forEach(([key, l]) => {
+            const m = (ml[key] > 0 ? ml[key] : null) || ms[l.sub] || 0;
+            if (m > 0) {
                 const fat = (l.total || 0) + (l.fat_dia || 0);
                 totalFat += fat; soma += fat * m;
             }
         });
         return totalFat > 0 ? soma / totalFat : null;
     };
+    // Margem Dia ponderada pelo fat_dia — mesma lógica, usa margem_lojas quando configurada
+    const _calcMargemDia = (entries) => {
+        const ms = _d.margem_subredes || {};
+        const ml = _d.margem_lojas || {};
+        let totalD = 0, somaD = 0;
+        entries.forEach(([key, l]) => {
+            const m = (ml[key] > 0 ? ml[key] : null) || ms[l.sub] || 0;
+            if (m > 0) { const f = l.fat_dia || 0; totalD += f; somaD += f * m; }
+        });
+        return totalD > 0 ? somaD / totalD : null;
+    };
     const _margValor = (() => {
-        const _redeVal = _calcMargemPonderada(Object.values(_d.lojas || {})) || _d.margem_mes || null;
+        const _redeVal = _calcMargemPonderada(_allLojaEntries) || _d.margem_mes || null;
         if (tipo === 'geral') return _redeVal;
-        if (tipo === 'sub')   return ((_d.margem_subredes || {})[val]) || _redeVal;
-        if (tipo === 'loja')  {
+        if (tipo === 'sub') {
+            const subEntries = _allLojaEntries.filter(([, l]) => l.sub === val);
+            return _calcMargemPonderada(subEntries) || ((_d.margem_subredes || {})[val]) || _redeVal;
+        }
+        if (tipo === 'loja') {
+            const lojaEntry = _allLojaEntries.filter(([k]) => k === val);
             const _loja = (_d.lojas || {})[val];
             const _subMarg = _loja ? ((_d.margem_subredes || {})[_loja.sub] || null) : null;
-            return ((_d.margem_lojas || {})[val]) || _subMarg || _redeVal;
+            return _calcMargemPonderada(lojaEntry) || ((_d.margem_lojas || {})[val]) || _subMarg || _redeVal;
         }
         return _redeVal;
     })();
@@ -8841,20 +8993,13 @@ function render360(tipo, val) {
         // Acessórios do dia
         let _totalAcess = 0;
         scope.forEach(function(l) { _totalAcess += l.acess_dia || 0; });
-        // Margem do dia — média ponderada das subredes pelo fat_dia de cada loja
+        // Margem do dia — usa _calcMargemDia definida no escopo do render (suporta margem_lojas)
         const _META_MARGEM_DIA = 45;
-        const _calcMargemDia = (lojasFiltro) => {
-            const ms = _d.margem_subredes || {};
-            let totalD = 0, somaD = 0;
-            lojasFiltro.forEach(function(l) {
-                const m = ms[l.sub];
-                if (m) { const f = l.fat_dia || 0; totalD += f; somaD += f * m; }
-            });
-            return totalD > 0 ? somaD / totalD : null;
-        };
-        const _mDia = tipo === 'sub'
-            ? (_calcMargemDia(Object.values(_d.lojas||{}).filter(l=>l.sub===val)) || _calcMargemDia(Object.values(_d.lojas||{})))
-            : _calcMargemDia(Object.values(_d.lojas||{}));
+        const _mDia = (() => {
+            if (tipo === 'sub')  return _calcMargemDia(_allLojaEntries.filter(([, l]) => l.sub === val)) || _calcMargemDia(_allLojaEntries);
+            if (tipo === 'loja') return _calcMargemDia(_allLojaEntries.filter(([k]) => k === val))       || _calcMargemDia(_allLojaEntries);
+            return _calcMargemDia(_allLojaEntries);
+        })();
         const _mDiaCor  = !_mDia ? '#6b7280' : _mDia >= _META_MARGEM_DIA ? '#10b981' : _mDia >= _META_MARGEM_DIA-2 ? '#f59e0b' : _mDia >= _META_MARGEM_DIA-4 ? '#f97316' : '#ef4444';
         const _mDiaBg   = !_mDia ? '#1f293720' : _mDia >= _META_MARGEM_DIA ? '#10b98115' : _mDia >= _META_MARGEM_DIA-2 ? '#f59e0b15' : _mDia >= _META_MARGEM_DIA-4 ? '#f9731615' : '#ef444415';
         const _mDiaBord = !_mDia ? '#1f2937' : _mDia >= _META_MARGEM_DIA ? '#10b98130' : _mDia >= _META_MARGEM_DIA-2 ? '#f59e0b30' : _mDia >= _META_MARGEM_DIA-4 ? '#f9731630' : '#ef444430';
@@ -9050,18 +9195,18 @@ function render360(tipo, val) {
 
         rankings = `
             <div class="glass-360 rounded-2xl p-5">
-                <h3 class="text-xs font-bold text-white tracking-widest uppercase mb-4" style="display:flex;align-items:center;">
-                    <i class="fas fa-medal mr-2" style="color:#06b6d4;"></i>Vendedores — ${l.label}
-                    ${_cntAlertaLoja > 0 ? `<button id="_btn-vf-loja" data-ativo="0" data-cnt="${_cntAlertaLoja}" onclick="_filtrarVendSemVenda('_vlist-loja', this)" style="${_btnVendStyle(false)}" title="Mostrar só quem está sem vender"><span style="font-size:.75rem;">👁️</span> ${_cntAlertaLoja}</button>` : ''}
-                </h3>
-                <div id="_vlist-loja" class="space-y-1">${vendHtml}</div>
-            </div>
-            <div class="glass-360 rounded-2xl p-5">
                 <h3 class="text-xs font-bold text-white tracking-widest uppercase mb-4">
                     <i class="fas fa-trophy mr-2" style="color:#a855f7;"></i>Ranking Rede
                     <span class="text-gray-500 font-normal normal-case ml-1">(${l.label} está em ${pos}°)</span>
                 </h3>
                 <div class="space-y-2">${rankHtml}</div>
+            </div>
+            <div class="glass-360 rounded-2xl p-5">
+                <h3 class="text-xs font-bold text-white tracking-widest uppercase mb-4" style="display:flex;align-items:center;">
+                    <i class="fas fa-medal mr-2" style="color:#06b6d4;"></i>Vendedores — ${l.label}
+                    ${_cntAlertaLoja > 0 ? `<button id="_btn-vf-loja" data-ativo="0" data-cnt="${_cntAlertaLoja}" onclick="_filtrarVendSemVenda('_vlist-loja', this)" style="${_btnVendStyle(false)}" title="Mostrar só quem está sem vender"><span style="font-size:.75rem;">👁️</span> ${_cntAlertaLoja}</button>` : ''}
+                </h3>
+                <div id="_vlist-loja" class="space-y-1">${vendHtml}</div>
             </div>`;
 
         /* metas: só a subrede da loja */
@@ -9201,13 +9346,20 @@ function render360(tipo, val) {
         subtitulo = 'Consolidado da rede · vendas · rankings · metas';
     }
 
-    document.getElementById('360-kpis').innerHTML     = kpis;
-    document.getElementById('360-rankings').innerHTML = rankings;
-    document.getElementById('360-metas').innerHTML    = metas;
-    document.getElementById('360-subtitulo').textContent = subtitulo;
-
-    // Atualiza gráfico de crescimento (assíncrono — não bloqueia renderização)
-    _360RenderChart(tipo, val).catch(()=>{});
+    // Fade-out → atualiza DOM invisível → fade-in (elimina flash de re-render)
+    const _r360els = ['360-kpis','360-rankings','360-metas'];
+    _r360els.forEach(function(id){ var e=document.getElementById(id); if(e) e.style.opacity='0'; });
+    clearTimeout(window._r360fadeTimer);
+    window._r360fadeTimer = setTimeout(function(){
+        document.getElementById('360-kpis').innerHTML     = kpis;
+        document.getElementById('360-rankings').innerHTML = rankings;
+        document.getElementById('360-metas').innerHTML    = metas;
+        document.getElementById('360-subtitulo').textContent = subtitulo;
+        requestAnimationFrame(function(){
+            _r360els.forEach(function(id){ var e=document.getElementById(id); if(e) e.style.opacity=''; });
+        });
+        _360RenderChart(tipo, val).catch(function(){});
+    }, 130);
 }
 
 /* ══════════════════════════════════════════════
@@ -23081,9 +23233,11 @@ window._dirDirUpdateTimestamp = _dirDirUpdateTimestamp;
             if (tag !== _etag) {
                 _etag       = tag;
                 _novaVersao = true;
-                /* Se ainda está no login: recarrega (usuário não vê nada importante) */
-                var ls = document.getElementById('login-screen');
-                if (ls && !ls.classList.contains('hidden')) { location.reload(); return; }
+                /* login-screen é ocultada via style.display='none', nunca via classe 'hidden'.
+                   Usar dash-screen como referência: se tiver 'hidden' = usuário não logou ainda. */
+                var ds = document.getElementById('dash-screen');
+                var logado = ds && !ds.classList.contains('hidden');
+                if (!logado) { location.reload(); return; }
                 /* Logado: aplica sem recarregar */
                 _aplicarSilencioso();
             }

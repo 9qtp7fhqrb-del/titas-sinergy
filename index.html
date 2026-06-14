@@ -8589,10 +8589,18 @@ function _desenharOndulacoesJersey() {
     ctx.fillRect(0, 0, W, H);
 }
 
+let _brasilMidnightTimer = null;
 function _ativarTemaBrasil() {
     const joga = _brasilJoga();
     document.body.classList.toggle('brasil-joga', joga);
     ['brasil-waves','brasil-flags'].forEach(id => { const el = document.getElementById(id); if (el) el.remove(); });
+
+    // Agenda reset automático à meia-noite (para quem deixa o app aberto)
+    if (_brasilMidnightTimer) clearTimeout(_brasilMidnightTimer);
+    const agora = new Date();
+    const meianoite = new Date(agora.getFullYear(), agora.getMonth(), agora.getDate() + 1);
+    _brasilMidnightTimer = setTimeout(() => { _ativarTemaBrasil(); }, meianoite - agora + 61000);
+
     if (!joga) return;
 
     _desenharOndulacoesJersey();

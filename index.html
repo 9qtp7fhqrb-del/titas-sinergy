@@ -358,6 +358,13 @@
             box-shadow: 0 8px 40px rgba(0,0,0,.6), 0 0 0 1px rgba(6,182,212,.06),
                         inset 0 1px 0 rgba(255,255,255,.04);
         }
+        /* Simetria dos cards KPI — fixada em CSS para não depender de inline styles no JS */
+        #360-kpis > div {
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: space-between !important;
+            min-height: 100%;
+        }
 
         /* ══ Copa 2026 — Tema Brasil (dias de jogo) — Paleta camisa verde ══ */
         body.brasil-joga { background: #010d03 !important; }

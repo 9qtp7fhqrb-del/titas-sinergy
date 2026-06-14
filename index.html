@@ -5004,6 +5004,7 @@ function switchTab(tab) {
     if (activeTab) activeTab.classList.remove('hidden');
     if (activeBtn) { activeBtn.classList.add('active'); activeBtn.style.color = '#fff'; }
     try { if (tab === '360') {
+        _ativarTemaBrasil();
         const _vLoja = _vendedorLojaKey();
         if (_vLoja) {
             render360('loja', _vLoja);

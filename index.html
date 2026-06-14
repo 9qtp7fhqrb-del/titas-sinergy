@@ -359,6 +359,20 @@
                         inset 0 1px 0 rgba(255,255,255,.04);
         }
 
+        /* ══ Copa 2026 — Tema Brasil (dias de jogo da Seleção) ══ */
+        body.brasil-joga .glass-360 {
+            border-color: rgba(0,156,59,.3) !important;
+            box-shadow: 0 8px 40px rgba(0,0,0,.6), 0 0 0 1px rgba(0,156,59,.08),
+                        inset 0 1px 0 rgba(255,215,0,.04) !important;
+        }
+        body.brasil-joga .bg-gradient {
+            background:
+                radial-gradient(ellipse at 10% 50%, rgba(0,60,12,.5)  0%, transparent 55%),
+                radial-gradient(ellipse at 90% 12%, rgba(0,20,60,.42) 0%, transparent 52%),
+                radial-gradient(ellipse at 50% 90%, rgba(0,35,6,.45)  0%, transparent 55%),
+                linear-gradient(160deg, rgba(3,6,18,.82) 0%, rgba(0,10,3,.68) 55%, rgba(3,6,18,.82) 100%);
+        }
+
         /* ══════════════════════════════
            FLOW MEETING — estilos
         ══════════════════════════════ */
@@ -4655,6 +4669,7 @@ function _vendedorLojaKey() {
 function openDash() {
     // Restaura dados do D360 — local imediato + Firestore em background (todos os dispositivos)
     restore360FromStorage();
+    _ativarTemaBrasil();
 
     const _setTxt = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
     _setTxt('nav-name',      user.name  || '');
@@ -8464,6 +8479,50 @@ function _abrirModalAcessorios(tipo, val) {
     document.getElementById('modal-acessorios').classList.remove('hidden');
 }
 
+// ── Copa 2026 — Tema Brasil nos dias de jogo ─────────────────────────────
+const _BRASIL_JOGOS_2026 = [
+    '2026-06-13', // Grupo C: Brasil vs Marrocos
+    '2026-06-19', // Grupo C: Brasil vs Haiti
+    '2026-06-24', // Grupo C: Brasil vs Escócia
+    '2026-06-29', // Rodada de 32 (se classificado)
+    // Fases eliminatórias: atualizar conforme Brasil avança
+];
+function _brasilJoga() {
+    const d = new Date();
+    const s = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    return _BRASIL_JOGOS_2026.includes(s);
+}
+function _ativarTemaBrasil() {
+    const joga = _brasilJoga();
+    document.body.classList.toggle('brasil-joga', joga);
+    ['brasil-banner','brasil-flags'].forEach(id => { const el = document.getElementById(id); if (el) el.remove(); });
+    if (!joga) return;
+
+    // Banner antes dos cards KPI
+    const kpisEl = document.getElementById('360-kpis');
+    if (kpisEl && !document.getElementById('brasil-banner')) {
+        const banner = document.createElement('div');
+        banner.id = 'brasil-banner';
+        banner.style.cssText = 'display:flex;align-items:center;gap:.65rem;padding:.55rem .9rem;margin-bottom:.75rem;border-radius:.8rem;background:linear-gradient(135deg,rgba(0,156,59,.12),rgba(0,39,118,.09),rgba(0,0,0,.06));border:1px solid rgba(0,156,59,.22);';
+        banner.innerHTML = '<span style="font-size:1.2rem;line-height:1;flex-shrink:0;">🇧🇷</span>'
+            + '<div style="flex:1;min-width:0;"><div style="font-size:.68rem;font-weight:800;color:#00c44a;letter-spacing:.05em;text-transform:uppercase;">Brasil joga hoje!</div>'
+            + '<div style="font-size:.58rem;color:#6b7280;margin-top:1px;">Copa do Mundo 2026 · Vai, Seleção! 🏆</div></div>'
+            + '<span style="font-size:1rem;opacity:.6;flex-shrink:0;">🇧🇷</span>';
+        kpisEl.parentNode.insertBefore(banner, kpisEl);
+    }
+
+    // Bandeirinhas decorativas fixas e sutis
+    if (!document.getElementById('brasil-flags')) {
+        const flags = document.createElement('div');
+        flags.id = 'brasil-flags';
+        flags.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:1;overflow:hidden;';
+        flags.innerHTML = '<span style="position:absolute;top:3.8rem;right:.7rem;font-size:1.3rem;opacity:.14;transform:rotate(10deg);">🇧🇷</span>'
+            + '<span style="position:absolute;bottom:5.5rem;left:.5rem;font-size:1.1rem;opacity:.11;transform:rotate(-7deg);">🇧🇷</span>'
+            + '<span style="position:absolute;top:54%;right:.45rem;font-size:.95rem;opacity:.09;transform:rotate(5deg);">🇧🇷</span>';
+        document.body.appendChild(flags);
+    }
+}
+
 function render360(tipo, val) {
     // Vendedores sempre veem apenas a própria loja — qualquer chamada com outro escopo é ignorada
     if (user && user.cargo === 'vendedor') {
@@ -8492,6 +8551,18 @@ function render360(tipo, val) {
     }
 
     const scope = lojasDeScope();
+
+    // Cores dos cards KPI — paleta normal vs Copa 2026 (dias de jogo)
+    const _bm = _brasilJoga();
+    const _C1  = _bm ? '#009c3b' : '#a855f7'; // Card 1 (Fat Total): verde / roxo
+    const _C1L = _bm ? '#00c44a' : '#c4b5fd'; // variante clara
+    const _C2  = _bm ? '#FFD700' : '#f59e0b'; // Card 2 (Fat Dia): amarelo / âmbar
+    const _C2L = _bm ? '#FFE566' : '#fbbf24'; // variante clara
+    const _C3  = _bm ? '#1d4ed8' : '#8b5cf6'; // Card 3 (Salão): azul / violeta
+    const _C3L = _bm ? '#60a5fa' : '#a78bfa'; // variante clara
+    const _C3D = _bm ? '#1e3a8a' : '#7c3aed'; // variante escura
+    const _C4  = _bm ? '#009c3b' : '#06b6d4'; // Card 4 (Agend): verde / ciano
+
     const total   = scope.reduce((s,l)=>s+l.total,0);
     const pedidos = scope.reduce((s,l)=>s+l.ped,0);
     const cancel  = scope.reduce((s,l)=>s+l.cancel,0);
@@ -8640,18 +8711,18 @@ function render360(tipo, val) {
             <div>
                 <div style="display:flex;align-items:center;justify-content:space-between;gap:.5rem;margin-bottom:.3rem;">
                     <div style="display:flex;align-items:center;gap:.5rem;min-width:0;">
-                        <div style="width:28px;height:28px;border-radius:8px;background:#a855f718;border:1px solid #a855f735;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                            <i class="fas fa-sack-dollar" style="color:#a855f7;font-size:.7rem;"></i>
+                        <div style="width:28px;height:28px;border-radius:8px;background:${_C1}18;border:1px solid ${_C1}35;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                            <i class="fas fa-sack-dollar" style="color:${_C1};font-size:.7rem;"></i>
                         </div>
                         <span style="font-size:.72rem;font-weight:800;color:#f9fafb;letter-spacing:.03em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Faturamento Total</span>
                     </div>
-                    <span style="font-size:.6rem;font-weight:700;padding:.15rem .55rem;border-radius:999px;background:#a855f720;color:#a855f7;white-space:nowrap;flex-shrink:0;">${_d.periodo}</span>
+                    <span style="font-size:.6rem;font-weight:700;padding:.15rem .55rem;border-radius:999px;background:${_C1}20;color:${_C1};white-space:nowrap;flex-shrink:0;">${_d.periodo}</span>
                 </div>
                 <p style="font-size:1.25rem;font-weight:900;color:#fff;line-height:1.2;margin:0 0 .25rem;">${brl(total)}${metaBatidaRede}</p>
                 <div style="height:3px;background:#1f2937;border-radius:3px;margin-bottom:.25rem;">
                     <div style="height:100%;width:${_fatBarPct}%;background:${perfBarStyle};border-radius:3px;transition:width .4s;"></div>
                 </div>
-                <p style="font-size:.6rem;color:#9ca3af;margin:0 0 .15rem;line-height:1.4;">↗ proj. <span style="font-weight:700;color:#c4b5fd;">${brl(_fatProjVal)}</span>${_mediaDia>0?' · méd. <span style="color:#9ca3af;">'+brl(_mediaDia)+'/dia</span>':''}</p>
+                <p style="font-size:.6rem;color:#9ca3af;margin:0 0 .15rem;line-height:1.4;">↗ proj. <span style="font-weight:700;color:${_C1L};">${brl(_fatProjVal)}</span>${_mediaDia>0?' · méd. <span style="color:#9ca3af;">'+brl(_mediaDia)+'/dia</span>':''}</p>
                 ${_antLine}
             </div>
             ${_margLine}
@@ -8704,16 +8775,16 @@ function render360(tipo, val) {
             <div>
                 <div style="display:flex;align-items:center;justify-content:space-between;gap:.5rem;margin-bottom:.3rem;">
                     <div style="display:flex;align-items:center;gap:.5rem;min-width:0;">
-                        <div style="width:28px;height:28px;border-radius:8px;background:#f59e0b18;border:1px solid #f59e0b35;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                            <i class="fas fa-bolt" style="color:#f59e0b;font-size:.7rem;"></i>
+                        <div style="width:28px;height:28px;border-radius:8px;background:${_C2}18;border:1px solid ${_C2}35;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                            <i class="fas fa-bolt" style="color:${_C2};font-size:.7rem;"></i>
                         </div>
                         <span style="font-size:.72rem;font-weight:800;color:#f9fafb;letter-spacing:.03em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Faturamento Diário</span>
                     </div>
-                    <span style="font-size:.6rem;font-weight:700;padding:.15rem .55rem;border-radius:999px;background:#f59e0b20;color:#f59e0b;white-space:nowrap;flex-shrink:0;">${_hoje} ↗</span>
+                    <span style="font-size:.6rem;font-weight:700;padding:.15rem .55rem;border-radius:999px;background:${_C2}20;color:${_C2};white-space:nowrap;flex-shrink:0;">${_hoje} ↗</span>
                 </div>
                 <p style="font-size:1.25rem;font-weight:900;color:#fff;line-height:1.2;margin:0 0 .25rem;">${brl(_totalDia)}</p>
                 <div style="height:3px;background:#1f2937;border-radius:3px;margin-bottom:.25rem;">
-                    <div style="height:100%;width:${_temDados?'100':'0'}%;background:linear-gradient(90deg,#f59e0b,#fbbf24);border-radius:3px;transition:width .4s;"></div>
+                    <div style="height:100%;width:${_temDados?'100':'0'}%;background:linear-gradient(90deg,${_C2},${_C2L});border-radius:3px;transition:width .4s;"></div>
                 </div>
                 <p style="font-size:.6rem;color:#9ca3af;margin:0;line-height:1.4;">${_subTxt}</p>
             </div>
@@ -8762,16 +8833,16 @@ function render360(tipo, val) {
             <div>
                 <div style="display:flex;align-items:center;justify-content:space-between;gap:.5rem;margin-bottom:.3rem;">
                     <div style="display:flex;align-items:center;gap:.5rem;min-width:0;">
-                        <div style="width:28px;height:28px;border-radius:8px;background:#8b5cf618;border:1px solid #8b5cf635;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                            <i class="fas fa-store" style="color:#8b5cf6;font-size:.7rem;"></i>
+                        <div style="width:28px;height:28px;border-radius:8px;background:${_C3}18;border:1px solid ${_C3}35;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                            <i class="fas fa-store" style="color:${_C3};font-size:.7rem;"></i>
                         </div>
                         <span style="font-size:.72rem;font-weight:800;color:#f9fafb;letter-spacing:.03em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Salão vs Financeiras</span>
                     </div>
-                    <span style="font-size:.6rem;font-weight:700;padding:.15rem .55rem;border-radius:999px;background:#8b5cf620;color:#8b5cf6;white-space:nowrap;flex-shrink:0;">${_mes} 2026 ↗</span>
+                    <span style="font-size:.6rem;font-weight:700;padding:.15rem .55rem;border-radius:999px;background:${_C3}20;color:${_C3};white-space:nowrap;flex-shrink:0;">${_mes} 2026 ↗</span>
                 </div>
                 <div style="display:flex;gap:.5rem;align-items:flex-end;margin-bottom:.25rem;">
                     <div style="flex:1;">
-                        <div style="font-size:.5rem;color:#a78bfa;font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-bottom:1px;">Salão</div>
+                        <div style="font-size:.5rem;color:${_C3L};font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-bottom:1px;">Salão</div>
                         <p style="font-size:1rem;font-weight:900;color:#fff;margin:0;line-height:1;">${_temMes ? brl(_salaoMes) : '—'}</p>
                     </div>
                     <div style="font-size:.7rem;color:#4b5563;font-weight:700;padding-bottom:2px;">vs</div>
@@ -8781,7 +8852,7 @@ function render360(tipo, val) {
                     </div>
                 </div>
                 <div style="height:18px;background:#1f2937;border-radius:4px;overflow:hidden;display:flex;">
-                    <div style="height:100%;width:${_pctSalaoMes}%;background:linear-gradient(90deg,#7c3aed,#a78bfa);display:flex;align-items:center;justify-content:center;overflow:hidden;transition:width .4s;">${_pctSalaoMes>=12?'<span style="font-size:.45rem;font-weight:700;color:#fff;white-space:nowrap;">Salão '+_pctSalaoMes+'%</span>':''}</div>
+                    <div style="height:100%;width:${_pctSalaoMes}%;background:linear-gradient(90deg,${_C3D},${_C3L});display:flex;align-items:center;justify-content:center;overflow:hidden;transition:width .4s;">${_pctSalaoMes>=12?'<span style="font-size:.45rem;font-weight:700;color:#fff;white-space:nowrap;">Salão '+_pctSalaoMes+'%</span>':''}</div>
                     <div style="height:100%;width:${_pctBdPJ}%;background:#059669;display:flex;align-items:center;justify-content:center;overflow:hidden;transition:width .4s;">${_pctBdPJ>=10?'<span style="font-size:.45rem;font-weight:700;color:#fff;white-space:nowrap;">PayJoy '+_pctBdPJ+'%</span>':''}</div>
                     <div style="height:100%;width:${_pctBdOD}%;background:#34d399;display:flex;align-items:center;justify-content:center;overflow:hidden;transition:width .4s;">${_pctBdOD>=8?'<span style="font-size:.45rem;font-weight:700;color:#065f46;white-space:nowrap;">OdresCred '+_pctBdOD+'%</span>':''}</div>
                     <div style="height:100%;width:${_pctBdOut}%;background:#6ee7b7;display:flex;align-items:center;justify-content:center;overflow:hidden;transition:width .4s;">${_pctBdOut>=8?'<span style="font-size:.45rem;font-weight:700;color:#065f46;white-space:nowrap;">Outras '+_pctBdOut+'%</span>':''}</div>
@@ -8789,8 +8860,8 @@ function render360(tipo, val) {
             </div>
             <div>
                 <div style="display:flex;gap:.4rem;margin-bottom:.2rem;">
-                    <div style="flex:1;padding:.22rem .5rem;background:#7c3aed12;border:1px solid #7c3aed28;border-radius:.45rem;text-align:center;">
-                        <div style="font-size:.45rem;color:#a78bfa;font-weight:700;text-transform:uppercase;letter-spacing:.04em;">Salão hoje</div>
+                    <div style="flex:1;padding:.22rem .5rem;background:${_C3D}12;border:1px solid ${_C3D}28;border-radius:.45rem;text-align:center;">
+                        <div style="font-size:.45rem;color:${_C3L};font-weight:700;text-transform:uppercase;letter-spacing:.04em;">Salão hoje</div>
                         <div style="font-size:.68rem;font-weight:800;color:#fff;">${_temDia ? brl(_totalSalaoDia) : '—'}</div>
                     </div>
                     <div style="flex:1;padding:.22rem .5rem;background:#34d39912;border:1px solid #34d39928;border-radius:.45rem;text-align:center;">
@@ -8816,12 +8887,12 @@ function render360(tipo, val) {
                 <div>
                     <div style="display:flex;align-items:center;justify-content:space-between;gap:.5rem;margin-bottom:.3rem;">
                         <div style="display:flex;align-items:center;gap:.5rem;min-width:0;">
-                            <div style="width:28px;height:28px;border-radius:8px;background:#06b6d418;border:1px solid #06b6d435;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                                <i class="fas fa-calendar-check" style="color:#06b6d4;font-size:.7rem;"></i>
+                            <div style="width:28px;height:28px;border-radius:8px;background:${_C4}18;border:1px solid ${_C4}35;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                                <i class="fas fa-calendar-check" style="color:${_C4};font-size:.7rem;"></i>
                             </div>
                             <span style="font-size:.72rem;font-weight:800;color:#f9fafb;letter-spacing:.03em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Canal Agendamento</span>
                         </div>
-                        <span style="font-size:.6rem;font-weight:700;padding:.15rem .55rem;border-radius:999px;background:#06b6d420;color:#06b6d4;white-space:nowrap;flex-shrink:0;">ver ranking ↗</span>
+                        <span style="font-size:.6rem;font-weight:700;padding:.15rem .55rem;border-radius:999px;background:${_C4}20;color:${_C4};white-space:nowrap;flex-shrink:0;">ver ranking ↗</span>
                     </div>
                     <p style="font-size:1.25rem;font-weight:900;color:#fff;line-height:1.2;margin:0 0 .25rem;">${brl(agFat)}</p>
                     <div style="height:3px;background:#1f2937;border-radius:3px;margin-bottom:.25rem;">
@@ -8830,9 +8901,9 @@ function render360(tipo, val) {
                     <p style="font-size:.6rem;color:#9ca3af;margin:0;line-height:1.4;">${agPctMeta}% da meta · ${scope.length} lojas</p>
                 </div>
                 <div>
-                    <div style="display:flex;justify-content:space-between;align-items:center;padding:.22rem .6rem;border-radius:.45rem;background:#06b6d412;border:1px solid #06b6d428;margin-bottom:.25rem;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;padding:.22rem .6rem;border-radius:.45rem;background:${_C4}12;border:1px solid ${_C4}28;margin-bottom:.25rem;">
                         <span style="font-size:.58rem;color:#9ca3af;font-weight:600;">📈 Projeção mês</span>
-                        <span style="font-size:.72rem;font-weight:800;color:#06b6d4;">${brl(agProj)}</span>
+                        <span style="font-size:.72rem;font-weight:800;color:${_C4};">${brl(agProj)}</span>
                     </div>
                     <div style="display:flex;justify-content:space-between;align-items:center;padding:.22rem .6rem;border-radius:.45rem;background:${agBarCor}12;border:1px solid ${agBarCor}28;">
                         <span style="font-size:.58rem;color:#9ca3af;font-weight:600;">🎯 Meta</span>

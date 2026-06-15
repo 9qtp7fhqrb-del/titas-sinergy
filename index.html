@@ -23199,13 +23199,37 @@ window._dirDirUpdateTimestamp = _dirDirUpdateTimestamp;
                 } catch(e) {}
             }
 
-            // 2. D360 lojas — totais e top vendedores
-            var mD360 = html.match(/diasDecorridos:\s*(\d+)[\s\S]{0,50}diasMes:\s*(\d+)/);
-            if (mD360 && typeof D360 !== 'undefined') {
+            // 2. D360 — dias e dados numéricos das lojas
+            if (typeof D360 !== 'undefined') {
                 try {
-                    var nd = parseInt(mD360[1]); var nm = parseInt(mD360[2]);
-                    if (!isNaN(nd)) D360.diasDecorridos = nd;
-                    if (!isNaN(nm)) D360.diasMes = nm;
+                    var mDias = html.match(/diasDecorridos:\s*(\d+)[\s\S]{0,80}diasMes:\s*(\d+)/);
+                    if (mDias) {
+                        var nd = parseInt(mDias[1]), nm = parseInt(mDias[2]);
+                        if (!isNaN(nd)) D360.diasDecorridos = nd;
+                        if (!isNaN(nm)) D360.diasMes = nm;
+                    }
+                    // Campos numéricos simples por loja
+                    var _campos = ['total','ped','fat_dia','acess_dia','fin_dia','fin_mes','agendFat'];
+                    Object.keys(D360.lojas || {}).forEach(function(sk) {
+                        var secM = html.match(new RegExp('\\n {8}' + sk + ':\\s*\\{[\\s\\S]{0,8000}?(?=\\n {8}\\w+:\\s*\\{|\\n {4}\\})', ''));
+                        if (!secM) return;
+                        var sec = secM[0];
+                        _campos.forEach(function(campo) {
+                            var vm = sec.match(new RegExp('\\b' + campo + ':(\\d+(?:\\.\\d+)?)'));
+                            if (vm) D360.lojas[sk][campo] = parseFloat(vm[1]);
+                        });
+                        // acessorios.total
+                        var am = sec.match(/acessorios:\{total:(\d+(?:\.\d+)?)/);
+                        if (am && D360.lojas[sk].acessorios) D360.lojas[sk].acessorios.total = parseFloat(am[1]);
+                        // top_dia
+                        var tdM = sec.match(/top_dia:\[([^\]]*)\]/);
+                        if (tdM) { try { D360.lojas[sk].top_dia = new Function('return [' + tdM[1] + ']')(); } catch(e) {} }
+                    });
+                    // Margens globais
+                    var mdM = html.match(/\bmargem_dia:\s*(\d+(?:\.\d+)?)/);
+                    if (mdM) D360.margem_dia = parseFloat(mdM[1]);
+                    var mmM = html.match(/\bmargem_mes:\s*(\d+(?:\.\d+)?)/);
+                    if (mmM) D360.margem_mes = parseFloat(mmM[1]);
                 } catch(e) {}
             }
 

@@ -125,6 +125,60 @@ def save_erp_token_to_firestore(token):
         print(f'  AVISO: erro ao salvar token ERP no Firestore: {e}')
 
 
+def save_d360_to_firestore(sales, acess, acess_dia, today_sellers_proc, fin, fin_acum, agend):
+    """Atualiza ts_d360/dados_360_atual no Firestore — dispara onSnapshot em todos os browsers abertos."""
+    import time, calendar
+    MESES = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez']
+    periodo = f"{MESES[_now_brt.month - 1]} {_now_brt.year}"
+    dias_mes = calendar.monthrange(_now_brt.year, _now_brt.month)[1]
+    dias_decorridos = min(_now_brt.day, dias_mes)
+
+    lojas_data = {}
+    for sk in STORE_MAP.values():
+        lojas_data[sk] = {
+            'total':         round(sales.get(sk, {}).get('total', 0), 2),
+            'fat_dia':       round(today_sellers_proc.get(sk, {}).get('total', 0), 2),
+            'top_dia':       today_sellers_proc.get(sk, {}).get('top', []),
+            'acess_dia':     round(acess_dia.get(sk, {}).get('total', 0), 2),
+            'acess_dia_top': acess_dia.get(sk, {}).get('top', []),
+            'fin_dia':       round(fin.get(sk, {}).get('total', 0), 2),
+            'fin_mes':       round(fin_acum.get(sk, {}).get('total', 0), 2),
+            'agendFat':      round(agend.get(sk, {}).get('total', 0), 2),
+            'acessorios':    {
+                'total': round(acess.get(sk, {}).get('total', 0), 2),
+                'top':   acess.get(sk, {}).get('top', []),
+            },
+        }
+
+    snap = {
+        'lojas':          lojas_data,
+        'diasDecorridos': dias_decorridos,
+        'periodo':        periodo,
+        'savedAt':        int(time.time() * 1000),
+    }
+
+    def to_fs(v):
+        if v is None:            return {'nullValue': None}
+        if isinstance(v, bool):  return {'booleanValue': v}
+        if isinstance(v, int):   return {'integerValue': str(v)}
+        if isinstance(v, float): return {'doubleValue': v}
+        if isinstance(v, list):  return {'arrayValue': {'values': [to_fs(i) for i in v]}}
+        if isinstance(v, dict):  return {'mapValue': {'fields': {k2: to_fs(v2) for k2, v2 in v.items()}}}
+        return {'stringValue': str(v)}
+
+    fields = {k: to_fs(v) for k, v in snap.items()}
+    url = (f'https://firestore.googleapis.com/v1/projects/{FIREBASE_PROJ}'
+           f'/databases/(default)/documents/ts_d360/dados_360_atual?key={FIREBASE_KEY}')
+    try:
+        r = requests.patch(url, json={'fields': fields}, timeout=20)
+        if r.status_code in (200, 201):
+            print(f'  ✅ Firestore atualizado — onSnapshot acionado em todos os browsers abertos')
+        else:
+            print(f'  AVISO: Firestore retornou {r.status_code}: {r.text[:200]}')
+    except Exception as e:
+        print(f'  AVISO: erro ao atualizar Firestore: {e}')
+
+
 def fetch_sales(token, start, end, channel_id=None, retries=4, wait=15):
     import time
     params = {
@@ -850,6 +904,10 @@ def main():
         with open(total_out, 'w') as f:
             f.write(str(round(fat_dia_total, 2)))
         print(f"Total fat_dia salvo: R$ {fat_dia_total:,.2f}")
+
+    # Atualiza Firestore em tempo real — dispara onSnapshot em todos os browsers abertos
+    print("\nSincronizando com Firestore...")
+    save_d360_to_firestore(sales, acess, acess_dia, today_sellers_proc, fin, fin_acum, agend)
 
 if __name__ == '__main__':
     main()

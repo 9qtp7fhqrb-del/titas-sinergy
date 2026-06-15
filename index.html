@@ -7935,7 +7935,16 @@ function vendRow(pos, ini, nome, sublabel, rawVal, lojaKey, ds, ult, ped) {
 }
 
 function _toggleVendDetail(uid, btn) {
-    const el  = document.getElementById(uid);
+    // Encontra o elemento pelo uid — procura também dentro de popups para evitar conflito de IDs
+    const allEls = document.querySelectorAll('#' + CSS.escape(uid));
+    // Prefere o mais próximo do btn clicado
+    let el = null;
+    for (const candidate of allEls) {
+        if (candidate.contains && btn && (candidate.closest('[id^="_popup"]') === btn.closest('[id^="_popup"]'))) {
+            el = candidate; break;
+        }
+    }
+    if (!el) el = document.getElementById(uid);
     const ico = document.getElementById(uid + '_ico');
     if (!el) return;
     const open = el.style.display !== 'none';
@@ -7943,14 +7952,17 @@ function _toggleVendDetail(uid, btn) {
         el.style.display = 'none';
         if (ico) ico.style.transform = '';
     } else {
-        const nome    = btn.dataset.vnome    || '';
-        const rawVal  = parseFloat(btn.dataset.vval  || 0);
-        const meta    = parseFloat(btn.dataset.vmeta || 50000);
-        const lojaKey = btn.dataset.vloja    || '';
-        const ds      = parseInt(btn.dataset.vds  || 0, 10);
-        el.innerHTML  = _buildVendDetail(nome, rawVal, meta, lojaKey, ds);
-        el.style.display = 'block';
-        if (ico) ico.style.transform = 'rotate(180deg)';
+        try {
+            const nome    = btn.dataset.vnome    || '';
+            const rawVal  = parseFloat(btn.dataset.vval  || 0);
+            const meta    = parseFloat(btn.dataset.vmeta || 50000);
+            const lojaKey = btn.dataset.vloja    || '';
+            const ds      = parseInt(btn.dataset.vds  || 0, 10);
+            el.innerHTML  = _buildVendDetail(nome, rawVal, meta, lojaKey, ds);
+            el.style.display = 'block';
+            if (ico) ico.style.transform = 'rotate(180deg)';
+            setTimeout(function() { try { el.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); } catch(e) {} }, 50);
+        } catch(e) { console.error('[_toggleVendDetail]', e); }
     }
 }
 

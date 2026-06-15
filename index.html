@@ -7913,7 +7913,7 @@ function vendRow(pos, ini, nome, sublabel, rawVal, lojaKey, ds, ult, ped) {
             <span class="text-${pos<=3?'base':'xs'} font-${pos<=3?'black':'bold'} w-6 text-center flex-shrink-0" style="color:${posColor};">${pos}°</span>
             <div class="w-8 h-8 rounded-lg flex items-center justify-center text-[10px] font-bold flex-shrink-0" style="${avatarSt}">${ini}</div>
             <div class="flex-1 min-w-0">
-                <p class="text-xs ${pos<=3?'text-white font-semibold':'text-gray-400'} truncate">${nome}${alertaSV ? ' ' + alertaSV : ''}${sublabel ? `<span class="text-gray-500 font-normal"> · ${sublabel}</span>` : ''}</p>
+                <p class="text-xs ${pos<=3?'text-white font-semibold':'text-gray-400'}" style="text-transform:uppercase;word-break:break-word;">${nome}${alertaSV ? ' ' + alertaSV : ''}${sublabel ? `<span class="text-gray-500 font-normal text-[9px]"> · ${sublabel}</span>` : ''}</p>
                 <div class="flex items-center gap-1.5 mt-1">
                     <div class="flex-1 h-1.5 bg-gray-800 rounded-full">
                         <div class="h-full rounded-full" style="width:${pct}%;background:${barGr};"></div>

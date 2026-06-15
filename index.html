@@ -23190,6 +23190,13 @@ window._dirDirUpdateTimestamp = _dirDirUpdateTimestamp;
             var r    = await fetch(location.href + '?_u=' + Date.now(), { cache: 'no-store' });
             var html = await r.text();
 
+            // 0. Se o BUILD mudou, forçar reload — garante que novo código é carregado
+            var buildM = html.match(/var BUILD = '(\d+)'/);
+            if (buildM && typeof BUILD !== 'undefined' && buildM[1] !== BUILD) {
+                location.reload();
+                return;
+            }
+
             // 1. VEND_METAS_DB — metas hardcoded dos vendedores
             var mDB = html.match(/const VEND_METAS_DB = \{([\s\S]+?)\n\};/);
             if (mDB && typeof VEND_METAS_DB !== 'undefined') {

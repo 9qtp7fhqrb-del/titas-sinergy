@@ -1847,6 +1847,43 @@
                 </div>
 
             </div>
+
+            <!-- ── Card: Treinamento Presencial (fora do grid, sempre visível) ── -->
+            <div style="max-width:1100px;margin:1.25rem auto 0;border-radius:1.4rem;background:linear-gradient(135deg,#06050f,#0a0820,#070514);border:2px solid rgba(201,162,39,.4);position:relative;overflow:hidden;display:flex;flex-direction:column;padding:1.75rem 1.5rem;">
+                <div style="position:absolute;top:-60px;right:-60px;width:240px;height:240px;border-radius:50%;background:rgba(201,162,39,.06);pointer-events:none;"></div>
+                <div style="position:absolute;bottom:-40px;left:-40px;width:160px;height:160px;border-radius:50%;background:rgba(29,78,216,.05);pointer-events:none;"></div>
+                <span style="position:absolute;top:1rem;right:1rem;font-size:.55rem;font-weight:900;letter-spacing:.12em;padding:.25rem .65rem;border-radius:999px;background:rgba(201,162,39,.18);color:#C9A227;border:1px solid rgba(201,162,39,.4);text-transform:uppercase;">Novo</span>
+                <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1rem;position:relative;">
+                    <div style="font-size:3.2rem;filter:drop-shadow(0 0 18px rgba(201,162,39,.7));line-height:1;">🎓</div>
+                    <div>
+                        <h3 style="font-size:1.05rem;font-weight:900;color:#C9A227;margin:0 0 .2rem;line-height:1.2;">Treinamento Presencial</h3>
+                        <p style="font-size:.68rem;color:#9ca3af;margin:0;line-height:1.4;">Titãs Sinergy · RAV Holding &amp; Casa do Celular</p>
+                    </div>
+                </div>
+                <div style="display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:1rem;position:relative;">
+                    <span style="font-size:.6rem;padding:.25rem .7rem;border-radius:999px;background:rgba(201,162,39,.12);color:#C9A227;border:1px solid rgba(201,162,39,.3);font-weight:700;">📅 17 e 18/06/2026</span>
+                    <span style="font-size:.6rem;padding:.25rem .7rem;border-radius:999px;background:rgba(201,162,39,.12);color:#C9A227;border:1px solid rgba(201,162,39,.3);font-weight:700;">⏱️ 20 horas</span>
+                    <span style="font-size:.6rem;padding:.25rem .7rem;border-radius:999px;background:rgba(29,78,216,.15);color:#93c5fd;border:1px solid rgba(29,78,216,.3);font-weight:700;">🏆 Certificado Incluso</span>
+                </div>
+                <p style="font-size:.72rem;color:#9ca3af;line-height:1.55;margin-bottom:1.25rem;position:relative;">Treinamento intensivo de vendas e desenvolvimento profissional. Inscreva-se para garantir sua vaga e, ao concluir, solicite seu certificado de participação.</p>
+                <div style="display:flex;gap:.75rem;flex-wrap:wrap;position:relative;" id="trm-card-btns">
+                    <button onclick="trmAbrirInscricao()" style="flex:1;min-width:160px;display:flex;align-items:center;justify-content:center;gap:.5rem;background:linear-gradient(135deg,#C9A227,#a07c18);color:#0a0800;font-weight:900;font-size:.78rem;padding:.75rem 1rem;border-radius:.8rem;border:none;cursor:pointer;letter-spacing:.02em;">
+                        <i class="fas fa-user-plus" style="font-size:.75rem;"></i> Inscrever-se
+                    </button>
+                    <button onclick="trmAbrirCertificado()" id="trm-btn-cert" style="flex:1;min-width:160px;display:flex;align-items:center;justify-content:center;gap:.5rem;font-weight:900;font-size:.78rem;padding:.75rem 1rem;border-radius:.8rem;cursor:pointer;letter-spacing:.02em;transition:all .2s;" title="Disponível apenas às sextas-feiras">
+                        <i class="fas fa-certificate" style="font-size:.75rem;"></i> Emitir Certificado
+                    </button>
+                </div>
+                <div id="trm-dir-btn-wrap" class="hidden" style="margin-top:.6rem;position:relative;display:flex;gap:.5rem;">
+                    <button onclick="trmDiretorAbrir()" style="flex:1;display:flex;align-items:center;justify-content:center;gap:.5rem;background:rgba(168,85,247,.12);color:#c084fc;font-weight:800;font-size:.7rem;padding:.55rem .8rem;border-radius:.7rem;border:1px solid rgba(168,85,247,.3);cursor:pointer;">
+                        <i class="fas fa-shield-halved" style="font-size:.65rem;"></i> Gerenciar Inscrições
+                    </button>
+                    <button onclick="trmVerArteCert()" style="display:flex;align-items:center;justify-content:center;gap:.4rem;background:rgba(201,162,39,.1);color:#C9A227;font-weight:800;font-size:.7rem;padding:.55rem .85rem;border-radius:.7rem;border:1px solid rgba(201,162,39,.3);cursor:pointer;white-space:nowrap;">
+                        <i class="fas fa-eye" style="font-size:.65rem;"></i> Ver Arte
+                    </button>
+                </div>
+            </div>
+
         </div><!-- /acad-view-landing -->
 
         <!-- ══════════════════════════════════════════════════
@@ -7596,6 +7633,36 @@ function brl(v) {
     return 'R$ ' + Number(v).toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2});
 }
 function numBR(v) { return Math.round(v).toLocaleString('pt-BR'); }
+
+/* ── Odômetro animado ─────────────────────────────────────────────────────
+   Uso: <span data-countup="123456.78" data-fmt="brl">R$ 123.456,78</span>
+   Formatos: "brl" (R$ com 2 decimais) | "int" (número inteiro pt-BR) | "pct" (X,XX%)
+   Chame _runCountUps(containerEl) após setar innerHTML do container.
+────────────────────────────────────────────────────────────────────────── */
+function _countUp(el, dur) {
+    if (el._cuRaf) cancelAnimationFrame(el._cuRaf);
+    const endVal = parseFloat(el.dataset.countup);
+    if (!endVal || endVal <= 0) return;
+    const finalText = el.textContent;
+    const fmt = el.dataset.fmt || 'brl';
+    const startTime = performance.now();
+    const fmtVal = (v) => {
+        if (fmt === 'brl') return brl(v);
+        if (fmt === 'pct') return v.toFixed(2).replace('.', ',') + '%';
+        return Math.round(v).toLocaleString('pt-BR');
+    };
+    const tick = (now) => {
+        const p = Math.min((now - startTime) / dur, 1);
+        const eased = 1 - Math.pow(1 - p, 3); // ease-out cúbico
+        el.textContent = fmtVal(endVal * eased);
+        if (p < 1) { el._cuRaf = requestAnimationFrame(tick); }
+        else { el.textContent = finalText; }
+    };
+    el._cuRaf = requestAnimationFrame(tick);
+}
+function _runCountUps(container, dur) {
+    (container || document).querySelectorAll('[data-countup]').forEach(function(el) { _countUp(el, dur || 1500); });
+}
 function pct(a,b) { return b ? Math.min(100, Math.round(a/b*100)) : 0; }
 function hitMeta(real, meta) {
     // retorna badge "😊 Meta batida!" quando real >= meta
@@ -8976,7 +9043,7 @@ function render360(tipo, val) {
                     </div>
                     <span style="font-size:.6rem;font-weight:700;padding:.15rem .55rem;border-radius:999px;background:${_C1}20;color:${_C1};white-space:nowrap;flex-shrink:0;">${_d.periodo}</span>
                 </div>
-                <p style="font-size:1.25rem;font-weight:900;color:#fff;line-height:1.2;margin:0 0 .25rem;">${brl(total)}${metaBatidaRede}</p>
+                <p style="font-size:1.25rem;font-weight:900;color:#fff;line-height:1.2;margin:0 0 .25rem;"><span data-countup="${total}" data-fmt="brl">${brl(total)}</span>${metaBatidaRede}</p>
                 <div style="height:3px;background:#1f2937;border-radius:3px;margin-bottom:.25rem;">
                     <div style="height:100%;width:${_fatBarPct}%;background:${perfBarStyle};border-radius:3px;transition:width .4s;"></div>
                 </div>
@@ -9033,7 +9100,7 @@ function render360(tipo, val) {
                     </div>
                     <span style="font-size:.6rem;font-weight:700;padding:.15rem .55rem;border-radius:999px;background:${_C2}20;color:${_C2};white-space:nowrap;flex-shrink:0;">${_hoje} ↗</span>
                 </div>
-                <p style="font-size:1.25rem;font-weight:900;color:#fff;line-height:1.2;margin:0 0 .25rem;">${brl(_totalDia)}</p>
+                <p style="font-size:1.25rem;font-weight:900;color:#fff;line-height:1.2;margin:0 0 .25rem;"><span data-countup="${_totalDia}" data-fmt="brl">${brl(_totalDia)}</span></p>
                 <div style="height:3px;background:#1f2937;border-radius:3px;margin-bottom:.25rem;">
                     <div style="height:100%;width:${_temDados?'100':'0'}%;background:linear-gradient(90deg,${_C2},${_C2L});border-radius:3px;transition:width .4s;"></div>
                 </div>
@@ -9094,12 +9161,12 @@ function render360(tipo, val) {
                 <div style="display:flex;gap:.5rem;align-items:flex-end;margin-bottom:.25rem;">
                     <div style="flex:1;">
                         <div style="font-size:.5rem;color:${_C3L};font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-bottom:1px;">Salão</div>
-                        <p style="font-size:1rem;font-weight:900;color:#fff;margin:0;line-height:1;">${_temMes ? brl(_salaoMes) : '—'}</p>
+                        <p style="font-size:1rem;font-weight:900;color:#fff;margin:0;line-height:1;">${_temMes ? '<span data-countup="'+_salaoMes+'" data-fmt="brl">'+brl(_salaoMes)+'</span>' : '—'}</p>
                     </div>
                     <div style="font-size:.7rem;color:#4b5563;font-weight:700;padding-bottom:2px;">vs</div>
                     <div style="flex:1;text-align:right;">
                         <div style="font-size:.5rem;color:#34d399;font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-bottom:1px;">Financeiras</div>
-                        <p style="font-size:1rem;font-weight:900;color:#fff;margin:0;line-height:1;">${_temMes ? brl(_finMes) : '—'}</p>
+                        <p style="font-size:1rem;font-weight:900;color:#fff;margin:0;line-height:1;">${_temMes ? '<span data-countup="'+_finMes+'" data-fmt="brl">'+brl(_finMes)+'</span>' : '—'}</p>
                     </div>
                 </div>
                 <div style="height:18px;background:#1f2937;border-radius:4px;overflow:hidden;display:flex;">
@@ -9145,7 +9212,7 @@ function render360(tipo, val) {
                         </div>
                         <span style="font-size:.6rem;font-weight:700;padding:.15rem .55rem;border-radius:999px;background:${_C4}20;color:${_C4};white-space:nowrap;flex-shrink:0;">ver ranking ↗</span>
                     </div>
-                    <p style="font-size:1.25rem;font-weight:900;color:#fff;line-height:1.2;margin:0 0 .25rem;">${brl(agFat)}</p>
+                    <p style="font-size:1.25rem;font-weight:900;color:#fff;line-height:1.2;margin:0 0 .25rem;"><span data-countup="${agFat}" data-fmt="brl">${brl(agFat)}</span></p>
                     <div style="height:3px;background:#1f2937;border-radius:3px;margin-bottom:.25rem;">
                         <div style="height:100%;width:${agPctMeta}%;background:${agBarCor};border-radius:3px;transition:width .4s;"></div>
                     </div>
@@ -9364,6 +9431,7 @@ function render360(tipo, val) {
     clearTimeout(window._r360fadeTimer);
     window._r360fadeTimer = setTimeout(function(){
         document.getElementById('360-kpis').innerHTML     = kpis;
+        _runCountUps(document.getElementById('360-kpis'), 1500);
         document.getElementById('360-rankings').innerHTML = rankings;
         document.getElementById('360-metas').innerHTML    = metas;
         document.getElementById('360-subtitulo').textContent = subtitulo;
@@ -23320,6 +23388,512 @@ window._dirDirUpdateTimestamp = _dirDirUpdateTimestamp;
     </div>
   </div>
 </div>
+
+<!-- ══════════════════════════════════════════════════════════
+     MODAL — INSCRIÇÃO TREINAMENTO PRESENCIAL
+══════════════════════════════════════════════════════════ -->
+<div id="modal-trm-inscricao" class="hidden fixed inset-0 z-[9999] flex items-center justify-center bg-black/85 p-4" onclick="if(event.target===this)trmFecharModal('modal-trm-inscricao')">
+  <div style="background:linear-gradient(160deg,#0c0a1a,#10091e);border:2px solid rgba(201,162,39,.5);border-radius:1.4rem;width:100%;max-width:460px;padding:2rem;position:relative;">
+    <div style="position:absolute;top:-1px;left:50%;transform:translateX(-50%);background:linear-gradient(90deg,#C9A227,#a07c18);padding:.3rem 1.5rem;border-radius:0 0 .8rem .8rem;font-size:.6rem;font-weight:900;color:#0a0800;letter-spacing:.15em;text-transform:uppercase;">Inscrição</div>
+    <button onclick="trmFecharModal('modal-trm-inscricao')" style="position:absolute;top:.75rem;right:.75rem;color:#6b7280;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:.5rem;width:2rem;height:2rem;cursor:pointer;font-size:.9rem;display:flex;align-items:center;justify-content:center;">✕</button>
+    <div style="text-align:center;margin:1.5rem 0 1.25rem;">
+      <div style="font-size:2.8rem;filter:drop-shadow(0 0 14px rgba(201,162,39,.6));margin-bottom:.5rem;">🎓</div>
+      <h2 style="font-size:1rem;font-weight:900;color:#C9A227;margin:0 0 .25rem;">Treinamento Presencial</h2>
+      <p style="font-size:.68rem;color:#6b7280;margin:0;">17 e 18 de junho de 2026 · 20 horas</p>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:.85rem;">
+      <div>
+        <label style="font-size:.65rem;font-weight:700;color:#9ca3af;letter-spacing:.08em;text-transform:uppercase;display:block;margin-bottom:.35rem;">Nome Completo *</label>
+        <input id="trm-input-nome" type="text" placeholder="Digite seu nome completo" autocomplete="name"
+          style="width:100%;background:rgba(255,255,255,.05);border:1.5px solid rgba(255,255,255,.12);border-radius:.75rem;padding:.7rem 1rem;color:#fff;font-size:.82rem;outline:none;box-sizing:border-box;"
+          onfocus="this.style.borderColor='rgba(201,162,39,.6)'" onblur="this.style.borderColor='rgba(255,255,255,.12)'">
+      </div>
+      <div>
+        <label style="font-size:.65rem;font-weight:700;color:#9ca3af;letter-spacing:.08em;text-transform:uppercase;display:block;margin-bottom:.35rem;">CPF *</label>
+        <input id="trm-input-cpf" type="text" placeholder="000.000.000-00" maxlength="14" inputmode="numeric"
+          style="width:100%;background:rgba(255,255,255,.05);border:1.5px solid rgba(255,255,255,.12);border-radius:.75rem;padding:.7rem 1rem;color:#fff;font-size:.82rem;outline:none;box-sizing:border-box;"
+          onfocus="this.style.borderColor='rgba(201,162,39,.6)'" onblur="this.style.borderColor='rgba(255,255,255,.12)'"
+          oninput="trmMascaraCpf(this)">
+        <p style="font-size:.6rem;color:#6b7280;margin:.3rem 0 0 .3rem;">Usado exclusivamente para emissão do certificado.</p>
+      </div>
+      <button onclick="trmSalvarInscricao()" id="trm-btn-salvar" style="width:100%;background:linear-gradient(135deg,#C9A227,#a07c18);color:#0a0800;font-weight:900;font-size:.85rem;padding:.85rem;border-radius:.8rem;border:none;cursor:pointer;margin-top:.25rem;letter-spacing:.03em;">
+        Confirmar Inscrição &nbsp;<i class="fas fa-check"></i>
+      </button>
+    </div>
+    <p id="trm-inscricao-msg" style="font-size:.7rem;text-align:center;margin-top:.75rem;display:none;"></p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     MODAL — EMISSÃO DE CERTIFICADO (usuário)
+══════════════════════════════════════════════════════════ -->
+<div id="modal-trm-cert" class="hidden fixed inset-0 z-[9999] flex items-center justify-center bg-black/85 p-4" onclick="if(event.target===this)trmFecharModal('modal-trm-cert')">
+  <div style="background:linear-gradient(160deg,#0c0a1a,#10091e);border:2px solid rgba(201,162,39,.5);border-radius:1.4rem;width:100%;max-width:480px;padding:2rem;position:relative;">
+    <div style="position:absolute;top:-1px;left:50%;transform:translateX(-50%);background:linear-gradient(90deg,#C9A227,#a07c18);padding:.3rem 1.5rem;border-radius:0 0 .8rem .8rem;font-size:.6rem;font-weight:900;color:#0a0800;letter-spacing:.15em;text-transform:uppercase;">Certificado</div>
+    <button onclick="trmFecharModal('modal-trm-cert')" style="position:absolute;top:.75rem;right:.75rem;color:#6b7280;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:.5rem;width:2rem;height:2rem;cursor:pointer;font-size:.9rem;display:flex;align-items:center;justify-content:center;">✕</button>
+    <div style="text-align:center;margin:1.5rem 0 1.25rem;">
+      <div style="font-size:2.8rem;filter:drop-shadow(0 0 14px rgba(201,162,39,.6));margin-bottom:.5rem;">📜</div>
+      <h2 style="font-size:1rem;font-weight:900;color:#C9A227;margin:0 0 .25rem;">Emissão de Certificado</h2>
+      <p style="font-size:.68rem;color:#6b7280;margin:0;">Treinamento Presencial · 17 e 18/06/2026</p>
+    </div>
+    <!-- busca por CPF -->
+    <div id="trm-cert-busca" style="display:flex;flex-direction:column;gap:.85rem;">
+      <div>
+        <label style="font-size:.65rem;font-weight:700;color:#9ca3af;letter-spacing:.08em;text-transform:uppercase;display:block;margin-bottom:.35rem;">Seu CPF</label>
+        <input id="trm-cert-cpf" type="text" placeholder="000.000.000-00" maxlength="14" inputmode="numeric"
+          style="width:100%;background:rgba(255,255,255,.05);border:1.5px solid rgba(255,255,255,.12);border-radius:.75rem;padding:.7rem 1rem;color:#fff;font-size:.82rem;outline:none;box-sizing:border-box;"
+          onfocus="this.style.borderColor='rgba(201,162,39,.6)'" onblur="this.style.borderColor='rgba(255,255,255,.12)'"
+          oninput="trmMascaraCpf(this)" onkeydown="if(event.key==='Enter')trmBuscarCertificado()">
+      </div>
+      <button onclick="trmBuscarCertificado()" style="width:100%;background:linear-gradient(135deg,#C9A227,#a07c18);color:#0a0800;font-weight:900;font-size:.85rem;padding:.8rem;border-radius:.8rem;border:none;cursor:pointer;">
+        Verificar &nbsp;<i class="fas fa-search"></i>
+      </button>
+    </div>
+    <!-- resultado -->
+    <div id="trm-cert-resultado" class="hidden" style="margin-top:1rem;">
+      <!-- preenchido por JS -->
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     MODAL — PAINEL DO DIRETOR (Marcelo)
+══════════════════════════════════════════════════════════ -->
+<div id="modal-trm-pdf" class="hidden fixed inset-0 z-[10000] flex items-center justify-center bg-black/95 p-2" onclick="if(event.target===this)trmFecharModal('modal-trm-pdf')">
+  <div style="width:100%;max-width:1000px;height:90vh;background:#111;border:2px solid rgba(201,162,39,.4);border-radius:1rem;display:flex;flex-direction:column;position:relative;overflow:hidden;">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:.6rem 1rem;background:#0a0800;flex-shrink:0;">
+      <span style="font-size:.7rem;font-weight:700;color:#C9A227;letter-spacing:.1em;">CERTIFICADO · PRÉVIA</span>
+      <button onclick="trmFecharModal('modal-trm-pdf')" style="color:#9ca3af;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:.4rem;width:1.8rem;height:1.8rem;cursor:pointer;font-size:.85rem;">✕</button>
+    </div>
+    <div id="trm-pdf-container" style="flex:1;width:100%;overflow:auto;display:flex;align-items:center;justify-content:center;"></div>
+  </div>
+</div>
+
+<div id="modal-trm-diretor" class="hidden fixed inset-0 z-[9999] flex items-center justify-center bg-black/85 p-4" onclick="if(event.target===this)trmFecharModal('modal-trm-diretor')">
+  <div style="background:linear-gradient(160deg,#0c0a1a,#10091e);border:2px solid rgba(168,85,247,.4);border-radius:1.4rem;width:100%;max-width:640px;max-height:90vh;display:flex;flex-direction:column;position:relative;">
+    <div style="position:absolute;top:-1px;left:50%;transform:translateX(-50%);background:linear-gradient(90deg,#a855f7,#7c3aed);padding:.3rem 1.5rem;border-radius:0 0 .8rem .8rem;font-size:.6rem;font-weight:900;color:#fff;letter-spacing:.15em;text-transform:uppercase;">Diretor · Controle</div>
+    <div style="padding:1.5rem 1.5rem .75rem;flex-shrink:0;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:.5rem;">
+        <div>
+          <h2 style="font-size:.95rem;font-weight:900;color:#c084fc;margin:0 0 .15rem;">Inscrições &amp; Certificados</h2>
+          <p style="font-size:.65rem;color:#6b7280;margin:0;">Treinamento 17–18/06/2026 · 20h</p>
+        </div>
+        <button onclick="trmFecharModal('modal-trm-diretor')" style="color:#6b7280;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:.5rem;width:2rem;height:2rem;cursor:pointer;font-size:.9rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;">✕</button>
+      </div>
+    </div>
+    <div id="trm-dir-lista" style="overflow-y:auto;flex:1;padding:0 1.5rem 1.5rem;">
+      <p style="font-size:.75rem;color:#6b7280;font-style:italic;">Carregando…</p>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ══════════════════════════════════════════════════════
+   TREINAMENTO PRESENCIAL — lógica completa
+══════════════════════════════════════════════════════ */
+(function(){
+  const TRM_DOC = 'turma_2026_06';
+  const TRM_COL = 'ts_treinamentos';
+
+  function _db(){ return window._acadDB || (window._acadFBOk && firebase.firestore()); }
+
+  function _isSexta(){
+    return new Date().getDay() === 5;
+  }
+
+  function _isDiretor(){
+    return user && user.cargo === 'diretoria' && (user.name||'').toLowerCase().includes('melo');
+  }
+
+  /* ── Inicializa botão de certificado e botão diretor ── */
+  function trmInit(){
+    const btn = document.getElementById('trm-btn-cert');
+    if(btn){
+      if(_isSexta()){
+        btn.style.background = 'linear-gradient(135deg,#1d4ed8,#1e40af)';
+        btn.style.color = '#fff';
+        btn.style.border = 'none';
+      } else {
+        btn.style.background = 'rgba(255,255,255,.05)';
+        btn.style.color = '#4b5563';
+        btn.style.border = '1.5px solid rgba(255,255,255,.08)';
+        btn.title = 'Disponível apenas às sextas-feiras';
+      }
+    }
+    if(_isDiretor()){
+      const wrap = document.getElementById('trm-dir-btn-wrap');
+      if(wrap) wrap.classList.remove('hidden');
+    }
+  }
+
+  /* ── CPF mask ── */
+  window.trmMascaraCpf = function(el){
+    let v = el.value.replace(/\D/g,'').slice(0,11);
+    if(v.length > 9)      v = v.replace(/(\d{3})(\d{3})(\d{3})(\d{0,2})/,'$1.$2.$3-$4');
+    else if(v.length > 6) v = v.replace(/(\d{3})(\d{3})(\d{0,3})/,'$1.$2.$3');
+    else if(v.length > 3) v = v.replace(/(\d{3})(\d{0,3})/,'$1.$2');
+    el.value = v;
+  };
+
+  /* ── Fechar modal ── */
+  window.trmFecharModal = function(id){
+    const el = document.getElementById(id);
+    if(el) el.classList.add('hidden');
+  };
+
+  /* ── INSCRIÇÃO ── */
+  window.trmAbrirInscricao = function(){
+    document.getElementById('trm-input-nome').value = '';
+    document.getElementById('trm-input-cpf').value = '';
+    const msg = document.getElementById('trm-inscricao-msg');
+    if(msg){ msg.style.display='none'; msg.textContent=''; }
+    document.getElementById('modal-trm-inscricao').classList.remove('hidden');
+  };
+
+  window.trmSalvarInscricao = async function(){
+    const nome = document.getElementById('trm-input-nome').value.trim();
+    const cpf  = document.getElementById('trm-input-cpf').value.trim();
+    const msg  = document.getElementById('trm-inscricao-msg');
+    const btn  = document.getElementById('trm-btn-salvar');
+
+    if(!nome || nome.length < 5){
+      _trmMsg(msg,'Por favor, informe seu nome completo.','#f87171'); return;
+    }
+    const cpfRaw = cpf.replace(/\D/g,'');
+    if(cpfRaw.length !== 11){
+      _trmMsg(msg,'CPF inválido. Verifique e tente novamente.','#f87171'); return;
+    }
+
+    const db = _db();
+    if(!db){ _trmMsg(msg,'Sem conexão com o servidor. Tente novamente.','#f87171'); return; }
+
+    btn.disabled = true; btn.textContent = 'Salvando…';
+    try {
+      const ref = db.collection(TRM_COL).doc(TRM_DOC);
+      const snap = await ref.get();
+      const data = snap.exists ? (snap.data()||{}) : {};
+      const inscricoes = data.inscricoes || {};
+      if(inscricoes[cpfRaw]){
+        _trmMsg(msg,'CPF já inscrito nesta turma. Você já está na lista!','#4ade80');
+        btn.disabled=false; btn.innerHTML='Confirmar Inscrição &nbsp;<i class="fas fa-check"></i>'; return;
+      }
+      inscricoes[cpfRaw] = { nome, cpf, inscritoEm: Date.now(), certificadoLiberado: false, liberadoEm: null };
+      await ref.set({ inscricoes }, { merge: true });
+      _trmMsg(msg,'Inscrição confirmada! Nos vemos no treinamento.','#4ade80');
+      btn.innerHTML='Inscrição Confirmada! <i class="fas fa-check"></i>';
+      setTimeout(()=>{ trmFecharModal('modal-trm-inscricao'); btn.disabled=false; btn.innerHTML='Confirmar Inscrição &nbsp;<i class="fas fa-check"></i>'; },2200);
+    } catch(e){
+      _trmMsg(msg,'Erro ao salvar. Tente novamente.','#f87171');
+      btn.disabled=false; btn.innerHTML='Confirmar Inscrição &nbsp;<i class="fas fa-check"></i>';
+    }
+  };
+
+  function _trmMsg(el, txt, cor){
+    if(!el) return;
+    el.textContent = txt; el.style.color = cor; el.style.display = 'block';
+  }
+
+  /* ── CERTIFICADO (usuário) ── */
+  window.trmAbrirCertificado = function(){
+    if(!_isSexta()){
+      if(typeof toast !== 'undefined')
+        toast('A emissão de certificado está disponível apenas às sextas-feiras.','warning');
+      else alert('A emissão de certificado está disponível apenas às sextas-feiras.');
+      return;
+    }
+    document.getElementById('trm-cert-cpf').value = '';
+    const res = document.getElementById('trm-cert-resultado');
+    if(res){ res.classList.add('hidden'); res.innerHTML=''; }
+    document.getElementById('modal-trm-cert').classList.remove('hidden');
+  };
+
+  window.trmBuscarCertificado = async function(){
+    const cpf = document.getElementById('trm-cert-cpf').value.trim();
+    const cpfRaw = cpf.replace(/\D/g,'');
+    const res = document.getElementById('trm-cert-resultado');
+    if(cpfRaw.length !== 11){
+      res.classList.remove('hidden');
+      res.innerHTML = '<p style="color:#f87171;font-size:.78rem;text-align:center;">CPF inválido.</p>';
+      return;
+    }
+    res.classList.remove('hidden');
+    res.innerHTML = '<p style="color:#9ca3af;font-size:.75rem;text-align:center;font-style:italic;">Verificando…</p>';
+    const db = _db();
+    if(!db){ res.innerHTML='<p style="color:#f87171;font-size:.78rem;text-align:center;">Sem conexão com servidor.</p>'; return; }
+    try {
+      const snap = await db.collection(TRM_COL).doc(TRM_DOC).get();
+      const inscricoes = snap.exists ? (snap.data()?.inscricoes || {}) : {};
+      const insc = inscricoes[cpfRaw];
+      if(!insc){
+        res.innerHTML = '<p style="color:#f87171;font-size:.78rem;text-align:center;">CPF não encontrado nas inscrições desta turma.</p>';
+        return;
+      }
+      if(!insc.certificadoLiberado){
+        res.innerHTML = `<div style="text-align:center;padding:1rem;">
+          <div style="font-size:2rem;margin-bottom:.5rem;">⏳</div>
+          <p style="color:#C9A227;font-weight:700;font-size:.85rem;margin:0 0 .3rem;">${insc.nome}</p>
+          <p style="color:#9ca3af;font-size:.72rem;">Certificado ainda não liberado.</p>
+          <p style="color:#6b7280;font-size:.65rem;margin-top:.4rem;">Aguarde a liberação pelo Diretor após o treinamento.</p>
+        </div>`;
+        return;
+      }
+      res.innerHTML = `<div style="text-align:center;padding:.75rem;">
+        <div style="font-size:2rem;margin-bottom:.5rem;">🏅</div>
+        <p style="color:#4ade80;font-weight:700;font-size:.85rem;margin:0 0 .3rem;">${insc.nome}</p>
+        <p style="color:#9ca3af;font-size:.7rem;margin:0 0 1rem;">Certificado liberado. Parabéns!</p>
+        <div style="display:flex;gap:.6rem;justify-content:center;flex-wrap:wrap;">
+          <button onclick="trmGerarPDF('${cpfRaw}','visualizar')" style="display:flex;align-items:center;gap:.4rem;background:rgba(29,78,216,.18);color:#93c5fd;border:1px solid rgba(29,78,216,.4);border-radius:.65rem;padding:.6rem 1.1rem;cursor:pointer;font-size:.75rem;font-weight:700;">
+            <i class="fas fa-eye"></i> Visualizar
+          </button>
+          <button onclick="trmGerarPDF('${cpfRaw}','baixar')" style="display:flex;align-items:center;gap:.4rem;background:linear-gradient(135deg,#C9A227,#a07c18);color:#0a0800;border:none;border-radius:.65rem;padding:.6rem 1.1rem;cursor:pointer;font-size:.75rem;font-weight:900;">
+            <i class="fas fa-download"></i> Baixar PDF
+          </button>
+        </div>
+      </div>`;
+      window._trmCertData = { nome: insc.nome, cpf: insc.cpf };
+    } catch(e){
+      res.innerHTML = '<p style="color:#f87171;font-size:.78rem;text-align:center;">Erro ao buscar dados.</p>';
+    }
+  };
+
+  /* ── GERAR CERTIFICADO PDF ── */
+  window.trmGerarPDF = async function(cpfRaw, modo){
+    const db = _db();
+    let nome = '', cpfFormatado = '';
+    if(window._trmCertData){
+      nome = window._trmCertData.nome;
+      cpfFormatado = window._trmCertData.cpf;
+    } else if(db){
+      try {
+        const snap = await db.collection(TRM_COL).doc(TRM_DOC).get();
+        const insc = snap.data()?.inscricoes?.[cpfRaw];
+        if(insc){ nome = insc.nome; cpfFormatado = insc.cpf; }
+      } catch(e){}
+    }
+    if(!nome){ if(typeof toast!=='undefined') toast('Dados não encontrados.','error'); return; }
+    await _trmRenderPDF(nome, cpfFormatado, modo);
+  };
+
+  async function _trmRenderPDF(nome, cpf, modo){
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ orientation:'l', unit:'mm', format:'a4' });
+    const W=297, H=210;
+
+    function _loadImg(url, op, maxW){
+      return new Promise(function(res){
+        const img = new Image(); img.crossOrigin='anonymous';
+        img.onload=function(){
+          let w=img.width, h=img.height;
+          if(maxW && w>maxW){ h=Math.round(h*maxW/w); w=maxW; }
+          const c=document.createElement('canvas'); c.width=w; c.height=h;
+          const ctx=c.getContext('2d');
+          if(op && op<1) ctx.globalAlpha=op;
+          ctx.drawImage(img,0,0,w,h);
+          res(c.toDataURL('image/png'));
+        };
+        img.onerror=function(){ res(null); };
+        img.src=url;
+      });
+    }
+    const [ravData, cdcWM] = await Promise.all([
+      _loadImg('/assets/Logo RAV.png', 1, 320),
+      _loadImg('/assets/logo-cdc.png', 0.07, 200)
+    ]);
+
+    /* FUNDO BRANCO */
+    doc.setFillColor(255,255,255); doc.rect(0,0,W,H,'F');
+
+    /* MARCA D'AGUA CDC */
+    if(cdcWM) doc.addImage(cdcWM,'PNG', W/2-50, H/2-20, 100, 40);
+
+    /* FORMA PRETA ESQUERDA */
+    doc.setFillColor(18,18,18);
+    const lpts=[[0,0],[52,0],[50,8],[48,22],[46,42],[44,65],[43,90],[42,118],[42,148],[43,175],[44,210],[0,210]];
+    const lrel=[]; let lx=0,ly=0;
+    lpts.forEach(([ax,ay])=>{ lrel.push([ax-lx,ay-ly]); lx=ax; ly=ay; });
+    doc.lines(lrel,0,0,[1,1],'F',true);
+
+    /* SWOOSH DOURADO */
+    doc.setDrawColor(201,162,39); doc.setLineWidth(4);
+    doc.lines([[2,-52,28,-148,50,-148],[38,0,120,32,190,58]],4,158,[1,1],'S',false);
+
+    /* LINHA DIAGONAL DIREITA */
+    doc.setDrawColor(201,162,39); doc.setLineWidth(1.2);
+    doc.line(218,5, 292,H-5);
+
+    /* ACENTO PRETO SUPERIOR DIREITO */
+    doc.setFillColor(18,18,18);
+    const rpts=[[297,0],[240,0],[244,6],[250,14],[258,20],[268,23],[280,22],[290,16],[297,6]];
+    const rrel=[]; let rx=0,ry=0;
+    rpts.forEach(([ax,ay])=>{ rrel.push([ax-rx,ay-ry]); rx=ax; ry=ay; });
+    doc.lines(rrel,0,0,[1,1],'F',true);
+
+    /* BORDAS DOURADAS */
+    doc.setDrawColor(180,140,25); doc.setLineWidth(1.8); doc.rect(4,4,W-8,H-8);
+    doc.setLineWidth(0.5); doc.rect(7.5,7.5,W-15,H-15);
+
+    /* LOGO RAV (canto inferior esquerdo, sobre fundo preto) */
+    if(ravData) doc.addImage(ravData,'PNG', 5, H-34, 34, 26);
+
+    /* TÍTULO */
+    const cx=W/2+18;
+    doc.setFont('helvetica','bold'); doc.setFontSize(33); doc.setTextColor(20,20,20);
+    doc.text('CERTIFICADO', cx, 50, {align:'center'});
+    doc.setDrawColor(180,140,25); doc.setLineWidth(1.4);
+    doc.line(cx-55,55,cx+55,55);
+    doc.setLineWidth(0.4);
+    doc.line(cx-55,57.5,cx+55,57.5);
+
+    /* CORPO */
+    doc.setFont('helvetica','bold'); doc.setFontSize(11); doc.setTextColor(25,25,25);
+    doc.text('Certificamos que '+nome+' participou e concluiu', cx, 78, {align:'center'});
+    doc.text('o Treinamento Presencial "TITAS SINERGY",', cx, 90, {align:'center'});
+    doc.text('realizado nos dias 17 e 18 de junho de 2026,', cx, 102, {align:'center'});
+    doc.text('com carga horaria de 20 (vinte) horas.', cx, 114, {align:'center'});
+
+    /* DATA */
+    const hoje=new Date();
+    const meses=['janeiro','fevereiro','marco','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
+    doc.setFont('helvetica','normal'); doc.setFontSize(9.5); doc.setTextColor(80,80,80);
+    doc.text('Vitoria - ES, '+hoje.getDate()+' de '+meses[hoje.getMonth()]+' de '+hoje.getFullYear()+'.', cx, 138, {align:'center'});
+
+    /* ASSINATURAS */
+    doc.setDrawColor(80,80,80); doc.setLineWidth(0.5);
+    const s1x=cx-52, s2x=cx+52;
+    doc.line(s1x-38,168,s1x+38,168);
+    doc.setFont('helvetica','bold'); doc.setFontSize(8.5); doc.setTextColor(25,25,25);
+    doc.text('Marcelo Lima', s1x, 174, {align:'center'});
+    doc.setFont('helvetica','normal'); doc.setFontSize(7.5); doc.setTextColor(90,90,90);
+    doc.text('Diretor - RAV Holding', s1x, 180, {align:'center'});
+    doc.line(s2x-38,168,s2x+38,168);
+    doc.setFont('helvetica','bold'); doc.setFontSize(8.5); doc.setTextColor(25,25,25);
+    doc.text('Participante', s2x, 174, {align:'center'});
+    doc.setFont('helvetica','normal'); doc.setFontSize(7.5); doc.setTextColor(90,90,90);
+    doc.text('Assinatura', s2x, 180, {align:'center'});
+
+    /* OUTPUT */
+    const blob = doc.output('blob');
+    const blobUrl = URL.createObjectURL(blob);
+    if(modo==='visualizar'){
+      const container = document.getElementById('trm-pdf-container');
+      if(container){
+        container.innerHTML = '';
+        const obj = document.createElement('object');
+        obj.setAttribute('data', blobUrl);
+        obj.setAttribute('type','application/pdf');
+        obj.style.cssText='width:100%;height:100%;min-height:500px;';
+        obj.innerHTML = '<p style="color:#fff;padding:2rem;text-align:center;"><a href="'+blobUrl+'" target="_blank" style="color:#C9A227;font-weight:700;">Clique aqui para abrir o certificado</a></p>';
+        container.appendChild(obj);
+      }
+      document.getElementById('modal-trm-pdf').classList.remove('hidden');
+    } else {
+      const nomeArq = nome.replace(/\s+/g,'_').replace(/[^a-zA-Z0-9_]/g,'');
+      const a = document.createElement('a');
+      a.href = blobUrl; a.download = 'Certificado_'+nomeArq+'_TitasSinergy.pdf';
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      setTimeout(()=>URL.revokeObjectURL(blobUrl), 5000);
+    }
+  }
+
+  /* ── PAINEL DO DIRETOR ── */
+  window.trmDiretorAbrir = async function(){
+    if(!_isDiretor()){ return; }
+    document.getElementById('modal-trm-diretor').classList.remove('hidden');
+    await trmDiretorCarregar();
+  };
+
+  window.trmDiretorCarregar = async function(){
+    const lista = document.getElementById('trm-dir-lista');
+    lista.innerHTML = '<p style="font-size:.75rem;color:#6b7280;font-style:italic;padding:.5rem 0;">Carregando…</p>';
+    const db = _db();
+    if(!db){ lista.innerHTML='<p style="color:#f87171;font-size:.75rem;">Sem conexão.</p>'; return; }
+    try {
+      const snap = await db.collection(TRM_COL).doc(TRM_DOC).get();
+      const inscricoes = snap.exists ? (snap.data()?.inscricoes || {}) : {};
+      const entries = Object.entries(inscricoes);
+      if(entries.length === 0){
+        lista.innerHTML = '<p style="font-size:.78rem;color:#6b7280;text-align:center;padding:1.5rem 0;">Nenhuma inscrição ainda.</p>';
+        return;
+      }
+      const total = entries.length;
+      const aprovados = entries.filter(([,v])=>v.certificadoLiberado).length;
+      let html = `<div style="display:flex;gap:.75rem;margin-bottom:1rem;flex-wrap:wrap;">
+        <span style="font-size:.68rem;padding:.25rem .7rem;border-radius:999px;background:rgba(201,162,39,.12);color:#C9A227;border:1px solid rgba(201,162,39,.3);">${total} inscritos</span>
+        <span style="font-size:.68rem;padding:.25rem .7rem;border-radius:999px;background:rgba(74,222,128,.1);color:#4ade80;border:1px solid rgba(74,222,128,.25);">${aprovados} certificados liberados</span>
+      </div>`;
+      html += '<div style="display:flex;flex-direction:column;gap:.6rem;">';
+      entries.sort((a,b)=>a[1].nome.localeCompare(b[1].nome)).forEach(([cpfRaw, insc])=>{
+        const lib = insc.certificadoLiberado;
+        html += `<div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:.85rem;padding:.85rem 1rem;display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;">
+          <div style="flex:1;min-width:160px;">
+            <p style="font-size:.82rem;font-weight:700;color:#e5e7eb;margin:0 0 .15rem;">${insc.nome}</p>
+            <p style="font-size:.65rem;color:#6b7280;margin:0;">CPF: ${insc.cpf} · ${new Date(insc.inscritoEm).toLocaleDateString('pt-BR')}</p>
+          </div>
+          <div style="display:flex;gap:.5rem;align-items:center;flex-shrink:0;">
+            ${lib
+              ? `<span style="font-size:.62rem;padding:.2rem .6rem;border-radius:999px;background:rgba(74,222,128,.12);color:#4ade80;border:1px solid rgba(74,222,128,.3);">✓ Liberado</span>
+                 <button onclick="trmDiretorRevogar('${cpfRaw}')" style="font-size:.65rem;padding:.25rem .65rem;border-radius:.45rem;background:rgba(239,68,68,.1);color:#f87171;border:1px solid rgba(239,68,68,.25);cursor:pointer;">Revogar</button>`
+              : `<button onclick="trmDiretorLiberar('${cpfRaw}')" style="font-size:.7rem;padding:.3rem .8rem;border-radius:.5rem;background:rgba(201,162,39,.15);color:#C9A227;border:1px solid rgba(201,162,39,.3);cursor:pointer;font-weight:700;">Liberar Cert.</button>`
+            }
+          </div>
+        </div>`;
+      });
+      html += '</div>';
+      lista.innerHTML = html;
+    } catch(e){
+      lista.innerHTML = '<p style="color:#f87171;font-size:.75rem;">Erro ao carregar.</p>';
+    }
+  };
+
+  window.trmDiretorLiberar = async function(cpfRaw){
+    const db = _db(); if(!db) return;
+    try {
+      const ref = db.collection(TRM_COL).doc(TRM_DOC);
+      const snap = await ref.get();
+      const inscricoes = snap.data()?.inscricoes || {};
+      if(!inscricoes[cpfRaw]) return;
+      inscricoes[cpfRaw].certificadoLiberado = true;
+      inscricoes[cpfRaw].liberadoEm = Date.now();
+      await ref.set({ inscricoes }, { merge: true });
+      if(typeof toast!=='undefined') toast('Certificado liberado!','success');
+      await trmDiretorCarregar();
+    } catch(e){ if(typeof toast!=='undefined') toast('Erro ao liberar.','error'); }
+  };
+
+  window.trmDiretorRevogar = async function(cpfRaw){
+    if(!confirm('Revogar certificado deste participante?')) return;
+    const db = _db(); if(!db) return;
+    try {
+      const ref = db.collection(TRM_COL).doc(TRM_DOC);
+      const snap = await ref.get();
+      const inscricoes = snap.data()?.inscricoes || {};
+      if(!inscricoes[cpfRaw]) return;
+      inscricoes[cpfRaw].certificadoLiberado = false;
+      inscricoes[cpfRaw].liberadoEm = null;
+      await ref.set({ inscricoes }, { merge: true });
+      if(typeof toast!=='undefined') toast('Certificado revogado.','warning');
+      await trmDiretorCarregar();
+    } catch(e){ if(typeof toast!=='undefined') toast('Erro ao revogar.','error'); }
+  };
+
+  /* ── VER ARTE DO CERTIFICADO (só Diretor) ── */
+  window.trmVerArteCert = async function(){
+    await _trmRenderPDF('Nome do Participante', '000.000.000-00', 'visualizar');
+  };
+
+  /* ── Hook: inicializar quando a aba Academy abrir ── */
+  const _origSwitchTab = window.switchTab;
+  if(typeof _origSwitchTab === 'function'){
+    window.switchTab = function(tab){
+      _origSwitchTab(tab);
+      if(tab === 'academy') setTimeout(trmInit, 100);
+    };
+  }
+  // também init imediato
+  setTimeout(trmInit, 800);
+
+})();
+</script>
 
 </body>
 </html>

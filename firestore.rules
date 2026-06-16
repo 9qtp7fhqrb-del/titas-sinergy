@@ -40,5 +40,9 @@ service cloud.firestore {
     match /ts_d360_config/{docId} {
       allow read, write: if true;
     }
+
+    match /ts_treinamentos/{docId} {
+      allow read, write: if true;
+    }
   }
 }

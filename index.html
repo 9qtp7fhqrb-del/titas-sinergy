@@ -4650,6 +4650,8 @@ function proceedToDash() {
                             // Firestore está desatualizado — usa hardcoded e bloqueia onSnapshot
                             window._d360LastSavedAt = Number(d360Data.savedAt || Date.now());
                             try { localStorage.removeItem(window._360storageKey); } catch(_) {}
+                            // Atualiza diasDecorridos para hoje antes de salvar (evita projeção errada)
+                            D360.diasDecorridos = Math.min(new Date().getDate(), D360.diasMes);
                             // Qualquer usuário logado pode re-empurrar (dados hardcoded são seguros)
                             setTimeout(() => { try { save360ToStorage(); } catch(_){} }, 800);
                         } else {
@@ -5586,7 +5588,7 @@ const D360 = {
             }
         }
     },
-    diasDecorridos: 12,   // atualizado automaticamente (dia 1 até hoje)
+    diasDecorridos: Math.min(new Date().getDate(), 30), // calculado dinamicamente
     diasMes: 30,          // junho tem 30 dias
 
     // ── Margem Bruta Mensal ──────────────────────────────────────────────────────

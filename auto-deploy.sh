@@ -41,6 +41,15 @@ R_LAST=$(md5 -q "$PROJECT/firestore.rules"  2>/dev/null)
 
 _deploy() {
     local targets="$1"
+    # Atualiza BUILD com timestamp atual sempre que o hosting for republicado
+    if [[ "$targets" == *"hosting"* ]]; then
+        local NEW_BUILD
+        NEW_BUILD=$(date '+%Y%m%d%H%M%S')
+        sed -i '' "s/var BUILD = '[0-9]*'/var BUILD = '$NEW_BUILD'/" "$PROJECT/index.html" 2>/dev/null
+        echo "[$(date '+%d/%m %H:%M:%S')] 🔖 BUILD atualizado para $NEW_BUILD" >> "$LOG"
+        # Atualiza hash para não disparar novo ciclo
+        H_LAST=$(md5 -q "$PROJECT/index.html" 2>/dev/null)
+    fi
     echo "[$(date '+%d/%m %H:%M:%S')] 📝 Alteração detectada — publicando $targets..." >> "$LOG"
     $FIREBASE deploy --only "$targets" >> "$LOG" 2>&1 \
         && echo "[$(date '+%d/%m %H:%M:%S')] ✅ Deploy concluído: https://titas-sinergy.web.app" >> "$LOG" \

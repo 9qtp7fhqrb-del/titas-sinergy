@@ -24260,48 +24260,55 @@ window._dirDirUpdateTimestamp = _dirDirUpdateTimestamp;
   };
 
   /* ── Correção pelo Diretor: marcar questão ── */
+  // acerto: true=certo | false=errado | 'meio'=meio certo
   window.avalCdcMarcar = function(uid, idx, acerto){
     const btnV = document.getElementById('aval-cor-v-'+uid+'-'+idx);
     const btnX = document.getElementById('aval-cor-x-'+uid+'-'+idx);
+    const btnM = document.getElementById('aval-cor-m-'+uid+'-'+idx);
     if(!btnV||!btnX) return;
-    if(acerto){
-      btnV.style.background='#16a34a'; btnV.style.color='#fff';
-      btnX.style.background='rgba(255,255,255,.05)'; btnX.style.color='#6b7280';
-    } else {
-      btnX.style.background='#dc2626'; btnX.style.color='#fff';
-      btnV.style.background='rgba(255,255,255,.05)'; btnV.style.color='#6b7280';
+    const off = 'rgba(255,255,255,.05)';
+    btnV.style.background=off; btnV.style.color='#6b7280'; btnV.dataset.sel='';
+    btnX.style.background=off; btnX.style.color='#6b7280'; btnX.dataset.sel='';
+    if(btnM){ btnM.style.background=off; btnM.style.color='#6b7280'; btnM.dataset.sel=''; }
+    if(acerto===true){
+      btnV.style.background='#16a34a'; btnV.style.color='#fff'; btnV.dataset.sel='1';
+    } else if(acerto===false){
+      btnX.style.background='#dc2626'; btnX.style.color='#fff'; btnX.dataset.sel='1';
+    } else if(acerto==='meio' && btnM){
+      btnM.style.background='#b45309'; btnM.style.color='#fff'; btnM.dataset.sel='1';
     }
-    btnV.dataset.sel = acerto ? '1' : '';
-    btnX.dataset.sel = acerto ? '' : '1';
     _atualizarContador(uid);
   };
 
   function _atualizarContador(uid){
-    let acertos=0, total=0;
+    let pontos=0, total=0;
     for(let i=0;i<N_QUESTOES;i++){
       const v = document.getElementById('aval-cor-v-'+uid+'-'+i);
-      const x = document.getElementById('aval-cor-x-'+uid+'-'+i);
+      const m = document.getElementById('aval-cor-m-'+uid+'-'+i);
       if(!v) continue;
       total++;
-      if(v.dataset.sel==='1') acertos++;
+      if(v.dataset.sel==='1') pontos += 1;
+      else if(m && m.dataset.sel==='1') pontos += 0.5;
     }
+    const nota = (pontos/N_QUESTOES*10).toFixed(1);
     const el = document.getElementById('aval-cor-contador-'+uid);
-    if(el) el.textContent = acertos+'/'+total+' corretas — Nota: '+(acertos/N_QUESTOES*10).toFixed(1);
+    if(el) el.textContent = pontos+'/'+total+' pts — Nota: '+nota;
   }
 
   /* ── Salvar correção ── */
   window.avalCdcSalvarCorrecao = async function(uid){
     const db = _db(); if(!db) return;
     const correctionMap = {};
-    let acertos = 0;
+    let pontos = 0;
     for(let i=0;i<N_QUESTOES;i++){
       const v = document.getElementById('aval-cor-v-'+uid+'-'+i);
+      const m = document.getElementById('aval-cor-m-'+uid+'-'+i);
       if(!v) continue;
-      const ok = v.dataset.sel==='1';
-      correctionMap[i] = ok;
-      if(ok) acertos++;
+      if(v.dataset.sel==='1'){ correctionMap[i]=true;   pontos+=1; }
+      else if(m&&m.dataset.sel==='1'){ correctionMap[i]='meio'; pontos+=0.5; }
+      else { correctionMap[i]=false; }
     }
-    const nota = parseFloat((acertos/N_QUESTOES*10).toFixed(2));
+    const nota = parseFloat((pontos/N_QUESTOES*10).toFixed(2));
     const btn = document.getElementById('aval-btn-salvar-'+uid);
     if(btn){ btn.disabled=true; btn.textContent='Salvando...'; }
     await db.collection(COL_RESP).doc(uid).update({
@@ -24506,38 +24513,56 @@ window._dirDirUpdateTimestamp = _dirDirUpdateTimestamp;
 
     Object.entries(resps).forEach(function([uid,r]){
       const st = r.status||'enviada';
-      const stLabel = st==='corrigida' ? `<span style="color:#4ade80;font-weight:800;">Nota ${(r.nota??0).toFixed(1)}</span>` : `<span style="color:#fbbf24;">Aguardando correção</span>`;
+      const corrigida = st==='corrigida';
+      const stLabel = corrigida
+        ? `<span style="color:#4ade80;font-weight:800;">Nota ${(r.nota??0).toFixed(1)}</span>`
+        : `<span style="color:#fbbf24;">Aguardando correção</span>`;
+      const wrapId = 'aval-wrap-'+uid;
+      const icId   = 'aval-ic-'+uid;
+
       let qsHtml = '';
+      let pontos = 0;
       PERGUNTAS.forEach(function(p,i){
         const mapV = (r.correctionMap||{})[i];
-        const selV = mapV===true ? '1' : '';
+        const selV = mapV===true  ? '1' : '';
+        const selM = mapV==='meio' ? '1' : '';
         const selX = mapV===false ? '1' : '';
-        const bgV  = selV ? '#16a34a' : 'rgba(255,255,255,.05)';
-        const bgX  = selX ? '#dc2626' : 'rgba(255,255,255,.05)';
+        const off  = 'rgba(255,255,255,.05)';
+        const bgV  = selV ? '#16a34a' : off;
+        const bgM  = selM ? '#b45309' : off;
+        const bgX  = selX ? '#dc2626' : off;
         const clV  = selV ? '#fff' : '#6b7280';
+        const clM  = selM ? '#fff' : '#6b7280';
         const clX  = selX ? '#fff' : '#6b7280';
+        if(selV) pontos+=1; else if(selM) pontos+=0.5;
         qsHtml += `<div style="padding:.75rem 1rem;border-bottom:1px solid rgba(255,255,255,.04);">
           <p style="font-size:.65rem;font-weight:800;color:#22d3ee;margin:0 0 .35rem;">${i+1}. ${p}</p>
           <p style="font-size:.75rem;color:#d1d5db;margin:0 0 .5rem;line-height:1.5;">${r.respostas&&r.respostas[i] ? r.respostas[i] : '<em style="color:#4b5563">Não respondido</em>'}</p>
-          <div style="display:flex;gap:.4rem;">
+          <div style="display:flex;gap:.4rem;align-items:center;">
             <button id="aval-cor-x-${uid}-${i}" data-sel="${selX}" onclick="avalCdcMarcar('${uid}',${i},false)" style="background:${bgX};color:${clX};font-weight:900;font-size:.85rem;width:2rem;height:2rem;border-radius:.45rem;border:1.5px solid rgba(239,68,68,.3);cursor:pointer;transition:all .15s;">✗</button>
+            <button id="aval-cor-m-${uid}-${i}" data-sel="${selM}" onclick="avalCdcMarcar('${uid}',${i},'meio')" title="Meio certo" style="background:${bgM};color:${clM};font-weight:900;font-size:.75rem;width:2rem;height:2rem;border-radius:.45rem;border:1.5px solid rgba(245,158,11,.3);cursor:pointer;transition:all .15s;">½</button>
             <button id="aval-cor-v-${uid}-${i}" data-sel="${selV}" onclick="avalCdcMarcar('${uid}',${i},true)" style="background:${bgV};color:${clV};font-weight:900;font-size:.85rem;width:2rem;height:2rem;border-radius:.45rem;border:1.5px solid rgba(74,222,128,.3);cursor:pointer;transition:all .15s;">✓</button>
           </div>
         </div>`;
       });
-      const acert = Object.values(r.correctionMap||{}).filter(v=>v===true).length;
-      const total = Object.keys(r.correctionMap||{}).length;
+
+      const notaCalc = (pontos/N_QUESTOES*10).toFixed(1);
       submissoes += `<div style="border-radius:.85rem;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.08);margin-bottom:1rem;overflow:hidden;">
-        <div style="padding:.85rem 1rem;background:rgba(6,182,212,.05);border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;">
-          <i class="fas fa-user-graduate" style="color:#22d3ee;"></i>
+        <div onclick="(function(){var w=document.getElementById('${wrapId}');var ic=document.getElementById('${icId}');var open=w.style.display!=='none';w.style.display=open?'none':'block';ic.style.transform=open?'rotate(0deg)':'rotate(180deg)';})()" style="padding:.85rem 1rem;background:rgba(6,182,212,.05);display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;cursor:pointer;user-select:none;">
+          <i class="fas fa-user-graduate" style="color:#22d3ee;font-size:.8rem;"></i>
           <span style="font-weight:800;color:#e5e7eb;font-size:.82rem;">${r.nome||uid}</span>
           <span style="font-size:.62rem;color:#9ca3af;">${r.cargo||''} · ${r.loja||''}</span>
-          <span style="margin-left:auto;">${stLabel}</span>
+          <span style="margin-left:auto;display:flex;align-items:center;gap:.75rem;">
+            ${stLabel}
+            <i id="${icId}" class="fas fa-chevron-down" style="font-size:.6rem;color:#6b7280;transition:transform .2s;"></i>
+          </span>
         </div>
-        <div>${qsHtml}</div>
-        <div style="padding:.85rem 1rem;background:rgba(6,182,212,.03);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem;">
-          <span id="aval-cor-contador-${uid}" style="font-size:.72rem;color:#9ca3af;">${acert}/${total} corretas — Nota: ${(acert/N_QUESTOES*10).toFixed(1)}</span>
-          <button id="aval-btn-salvar-${uid}" onclick="avalCdcSalvarCorrecao('${uid}')" style="background:linear-gradient(135deg,#0e7490,#0891b2);color:#fff;font-weight:900;font-size:.75rem;padding:.55rem 1.5rem;border-radius:.65rem;border:none;cursor:pointer;">💾 Salvar Correção</button>
+        <div id="${wrapId}" style="display:none;">
+          ${qsHtml}
+          <div style="padding:.85rem 1rem;background:rgba(6,182,212,.03);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem;">
+            <span id="aval-cor-contador-${uid}" style="font-size:.72rem;color:#9ca3af;">${pontos}/${N_QUESTOES} pts — Nota: ${notaCalc}</span>
+            <button id="aval-btn-salvar-${uid}" onclick="avalCdcSalvarCorrecao('${uid}')" style="background:linear-gradient(135deg,#0e7490,#0891b2);color:#fff;font-weight:900;font-size:.75rem;padding:.55rem 1.5rem;border-radius:.65rem;border:none;cursor:pointer;">💾 Salvar Correção</button>
+          </div>
         </div>
       </div>`;
     });

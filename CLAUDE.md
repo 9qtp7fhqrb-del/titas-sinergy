@@ -8,7 +8,8 @@
 
 ## Estrutura D360 (painel principal)
 Objeto `D360` no `index.html` contém:
-- `diasDecorridos` / `diasMes` — dias do mês atual
+- `diasDecorridos` — valor **estático** escrito pelo script Python a cada run do GitHub Actions. NUNCA recalcular com `new Date().getDate()` — isso quebra as projeções. `_d360Init()` usa `D360.diasDecorridos = D360.diasDecorridos || Math.min(now.getDate(), D360.diasMes)` (preserva o valor do Python).
+- `diasMes` — total de dias do mês, também atualizado pelo Python
 - `subredes` — t1 (Talysson), t2 (Adriel), t3 (Arthur)
 - `lojas` — 11 lojas com `total`, `ped`, `acessorios`, `top` (vendedores)
 

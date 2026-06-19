@@ -44,5 +44,13 @@ service cloud.firestore {
     match /ts_treinamentos/{docId} {
       allow read, write: if true;
     }
+
+    match /ts_avaliacao_cdc_access/{docId} {
+      allow read, write: if true;
+    }
+
+    match /ts_avaliacao_cdc_respostas/{docId} {
+      allow read, write: if true;
+    }
   }
 }

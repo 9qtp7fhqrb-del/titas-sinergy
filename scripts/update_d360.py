@@ -381,6 +381,35 @@ def update_margem_dia_subredes(content, margens):
     return content
 
 
+def update_dias_decorridos(content, dias_decorridos, dias_mes, start_str, today_str):
+    """Atualiza diasDecorridos, diasMes e comentário de fonte no D360 do index.html."""
+    # diasDecorridos — substitui expressão dinâmica OU número anterior pelo valor correto
+    def _repl_dias(m):
+        prefix = m.group(1) if m.group(1) else m.group(2)
+        return prefix + str(dias_decorridos)
+    updated = re.sub(
+        r'(diasDecorridos\s*:\s*)Math\.min\(new Date\(\)\.getDate\(\),\s*\d+\)'
+        r'|(diasDecorridos\s*:\s*)\d+',
+        _repl_dias, content, count=1
+    )
+    if updated == content:
+        print(f"  AVISO: campo diasDecorridos não encontrado no HTML")
+    else:
+        content = updated
+    # diasMes
+    updated2 = re.sub(r'(diasMes\s*:\s*)\d+(?=\s*,)', f'\\g<1>{dias_mes}', content, count=1)
+    if updated2 != content:
+        content = updated2
+    # Comentário de fonte — mantém rastreabilidade do período dos dados
+    novo_com = f'// ── Totais acumulados {start_str} a {today_str} · Atualizado automaticamente ──'
+    content = re.sub(
+        r'// ── Totais acumulados [^\n]+\n',
+        novo_com + '\n',
+        content, count=1
+    )
+    return content
+
+
 def update_margem_rede(content, margem):
     """Atualiza margem_mes na rede (D360 top-level) no index.html."""
     new_val = f'{margem:.2f}'
@@ -711,9 +740,11 @@ def main():
                 f.write(token)
             print(f"Token salvo em {token_out}")
 
+    import calendar as _cal_main2
     today = _now_brt.strftime('%Y-%m-%d')
     start = _now_brt.strftime('%Y-%m-01')
-    print(f"Período: {start} → {today} (BRT {_now_brt.strftime('%H:%M')})")
+    dias_decorridos = min(_now_brt.day, _cal_main2.monthrange(_now_brt.year, _now_brt.month)[1])
+    print(f"Período: {start} → {today} (BRT {_now_brt.strftime('%H:%M')}, dia {dias_decorridos})")
 
     print("Buscando vendas gerais (acumulado)...")
     sales_data = fetch_sales(token, start, today)
@@ -863,6 +894,12 @@ def main():
             sellers_today  = sellers_today_by_store.get(sk, set()),
         )
         print(f"  {sk}: atualizado")
+
+    # Atualiza diasDecorridos e diasMes no HTML (garante projeção correta)
+    import calendar as _cal_main
+    dias_mes_atual = _cal_main.monthrange(_now_brt.year, _now_brt.month)[1]
+    content = update_dias_decorridos(content, dias_decorridos, dias_mes_atual, start, today)
+    print(f"  diasDecorridos → {dias_decorridos}, diasMes → {dias_mes_atual}")
 
     # Atualiza margem_dia (margem bruta do dia) — zera se não houver vendas ainda
     margem_dia_final = margem_dia if margem_dia is not None else 0.0

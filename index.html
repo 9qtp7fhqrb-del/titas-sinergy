@@ -5,7 +5,7 @@
     <script>
     // Cache-buster: força reload se a versão mudou
     (function(){
-      var BUILD = '20260616140000';
+      var BUILD = '20260619134500';
       var stored = localStorage.getItem('d360_build');
       if (stored && stored !== BUILD) {
         localStorage.setItem('d360_build', BUILD);
@@ -100,21 +100,21 @@
         .bg-gradient {
             position: fixed; inset: 0; z-index: 0;
             background:
-                radial-gradient(ellipse at 12% 55%, rgba(4,10,40,.72)  0%, transparent 55%),
-                radial-gradient(ellipse at 88% 15%, rgba(15,5,45,.55)  0%, transparent 52%),
-                radial-gradient(ellipse at 50% 90%, rgba(3,8,30,.5)    0%, transparent 55%),
-                linear-gradient(160deg, rgba(4,7,20,.78) 0%, rgba(6,10,28,.68) 55%, rgba(4,7,20,.78) 100%);
+                radial-gradient(ellipse at 12% 55%, rgba(4,10,40,.85)  0%, transparent 55%),
+                radial-gradient(ellipse at 88% 15%, rgba(15,5,45,.72)  0%, transparent 52%),
+                radial-gradient(ellipse at 50% 90%, rgba(3,8,30,.68)   0%, transparent 55%),
+                linear-gradient(160deg, rgba(4,7,20,.92) 0%, rgba(6,10,28,.88) 55%, rgba(4,7,20,.92) 100%);
         }
 
         /* ── Glassmorphism card — versão imagem (mais escuro, borda azulada+dourada) ── */
         .glass {
-            background: rgba(4,10,28,.72);
+            background: rgba(4,10,28,.88);
             backdrop-filter: blur(22px);
             -webkit-backdrop-filter: blur(22px);
-            border: 1px solid rgba(212,175,55,.18);
-            box-shadow: 0 8px 40px rgba(0,0,0,.6),
-                        0 0 0 1px rgba(74,128,255,.07),
-                        inset 0 1px 0 rgba(255,255,255,.04);
+            border: 1px solid rgba(212,175,55,.22);
+            box-shadow: 0 8px 40px rgba(0,0,0,.65),
+                        0 0 0 1px rgba(74,128,255,.08),
+                        inset 0 1px 0 rgba(255,255,255,.05);
         }
 
         /* ── Gold text gradient ── */
@@ -352,11 +352,11 @@
         @keyframes _pulseRed { 0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(239,68,68,.5)} 50%{opacity:.8;box-shadow:0 0 0 4px rgba(239,68,68,.0)} }
         .spin-360 { animation:spin360 .8s linear infinite; }
         .glass-360 {
-            background: rgba(30,10,60,.55);
+            background: rgba(30,10,60,.82);
             backdrop-filter: blur(22px); -webkit-backdrop-filter: blur(22px);
-            border: 1px solid rgba(168,85,247,.22);
-            box-shadow: 0 8px 40px rgba(0,0,0,.6), 0 0 0 1px rgba(6,182,212,.06),
-                        inset 0 1px 0 rgba(255,255,255,.04);
+            border: 1px solid rgba(168,85,247,.28);
+            box-shadow: 0 8px 40px rgba(0,0,0,.65), 0 0 0 1px rgba(6,182,212,.08),
+                        inset 0 1px 0 rgba(255,255,255,.05);
         }
         /* Simetria dos cards KPI — dupla garantia: height:100% preenche célula do grid,
            flex:1 no topo empurra o bottom section para a borda inferior em qualquer altura */
@@ -376,15 +376,39 @@
         body.brasil-joga #bg-canvas { opacity: 0 !important; }
         body.brasil-joga .bg-gradient { background: rgba(0,0,0,.18) !important; }
         body.brasil-joga .glass {
-            background: rgba(2,22,7,.88) !important;
-            border-color: rgba(34,197,94,.25) !important;
-            box-shadow: 0 8px 40px rgba(0,0,0,.7), inset 0 1px 0 rgba(74,222,128,.06) !important;
+            background: #051a09 !important;
+            border-color: rgba(34,197,94,.35) !important;
+            box-shadow: 0 8px 40px rgba(0,0,0,.8), inset 0 1px 0 rgba(74,222,128,.08) !important;
         }
         body.brasil-joga .glass-360 {
-            background: rgba(4,32,12,.78) !important;
-            border-color: rgba(34,197,94,.55) !important;
-            box-shadow: 0 8px 40px rgba(0,0,0,.65), 0 0 0 1px rgba(34,197,94,.15),
+            background: #071f0c !important;
+            border-color: rgba(34,197,94,.5) !important;
+            box-shadow: 0 8px 40px rgba(0,0,0,.75), 0 0 0 1px rgba(34,197,94,.2),
                         inset 0 1px 0 rgba(74,222,128,.1) !important;
+        }
+        body.brasil-joga .acad-wrap {
+            background: #040f07 !important;
+            border-color: rgba(34,197,94,.3) !important;
+        }
+        body.brasil-joga .acad-card {
+            background: #060e09 !important;
+            border-color: rgba(34,197,94,.18) !important;
+        }
+        body.brasil-joga .acad-stat-card {
+            background: #071208 !important;
+            border-color: rgba(34,197,94,.3) !important;
+        }
+        body.brasil-joga .acad-subrede-card {
+            background: #060e09 !important;
+            border-color: rgba(34,197,94,.2) !important;
+        }
+        body.brasil-joga .acad-question-card {
+            background: #06100a !important;
+            border-color: rgba(34,197,94,.22) !important;
+        }
+        body.brasil-joga .fm-card {
+            background: #060e09 !important;
+            border-color: rgba(34,197,94,.18) !important;
         }
         body.brasil-joga #btn-360.active .tab-360-icon,
         body.brasil-joga #btn-360 .tab-360-label { color: #22c55e !important; }
@@ -420,7 +444,7 @@
         .fm-group-label { font-size:.51rem; letter-spacing:.18em; color:rgba(212,175,55,.38); text-transform:uppercase; font-weight:700; margin:1rem 0 .6rem; padding-bottom:.35rem; border-bottom:1px solid rgba(255,255,255,.05); }
         .fm-group-label:first-child { margin-top:0; }
         .fm-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:.7rem; margin-bottom:.15rem; }
-        .fm-card { background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.08); border-radius:1rem; padding:.9rem; transition:border-color .2s, box-shadow .2s, transform .15s; cursor:default; }
+        .fm-card { background:rgba(6,4,18,.78); border:1px solid rgba(255,255,255,.1); border-radius:1rem; padding:.9rem; transition:border-color .2s, box-shadow .2s, transform .15s; cursor:default; }
         .fm-card:hover { border-color:rgba(212,175,55,.2); box-shadow:0 8px 28px rgba(0,0,0,.4); transform:translateY(-2px); }
         .fm-card-badge { font-size:.48rem; font-weight:800; padding:.15rem .5rem; border-radius:999px; background:rgba(255,255,255,.05); color:#6b7280; white-space:nowrap; flex-shrink:0; }
         .fm-card-gancho { margin:.6rem 0; border-radius:.6rem; padding:.5rem .65rem; font-size:.62rem; line-height:1.6; }
@@ -619,8 +643,8 @@
         ══════════════════════════════════════════ */
         .acad-wrap {
             margin-top: 1.5rem;
-            background: rgba(212,175,55,.04);
-            border: 1px solid rgba(212,175,55,.18);
+            background: rgba(8,6,22,.82);
+            border: 1px solid rgba(212,175,55,.22);
             border-radius: 1.25rem;
             padding: 1.25rem;
         }
@@ -679,8 +703,8 @@
         .acad-panel.active { display: block; }
         /* Cards internos */
         .acad-card {
-            background: rgba(255,255,255,.035);
-            border: 1px solid rgba(255,255,255,.07);
+            background: rgba(6,4,18,.78);
+            border: 1px solid rgba(255,255,255,.1);
             border-radius: .9rem; padding: 1rem;
         }
         .acad-card-title {
@@ -689,8 +713,8 @@
         }
         /* Stats grid */
         .acad-stat-card {
-            background: rgba(212,175,55,.06);
-            border: 1px solid rgba(212,175,55,.15);
+            background: rgba(10,8,26,.85);
+            border: 1px solid rgba(212,175,55,.2);
             border-radius: .75rem; padding: 1rem; text-align: center;
         }
         .acad-stat-val { font-size: 1.6rem; font-weight: 800; color: #D4AF37; }
@@ -720,14 +744,14 @@
         }
         /* Subrede cards */
         .acad-subrede-card {
-            background: rgba(255,255,255,.03);
-            border: 1px solid rgba(212,175,55,.12);
+            background: rgba(6,4,18,.78);
+            border: 1px solid rgba(212,175,55,.18);
             border-radius: .9rem; padding: 1rem;
         }
         /* Quiz */
         .acad-question-card {
-            background: rgba(255,255,255,.04);
-            border: 1px solid rgba(255,255,255,.09);
+            background: rgba(6,4,18,.82);
+            border: 1px solid rgba(255,255,255,.12);
             border-radius: .9rem; padding: 1.25rem; margin-bottom: 1rem;
         }
         .acad-option-btn {
@@ -1882,6 +1906,13 @@
                         <i class="fas fa-eye" style="font-size:.65rem;"></i> Ver Arte
                     </button>
                 </div>
+                <!-- Botão Avaliação CDC — visível a todos -->
+                <div style="margin-top:.6rem;position:relative;">
+                    <button id="trm-btn-avaliacao" onclick="acadSwitchView('avaliacao-cdc');avalCdcRender();" style="width:100%;display:flex;align-items:center;justify-content:center;gap:.5rem;background:rgba(6,182,212,.1);color:#22d3ee;font-weight:900;font-size:.78rem;padding:.65rem 1rem;border-radius:.8rem;border:1.5px solid rgba(6,182,212,.28);cursor:pointer;letter-spacing:.02em;transition:all .2s;" onmouseover="this.style.background='rgba(6,182,212,.22)'" onmouseout="this.style.background='rgba(6,182,212,.1)'">
+                        <i class="fas fa-clipboard-list" style="font-size:.75rem;"></i>
+                        <span id="trm-btn-avaliacao-label">📋 Avaliação CDC</span>
+                    </button>
+                </div>
             </div>
 
         </div><!-- /acad-view-landing -->
@@ -2147,6 +2178,17 @@
             </div>
             <p style="text-align:center;font-size:.58rem;color:#4b5563;margin-top:.6rem;">Use as teclas ← → do teclado para navegar · Conteúdo protegido — somente consulta</p>
         </div><!-- /acad-view-processo -->
+
+        <!-- ══════════════════════════════════════════════════
+             VIEW — Avaliação CDC
+        ══════════════════════════════════════════════════ -->
+        <div id="acad-view-avaliacao-cdc" class="hidden">
+            <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:1.1rem;">
+                <button onclick="acadSwitchView('landing')" style="display:flex;align-items:center;gap:.45rem;padding:.4rem .9rem;border-radius:.6rem;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:#9ca3af;font-size:.68rem;font-weight:700;cursor:pointer;"><i class="fas fa-chevron-left" style="font-size:.58rem;"></i> Voltar</button>
+                <span style="font-size:.8rem;font-weight:800;color:#22d3ee;">📋 Avaliação CDC</span>
+            </div>
+            <div id="aval-cdc-container" style="max-width:900px;margin:0 auto;"></div>
+        </div><!-- /acad-view-avaliacao-cdc -->
 
         </div><!-- /tab-academy -->
 
@@ -4058,9 +4100,9 @@ async function renderUsuarios() {
                         <span class="text-white text-xs font-semibold truncate">${u.codigo ? `<span style="color:#d4af37;font-family:monospace;font-weight:800;">${u.codigo}</span><span style="color:rgba(212,175,55,.5);margin:0 .3rem;">—</span>` : ''}${u.nome||'—'}</span>
                         ${aguardBadge}${bloqBadge}
                     </div>
-                    <div class="text-gray-500 text-[10px] mt-0.5 flex items-center gap-1 min-w-0">
-                        <span class="truncate">${descLine}</span>
-                        <span style="color:${g.color};opacity:.7;flex-shrink:0;">· ${login}</span>
+                    <div class="text-gray-500 text-[10px] mt-0.5 flex items-center gap-1 overflow-hidden">
+                        <span style="color:${g.color};opacity:.85;flex-shrink:0;white-space:nowrap;font-family:monospace;font-weight:700;">· ${login}</span>
+                        ${descLine ? `<span class="truncate">${descLine}</span>` : ''}
                     </div>
                     <div class="mt-0.5 truncate">${_actLine}</div>
                 </div>
@@ -5588,7 +5630,7 @@ const D360 = {
             }
         }
     },
-    diasDecorridos: Math.min(new Date().getDate(), 30), // calculado dinamicamente
+    diasDecorridos: 17, // atualizado pelo script de automação — não alterar manualmente
     diasMes: 30,          // junho tem 30 dias
 
     // ── Margem Bruta Mensal ──────────────────────────────────────────────────────
@@ -6735,7 +6777,9 @@ function _renderHistAcessAbr26() {
 
     // Período e dias do mês calculados automaticamente
     D360.diasMes        = new Date(ano, mes + 1, 0).getDate();
-    D360.diasDecorridos = Math.min(now.getDate(), D360.diasMes);
+    // diasDecorridos: preserva o valor escrito pelo script de automação (Python).
+    // Só usa now.getDate() como fallback se o valor ainda não foi definido (0 ou undefined).
+    D360.diasDecorridos = D360.diasDecorridos || Math.min(now.getDate(), D360.diasMes);
     D360.periodo        = _MESES[mes] + ' ' + ano;
 
     // Chave localStorage: v2 força re-fetch do Firestore (invalida cache antigo)
@@ -6798,7 +6842,13 @@ function _aplicarSnap360(data) {
         if (D360.lojas[k]) Object.assign(D360.lojas[k], v);
     });
     const now = new Date();
-    D360.diasDecorridos = Math.min(now.getDate(), D360.diasMes);
+    // Usa diasDecorridos do snapshot quando disponível — evita usar "hoje" se os dados cobrem menos dias
+    // Ex.: às 00h01 do dia 18, o Firestore ainda tem dados até o dia 17 (diasDecorridos=17)
+    // Projeção correta usa o dia real dos dados, não o dia do relógio
+    D360.diasDecorridos = data.diasDecorridos
+        ? Math.min(data.diasDecorridos, D360.diasMes)
+        : Math.min(now.getDate(), D360.diasMes);
+    if (data.diasMes) D360.diasMes = data.diasMes;
     if (data.periodo) D360.periodo = data.periodo;
     if (data.savedAt) window._d360LastSavedAt = Number(data.savedAt);
     return true;
@@ -7064,6 +7114,7 @@ const _METAS_SUBREDE_NOME = {
 /* Gerentes responsáveis por mais de uma loja */
 const _GERENTE_MULTI_LOJAS = {
     'ana carolina da silva': ['cariacica', 'moxuara'],
+    'ana silva': ['cariacica', 'moxuara'],
 };
 
 /* Retorna o array de lojas do gerente multi-loja logado, ou null se tiver só uma loja */
@@ -7647,15 +7698,17 @@ function _countUp(el, dur) {
     if (!endVal || endVal <= 0) return;
     const finalText = el.textContent;
     const fmt = el.dataset.fmt || 'brl';
-    const startTime = performance.now();
     const fmtVal = (v) => {
         if (fmt === 'brl') return brl(v);
         if (fmt === 'pct') return v.toFixed(2).replace('.', ',') + '%';
         return Math.round(v).toLocaleString('pt-BR');
     };
+    let startTime = null;
     const tick = (now) => {
+        if (!document.contains(el)) return;
+        if (!startTime) startTime = now;
         const p = Math.min((now - startTime) / dur, 1);
-        const eased = 1 - Math.pow(1 - p, 3); // ease-out cúbico
+        const eased = 1 - Math.pow(1 - p, 3);
         el.textContent = fmtVal(endVal * eased);
         if (p < 1) { el._cuRaf = requestAnimationFrame(tick); }
         else { el.textContent = finalText; }
@@ -7739,6 +7792,79 @@ function rankRow(pos, sigla, label, sublabel, rawTotal, lojaMeta, first, metaOk,
         </div>
         ${first ? '<i class="fas fa-crown flex-shrink-0" style="color:#a855f7;font-size:.8rem;"></i>' : ''}
         ${lojaKey ? '<i class="fas fa-chevron-right flex-shrink-0" style="color:#6b7280;font-size:.55rem;opacity:.7;"></i>' : ''}
+    </div>`;
+}
+
+/* ── Gera barras de histórico de forma SÍNCRONA usando cache disponível ── */
+function _lojaHistBars(lojaKey, curVal) {
+    const MESES = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+    const BAR_H = 52;
+    const cache  = window._360histChartCache || {};
+    const jsonH  = window._360JsonHistorico  || {};
+
+    // Gera chaves dos últimos 24 meses
+    const keys = [];
+    const now = new Date();
+    let y = now.getFullYear(), m = now.getMonth() + 1;
+    for (let i = 0; i < 24; i++) {
+        m--; if (m === 0) { m = 12; y--; }
+        keys.unshift(y + '_' + String(m).padStart(2, '0'));
+    }
+
+    // Extrai valor por mês do cache
+    const vals = keys.map(k => {
+        const d = cache[k] || (jsonH[k] ? { lojas: Object.fromEntries(Object.entries(jsonH[k].lojas||{}).map(([lk,lv])=>[lk,{total:lv.total||0}])) } : null);
+        return d?.lojas?.[lojaKey]?.total || 0;
+    });
+    const allVals = [...vals, curVal || 0];
+    const allKeys = [...keys, 'atual'];
+    const maxVal  = Math.max(...allVals, 1);
+    const bestVal = Math.max(...vals, 0);
+
+    const bars = allKeys.map((k, i) => {
+        const v       = allVals[i];
+        const px      = Math.max(4, Math.round(v / maxVal * BAR_H));
+        const isAtual = k === 'atual';
+        const isBest  = !isAtual && v === bestVal && bestVal > 0;
+        const [ky, km] = isAtual ? [now.getFullYear(), now.getMonth()+1] : k.split('_').map(Number);
+        const lbl = MESES[km-1] + ' ' + String(ky).slice(2);
+        const brl2 = v => v.toLocaleString('pt-BR',{style:'currency',currency:'BRL',maximumFractionDigits:0});
+        const cor  = isAtual ? '#D4AF37' : isBest ? '#22c55e' : '#6366f1';
+        return `<button
+            title="${lbl}: ${brl2(v)}"
+            onclick="_lojaHistDetalhe('${lbl}',${v},${isBest},${isAtual})"
+            style="flex:1;min-width:0;height:${px}px;background:${cor};opacity:.82;border:none;border-radius:2px 2px 0 0;cursor:pointer;position:relative;padding:0;"
+            onmouseenter="this.style.opacity='1'" onmouseleave="this.style.opacity='.82'">
+            ${isBest ? `<span style="position:absolute;top:-13px;left:50%;transform:translateX(-50%);font-size:8px;pointer-events:none;">🥇</span>` : ''}
+        </button>`;
+    }).join('');
+
+    const labRow = allKeys.map((k, i) => {
+        const show = i === 0 || i === 6 || i === 12 || i === 18 || i === allKeys.length - 1;
+        if (!show) return `<div style="flex:1;"></div>`;
+        const isAtual = k === 'atual';
+        const [ky, km] = isAtual ? [now.getFullYear(), now.getMonth()+1] : k.split('_').map(Number);
+        return `<div style="flex:1;text-align:center;font-size:.38rem;color:#6b7280;line-height:1.3;">${MESES[km-1]}<br>${String(ky).slice(2)}</div>`;
+    }).join('');
+
+    return `<div style="display:flex;align-items:flex-end;gap:2px;height:${BAR_H+14}px;padding-top:14px;">${bars}</div>
+            <div style="display:flex;gap:2px;margin-top:2px;">${labRow}</div>`;
+}
+
+function _lojaHistDetalhe(label, val, isBest, isAtual) {
+    const el = document.getElementById('_popup-loja-hist-detail');
+    if (!el) return;
+    const brl2 = v => v.toLocaleString('pt-BR',{style:'currency',currency:'BRL',maximumFractionDigits:0});
+    const badge = isAtual ? `<span style="background:#D4AF37;color:#000;font-size:.42rem;font-weight:800;padding:.1rem .3rem;border-radius:999px;margin-left:.35rem;">MÊS ATUAL</span>`
+                : isBest  ? `<span style="background:#16a34a;color:#fff;font-size:.42rem;font-weight:800;padding:.1rem .3rem;border-radius:999px;margin-left:.35rem;">🥇 RECORDE</span>` : '';
+    el.style.display = 'block';
+    el.innerHTML = `<div style="display:flex;align-items:center;justify-content:space-between;gap:.5rem;">
+        <div>
+            <div style="font-size:.5rem;color:#a78bfa;font-weight:700;text-transform:uppercase;">${label}${badge}</div>
+            <div style="font-size:1rem;font-weight:900;color:#fff;margin-top:.1rem;">${brl2(val)}</div>
+        </div>
+        <button onclick="document.getElementById('_popup-loja-hist-detail').style.display='none'"
+            style="background:rgba(255,255,255,.08);border:none;border-radius:.4rem;color:#6b7280;font-size:.7rem;cursor:pointer;padding:.2rem .45rem;">✕</button>
     </div>`;
 }
 
@@ -7841,6 +7967,15 @@ function abrirPopupLoja(lojaKey) {
             ${chip('Fat. Hoje', l.fat_dia > 0 ? brl(l.fat_dia) : '—', '#fbbf24')}
         </div>
 
+        <!-- Histórico 24 meses -->
+        <div style="background:rgba(168,85,247,.06);border:1px solid rgba(168,85,247,.2);border-radius:.9rem;padding:.85rem 1rem;margin-bottom:.75rem;">
+            <div style="font-size:.5rem;color:#c084fc;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:.6rem;display:flex;align-items:center;gap:.35rem;">
+                <i class="fas fa-chart-column" style="color:#a855f7;"></i>Histórico — Últimos 24 Meses
+            </div>
+            ${_lojaHistBars(lojaKey, l.total)}
+            <div id="_popup-loja-hist-detail" style="display:none;margin-top:.6rem;padding:.5rem .65rem;background:rgba(168,85,247,.1);border:1px solid rgba(168,85,247,.25);border-radius:.6rem;"></div>
+        </div>
+
         <!-- Ranking vendedores -->
         <div style="font-size:.55rem;font-weight:800;color:#6b7280;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.5rem;display:flex;align-items:center;gap:.4rem;">
             <i class="fas fa-medal" style="color:#06b6d4;"></i>Ranking de Vendedores
@@ -7858,6 +7993,90 @@ function abrirPopupLoja(lojaKey) {
     const modal = document.getElementById('_popup-loja-360');
     modal.style.display = 'flex';
     document.body.style.overflow = 'hidden';
+
+}
+
+async function _lojaPopupHist(lojaKey) {
+    try {
+        const container = document.getElementById('_popup-loja-hist');
+        if (!container) return;
+
+        const MESES_BR = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+        const BAR_H = 56; // altura máxima em px
+
+        await _360LoadJsonHist();
+        const keys    = _360get24Keys(24);
+        const results = await Promise.all(keys.map(k => _360fetchChartMonth(k)));
+
+        const _d    = _360D();
+        const curVal = _d?.lojas?.[lojaKey]?.total || 0;
+        const allKeys   = [...keys, 'atual'];
+        const allValues = [...results.map(d => d?.lojas?.[lojaKey]?.total || 0), curVal];
+
+        const maxVal  = Math.max(...allValues, 1);
+        const bestVal = Math.max(...allValues.slice(0, -1), 0);
+
+        const brl2 = v => v.toLocaleString('pt-BR', {style:'currency',currency:'BRL',maximumFractionDigits:0});
+
+        const bars = allKeys.map((k, i) => {
+            const val     = allValues[i];
+            const px      = Math.max(3, Math.round(val / maxVal * BAR_H));
+            const isAtual = k === 'atual';
+            const isBest  = !isAtual && val === bestVal && bestVal > 0;
+            const [y, m]  = isAtual
+                ? [new Date().getFullYear(), new Date().getMonth() + 1]
+                : k.split('_').map(Number);
+            const label = MESES_BR[m - 1] + ' ' + String(y).slice(2);
+            const cor   = isAtual ? '#D4AF37' : isBest ? '#22c55e' : '#6366f1';
+            const lbl   = brl2(val);
+            return `<button
+                title="${label}: ${lbl}"
+                onclick="_lojaHistDetail('${lojaKey}','${k}',${val},'${label}',${isBest},${isAtual})"
+                style="flex:1;min-width:0;height:${px}px;background:${cor};opacity:.8;border:none;border-radius:2px 2px 0 0;cursor:pointer;position:relative;"
+                onmouseenter="this.style.opacity='1'" onmouseleave="this.style.opacity='.8'">
+                ${isBest ? `<span style="position:absolute;top:-13px;left:50%;transform:translateX(-50%);font-size:9px;line-height:1;">🥇</span>` : ''}
+            </button>`;
+        }).join('');
+
+        // Labels eixo X a cada 6 meses + atual
+        const labels = allKeys.map((k, i) => {
+            const show = i === 0 || i % 6 === 0 || i === allKeys.length - 1;
+            if (!show) return `<div style="flex:1;"></div>`;
+            const isAtual = k === 'atual';
+            const [y, m]  = isAtual
+                ? [new Date().getFullYear(), new Date().getMonth() + 1]
+                : k.split('_').map(Number);
+            return `<div style="flex:1;text-align:center;font-size:.4rem;color:#4b5563;line-height:1.2;">${MESES_BR[m-1]}<br>${String(y).slice(2)}</div>`;
+        }).join('');
+
+        container.innerHTML = `
+            <div style="display:flex;align-items:flex-end;gap:2px;height:${BAR_H}px;padding-top:14px;">${bars}</div>
+            <div style="display:flex;gap:2px;margin-top:3px;">${labels}</div>`;
+    } catch(e) {
+        const c = document.getElementById('_popup-loja-hist');
+        if (c) c.innerHTML = `<span style="color:#4b5563;font-size:.52rem;">Histórico indisponível</span>`;
+    }
+}
+
+function _lojaHistDetail(lojaKey, chave, val, label, isBest, isAtual) {
+    const detailEl = document.getElementById('_popup-loja-hist-detail');
+    if (!detailEl) return;
+    const brl2 = v => v.toLocaleString('pt-BR', {style:'currency',currency:'BRL',maximumFractionDigits:0});
+    const badge = isAtual
+        ? `<span style="background:#D4AF37;color:#000;font-size:.45rem;font-weight:800;padding:.1rem .35rem;border-radius:999px;margin-left:.4rem;">MÊS ATUAL</span>`
+        : isBest
+        ? `<span style="background:#16a34a;color:#fff;font-size:.45rem;font-weight:800;padding:.1rem .35rem;border-radius:999px;margin-left:.4rem;">🥇 RECORDE</span>`
+        : '';
+    detailEl.style.display = 'block';
+    detailEl.innerHTML = `
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:.5rem;">
+            <div>
+                <div style="font-size:.52rem;color:#a78bfa;font-weight:700;text-transform:uppercase;letter-spacing:.05em;">${label}${badge}</div>
+                <div style="font-size:1.05rem;font-weight:900;color:#fff;margin-top:.15rem;">${brl2(val)}</div>
+            </div>
+            <button onclick="document.getElementById('_popup-loja-hist-detail').style.display='none'"
+                style="background:rgba(255,255,255,.08);border:none;border-radius:.4rem;color:#6b7280;font-size:.7rem;cursor:pointer;padding:.2rem .45rem;flex-shrink:0;">✕</button>
+        </div>`;
 }
 function fecharPopupLoja() {
     const m = document.getElementById('_popup-loja-360');
@@ -8738,27 +8957,31 @@ function _desenharOndulacoesJersey() {
 
     const ctx = cvs.getContext('2d');
 
-    // Base: verde floresta escuro
-    ctx.fillStyle = '#071a0a';
+    // Base: verde escuro da bandeira
+    ctx.fillStyle = '#021a07';
     ctx.fillRect(0, 0, W, H);
 
-    // Bandas diagonais com alto contraste — alternando escuro/médio/claro como na camisa
-    // Paleta: escuro, médio, escuro, médio-claro, escuro, médio, neon (acento raro)
+    // Paleta da Bandeira do Brasil: verde, amarelo, azul, branco
+    // Alternância: escuro → verde → escuro → amarelo → escuro → azul → escuro → verde → ...
     const cores = [
-        '#040e06',   // muito escuro
-        '#1a6b32',   // médio-verde
-        '#050f07',   // muito escuro
-        '#22913e',   // verde vivo
-        '#030c04',   // muito escuro
-        '#1e7d38',   // médio-verde
-        '#040e06',   // muito escuro
-        '#26a348',   // verde mais vivo
-        '#030c04',   // muito escuro
-        '#1a6b32',   // médio-verde
-        '#050f07',   // muito escuro
-        '#30c05a',   // verde neon (acento)
-        '#040e06',   // muito escuro
-        '#1e7d38',   // médio-verde
+        '#021206',   // escuro base
+        '#009C3B',   // VERDE bandeira
+        '#031508',   // escuro
+        '#FFDF00',   // AMARELO bandeira
+        '#020e05',   // escuro profundo
+        '#002776',   // AZUL bandeira
+        '#021206',   // escuro base
+        '#007a2e',   // verde escuro
+        '#031508',   // escuro
+        '#FFD700',   // amarelo ouro
+        '#020e05',   // escuro profundo
+        '#001f5c',   // azul profundo
+        '#009C3B',   // VERDE bandeira
+        '#021206',   // escuro
+        '#FFDF00',   // AMARELO bandeira
+        '#031508',   // escuro
+        '#002776',   // AZUL bandeira
+        '#020e05',   // escuro profundo
     ];
 
     // Rotação ~28° — diagonal suave como na camisa
@@ -8768,7 +8991,7 @@ function _desenharOndulacoesJersey() {
     ctx.translate(-W / 2, -H / 2);
 
     const diag  = Math.ceil(Math.sqrt(W * W + H * H));
-    const nBand = 24;
+    const nBand = 28;
     const bw    = (diag * 2.0) / nBand;
 
     for (let i = 0; i < nBand + 2; i++) {
@@ -8777,13 +9000,12 @@ function _desenharOndulacoesJersey() {
 
         ctx.beginPath();
         for (let y = -diag; y <= diag * 2; y += 2) {
-            // Serpenteio de rio + impressão digital: baixa freq=curvas longas, alta freq=textura
             const x = xBase
-                + Math.sin(y / 750 + i * 0.55) * 140   // grande serpentear
-                + Math.sin(y / 300 + i * 1.05) * 65    // curvas médias
-                + Math.sin(y / 120 + i * 1.45) * 28    // ondulação
-                + Math.sin(y / 48  + i * 2.1)  * 11    // textura fina
-                + Math.sin(y / 22  + i * 3.3)  * 4;    // micro-detalhe
+                + Math.sin(y / 750 + i * 0.55) * 140
+                + Math.sin(y / 300 + i * 1.05) * 65
+                + Math.sin(y / 120 + i * 1.45) * 28
+                + Math.sin(y / 48  + i * 2.1)  * 11
+                + Math.sin(y / 22  + i * 3.3)  * 4;
             if (y === -diag) ctx.moveTo(x, y);
             else             ctx.lineTo(x, y);
         }
@@ -8795,10 +9017,10 @@ function _desenharOndulacoesJersey() {
     }
     ctx.restore();
 
-    // Reflexo neon sutil (brilho do tecido)
+    // Brilho suave sobre as ondas
     const shine = ctx.createRadialGradient(W * .3, H * .2, 0, W * .5, H * .5, diag * .65);
-    shine.addColorStop(0,  'rgba(34,197,94,.09)');
-    shine.addColorStop(.4, 'rgba(22,163,74,.05)');
+    shine.addColorStop(0,  'rgba(255,223,0,.06)');
+    shine.addColorStop(.4, 'rgba(0,156,59,.04)');
     shine.addColorStop(1,  'rgba(0,0,0,0)');
     ctx.fillStyle = shine;
     ctx.fillRect(0, 0, W, H);
@@ -8820,14 +9042,27 @@ function _ativarTemaBrasil() {
 
     _desenharOndulacoesJersey();
 
-    // Bandeiras decorativas
+    // Bandeiras decorativas — espalhadas por toda a tela
     const flags = document.createElement('div');
     flags.id = 'brasil-flags';
     flags.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:1;overflow:hidden;';
-    flags.innerHTML = '<span style="position:absolute;top:3.8rem;right:.8rem;font-size:2rem;opacity:.28;transform:rotate(8deg);">🇧🇷</span>'
-        + '<span style="position:absolute;bottom:5rem;left:.6rem;font-size:1.7rem;opacity:.22;transform:rotate(-9deg);">🇧🇷</span>'
-        + '<span style="position:absolute;top:48%;right:.5rem;font-size:1.3rem;opacity:.18;transform:rotate(5deg);">🇧🇷</span>'
-        + '<span style="position:absolute;top:72%;left:.5rem;font-size:1.1rem;opacity:.15;transform:rotate(-4deg);">🇧🇷</span>';
+    flags.innerHTML =
+        // cantos e bordas
+        '<span style="position:absolute;top:3.2rem;right:.8rem;font-size:2.6rem;opacity:.55;transform:rotate(10deg);">🇧🇷</span>'
+      + '<span style="position:absolute;top:3.2rem;left:.8rem;font-size:2.2rem;opacity:.45;transform:rotate(-8deg);">🇧🇷</span>'
+      + '<span style="position:absolute;bottom:4.5rem;right:.8rem;font-size:2rem;opacity:.48;transform:rotate(-6deg);">🇧🇷</span>'
+      + '<span style="position:absolute;bottom:4.5rem;left:.7rem;font-size:2.4rem;opacity:.5;transform:rotate(7deg);">🇧🇷</span>'
+        // meio direito / esquerdo
+      + '<span style="position:absolute;top:45%;right:.5rem;font-size:1.8rem;opacity:.38;transform:rotate(5deg);">🇧🇷</span>'
+      + '<span style="position:absolute;top:45%;left:.5rem;font-size:1.6rem;opacity:.35;transform:rotate(-5deg);">🇧🇷</span>'
+        // centro superior / inferior
+      + '<span style="position:absolute;top:1.2rem;left:50%;transform:translateX(-50%) rotate(4deg);font-size:1.9rem;opacity:.4;">🇧🇷</span>'
+      + '<span style="position:absolute;bottom:1.2rem;left:50%;transform:translateX(-50%) rotate(-4deg);font-size:1.9rem;opacity:.4;">🇧🇷</span>'
+        // dispersas intermediárias
+      + '<span style="position:absolute;top:22%;right:2rem;font-size:1.4rem;opacity:.28;transform:rotate(12deg);">🇧🇷</span>'
+      + '<span style="position:absolute;top:68%;right:2rem;font-size:1.4rem;opacity:.28;transform:rotate(-10deg);">🇧🇷</span>'
+      + '<span style="position:absolute;top:22%;left:2rem;font-size:1.4rem;opacity:.28;transform:rotate(-12deg);">🇧🇷</span>'
+      + '<span style="position:absolute;top:68%;left:2rem;font-size:1.4rem;opacity:.28;transform:rotate(10deg);">🇧🇷</span>';
     document.body.appendChild(flags);
 }
 
@@ -9433,12 +9668,12 @@ function render360(tipo, val) {
     clearTimeout(window._r360fadeTimer);
     window._r360fadeTimer = setTimeout(function(){
         document.getElementById('360-kpis').innerHTML     = kpis;
-        _runCountUps(document.getElementById('360-kpis'), 1500);
         document.getElementById('360-rankings').innerHTML = rankings;
         document.getElementById('360-metas').innerHTML    = metas;
         document.getElementById('360-subtitulo').textContent = subtitulo;
         requestAnimationFrame(function(){
             _r360els.forEach(function(id){ var e=document.getElementById(id); if(e) e.style.opacity=''; });
+            _runCountUps(document.getElementById('360-kpis'), 1500);
         });
         _360RenderChart(tipo, val).catch(function(){});
     }, 130);
@@ -18798,7 +19033,7 @@ window.processoInit = processoInit;
 
 /* ── Navegação entre views da Academy ── */
 window.acadSwitchView = function(view) {
-    ['landing','avaliacoes','cursos','livros','processo'].forEach(function(v) {
+    ['landing','avaliacoes','cursos','livros','processo','avaliacao-cdc'].forEach(function(v) {
         var el = document.getElementById('acad-view-' + v);
         if (el) el.classList.add('hidden');
     });
@@ -23401,7 +23636,7 @@ window._dirDirUpdateTimestamp = _dirDirUpdateTimestamp;
     <div style="text-align:center;margin:1.5rem 0 1.25rem;">
       <div style="font-size:2.8rem;filter:drop-shadow(0 0 14px rgba(201,162,39,.6));margin-bottom:.5rem;">🎓</div>
       <h2 style="font-size:1rem;font-weight:900;color:#C9A227;margin:0 0 .25rem;">Treinamento Presencial</h2>
-      <p style="font-size:.68rem;color:#6b7280;margin:0;">17 e 18 de junho de 2026 · 20 horas</p>
+      <p style="font-size:.68rem;color:#6b7280;margin:0;">18 e 19 de junho de 2026 · 20 horas</p>
     </div>
     <div style="display:flex;flex-direction:column;gap:.85rem;">
       <div>
@@ -23478,7 +23713,7 @@ window._dirDirUpdateTimestamp = _dirDirUpdateTimestamp;
       <div style="display:flex;align-items:center;justify-content:space-between;margin-top:.5rem;">
         <div>
           <h2 style="font-size:.95rem;font-weight:900;color:#c084fc;margin:0 0 .15rem;">Inscrições &amp; Certificados</h2>
-          <p style="font-size:.65rem;color:#6b7280;margin:0;">Treinamento 17–18/06/2026 · 20h</p>
+          <p style="font-size:.65rem;color:#6b7280;margin:0;">Treinamento 18–19/06/2026 · 20h</p>
         </div>
         <button onclick="trmFecharModal('modal-trm-diretor')" style="color:#6b7280;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:.5rem;width:2rem;height:2rem;cursor:pointer;font-size:.9rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;">✕</button>
       </div>
@@ -23750,7 +23985,7 @@ window._dirDirUpdateTimestamp = _dirDirUpdateTimestamp;
     doc.setFont('helvetica','bold'); doc.setFontSize(11); doc.setTextColor(25,25,25);
     doc.text('Certificamos que '+nome+' participou e concluiu', cx, 78, {align:'center'});
     doc.text('o Treinamento Presencial "TITAS SINERGY",', cx, 90, {align:'center'});
-    doc.text('realizado nos dias 17 e 18 de junho de 2026,', cx, 102, {align:'center'});
+    doc.text('realizado nos dias 18 e 19 de junho de 2026,', cx, 102, {align:'center'});
     doc.text('com carga horaria de 20 (vinte) horas.', cx, 114, {align:'center'});
 
     /* DATA */
@@ -23893,6 +24128,455 @@ window._dirDirUpdateTimestamp = _dirDirUpdateTimestamp;
   }
   // também init imediato
   setTimeout(trmInit, 800);
+
+})();
+
+/* ══════════════════════════════════════════════════════
+   AVALIAÇÃO CDC — Treinamento Presencial
+══════════════════════════════════════════════════════ */
+(function(){
+  const COL_ACCESS = 'ts_avaliacao_cdc_access';
+  const COL_RESP   = 'ts_avaliacao_cdc_respostas';
+  const N_QUESTOES = 21;
+
+  const PERGUNTAS = [
+    'Sabemos que no início do treinamento prático do trainee em lojas, será necessário que o trainee tome 3 atitudes iniciais para seu melhor rendimento. Cite quais são.',
+    'Para que serve o tabuleiro?',
+    'Para que serve o Balcão de negociação?',
+    'Para que serve o Frigobar?',
+    'Para que serve a Lojinha de acessórios?',
+    'Explique com suas palavras o que é vender para a Casa do Celular.',
+    'O que é processador?',
+    'O que é memória interna (ROM)?',
+    'O que é memória RAM?',
+    'Qual a finalidade da DIVULGAÇÃO no processo de vendas da Casa do Celular?',
+    'No processo de ABORDAGEM ao cliente, qual saudação temos como padrão na Casa do Celular?',
+    'Após a abordagem iniciamos o processo de CONEXÃO através de algumas "falinhas" que forçam uma conversação com o cliente. Quais "falinhas" são estas?',
+    'Durante o processo de SONDAGEM com o cliente, o Vendedor se depara com dois tipos de necessidades relacionadas ao produto que o cliente demonstra durante o atendimento. Quais necessidades são estas e explique com suas palavras cada uma delas.',
+    'Durante a ABORDAGEM com o cliente podemos perceber se ele é AUDITIVO, VISUAL OU SINESTÉSICO. Cite as principais características de cada tipo.',
+    'Cite 2 características de um aparelho e descreva os benefícios que estas características podem oferecer para um cliente.',
+    'Explique com suas palavras o que é MODO DE DEFESA.',
+    'Durante a NEGOCIAÇÃO endividamos um pouco mais o cliente oferecendo alguns mimos. Cite exemplos de mimos que usamos para endividamento do cliente.',
+    'Explique com suas palavras o que é o termo FEIO.',
+    'Em uma briga entre um jacaré e um urso, quem sai como vencedor?',
+    'Cite exemplos de chaves que induzam ao fechamento positivo.',
+    'Cite 3 exemplos de procedimentos de segurança que devemos seguir durante o andamento de nossas funções em loja.'
+  ];
+
+  function _db(){ return window._acadDB || (window._acadFBOk && firebase.firestore()); }
+  function _isDiretor(){ return user && user.cargo === 'diretoria' && (user.name||'').toLowerCase().includes('melo'); }
+  function _ukey(){ return user ? userKey(user.cargo, user.name) : null; }
+  function _box(){ return document.getElementById('aval-cdc-container'); }
+
+  /* ── Render principal — decide o estado do usuário ── */
+  window.avalCdcRender = async function(){
+    const box = _box();
+    if(!box){ console.error('[AvalCDC] container #aval-cdc-container não encontrado'); return; }
+    if(!user){ box.innerHTML = _tplMsg('fas fa-lock','#6b7280','Faça login para acessar a avaliação.'); return; }
+    const db = _db();
+    if(!db){ box.innerHTML = _tplMsg('fas fa-wifi','#f87171','Sem conexão com o Firebase. Tente novamente.'); return; }
+    box.innerHTML = _tplLoading();
+    try {
+      if(_isDiretor()){
+        await _renderDiretor(db, box); return;
+      }
+      const uid = _ukey();
+      const [accSnap, respSnap] = await Promise.all([
+        db.collection(COL_ACCESS).doc(uid).get().catch(()=>null),
+        db.collection(COL_RESP).doc(uid).get().catch(()=>null)
+      ]);
+      const acc  = accSnap && accSnap.exists ? accSnap.data() : null;
+      const resp = respSnap && respSnap.exists ? respSnap.data() : null;
+
+      if(!acc || acc.status === 'denied'){
+        box.innerHTML = _tplSolicitar(!acc);
+      } else if(acc.status === 'pending'){
+        box.innerHTML = _tplPendente();
+      } else if(acc.status === 'approved'){
+        if(!resp || resp.status === 'rascunho'){
+          box.innerHTML = _tplFormulario(resp);
+        } else if(resp.status === 'enviada'){
+          box.innerHTML = _tplAguardando();
+        } else if(resp.status === 'corrigida'){
+          box.innerHTML = _tplResultado(resp);
+        }
+      }
+    } catch(e){
+      console.error('[AvalCDC] erro ao renderizar:', e);
+      box.innerHTML = _tplMsg('fas fa-triangle-exclamation','#f87171','Erro ao carregar: '+e.message);
+    }
+  };
+
+  /* ── Solicitar acesso ── */
+  window.avalCdcSolicitarAcesso = async function(){
+    const db = _db(); if(!db) return;
+    const uid = _ukey(); if(!uid) return;
+    const btn = document.getElementById('aval-btn-solicitar');
+    if(btn){ btn.disabled=true; btn.textContent='Enviando...'; }
+    await db.collection(COL_ACCESS).doc(uid).set({
+      status: 'pending', nome: user.name, cargo: user.cargo,
+      loja: user.loja||'', requestedAt: Date.now()
+    });
+    avalCdcRender();
+  };
+
+  /* ── Salvar rascunho e enviar avaliação ── */
+  window.avalCdcEnviar = async function(){
+    const db = _db(); if(!db) return;
+    const uid = _ukey(); if(!uid) return;
+    const nomeForm = (document.getElementById('aval-cab-nome')||{}).value||user.name||'';
+    const lojaForm = (document.getElementById('aval-cab-loja')||{}).value||user.loja||'';
+    const dataForm = (document.getElementById('aval-cab-data')||{}).value||'';
+    const respostas = [];
+    let vazias = 0;
+    for(let i=0;i<N_QUESTOES;i++){
+      const el = document.getElementById('aval-q-'+i);
+      const r = el ? el.value.trim() : '';
+      respostas.push(r);
+      if(!r) vazias++;
+    }
+    if(vazias > 0){
+      const ok = confirm(`Você deixou ${vazias} questão(ões) em branco. Deseja enviar assim mesmo?`);
+      if(!ok) return;
+    }
+    const btn = document.getElementById('aval-btn-enviar');
+    if(btn){ btn.disabled=true; btn.textContent='Enviando...'; }
+    await db.collection(COL_RESP).doc(uid).set({
+      uid, nome: user.name, cargo: user.cargo, loja: user.loja||'',
+      nomeForm, lojaForm, dataForm,
+      respostas, status: 'enviada', correctionMap: {}, nota: null,
+      submittedAt: Date.now()
+    });
+    avalCdcRender();
+  };
+
+  /* ── Correção pelo Diretor: marcar questão ── */
+  window.avalCdcMarcar = function(uid, idx, acerto){
+    const btnV = document.getElementById('aval-cor-v-'+uid+'-'+idx);
+    const btnX = document.getElementById('aval-cor-x-'+uid+'-'+idx);
+    if(!btnV||!btnX) return;
+    if(acerto){
+      btnV.style.background='#16a34a'; btnV.style.color='#fff';
+      btnX.style.background='rgba(255,255,255,.05)'; btnX.style.color='#6b7280';
+    } else {
+      btnX.style.background='#dc2626'; btnX.style.color='#fff';
+      btnV.style.background='rgba(255,255,255,.05)'; btnV.style.color='#6b7280';
+    }
+    btnV.dataset.sel = acerto ? '1' : '';
+    btnX.dataset.sel = acerto ? '' : '1';
+    _atualizarContador(uid);
+  };
+
+  function _atualizarContador(uid){
+    let acertos=0, total=0;
+    for(let i=0;i<N_QUESTOES;i++){
+      const v = document.getElementById('aval-cor-v-'+uid+'-'+i);
+      const x = document.getElementById('aval-cor-x-'+uid+'-'+i);
+      if(!v) continue;
+      total++;
+      if(v.dataset.sel==='1') acertos++;
+    }
+    const el = document.getElementById('aval-cor-contador-'+uid);
+    if(el) el.textContent = acertos+'/'+total+' corretas — Nota: '+(acertos/N_QUESTOES*10).toFixed(1);
+  }
+
+  /* ── Salvar correção ── */
+  window.avalCdcSalvarCorrecao = async function(uid){
+    const db = _db(); if(!db) return;
+    const correctionMap = {};
+    let acertos = 0;
+    for(let i=0;i<N_QUESTOES;i++){
+      const v = document.getElementById('aval-cor-v-'+uid+'-'+i);
+      if(!v) continue;
+      const ok = v.dataset.sel==='1';
+      correctionMap[i] = ok;
+      if(ok) acertos++;
+    }
+    const nota = parseFloat((acertos/N_QUESTOES*10).toFixed(2));
+    const btn = document.getElementById('aval-btn-salvar-'+uid);
+    if(btn){ btn.disabled=true; btn.textContent='Salvando...'; }
+    await db.collection(COL_RESP).doc(uid).update({
+      correctionMap, nota, status: 'corrigida', correctedAt: Date.now()
+    });
+    if(btn){ btn.textContent='✓ Salvo'; }
+    const el = document.getElementById('aval-cor-contador-'+uid);
+    if(el) el.innerHTML += ' &nbsp;<span style="color:#4ade80;font-weight:900;">✓ Corrigido</span>';
+  };
+
+  /* ── Aprovar/negar acesso ── */
+  window.avalCdcAprovar = async function(uid, aprovar){
+    const db = _db(); if(!db) return;
+    await db.collection(COL_ACCESS).doc(uid).update({
+      status: aprovar ? 'approved' : 'denied',
+      approvedAt: Date.now(), approvedBy: user.name
+    });
+    avalCdcRender();
+  };
+
+  /* ══ Templates HTML ══ */
+
+  function _tplLoading(){
+    return '<div style="text-align:center;padding:3rem;color:#6b7280;font-size:.8rem;">Carregando...</div>';
+  }
+
+  function _tplMsg(icon, color, txt){
+    return `<div style="text-align:center;padding:3rem 1rem;">
+      <i class="${icon}" style="font-size:2rem;color:${color};margin-bottom:.75rem;display:block;"></i>
+      <p style="color:#9ca3af;font-size:.82rem;">${txt}</p>
+    </div>`;
+  }
+
+  function _tplSolicitar(novo){
+    return `<div style="max-width:560px;margin:0 auto;border-radius:1.2rem;background:linear-gradient(135deg,#06050f,#0a0820);border:2px solid rgba(6,182,212,.3);padding:2.5rem 2rem;text-align:center;">
+      <div style="font-size:3.5rem;margin-bottom:1rem;filter:drop-shadow(0 0 18px rgba(6,182,212,.5))">📋</div>
+      <h3 style="font-size:1.1rem;font-weight:900;color:#22d3ee;margin:0 0 .5rem;">Avaliação de Participantes</h3>
+      <p style="font-size:.7rem;color:#6b7280;margin:0 0 1.5rem;">Treinamento Presencial CDC · 2026</p>
+      <p style="font-size:.8rem;color:#9ca3af;line-height:1.65;margin-bottom:2rem;">Esta avaliação é restrita aos participantes do treinamento. Para realizar, solicite o acesso abaixo. O Diretor irá liberar a prova para você.</p>
+      ${novo ? `<button id="aval-btn-solicitar" onclick="avalCdcSolicitarAcesso()" style="background:linear-gradient(135deg,#0e7490,#0891b2);color:#fff;font-weight:900;font-size:.82rem;padding:.8rem 2.5rem;border-radius:.8rem;border:none;cursor:pointer;letter-spacing:.02em;">
+        <i class="fas fa-hand-point-up"></i> Solicitar Acesso à Avaliação
+      </button>` : `<p style="color:#f87171;font-size:.78rem;background:rgba(239,68,68,.1);border-radius:.6rem;padding:.6rem 1rem;border:1px solid rgba(239,68,68,.2);">Acesso negado. Entre em contato com o Diretor.</p>`}
+    </div>`;
+  }
+
+  function _tplPendente(){
+    return `<div style="max-width:560px;margin:0 auto;border-radius:1.2rem;background:linear-gradient(135deg,#06050f,#0a0820);border:2px solid rgba(245,158,11,.3);padding:2.5rem 2rem;text-align:center;">
+      <div style="font-size:3rem;margin-bottom:1rem;">⏳</div>
+      <h3 style="font-size:1rem;font-weight:900;color:#fbbf24;margin:0 0 .5rem;">Solicitação enviada!</h3>
+      <p style="font-size:.8rem;color:#9ca3af;line-height:1.65;">Aguardando aprovação do Diretor. Assim que seu acesso for liberado, você poderá realizar a avaliação.</p>
+      <button onclick="avalCdcRender()" style="margin-top:1.5rem;background:rgba(255,255,255,.06);color:#9ca3af;font-size:.72rem;padding:.5rem 1.2rem;border-radius:.65rem;border:1px solid rgba(255,255,255,.1);cursor:pointer;">🔄 Verificar status</button>
+    </div>`;
+  }
+
+  function _tplAguardando(){
+    return `<div style="max-width:560px;margin:0 auto;border-radius:1.2rem;background:linear-gradient(135deg,#06050f,#0a0820);border:2px solid rgba(74,222,128,.3);padding:2.5rem 2rem;text-align:center;">
+      <div style="font-size:3rem;margin-bottom:1rem;">✅</div>
+      <h3 style="font-size:1rem;font-weight:900;color:#4ade80;margin:0 0 .5rem;">Avaliação enviada!</h3>
+      <p style="font-size:.8rem;color:#9ca3af;line-height:1.65;">Suas respostas foram recebidas. Aguarde a correção pelo Diretor.</p>
+      <button onclick="avalCdcRender()" style="margin-top:1.5rem;background:rgba(255,255,255,.06);color:#9ca3af;font-size:.72rem;padding:.5rem 1.2rem;border-radius:.65rem;border:1px solid rgba(255,255,255,.1);cursor:pointer;">🔄 Verificar resultado</button>
+    </div>`;
+  }
+
+  function _tplResultado(resp){
+    const nota = (resp.nota??0).toFixed(1);
+    const cor  = resp.nota >= 7 ? '#4ade80' : resp.nota >= 5 ? '#fbbf24' : '#f87171';
+    const map  = resp.correctionMap || {};
+    let qs = '';
+    PERGUNTAS.forEach(function(p,i){
+      const ok = map[i] === true;
+      const ng = map[i] === false;
+      const ic = ok ? '✓' : (ng ? '✗' : '—');
+      const cl = ok ? '#4ade80' : (ng ? '#f87171' : '#6b7280');
+      qs += `<div style="padding:.75rem;border-bottom:1px solid rgba(255,255,255,.05);display:flex;gap:.75rem;align-items:flex-start;">
+        <span style="font-weight:900;color:${cl};font-size:1.1rem;flex-shrink:0;width:1.4rem;text-align:center;">${ic}</span>
+        <div>
+          <p style="font-size:.68rem;color:#6b7280;margin:0 0 .2rem;font-weight:700;">${i+1}. ${p}</p>
+          <p style="font-size:.75rem;color:#d1d5db;margin:0;line-height:1.5;">${resp.respostas[i]||'<em style="color:#4b5563">Não respondido</em>'}</p>
+        </div>
+      </div>`;
+    });
+    return `<div style="max-width:860px;margin:0 auto;">
+      <div style="border-radius:1.2rem;background:linear-gradient(135deg,#06050f,#0a0820);border:2px solid ${cor}55;padding:2rem;text-align:center;margin-bottom:1.5rem;">
+        <p style="font-size:.65rem;color:#6b7280;letter-spacing:.12em;text-transform:uppercase;margin:0 0 .5rem;">Resultado da Avaliação</p>
+        <div style="font-size:3.5rem;font-weight:900;color:${cor};line-height:1;">${nota}</div>
+        <div style="font-size:.75rem;color:#9ca3af;margin-top:.3rem;">/ 10 &nbsp;·&nbsp; ${Object.values(map).filter(v=>v===true).length} acerto(s) de ${N_QUESTOES} questões</div>
+      </div>
+      <div style="border-radius:1rem;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.07);overflow:hidden;">${qs}</div>
+    </div>`;
+  }
+
+  function _tplFormulario(rascunho){
+    const rs  = rascunho && rascunho.respostas ? rascunho.respostas : [];
+    const nomeVal  = (rascunho && rascunho.nomeForm) || (user && user.name) || '';
+    const lojaVal  = (rascunho && rascunho.lojaForm) || (user && user.loja) || '';
+    const dataVal  = (rascunho && rascunho.dataForm)  || new Date().toLocaleDateString('pt-BR');
+
+    const fieldStyle = 'width:100%;background:#0d0d1a;border:1.5px solid rgba(255,255,255,.15);border-radius:.6rem;color:#e5e7eb;font-size:.82rem;padding:.65rem .9rem;outline:none;font-family:inherit;box-sizing:border-box;transition:border-color .2s;';
+
+    let qs = '';
+    PERGUNTAS.forEach(function(p,i){
+      qs += `<div style="background:#0b0b18;border:1.5px solid rgba(255,255,255,.08);border-radius:.85rem;padding:1.1rem 1.25rem;display:flex;flex-direction:column;gap:.75rem;">
+        <div style="display:flex;align-items:flex-start;gap:.85rem;">
+          <span style="display:inline-flex;align-items:center;justify-content:center;width:2rem;height:2rem;border-radius:50%;background:#131328;border:1.5px solid rgba(255,255,255,.15);font-size:.75rem;font-weight:900;color:#e5e7eb;flex-shrink:0;margin-top:.05rem;">${i+1}</span>
+          <div style="flex:1;">
+            <p style="font-size:.8rem;font-weight:800;color:#ffffff;margin:0;line-height:1.5;text-transform:uppercase;letter-spacing:.03em;">${p} <span style="color:#f87171;margin-left:.25rem;">★</span></p>
+          </div>
+        </div>
+        <textarea id="aval-q-${i}" rows="4" placeholder="Descreva aqui... (obrigatório)" style="${fieldStyle}resize:vertical;line-height:1.6;" onfocus="this.style.borderColor='rgba(6,182,212,.6)'" onblur="this.style.borderColor='rgba(255,255,255,.15)'">${rs[i]||''}</textarea>
+        <p style="font-size:.6rem;color:#6b7280;margin:0;">★ preenchimento obrigatório</p>
+      </div>`;
+    });
+
+    return `<div style="max-width:900px;margin:0 auto;display:flex;flex-direction:column;gap:1rem;">
+
+      <!-- Cabeçalho -->
+      <div style="background:#0b0b18;border:1.5px solid rgba(6,182,212,.35);border-radius:1rem;overflow:hidden;">
+        <div style="padding:.75rem 1.25rem;background:rgba(6,182,212,.12);border-bottom:1.5px solid rgba(6,182,212,.2);display:flex;align-items:center;gap:.6rem;">
+          <i class="fas fa-clipboard-list" style="color:#22d3ee;"></i>
+          <span style="font-size:.78rem;font-weight:900;color:#22d3ee;">Avaliação de Participantes — CDC</span>
+          <span style="margin-left:auto;font-size:.6rem;color:#6b7280;">${N_QUESTOES} questões · Nota 0–10</span>
+        </div>
+        <div style="padding:1rem 1.25rem;display:grid;grid-template-columns:1fr 1fr 1fr;gap:.85rem;">
+          <div>
+            <label style="font-size:.6rem;color:#6b7280;font-weight:700;letter-spacing:.08em;text-transform:uppercase;display:block;margin-bottom:.35rem;">Nome completo</label>
+            <input id="aval-cab-nome" type="text" value="${nomeVal}" placeholder="Seu nome completo" style="${fieldStyle}" onfocus="this.style.borderColor='rgba(6,182,212,.6)'" onblur="this.style.borderColor='rgba(255,255,255,.15)'">
+          </div>
+          <div>
+            <label style="font-size:.6rem;color:#6b7280;font-weight:700;letter-spacing:.08em;text-transform:uppercase;display:block;margin-bottom:.35rem;">Loja</label>
+            <input id="aval-cab-loja" type="text" value="${lojaVal}" placeholder="Nome da loja" style="${fieldStyle}" onfocus="this.style.borderColor='rgba(6,182,212,.6)'" onblur="this.style.borderColor='rgba(255,255,255,.15)'">
+          </div>
+          <div>
+            <label style="font-size:.6rem;color:#6b7280;font-weight:700;letter-spacing:.08em;text-transform:uppercase;display:block;margin-bottom:.35rem;">Data</label>
+            <input id="aval-cab-data" type="text" value="${dataVal}" placeholder="dd/mm/aaaa" style="${fieldStyle}" onfocus="this.style.borderColor='rgba(6,182,212,.6)'" onblur="this.style.borderColor='rgba(255,255,255,.15)'">
+          </div>
+        </div>
+      </div>
+
+      <!-- Questões -->
+      ${qs}
+
+      <!-- Rodapé / enviar -->
+      <div style="background:#060514;border:1.5px solid rgba(6,182,212,.3);border-radius:1rem;padding:1rem 1.25rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;">
+        <p style="font-size:.7rem;color:#6b7280;margin:0;">Revise suas respostas antes de enviar. Após o envio, não é possível editar.</p>
+        <button id="aval-btn-enviar" onclick="avalCdcEnviar()" style="background:linear-gradient(135deg,#0e7490,#0891b2);color:#fff;font-weight:900;font-size:.82rem;padding:.75rem 2rem;border-radius:.8rem;border:none;cursor:pointer;letter-spacing:.02em;white-space:nowrap;">
+          <i class="fas fa-paper-plane"></i> Enviar Avaliação
+        </button>
+      </div>
+
+    </div>`;
+  }
+
+  /* ── Preview do formulário para o Diretor (campos desabilitados) ── */
+  function _tplFormularioPreview(){
+    const fieldStyle = 'width:100%;background:#0a0a16;border:1.5px solid rgba(255,255,255,.1);border-radius:.6rem;color:#9ca3af;font-size:.82rem;padding:.65rem .9rem;outline:none;font-family:inherit;box-sizing:border-box;resize:vertical;line-height:1.6;';
+    let qs = '';
+    PERGUNTAS.forEach(function(p,i){
+      qs += `<div style="background:#0b0b18;border:1.5px solid rgba(255,255,255,.07);border-radius:.85rem;padding:1.1rem 1.25rem;display:flex;flex-direction:column;gap:.75rem;margin-bottom:.75rem;">
+        <div style="display:flex;align-items:flex-start;gap:.85rem;">
+          <span style="display:inline-flex;align-items:center;justify-content:center;width:2rem;height:2rem;border-radius:50%;background:#131328;border:1.5px solid rgba(255,255,255,.12);font-size:.75rem;font-weight:900;color:#e5e7eb;flex-shrink:0;">${i+1}</span>
+          <p style="font-size:.8rem;font-weight:800;color:#ffffff;margin:0;line-height:1.5;text-transform:uppercase;letter-spacing:.03em;">${p} <span style="color:#f87171;">★</span></p>
+        </div>
+        <textarea rows="3" disabled placeholder="Campo de resposta do participante..." style="${fieldStyle}cursor:not-allowed;opacity:.6;"></textarea>
+      </div>`;
+    });
+    const cabStyle = 'width:100%;background:#0a0a16;border:1.5px solid rgba(255,255,255,.1);border-radius:.6rem;color:#9ca3af;font-size:.82rem;padding:.65rem .9rem;outline:none;font-family:inherit;box-sizing:border-box;opacity:.6;cursor:not-allowed;';
+    return `<div style="pointer-events:none;">
+      <div style="background:#0b0b18;border:1.5px solid rgba(168,85,247,.25);border-radius:1rem;overflow:hidden;margin-bottom:.75rem;">
+        <div style="padding:.6rem 1rem;background:rgba(168,85,247,.1);border-bottom:1px solid rgba(168,85,247,.2);font-size:.65rem;font-weight:700;color:#c084fc;letter-spacing:.08em;text-transform:uppercase;">Cabeçalho — preenchido pelo participante</div>
+        <div style="padding:.85rem 1rem;display:grid;grid-template-columns:1fr 1fr 1fr;gap:.75rem;">
+          <div><label style="font-size:.58rem;color:#6b7280;font-weight:700;letter-spacing:.08em;text-transform:uppercase;display:block;margin-bottom:.3rem;">Nome completo</label><input disabled placeholder="Nome do participante" style="${cabStyle}"></div>
+          <div><label style="font-size:.58rem;color:#6b7280;font-weight:700;letter-spacing:.08em;text-transform:uppercase;display:block;margin-bottom:.3rem;">Loja</label><input disabled placeholder="Loja" style="${cabStyle}"></div>
+          <div><label style="font-size:.58rem;color:#6b7280;font-weight:700;letter-spacing:.08em;text-transform:uppercase;display:block;margin-bottom:.3rem;">Data</label><input disabled placeholder="dd/mm/aaaa" style="${cabStyle}"></div>
+        </div>
+      </div>
+      ${qs}
+    </div>`;
+  }
+
+  /* ── View do Diretor: listar solicitações + submissões ── */
+  async function _renderDiretor(db, box){
+    const [accSnaps, respSnaps] = await Promise.all([
+      db.collection(COL_ACCESS).get().catch(()=>null),
+      db.collection(COL_RESP).get().catch(()=>null)
+    ]);
+    const acessos = {}; if(accSnaps) accSnaps.forEach(d=>{ acessos[d.id]=d.data(); });
+    const resps   = {}; if(respSnaps) respSnaps.forEach(d=>{ resps[d.id]=d.data(); });
+
+    let pedentes='', submissoes='';
+    Object.entries(acessos).forEach(function([uid,a]){
+      const nome = a.nome||uid;
+      if(a.status==='pending'){
+        pedentes += `<div style="display:flex;align-items:center;gap:.75rem;padding:.65rem .85rem;border-bottom:1px solid rgba(255,255,255,.05);">
+          <i class="fas fa-user" style="color:#fbbf24;font-size:.8rem;"></i>
+          <span style="flex:1;font-size:.78rem;color:#e5e7eb;">${nome}</span>
+          <span style="font-size:.62rem;color:#9ca3af;">${a.cargo||''} · ${a.loja||''}</span>
+          <button onclick="avalCdcAprovar('${uid}',true)" style="background:#16a34a;color:#fff;font-weight:800;font-size:.68rem;padding:.3rem .8rem;border-radius:.5rem;border:none;cursor:pointer;">✓ Aprovar</button>
+          <button onclick="avalCdcAprovar('${uid}',false)" style="background:#dc2626;color:#fff;font-weight:800;font-size:.68rem;padding:.3rem .8rem;border-radius:.5rem;border:none;cursor:pointer;">✗ Negar</button>
+        </div>`;
+      }
+    });
+
+    Object.entries(resps).forEach(function([uid,r]){
+      const st = r.status||'enviada';
+      const stLabel = st==='corrigida' ? `<span style="color:#4ade80;font-weight:800;">Nota ${(r.nota??0).toFixed(1)}</span>` : `<span style="color:#fbbf24;">Aguardando correção</span>`;
+      let qsHtml = '';
+      PERGUNTAS.forEach(function(p,i){
+        const mapV = (r.correctionMap||{})[i];
+        const selV = mapV===true ? '1' : '';
+        const selX = mapV===false ? '1' : '';
+        const bgV  = selV ? '#16a34a' : 'rgba(255,255,255,.05)';
+        const bgX  = selX ? '#dc2626' : 'rgba(255,255,255,.05)';
+        const clV  = selV ? '#fff' : '#6b7280';
+        const clX  = selX ? '#fff' : '#6b7280';
+        qsHtml += `<div style="padding:.75rem 1rem;border-bottom:1px solid rgba(255,255,255,.04);">
+          <p style="font-size:.65rem;font-weight:800;color:#22d3ee;margin:0 0 .35rem;">${i+1}. ${p}</p>
+          <p style="font-size:.75rem;color:#d1d5db;margin:0 0 .5rem;line-height:1.5;">${r.respostas&&r.respostas[i] ? r.respostas[i] : '<em style="color:#4b5563">Não respondido</em>'}</p>
+          <div style="display:flex;gap:.4rem;">
+            <button id="aval-cor-x-${uid}-${i}" data-sel="${selX}" onclick="avalCdcMarcar('${uid}',${i},false)" style="background:${bgX};color:${clX};font-weight:900;font-size:.85rem;width:2rem;height:2rem;border-radius:.45rem;border:1.5px solid rgba(239,68,68,.3);cursor:pointer;transition:all .15s;">✗</button>
+            <button id="aval-cor-v-${uid}-${i}" data-sel="${selV}" onclick="avalCdcMarcar('${uid}',${i},true)" style="background:${bgV};color:${clV};font-weight:900;font-size:.85rem;width:2rem;height:2rem;border-radius:.45rem;border:1.5px solid rgba(74,222,128,.3);cursor:pointer;transition:all .15s;">✓</button>
+          </div>
+        </div>`;
+      });
+      const acert = Object.values(r.correctionMap||{}).filter(v=>v===true).length;
+      const total = Object.keys(r.correctionMap||{}).length;
+      submissoes += `<div style="border-radius:.85rem;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.08);margin-bottom:1rem;overflow:hidden;">
+        <div style="padding:.85rem 1rem;background:rgba(6,182,212,.05);border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;">
+          <i class="fas fa-user-graduate" style="color:#22d3ee;"></i>
+          <span style="font-weight:800;color:#e5e7eb;font-size:.82rem;">${r.nome||uid}</span>
+          <span style="font-size:.62rem;color:#9ca3af;">${r.cargo||''} · ${r.loja||''}</span>
+          <span style="margin-left:auto;">${stLabel}</span>
+        </div>
+        <div>${qsHtml}</div>
+        <div style="padding:.85rem 1rem;background:rgba(6,182,212,.03);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem;">
+          <span id="aval-cor-contador-${uid}" style="font-size:.72rem;color:#9ca3af;">${acert}/${total} corretas — Nota: ${(acert/N_QUESTOES*10).toFixed(1)}</span>
+          <button id="aval-btn-salvar-${uid}" onclick="avalCdcSalvarCorrecao('${uid}')" style="background:linear-gradient(135deg,#0e7490,#0891b2);color:#fff;font-weight:900;font-size:.75rem;padding:.55rem 1.5rem;border-radius:.65rem;border:none;cursor:pointer;">💾 Salvar Correção</button>
+        </div>
+      </div>`;
+    });
+
+    if(!pedentes) pedentes='<p style="color:#9ca3af;font-size:.75rem;padding:.85rem 1rem;">Nenhuma solicitação pendente.</p>';
+    if(!submissoes) submissoes='<p style="color:#9ca3af;font-size:.75rem;padding:.85rem 1rem;">Nenhuma avaliação enviada ainda.</p>';
+
+    // Preview das questões (colapsável)
+    let qsPreview = '';
+    PERGUNTAS.forEach(function(p,i){
+      qsPreview += `<div style="padding:.7rem 1rem;border-bottom:1px solid rgba(255,255,255,.07);display:flex;gap:.7rem;">
+        <span style="font-size:.7rem;font-weight:900;color:#22d3ee;flex-shrink:0;min-width:1.4rem;">${i+1}.</span>
+        <p style="font-size:.75rem;color:#e5e7eb;margin:0;line-height:1.55;">${p}</p>
+      </div>`;
+    });
+
+    box.innerHTML = `
+      <div style="max-width:900px;margin:0 auto;display:flex;flex-direction:column;gap:1rem;">
+
+        <!-- Solicitações pendentes -->
+        <div style="border-radius:1rem;background:#130f02;border:1.5px solid rgba(245,158,11,.45);overflow:hidden;">
+          <div style="padding:.75rem 1rem;background:rgba(245,158,11,.15);border-bottom:1.5px solid rgba(245,158,11,.25);font-size:.75rem;font-weight:900;color:#fbbf24;display:flex;align-items:center;gap:.5rem;">
+            <i class="fas fa-clock"></i> Solicitações de Acesso Pendentes
+          </div>
+          <div style="background:#0e0a01;">${pedentes}</div>
+        </div>
+
+        <!-- Avaliação — formulário completo interativo -->
+        <div style="border-radius:1rem;background:#060514;border:1.5px solid rgba(168,85,247,.4);overflow:hidden;">
+          <div onclick="var c=document.getElementById('aval-preview-qs');var ic=document.getElementById('aval-preview-ic');var open=c.style.display!=='none';c.style.display=open?'none':'block';ic.style.transform=open?'':'rotate(180deg)';"
+               style="padding:.75rem 1rem;background:rgba(168,85,247,.15);border-bottom:1.5px solid rgba(168,85,247,.25);font-size:.75rem;font-weight:900;color:#c084fc;display:flex;align-items:center;justify-content:space-between;gap:.5rem;cursor:pointer;">
+            <span><i class="fas fa-clipboard-list"></i> Avaliação CDC — ${N_QUESTOES} questões &nbsp;<span style="font-weight:400;font-size:.65rem;color:#9ca3af;">(clique para recolher)</span></span>
+            <i id="aval-preview-ic" class="fas fa-chevron-down" style="font-size:.65rem;color:#9ca3af;transition:transform .2s;transform:rotate(180deg);"></i>
+          </div>
+          <div id="aval-preview-qs" style="display:block;background:#07051a;padding:1rem;">${_tplFormulario(null)}</div>
+        </div>
+
+        <!-- Avaliações para correção -->
+        <div style="border-radius:1rem;background:#03111a;border:1.5px solid rgba(6,182,212,.4);overflow:hidden;">
+          <div style="padding:.75rem 1rem;background:rgba(6,182,212,.15);border-bottom:1.5px solid rgba(6,182,212,.25);font-size:.75rem;font-weight:900;color:#22d3ee;display:flex;align-items:center;justify-content:space-between;gap:.5rem;">
+            <span><i class="fas fa-clipboard-check"></i> Avaliações para Correção</span>
+            <button onclick="avalCdcRender()" style="background:rgba(6,182,212,.12);color:#22d3ee;font-size:.65rem;padding:.28rem .7rem;border-radius:.45rem;border:1px solid rgba(6,182,212,.3);cursor:pointer;font-weight:700;">🔄 Atualizar</button>
+          </div>
+          <div style="padding:.75rem;background:#04121a;">${submissoes}</div>
+        </div>
+
+      </div>`;
+  }
 
 })();
 </script>

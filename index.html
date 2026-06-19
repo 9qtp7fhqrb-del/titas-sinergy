@@ -4648,6 +4648,12 @@ function proceedToDash() {
             }
             // Auto-exclusão de duplicados em background
             _excluirDuplicadosInativos(user).catch(() => {});
+            // Pop-up de unificação para duplicados ativos (roda após 3s para não atrapalhar o load)
+            setTimeout(() => {
+                if (typeof _verificarDuplicadosUnificar === 'function') {
+                    _verificarDuplicadosUnificar(user).catch(() => {});
+                }
+            }, 3000);
         }
         const ov = document.getElementById('loading-overlay');
         if (!ov) { openDash(); return; }
@@ -24580,6 +24586,199 @@ window._dirDirUpdateTimestamp = _dirDirUpdateTimestamp;
 
       </div>`;
   }
+
+})();
+</script>
+
+<!-- ══════════════════════════════════════════════════
+     MODAL — UNIFICAÇÃO DE CONTA DUPLICADA
+══════════════════════════════════════════════════ -->
+<div id="modal-unificar-conta" class="hidden fixed inset-0 z-[99999] flex items-center justify-center p-4"
+     style="background:rgba(0,0,0,.92);backdrop-filter:blur(14px);">
+  <div style="background:linear-gradient(145deg,#0d0b1e,#140f2b,#0a0818);border:2px solid rgba(245,158,11,.45);border-radius:1.5rem;padding:1.75rem 1.5rem;max-width:480px;width:100%;position:relative;">
+    <div style="position:absolute;top:-1px;left:50%;transform:translateX(-50%);background:rgba(245,158,11,.18);border:1.5px solid rgba(245,158,11,.5);border-radius:999px;padding:.2rem 1rem;font-size:.6rem;font-weight:900;color:#fbbf24;letter-spacing:.12em;text-transform:uppercase;white-space:nowrap;">
+      ⚠️ Conta Duplicada Encontrada
+    </div>
+    <div style="margin-top:.9rem;">
+      <p style="font-size:.8rem;font-weight:700;color:#e5e7eb;margin-bottom:.35rem;">Encontramos outra conta com seu nome no sistema.</p>
+      <p style="font-size:.7rem;color:#9ca3af;margin-bottom:1.25rem;line-height:1.55;">Escolha qual conta manter. A outra será removida e os dados serão unificados.</p>
+
+      <div style="display:flex;flex-direction:column;gap:.7rem;margin-bottom:1.25rem;">
+        <!-- Conta A: atual (logada) -->
+        <div id="unif-card-a" onclick="unif_selecionarConta('a')" style="cursor:pointer;border:2px solid rgba(245,158,11,.25);border-radius:1rem;padding:1rem;transition:all .18s;position:relative;">
+          <div style="position:absolute;top:.6rem;right:.6rem;font-size:.55rem;font-weight:900;padding:.15rem .5rem;border-radius:999px;background:rgba(16,185,129,.15);color:#34d399;border:1px solid rgba(16,185,129,.3);">CONTA ATUAL</div>
+          <p id="unif-nome-a" style="font-size:.88rem;font-weight:800;color:#fff;margin-bottom:.25rem;padding-right:5rem;"></p>
+          <p id="unif-info-a" style="font-size:.68rem;color:#9ca3af;"></p>
+        </div>
+        <!-- Conta B: duplicada -->
+        <div id="unif-card-b" onclick="unif_selecionarConta('b')" style="cursor:pointer;border:2px solid rgba(99,102,241,.25);border-radius:1rem;padding:1rem;transition:all .18s;position:relative;">
+          <div style="position:absolute;top:.6rem;right:.6rem;font-size:.55rem;font-weight:900;padding:.15rem .5rem;border-radius:999px;background:rgba(99,102,241,.15);color:#a5b4fc;border:1px solid rgba(99,102,241,.3);">OUTRA CONTA</div>
+          <p id="unif-nome-b" style="font-size:.88rem;font-weight:800;color:#fff;margin-bottom:.25rem;padding-right:5.5rem;"></p>
+          <p id="unif-info-b" style="font-size:.68rem;color:#9ca3af;"></p>
+        </div>
+      </div>
+
+      <p id="unif-selecionado-label" style="font-size:.7rem;color:#fbbf24;text-align:center;margin-bottom:1rem;min-height:1.2rem;"></p>
+
+      <div style="display:flex;gap:.75rem;">
+        <button onclick="unif_confirmar()" id="unif-btn-confirmar" disabled
+          style="flex:1;background:linear-gradient(135deg,#C9A227,#a07c18);color:#0a0800;font-weight:900;font-size:.82rem;padding:.8rem 1rem;border-radius:.8rem;border:none;cursor:pointer;opacity:.4;transition:opacity .2s;">
+          Unificar Conta
+        </button>
+        <button onclick="unif_adiarParaDepois()"
+          style="padding:.8rem 1.2rem;border-radius:.8rem;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:#6b7280;font-size:.75rem;font-weight:700;cursor:pointer;">
+          Depois
+        </button>
+      </div>
+      <p style="font-size:.6rem;color:#4b5563;text-align:center;margin-top:.75rem;">Você pode unificar depois acessando o seu perfil.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ══════════════════════════════════════════════════════
+   UNIFICAÇÃO DE CONTAS DUPLICADAS
+══════════════════════════════════════════════════════ */
+(function(){
+  let _unifDupKey = null;   // key do duplicado a ser removido
+  let _unifKeepKey = null;  // key a manter
+  let _unifKeepData = null; // dados a manter
+
+  /* Normaliza nome para comparação: minúsculas, sem acentos */
+  function _norm(s) {
+    return (s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').trim();
+  }
+
+  /* Verifica se dois docs são duplicados: mesmo cargo, mesma loja, mesmo primeiro nome */
+  function _eDuplicado(a, b) {
+    if (!a || !b) return false;
+    const cargoA = (a.cargo||'').toLowerCase();
+    const cargoB = (b.cargo||'').toLowerCase();
+    if (cargoA !== cargoB) return false;
+
+    const lojaA = _norm(a.loja||'');
+    const lojaB = _norm(b.loja||'');
+    if (lojaA && lojaB && lojaA !== lojaB) return false;  // lojas diferentes = pessoas diferentes
+
+    const primeiroA = _norm(a.nome||a.name||'').split(' ')[0];
+    const primeiroB = _norm(b.nome||b.name||'').split(' ')[0];
+    if (!primeiroA || !primeiroB) return false;
+    return primeiroA === primeiroB;
+  }
+
+  /* Formata último acesso para exibição */
+  function _fmtAcesso(u) {
+    const ts = u.ultimoAcesso || u.ultimoLogin || '';
+    if (!ts || ts === '0' || new Date(ts).getFullYear() < 2020) return 'Nunca acessou';
+    try {
+      const d = new Date(ts);
+      return 'Último acesso: ' + d.toLocaleDateString('pt-BR') + ' ' + d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+    } catch(e){ return ''; }
+  }
+
+  /* Ponto de entrada: chamado logo após login bem-sucedido */
+  window._verificarDuplicadosUnificar = async function(usuarioLogado) {
+    try {
+      // Não mostrar se já adiou há menos de 7 dias
+      const adiouKey = 'unif_adiado_' + (usuarioLogado.cargo||'') + '_' + _norm(usuarioLogado.name||'').split(' ')[0];
+      const adiou = localStorage.getItem(adiouKey);
+      if (adiou && (Date.now() - parseInt(adiou)) < 7 * 86400000) return;
+
+      const todos = await _usrRestList();
+      if (!todos || !todos.length) return;
+
+      const keyAtual = userKey(usuarioLogado.cargo, usuarioLogado.name);
+      const docAtual = { nome: usuarioLogado.name, cargo: usuarioLogado.cargo, loja: usuarioLogado.loja, key: keyAtual,
+                         ultimoAcesso: usuarioLogado.ultimoAcesso };
+
+      for (const u of todos) {
+        if (u.key === keyAtual) continue;
+        const uEnrich = _usrEnrich(u);
+        if (_eDuplicado(docAtual, uEnrich)) {
+          // Encontrou duplicado — exibir modal
+          _unifDupKey = u.key;
+          _unifKeepKey = null;
+          _unifKeepData = null;
+
+          document.getElementById('unif-nome-a').textContent = usuarioLogado.name || keyAtual;
+          document.getElementById('unif-info-a').textContent = (usuarioLogado.cargo||'') + (usuarioLogado.loja ? ' · ' + usuarioLogado.loja : '') + ' · ' + _fmtAcesso(docAtual);
+          document.getElementById('unif-nome-b').textContent = uEnrich.nome || u.key;
+          document.getElementById('unif-info-b').textContent = (uEnrich.cargo||'') + (uEnrich.loja ? ' · ' + uEnrich.loja : '') + ' · ' + _fmtAcesso(uEnrich);
+
+          document.getElementById('modal-unificar-conta').classList.remove('hidden');
+          break; // mostrar um de cada vez
+        }
+      }
+    } catch(e) {
+      console.warn('[unif] erro:', e);
+    }
+  };
+
+  window.unif_selecionarConta = function(lado) {
+    const cardA = document.getElementById('unif-card-a');
+    const cardB = document.getElementById('unif-card-b');
+    const label = document.getElementById('unif-selecionado-label');
+    const btn   = document.getElementById('unif-btn-confirmar');
+
+    cardA.style.borderColor = lado === 'a' ? 'rgba(245,158,11,.8)' : 'rgba(99,102,241,.2)';
+    cardB.style.borderColor = lado === 'b' ? 'rgba(245,158,11,.8)' : 'rgba(99,102,241,.2)';
+    cardA.style.background  = lado === 'a' ? 'rgba(245,158,11,.08)' : '';
+    cardB.style.background  = lado === 'b' ? 'rgba(245,158,11,.08)' : '';
+
+    if (lado === 'a') {
+      _unifKeepKey  = userKey(user.cargo, user.name);
+      _unifKeepData = null; // manter atual
+      label.textContent = '✔ Mantendo: ' + (document.getElementById('unif-nome-a').textContent);
+    } else {
+      _unifKeepKey  = _unifDupKey;
+      _unifKeepData = document.getElementById('unif-nome-b').textContent;
+      label.textContent = '✔ Mantendo: ' + _unifKeepData;
+    }
+    btn.disabled = false;
+    btn.style.opacity = '1';
+  };
+
+  window.unif_confirmar = async function() {
+    const btn = document.getElementById('unif-btn-confirmar');
+    btn.disabled = true;
+    btn.textContent = 'Unificando…';
+
+    try {
+      const keyAtual = userKey(user.cargo, user.name);
+
+      if (_unifKeepKey === keyAtual) {
+        // Manter conta atual → apagar duplicado
+        await _usrDelete(_unifDupKey);
+      } else {
+        // Manter conta duplicada → precisamos migrar a sessão atual para o doc do duplicado
+        // Pegar dados do duplicado (mais completo)
+        const dupData = await _usrGetOne(_unifDupKey);
+        // Atualizar o doc atual com os dados do duplicado (nome correto, etc.)
+        await _usrUpdate(keyAtual, { nome: dupData.nome || dupData.name || user.name });
+        // Apagar o duplicado (doc original ficou, só atualizamos o nome)
+        await _usrDelete(_unifDupKey);
+        // Atualizar sessão local
+        user.name = dupData.nome || dupData.name || user.name;
+        const nav = document.getElementById('nav-name');
+        if (nav) nav.textContent = user.name;
+        _saveSession && _saveSession();
+      }
+
+      document.getElementById('modal-unificar-conta').classList.add('hidden');
+      toast('✅ Conta unificada com sucesso!', 'success');
+    } catch(e) {
+      btn.disabled = false;
+      btn.textContent = 'Unificar Conta';
+      btn.style.opacity = '1';
+      toast('Erro ao unificar: ' + e.message, 'error');
+    }
+  };
+
+  window.unif_adiarParaDepois = function() {
+    const adiouKey = 'unif_adiado_' + (user?.cargo||'') + '_' + _norm(user?.name||'').split(' ')[0];
+    localStorage.setItem(adiouKey, Date.now().toString());
+    document.getElementById('modal-unificar-conta').classList.add('hidden');
+  };
 
 })();
 </script>

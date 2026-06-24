@@ -74,3 +74,6 @@ node_modules/
 # macOS
 .DS_Store
 .auto-deploy.log
+
+# Claude Code — contém histórico de comandos com tokens sensíveis
+.claude/

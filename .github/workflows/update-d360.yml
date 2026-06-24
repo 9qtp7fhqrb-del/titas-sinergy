@@ -2,7 +2,7 @@ name: Atualizar D360 — Vendas
 
 on:
   schedule:
-    - cron: '*/30 * * * *'
+    - cron: '*/30 14-22 * * 1-6'
   workflow_dispatch:
 
 concurrency:

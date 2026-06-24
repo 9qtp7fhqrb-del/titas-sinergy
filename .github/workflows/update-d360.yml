@@ -2,7 +2,10 @@ name: Atualizar D360 — Vendas
 
 on:
   schedule:
-    - cron: '*/30 14-22 * * 1-6'
+    - cron: '*/30 13-23 * * 1-6'   # Seg-Sáb 10h-20h BRT
+    - cron: '*/30 0-2 * * 0,2-6'   # Seg-Sáb 21h-23h BRT (madrugada UTC)
+    - cron: '*/30 16-23 * * 0'      # Dom 13h-20h BRT
+    - cron: '*/30 0-1 * * 1'        # Dom 21h-22h BRT (madrugada UTC segunda)
   workflow_dispatch:
 
 concurrency:

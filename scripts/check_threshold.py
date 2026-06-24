@@ -202,6 +202,17 @@ def main():
         print('✅ Flag manual no Firestore — atualizando')
         return
 
+    # Detectar virada de dia: se LAST_TS é de outro dia, base do threshold é 0
+    last_total_base = LAST_TOTAL
+    if LAST_TS:
+        try:
+            last_dt_brt = datetime.fromisoformat(LAST_TS.replace('Z', '+00:00')).astimezone(BRT)
+            if last_dt_brt.date() < _now_brt.date():
+                last_total_base = 0.0
+                print(f'  ↺ Virada de dia detectada (último update: {last_dt_brt.strftime("%d/%m %H:%M")}) — base resetada para 0')
+        except Exception:
+            pass
+
     try:
         token, is_new = get_or_login_token()
         if is_new:
@@ -212,8 +223,8 @@ def main():
                 print(f'  Token novo salvo em {out}')
 
         today_total = get_today_total(token)
-        diff = today_total - LAST_TOTAL
-        print(f'  Hoje: R$ {today_total:,.2f} | Último: R$ {LAST_TOTAL:,.2f} | Diff: R$ {diff:,.2f} | Threshold: R$ {THRESHOLD:,.0f}')
+        diff = today_total - last_total_base
+        print(f'  Hoje: R$ {today_total:,.2f} | Base: R$ {last_total_base:,.2f} | Diff: R$ {diff:,.2f} | Threshold: R$ {THRESHOLD:,.0f}')
 
         if diff < THRESHOLD:
             gh_output('should_update', 'false')

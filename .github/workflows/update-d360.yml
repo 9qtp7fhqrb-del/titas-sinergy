@@ -9,9 +9,6 @@ concurrency:
   group: d360-update
   cancel-in-progress: true
 
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-
 jobs:
   update:
     runs-on: ubuntu-latest

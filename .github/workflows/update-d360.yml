@@ -2,7 +2,7 @@ name: Atualizar D360 — Vendas
 
 on:
   schedule:
-    - cron: '*/30 10-22 * * 1-6'  # 07h-19h BRT (UTC-3), seg-sab
+    - cron: '*/30 * * * *'
   workflow_dispatch:
 
 concurrency:
@@ -19,7 +19,7 @@ jobs:
       - name: Checkout repositório
         uses: actions/checkout@v4
         with:
-          token: ${{ secrets.GH_PAT }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Configurar Python
         uses: actions/setup-python@v5

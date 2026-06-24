@@ -193,8 +193,14 @@ def main():
         print(f'✅ Fora da janela ({hour}h BRT) — atualizando')
         return
 
-    # 3. Dentro da janela 11h-20h: verificar flag manual e threshold
-    print(f'Janela de threshold ativa ({hour}h BRT). Verificando flag Firestore e ERP...')
+    # 3. Após 17h o threshold cai para R$1.000 (vendas desaceleram no fim do dia)
+    if hour >= 17:
+        THRESHOLD_EFETIVO = 1000.0
+    else:
+        THRESHOLD_EFETIVO = THRESHOLD
+
+    # 4. Dentro da janela 11h-20h: verificar flag manual e threshold
+    print(f'Janela de threshold ativa ({hour}h BRT, threshold efetivo R${THRESHOLD_EFETIVO:,.0f}). Verificando flag Firestore e ERP...')
 
     if check_manual_flag():
         gh_output('should_update', 'true')
@@ -224,12 +230,12 @@ def main():
 
         today_total = get_today_total(token)
         diff = today_total - last_total_base
-        print(f'  Hoje: R$ {today_total:,.2f} | Base: R$ {last_total_base:,.2f} | Diff: R$ {diff:,.2f} | Threshold: R$ {THRESHOLD:,.0f}')
+        print(f'  Hoje: R$ {today_total:,.2f} | Base: R$ {last_total_base:,.2f} | Diff: R$ {diff:,.2f} | Threshold: R$ {THRESHOLD_EFETIVO:,.0f}')
 
-        if diff < THRESHOLD:
+        if diff < THRESHOLD_EFETIVO:
             gh_output('should_update', 'false')
-            gh_output('skip_reason',   f'threshold_R${diff:.0f}_de_R${THRESHOLD:.0f}')
-            print(f'⏭️  Threshold não atingido — pulando (faltam R$ {THRESHOLD - diff:,.0f})')
+            gh_output('skip_reason',   f'threshold_R${diff:.0f}_de_R${THRESHOLD_EFETIVO:.0f}')
+            print(f'⏭️  Threshold não atingido — pulando (faltam R$ {THRESHOLD_EFETIVO - diff:,.0f})')
         else:
             gh_output('should_update', 'true')
             gh_output('skip_reason',   f'threshold_atingido_diff_R${diff:.0f}')

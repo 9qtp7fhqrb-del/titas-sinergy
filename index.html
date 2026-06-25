@@ -5429,7 +5429,11 @@ function _jurRenderCards(data) {
             .map(([s,n]) => { const c=_jurStatusColor(s); return `<span style="font-size:.65rem;padding:.2rem .65rem;border-radius:999px;background:rgba(${_jurRgb(c)},.12);color:${c};border:1px solid rgba(${_jurRgb(c)},.25);">${s}: <strong>${n}</strong></span>`; })
             .join('');
     }
-    grid.innerHTML = data.map(l => {
+    const _nivelOrd = {critico:0, atencao:1, normal:2, excelencia:3};
+    const dataSorted = [...data].sort((a, b) =>
+        _nivelOrd[_jurNivelLoja(a.processos).nivel] - _nivelOrd[_jurNivelLoja(b.processos).nivel]
+    );
+    grid.innerHTML = dataSorted.map(l => {
         const nivel  = _jurNivelLoja(l.processos);
         const st     = _jurCardStatus(l.processos);
         const active = l.processos.filter(p => !(p.status||'').toLowerCase().includes('encerrado')).length;

@@ -1774,6 +1774,8 @@
                 </div>
                 <!-- Cards grid -->
                 <div id="jur-cards-grid" class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-3"></div>
+                <!-- Análise geral + legenda -->
+                <div id="jur-insights-wrap" class="mt-4"></div>
             </div>
 
             <!-- Modal detalhe loja -->
@@ -5258,6 +5260,125 @@ function _jurCardStatus(processos) {
     return {label:'Pendente', color:'#9ca3af'};
 }
 
+function _jurNivelLoja(processos) {
+    const active = processos.filter(p => !(p.status||'').toLowerCase().includes('encerrado'));
+    const n = active.length;
+    if (n >= 4) return {nivel:'critico',    color:'#ef4444', label:'Crítico',    border:'rgba(239,68,68,.7)',   glow:'0 0 14px rgba(239,68,68,.25)'};
+    if (n >= 1) return {nivel:'atencao',    color:'#eab308', label:'Atenção',    border:'rgba(234,179,8,.55)',  glow:'0 0 8px rgba(234,179,8,.15)'};
+    let maxDt = null;
+    processos.forEach(p => {
+        if (!p.dtNotif) return;
+        const [d,m,a] = p.dtNotif.split('/').map(Number);
+        if (!d||!m||!a) return;
+        const dt = new Date(a,m-1,d);
+        if (!maxDt || dt > maxDt) maxDt = dt;
+    });
+    if (!maxDt || !processos.length) return {nivel:'excelencia', color:'#22c55e', label:'Excelência', border:'rgba(34,197,94,.45)', glow:'0 0 10px rgba(34,197,94,.15)'};
+    const hoje = new Date(new Date().toLocaleString('en-US',{timeZone:'America/Sao_Paulo'}));
+    const dias  = Math.round((hoje - maxDt) / 86400000);
+    if (dias > 15) return {nivel:'excelencia', color:'#22c55e', label:'Excelência', border:'rgba(34,197,94,.45)', glow:'0 0 10px rgba(34,197,94,.15)'};
+    return {nivel:'normal', color:'#6b7280', label:'Normal', border:'rgba(107,114,128,.28)', glow:'none'};
+}
+
+function _jurInsightsGeral(data) {
+    const ativos = [];
+    data.forEach(l => l.processos.forEach(p => {
+        if (!(p.status||'').toLowerCase().includes('encerrado')) ativos.push({...p, loja: l.label});
+    }));
+    const txt = ativos.map(p => ((p.obs||'') + ' ' + (p.status||'')).toLowerCase()).join(' ');
+    const kDefs = [
+        {ks:['bloqueio','payjoy','bloqueado'],              t:'Bloqueio de aparelho / financeira'},
+        {ks:['parcela','cobrança','financeiro','boleto'],   t:'Disputas sobre cobrança / parcelas'},
+        {ks:['procon'],                                     t:'Autuações do PROCON'},
+        {ks:['trabalhista','rescisão','justa causa'],       t:'Processos trabalhistas'},
+        {ks:['defeito','qualidade','não funciona'],         t:'Defeito / qualidade de produto'},
+        {ks:['acessório','troca de produto'],               t:'Acessórios / troca de produto'},
+        {ks:['depósito','cumprimento de sentença','guia'],  t:'Cumprimento de sentença (depósito judicial)'},
+    ];
+    const temas = kDefs.filter(({ks}) => ks.some(k => txt.includes(k))).map(({t}) => t);
+    const prev = [
+        'Capacitar equipe sobre transparência nas condições de bloqueio e financiamento na venda',
+        'Entregar comprovante com todas as condições financeiras assinado pelo cliente',
+        'Criar canal interno para resolução de reclamações antes que se tornem processos',
+        'Revisar script de vendas com foco em compliance e Código de Defesa do Consumidor',
+        'Nomear responsável por monitorar e responder notificações de PROCON em cada loja',
+    ];
+    const corr = [];
+    const criticas = data.filter(l => _jurNivelLoja(l.processos).nivel === 'critico');
+    const emAtencao = data.filter(l => _jurNivelLoja(l.processos).nivel === 'atencao');
+    if (criticas.length)  corr.push('🔴 Acionamento urgente do jurídico: ' + criticas.map(l => l.label).join(', '));
+    if (emAtencao.length) corr.push('🟡 Acompanhar de perto: ' + emAtencao.map(l => l.label).join(', '));
+    const BRT  = new Date(new Date().toLocaleString('en-US',{timeZone:'America/Sao_Paulo'}));
+    const hoje = new Date(BRT.getFullYear(), BRT.getMonth(), BRT.getDate());
+    const proxAuds = ativos.filter(p => {
+        if (!p.dtAud) return false;
+        const [d,m,a] = p.dtAud.split('/').map(Number);
+        if (!d||!m||!a) return false;
+        return Math.round((new Date(a,m-1,d) - hoje) / 86400000) <= 7;
+    });
+    if (proxAuds.length) corr.push('📅 Preparar documentação para ' + proxAuds.length + ' audiência(s) nos próximos 7 dias');
+    const deps = ativos.filter(p => (p.obs||'').toLowerCase().includes('depósito') || (p.status||'').toLowerCase().includes('cumprimento'));
+    if (deps.length) corr.push('💰 Regularizar ' + deps.length + ' guia(s) de depósito judicial pendente(s)');
+    if (!corr.length) corr.push('✅ Manter acompanhamento periódico junto ao escritório jurídico');
+    return {temas, prev, corr, totalAtivos: ativos.length};
+}
+
+function _jurInsightsLoja(processos) {
+    const ativos = processos.filter(p => !(p.status||'').toLowerCase().includes('encerrado'));
+    if (!ativos.length) return null;
+    const txt = ativos.map(p => ((p.obs||'') + ' ' + (p.status||'')).toLowerCase()).join(' ');
+    const temas = [];
+    if (txt.includes('bloqueio') || txt.includes('payjoy'))          temas.push('Bloqueio de aparelho');
+    if (txt.includes('parcela') || txt.includes('cobrança'))         temas.push('Cobrança / financeiro');
+    if (txt.includes('procon'))                                       temas.push('PROCON');
+    if (txt.includes('trabalhista') || txt.includes('rescisão'))     temas.push('Trabalhista');
+    if (txt.includes('defeito') || txt.includes('qualidade'))        temas.push('Defeito de produto');
+    if (txt.includes('acessório') || txt.includes('troca'))          temas.push('Acessórios / troca');
+    if (txt.includes('depósito') || txt.includes('cumprimento'))     temas.push('Cumprimento de sentença');
+    const prev = [], corr = [];
+    if (txt.includes('bloqueio') || txt.includes('payjoy'))          { prev.push('Informar cliente sobre regras de bloqueio no ato da venda'); corr.push('Contatar financeira para desbloqueio antes da audiência'); }
+    if (txt.includes('parcela') || txt.includes('cobrança'))         { prev.push('Entregar comprovante com todas as condições financeiras'); corr.push('Avaliar possibilidade de acordo extrajudicial'); }
+    if (txt.includes('procon'))                                       { prev.push('Manter canal de atendimento ao consumidor atualizado'); corr.push('Responder notificação do PROCON dentro do prazo legal'); }
+    if (txt.includes('trabalhista') || txt.includes('rescisão'))     { prev.push('Seguir rigorosamente a CLT em todas as demissões'); corr.push('Acionar RH e jurídico para análise do caso'); }
+    if (txt.includes('defeito') || txt.includes('qualidade'))        { prev.push('Reforçar checklist de qualidade do produto na venda'); corr.push('Acionar garantia do fabricante antes da audiência'); }
+    if (txt.includes('depósito') || txt.includes('cumprimento'))     { corr.push('Priorizar pagamento das guias de depósito judicial pendentes'); }
+    if (!prev.length) prev.push('Treinar equipe sobre o Código de Defesa do Consumidor');
+    if (!corr.length) corr.push('Acompanhar processos junto ao escritório jurídico');
+    const BRT  = new Date(new Date().toLocaleString('en-US',{timeZone:'America/Sao_Paulo'}));
+    const hoje = new Date(BRT.getFullYear(), BRT.getMonth(), BRT.getDate());
+    const proxAuds = ativos.filter(p => {
+        if (!p.dtAud) return false;
+        const [d,m,a] = p.dtAud.split('/').map(Number);
+        if (!d||!m||!a) return false;
+        return Math.round((new Date(a,m-1,d) - hoje) / 86400000) <= 30;
+    }).map(p => p.dtAud);
+    if (proxAuds.length) corr.push('Preparar documentação para audiência(s): ' + proxAuds.join(', '));
+    return {temas, prev, corr};
+}
+
+function _jurInsightsHtml(insights) {
+    if (!insights) return '';
+    const {temas, prev, corr} = insights;
+    const temasHtml = temas.length ? `
+        <div style="margin-bottom:12px;">
+            <div style="font-size:.58rem;font-weight:800;color:#9ca3af;letter-spacing:.08em;text-transform:uppercase;margin-bottom:5px;">Padrões Identificados</div>
+            <div style="display:flex;flex-wrap:wrap;gap:4px;">
+                ${temas.map(t => `<span style="font-size:.6rem;padding:.2rem .6rem;border-radius:999px;background:rgba(239,68,68,.08);color:#f87171;border:1px solid rgba(239,68,68,.2);">${t}</span>`).join('')}
+            </div>
+        </div>` : '';
+    const prevHtml = prev.length ? `
+        <div style="margin-bottom:10px;">
+            <div style="font-size:.58rem;font-weight:800;color:#22c55e;letter-spacing:.06em;text-transform:uppercase;margin-bottom:5px;"><i class="fas fa-shield-alt" style="margin-right:4px;"></i>Ações Preventivas</div>
+            ${prev.map(a => `<div style="font-size:.65rem;color:#bbf7d0;line-height:1.6;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.04);">• ${a}</div>`).join('')}
+        </div>` : '';
+    const corrHtml = corr.length ? `
+        <div>
+            <div style="font-size:.58rem;font-weight:800;color:#f59e0b;letter-spacing:.06em;text-transform:uppercase;margin-bottom:5px;"><i class="fas fa-tools" style="margin-right:4px;"></i>Ações Corretivas</div>
+            ${corr.map(a => `<div style="font-size:.65rem;color:#fef3c7;line-height:1.6;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.04);">• ${a}</div>`).join('')}
+        </div>` : '';
+    return temasHtml + prevHtml + corrHtml;
+}
+
 function _jurDiasAteAud(processos) {
     const BRT = new Date(new Date().toLocaleString('en-US', {timeZone:'America/Sao_Paulo'}));
     const hoje = new Date(BRT.getFullYear(), BRT.getMonth(), BRT.getDate());
@@ -5303,27 +5424,31 @@ function _jurRenderCards(data) {
             .join('');
     }
     grid.innerHTML = data.map(l => {
-        const st = _jurCardStatus(l.processos);
+        const nivel  = _jurNivelLoja(l.processos);
+        const st     = _jurCardStatus(l.processos);
         const active = l.processos.filter(p => !(p.status||'').toLowerCase().includes('encerrado')).length;
         const hasProc = l.processos.length > 0;
-        const glow = st.color !== '#22c55e' && hasProc;
         const diasAud = _jurDiasAteAud(l.processos);
         const audBadge = _jurAudBadge(diasAud);
-        const urgBorder = diasAud !== null ? (diasAud <= 1 ? 'rgba(239,68,68,.6)' : diasAud === 2 ? 'rgba(249,115,22,.5)' : 'rgba(234,179,8,.4)') : `rgba(${_jurRgb(l.cor)},.25)`;
-        return `<div onclick="_jurOpenLoja('${l.key}')" style="position:relative;overflow:hidden;border-radius:16px;cursor:pointer;min-height:110px;background:linear-gradient(135deg,rgba(8,8,18,.95),rgba(18,18,36,.9));border:1px solid ${urgBorder};transition:transform .18s,border-color .18s;" onmouseenter="this.style.transform='scale(1.025)'" onmouseleave="this.style.transform=''">
-            <div style="position:absolute;top:-24px;right:-24px;width:90px;height:90px;border-radius:50%;background:${diasAud!==null&&diasAud<=1?'#ef4444':l.cor};opacity:.08;pointer-events:none;"></div>
+        const border = diasAud !== null
+            ? (diasAud <= 1 ? 'rgba(239,68,68,.7)' : diasAud === 2 ? 'rgba(249,115,22,.5)' : 'rgba(234,179,8,.4)')
+            : nivel.border;
+        const shadow = diasAud !== null ? 'none' : nivel.glow;
+        return `<div onclick="_jurOpenLoja('${l.key}')" style="position:relative;overflow:hidden;border-radius:16px;cursor:pointer;min-height:118px;background:linear-gradient(135deg,rgba(8,8,18,.95),rgba(18,18,36,.9));border:1px solid ${border};box-shadow:${shadow};transition:transform .18s;" onmouseenter="this.style.transform='scale(1.025)'" onmouseleave="this.style.transform=''">
+            <div style="position:absolute;top:0;left:0;right:0;height:3px;background:${nivel.color};opacity:.8;border-radius:2px 2px 0 0;"></div>
+            <div style="position:absolute;top:-24px;right:-24px;width:90px;height:90px;border-radius:50%;background:${nivel.color};opacity:.07;pointer-events:none;"></div>
             <div style="padding:14px;display:flex;flex-direction:column;gap:8px;">
                 <div style="display:flex;justify-content:space-between;align-items:flex-start;">
                     <div style="width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(${_jurRgb(l.cor)},.12);border:1px solid rgba(${_jurRgb(l.cor)},.22);">
                         <i class="fas fa-clipboard-list" style="color:${l.cor};font-size:.7rem;"></i>
                     </div>
-                    <span style="font-size:.58rem;color:#6b7280;font-weight:700;letter-spacing:.08em;">${l.sigla}</span>
+                    <span style="font-size:.54rem;font-weight:800;color:${nivel.color};letter-spacing:.06em;">${nivel.label.toUpperCase()}</span>
                 </div>
                 <div>
                     <div style="font-size:.78rem;font-weight:700;color:#f3f4f6;margin-bottom:5px;line-height:1.2;">${l.label}</div>
                     <div style="display:flex;align-items:center;justify-content:space-between;gap:4px;">
                         <div style="display:flex;align-items:center;gap:5px;">
-                            <span style="width:7px;height:7px;border-radius:50%;background:${st.color};display:inline-block;${glow?'box-shadow:0 0 6px '+st.color+'90':''}"></span>
+                            <span style="width:7px;height:7px;border-radius:50%;background:${st.color};display:inline-block;"></span>
                             <span style="font-size:.62rem;color:${st.color};font-weight:600;">${st.label}</span>
                         </div>
                         ${hasProc ? `<span style="font-size:.56rem;background:rgba(255,255,255,.05);color:#9ca3af;padding:.1rem .4rem;border-radius:999px;">${active>0?active+' ativo'+(active>1?'s':''):'encerrados'}</span>` : ''}
@@ -5333,6 +5458,40 @@ function _jurRenderCards(data) {
             </div>
         </div>`;
     }).join('');
+
+    // Painel de análise geral + legenda de níveis
+    const insightsWrap = document.getElementById('jur-insights-wrap');
+    if (insightsWrap) {
+        const ins = _jurInsightsGeral(data);
+        const legendaItens = [
+            {nivel:'critico',    color:'#ef4444', label:'Crítico',    desc:'4+ processos ativos'},
+            {nivel:'atencao',    color:'#eab308', label:'Atenção',    desc:'1–3 processos ativos'},
+            {nivel:'normal',     color:'#6b7280', label:'Normal',     desc:'Sem ativos há ≤15 dias'},
+            {nivel:'excelencia', color:'#22c55e', label:'Excelência', desc:'Sem ativos há +15 dias'},
+        ];
+        insightsWrap.innerHTML = `
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+            <!-- Legenda de níveis -->
+            <div class="glass rounded-2xl p-4" style="border-color:rgba(255,255,255,.06);">
+                <div style="font-size:.65rem;font-weight:800;color:#D4AF37;letter-spacing:.08em;text-transform:uppercase;margin-bottom:12px;"><i class="fas fa-circle-info" style="margin-right:5px;"></i>Legenda de Níveis</div>
+                <div style="display:flex;flex-direction:column;gap:8px;">
+                    ${legendaItens.map(li => `
+                    <div style="display:flex;align-items:center;gap:10px;">
+                        <div style="width:28px;height:4px;border-radius:2px;background:${li.color};flex-shrink:0;"></div>
+                        <div>
+                            <span style="font-size:.65rem;font-weight:700;color:${li.color};">${li.label}</span>
+                            <span style="font-size:.6rem;color:#6b7280;margin-left:6px;">${li.desc}</span>
+                        </div>
+                    </div>`).join('')}
+                </div>
+            </div>
+            <!-- Análise geral -->
+            <div class="glass rounded-2xl p-4" style="border-color:rgba(212,175,55,.12);background:linear-gradient(135deg,rgba(212,175,55,.03),rgba(0,0,0,0));">
+                <div style="font-size:.65rem;font-weight:800;color:#D4AF37;letter-spacing:.08em;text-transform:uppercase;margin-bottom:12px;"><i class="fas fa-brain" style="margin-right:5px;"></i>Análise da Rede — ${ins.totalAtivos} processo${ins.totalAtivos!==1?'s':''} ativo${ins.totalAtivos!==1?'s':''}</div>
+                ${_jurInsightsHtml(ins)}
+            </div>
+        </div>`;
+    }
 }
 
 async function _jurRender() {
@@ -5352,13 +5511,16 @@ function _jurOpenLoja(key) {
     if (!data) return;
     const loja = data.find(l => l.key === key);
     if (!loja) return;
-    document.getElementById('jur-modal-loja').textContent = loja.label;
-    document.getElementById('jur-modal-count').textContent = loja.processos.length + ' processo' + (loja.processos.length !== 1 ? 's' : '');
     const body = document.getElementById('jur-modal-body');
+    const nivel = _jurNivelLoja(loja.processos);
+    document.getElementById('jur-modal-loja').textContent = loja.label;
+    document.getElementById('jur-modal-count').innerHTML =
+        `${loja.processos.length} processo${loja.processos.length!==1?'s':''} &nbsp;<span style="font-size:.58rem;font-weight:800;color:${nivel.color};padding:.1rem .5rem;border-radius:999px;background:rgba(${_jurRgb(nivel.color)},.1);border:1px solid rgba(${_jurRgb(nivel.color)},.3);">${nivel.label.toUpperCase()}</span>`;
+
     if (!loja.processos.length) {
         body.innerHTML = '<div style="text-align:center;padding:2.5rem 1rem;color:#6b7280;"><i class="fas fa-check-circle" style="color:#22c55e;font-size:2rem;display:block;margin-bottom:.75rem;"></i><div style="font-size:.82rem;">Nenhum processo para esta loja.</div></div>';
     } else {
-        body.innerHTML = loja.processos.map(p => {
+        const processosHtml = loja.processos.map(p => {
             const sc = _jurStatusColor(p.status);
             return `<div style="border-radius:14px;padding:14px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);">
                 <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;gap:8px;">
@@ -5374,6 +5536,15 @@ function _jurOpenLoja(key) {
                 ${p.obs ? `<div style="font-size:.64rem;color:#9ca3af;line-height:1.55;padding:8px 10px;background:rgba(0,0,0,.25);border-radius:8px;border-left:3px solid rgba(${_jurRgb(sc)},.4);">${p.obs}</div>` : ''}
             </div>`;
         }).join('');
+
+        const insLoja = _jurInsightsLoja(loja.processos);
+        const insHtml = insLoja ? `
+            <div style="border-radius:14px;padding:14px;background:linear-gradient(135deg,rgba(212,175,55,.04),rgba(0,0,0,0));border:1px solid rgba(212,175,55,.15);">
+                <div style="font-size:.6rem;font-weight:800;color:#D4AF37;letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px;"><i class="fas fa-brain" style="margin-right:4px;"></i>Análise — Ações para Zerar Processos</div>
+                ${_jurInsightsHtml(insLoja)}
+            </div>` : '';
+
+        body.innerHTML = processosHtml + insHtml;
     }
     const modal = document.getElementById('jur-modal');
     modal.style.display = 'flex';

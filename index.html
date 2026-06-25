@@ -879,6 +879,7 @@
                 <option value="">— Selecione seu Cargo —</option>
                 <option value="diretoria">🏛️  Diretoria</option>
                 <option value="franqueado">💎  Franqueado</option>
+                <option value="escritorio">🏢  Escritório</option>
                 <option value="gerente-senior">📊  Gerente Sênior</option>
                 <option value="gerente-senior-acess">👜  Gerente Sênior de Acessórios</option>
                 <option value="subgerente">📋  Subgerente</option>
@@ -4381,7 +4382,7 @@ function onCargoChange() {
 
     show('f-email');
 
-    if (['diretoria','franqueado','gerente-senior-acess'].includes(cargo)) {
+    if (['diretoria','franqueado','gerente-senior-acess','escritorio'].includes(cargo)) {
         show('f-pnome');
     } else if (cargo === 'gerente-senior') {
         show('f-nome');
@@ -4499,7 +4500,7 @@ async function doLogin() {
 
         // ── Coletar nome ──
         let name = '';
-        if (['diretoria','franqueado','gerente-senior-acess'].includes(cargo)) {
+        if (['diretoria','franqueado','gerente-senior-acess','escritorio'].includes(cargo)) {
             name = document.getElementById('i-pnome').value.trim();
             if (!name) { toast('Insira seu primeiro nome.','warn'); return; }
         } else {
@@ -4608,7 +4609,7 @@ async function doLogin() {
         if (cargo === 'gerente-senior') {
             subrede = document.getElementById('i-subrede').value;
             if (!subrede) { toast('Selecione sua Sub-rede.','warn'); return; }
-        } else if (!['diretoria','franqueado','gerente-senior-acess'].includes(cargo)) {
+        } else if (!['diretoria','franqueado','gerente-senior-acess','escritorio'].includes(cargo)) {
             loja = document.getElementById('i-loja').value;
             if (!loja) { toast('Selecione sua Loja.','warn'); return; }
         }
@@ -4808,6 +4809,7 @@ function cargoLabel(c) {
         'trainee':             'Trainee',
         'vendedor':            'Vendedor',
         'adf':                 'ADF',
+        'escritorio':          'Escritório',
     }[c] || c;
 }
 
@@ -4823,7 +4825,7 @@ function hasFlowAccess(cargo) {
 
 /* Acesso à aba 360° — Diretoria, Franqueados, Gerentes Sênior, Subgerentes e Vendedores */
 function has360Access(cargo) {
-    return ['diretoria','franqueado','gerente-senior','gerente-senior-acess','subgerente','gerente','vendedor'].includes(cargo);
+    return ['diretoria','franqueado','gerente-senior','gerente-senior-acess','subgerente','gerente','vendedor','escritorio'].includes(cargo);
 }
 
 /* Retorna a chave D360 da loja do vendedor logado (ex: 'cariacica', 'teixeira') */
@@ -4864,7 +4866,7 @@ function openDash() {
     if (allowed360)        _showBtn('btn-360');
     _showBtn('btn-dicta');
     if (allowedUsuarios)   _showBtn('btn-usuarios');
-    if (allowedUsuarios)   _showBtn('btn-juridico');
+    if (allowedUsuarios || user.cargo === 'escritorio')   _showBtn('btn-juridico');
     if (allowedUsuarios || ['diretoria','franqueado','gerente-senior','gerente-senior-acess','gerente','subgerente'].includes(user.cargo))
         _showBtn('btn-lancar-metas');
     if (['diretoria','admin','franqueado','gerente-senior','gerente-senior-acess','gerente','subgerente'].includes(user.cargo)) _showBtn('btn-diario');

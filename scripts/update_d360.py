@@ -873,7 +873,19 @@ def main():
 
     for sk in STORE_MAP.values():
         if sk not in sales:
-            print(f"  {sk}: sem dados de vendas, pulando")
+            # Na virada de mês (dia 1) sempre zera — evita acumulado do mês anterior
+            if dias_decorridos == 1:
+                content = update_store(
+                    content, sk,
+                    total=0, acess_total=0, agend_total=0, agend_top=[],
+                    fat_dia=0, top_dia=[], acess_dia=0, acess_dia_top=[],
+                    fin_dia=0, top_fin=[], fin_mes=0, top_fin_mes=[],
+                    fin_bd=[{'nm': g['nm'], 't': 0} for g in FINANCEIRAS_GROUPS],
+                    sellers_top=[], sellers_today=set(),
+                )
+                print(f"  {sk}: sem vendas — zerado (dia 1 do mês)")
+            else:
+                print(f"  {sk}: sem dados de vendas, pulando")
             continue
         content = update_store(
             content, sk,

@@ -1772,10 +1772,29 @@
                     </div>
                     <div id="jur-status-summary" class="flex flex-wrap gap-2 mt-1"></div>
                 </div>
+                <!-- Pendências Corporativas (preenchidas por Claude via prints de grupo) -->
+                <div id="jur-rede-wrap" style="display:none;"></div>
                 <!-- Cards grid -->
                 <div id="jur-cards-grid" class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-3"></div>
                 <!-- Análise geral + legenda -->
                 <div id="jur-insights-wrap" class="mt-4"></div>
+            </div>
+
+            <!-- Modal pendência corporativa -->
+            <div id="jur-rede-modal" class="fixed inset-0 z-50" style="display:none;background:rgba(0,0,0,.78);align-items:flex-end;justify-content:center;padding:1rem;" onclick="if(event.target===this)_jurRedeClose()">
+                <div class="glass rounded-2xl w-full max-w-2xl flex flex-col" style="max-height:85vh;border-color:rgba(245,158,11,.2);">
+                    <div class="flex items-center gap-3 p-5" style="border-bottom:1px solid rgba(255,255,255,.06);">
+                        <div id="jur-rede-modal-icon" style="width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;"></div>
+                        <div style="flex:1;min-width:0;">
+                            <div id="jur-rede-modal-titulo" class="font-bold text-white text-sm leading-tight"></div>
+                            <div id="jur-rede-modal-badges" class="flex gap-2 mt-1 flex-wrap"></div>
+                        </div>
+                        <button onclick="_jurRedeClose()" class="ml-2 w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style="background:rgba(255,255,255,.06);">
+                            <i class="fas fa-times text-gray-400 text-xs"></i>
+                        </button>
+                    </div>
+                    <div id="jur-rede-modal-body" class="overflow-y-auto p-5 flex flex-col gap-3"></div>
+                </div>
             </div>
 
             <!-- Modal detalhe loja -->
@@ -5386,6 +5405,279 @@ function _jurInsightsHtml(insights) {
     return temasHtml + prevHtml + corrHtml;
 }
 
+// ─── Pendências da Loja (por loja — preenchidas por Claude via conversas) ───
+async function _jurPendLoad(key) {
+    const db = window._acadDB;
+    if (!db) return [];
+    try {
+        const doc = await db.collection('ts_jur_pendencias').doc(key).get();
+        return doc.exists ? (doc.data().itens || []) : [];
+    } catch(e) { return []; }
+}
+
+function _jurPendFmt(ts) {
+    if (!ts) return '';
+    const d = new Date(ts);
+    return d.toLocaleDateString('pt-BR', {day:'2-digit', month:'2-digit', year:'2-digit'});
+}
+
+async function _jurPendRender(key) {
+    const wrap = document.getElementById('jur-pend-wrap-' + key);
+    if (!wrap) return;
+    const itens = await _jurPendLoad(key);
+    const abertas = itens.filter(i => i.status !== 'resolvida');
+    if (!abertas.length) { wrap.innerHTML = ''; return; }
+    wrap.innerHTML = `
+        <div style="border-radius:14px;padding:13px;background:rgba(245,158,11,.04);border:1px solid rgba(245,158,11,.16);">
+            <div style="font-size:.58rem;font-weight:800;color:#fbbf24;letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px;">
+                <i class="fas fa-thumbtack" style="margin-right:4px;"></i>Pendências da Loja · ${abertas.length}
+            </div>
+            <div style="display:flex;flex-direction:column;gap:5px;">
+                ${abertas.map(it => `
+                <div style="font-size:.67rem;color:#d1d5db;padding:7px 10px;border-radius:9px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);line-height:1.55;">
+                    ${it.texto}
+                    <div style="font-size:.55rem;color:#6b7280;margin-top:2px;"><i class="fas fa-calendar" style="margin-right:2px;"></i>${_jurPendFmt(it.criadoEm)}</div>
+                </div>`).join('')}
+            </div>
+        </div>`;
+}
+
+// ─── Pendências Corporativas / Rede (preenchidas por Claude via conversas) ───
+async function _jurRedeLoad() {
+    const db = window._acadDB;
+    if (!db) return [];
+    try {
+        const snap = await db.collection('ts_jur_rede').get();
+        const itens = [];
+        snap.forEach(d => itens.push({id: d.id, ...d.data()}));
+        itens.sort((a, b) => (b.criadoEm||0) - (a.criadoEm||0));
+        return itens;
+    } catch(e) { return []; }
+}
+
+function _jurRedeSt(status) {
+    return {
+        aguardando_retorno: {label:'Aguardando Retorno', color:'#eab308', bg:'rgba(234,179,8,.1)',  border:'rgba(234,179,8,.28)'},
+        em_andamento:       {label:'Em Andamento',       color:'#3b82f6', bg:'rgba(59,130,246,.1)', border:'rgba(59,130,246,.28)'},
+        pendente:           {label:'Pendente',           color:'#f97316', bg:'rgba(249,115,22,.1)', border:'rgba(249,115,22,.28)'},
+        resolvido:          {label:'Resolvido',          color:'#22c55e', bg:'rgba(34,197,94,.1)',  border:'rgba(34,197,94,.25)'},
+    }[status] || {label:'Pendente', color:'#f97316', bg:'rgba(249,115,22,.1)', border:'rgba(249,115,22,.28)'};
+}
+
+function _jurRedeTipoCfg(tipo) {
+    return {
+        trabalhista:   {label:'Trabalhista',   color:'#f87171'},
+        compliance:    {label:'Compliance',    color:'#a78bfa'},
+        documentacao:  {label:'Documentação',  color:'#60a5fa'},
+        procon:        {label:'PROCON',        color:'#f97316'},
+        judicial:      {label:'Judicial',      color:'#e879f9'},
+        financeiro:    {label:'Financeiro',    color:'#34d399'},
+    }[tipo] || {label:'Outro', color:'#9ca3af'};
+}
+
+let _jurRedeItens = [];
+
+async function _jurRedeRender() {
+    const wrap = document.getElementById('jur-rede-wrap');
+    if (!wrap) return;
+    wrap.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:1.5rem;"><i class="fas fa-spinner fa-spin" style="color:#f59e0b;font-size:.9rem;"></i></div>`;
+    wrap.style.display = '';
+    const itens = await _jurRedeLoad();
+    _jurRedeItens = itens;
+    if (!itens.length) { wrap.style.display = 'none'; return; }
+    const ordSt = {pendente:0, aguardando_retorno:1, em_andamento:2, resolvido:3};
+    const sorted = [...itens].sort((a,b) => (ordSt[a.status]??2) - (ordSt[b.status]??2));
+    const abertos  = sorted.filter(i => i.status !== 'resolvido');
+    const resolvidos = sorted.filter(i => i.status === 'resolvido');
+
+    const cardHtml = (i, dimmed) => {
+        const st = _jurRedeSt(i.status);
+        const tp = _jurRedeTipoCfg(i.tipo);
+        const dias = i.criadoEm ? Math.round((Date.now() - i.criadoEm) / 86400000) : null;
+        const tituloLimpo = i.titulo.replace(/^[🔴✅⚠️🟡🟠]\s*/u,'');
+        const iconMap = {trabalhista:'fa-hard-hat', judicial:'fa-gavel', procon:'fa-building-columns', documentacao:'fa-file-contract', compliance:'fa-shield-halved', financeiro:'fa-money-bill-wave'};
+        const icon = iconMap[i.tipo] || 'fa-circle-exclamation';
+        return `<div onclick="_jurRedeOpenItem('${i.id}')" style="position:relative;overflow:hidden;border-radius:16px;cursor:pointer;min-height:118px;background:linear-gradient(135deg,rgba(8,8,18,.95),rgba(18,18,36,.9));border:1px solid ${st.border};box-shadow:${st.glow||'none'};transition:transform .18s;${dimmed?'opacity:.45;':''}" onmouseenter="this.style.transform='scale(1.025)'" onmouseleave="this.style.transform=''">
+            <div style="position:absolute;top:0;left:0;right:0;height:3px;background:${st.color};opacity:.85;border-radius:2px 2px 0 0;"></div>
+            <div style="position:absolute;top:-22px;right:-22px;width:80px;height:80px;border-radius:50%;background:${st.color};opacity:.06;pointer-events:none;"></div>
+            <div style="padding:13px;height:100%;box-sizing:border-box;display:flex;flex-direction:column;gap:8px;">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+                    <div style="width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;background:rgba(${_jurRgb(tp.color)},.12);border:1px solid rgba(${_jurRgb(tp.color)},.22);flex-shrink:0;">
+                        <i class="fas ${icon}" style="color:${tp.color};font-size:.65rem;"></i>
+                    </div>
+                    <span style="font-size:.52rem;font-weight:800;color:${st.color};letter-spacing:.05em;text-align:right;line-height:1.3;">${st.label.toUpperCase()}</span>
+                </div>
+                <div style="flex:1;display:flex;flex-direction:column;justify-content:flex-end;gap:5px;">
+                    <div style="font-size:.72rem;font-weight:700;color:#f3f4f6;line-height:1.25;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">${tituloLimpo}</div>
+                    <div style="display:flex;align-items:center;justify-content:space-between;gap:4px;flex-wrap:wrap;">
+                        <span style="font-size:.56rem;padding:.15rem .5rem;border-radius:999px;background:rgba(${_jurRgb(tp.color)},.1);color:${tp.color};border:1px solid rgba(${_jurRgb(tp.color)},.25);">${tp.label}</span>
+                        ${dias !== null ? `<span style="font-size:.54rem;color:#4b5563;white-space:nowrap;">${dias}d aberto</span>` : ''}
+                    </div>
+                    ${i.prazo ? `<div style="font-size:.58rem;color:#fbbf24;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"><i class="fas fa-calendar-clock" style="margin-right:3px;"></i>${i.prazo}</div>` : ''}
+                </div>
+            </div>
+        </div>`;
+    };
+
+    const resolvidosToggle = resolvidos.length ? `
+        <div style="grid-column:1/-1;margin-top:4px;">
+            <details>
+                <summary style="font-size:.57rem;color:#4b5563;cursor:pointer;padding:4px 2px;user-select:none;list-style:none;">
+                    <i class="fas fa-check-circle" style="color:#22c55e;margin-right:4px;"></i>${resolvidos.length} resolvida${resolvidos.length>1?'s':''} ▾
+                </summary>
+                <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:8px;">
+                    ${resolvidos.map(i => cardHtml(i, true)).join('')}
+                </div>
+            </details>
+        </div>` : '';
+
+    wrap.innerHTML = `
+        <div class="glass rounded-2xl p-4 mb-4" style="border-color:rgba(245,158,11,.2);background:linear-gradient(135deg,rgba(245,158,11,.03),rgba(0,0,0,0));">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+                <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.25);flex-shrink:0;">
+                    <i class="fas fa-network-wired" style="color:#f59e0b;font-size:.75rem;"></i>
+                </div>
+                <div style="flex:1;">
+                    <div style="font-size:.7rem;font-weight:800;color:#fbbf24;letter-spacing:.04em;">Pendências Corporativas</div>
+                    <div style="font-size:.58rem;color:#6b7280;">Assuntos da rede — extraídos das conversas do grupo</div>
+                </div>
+                ${abertos.length ? `<span style="font-size:.62rem;font-weight:800;color:#f59e0b;background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.28);border-radius:999px;padding:.2rem .7rem;white-space:nowrap;">${abertos.length} em aberto</span>` : ''}
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;">
+                ${abertos.map(i => cardHtml(i, false)).join('')}
+                ${resolvidosToggle}
+            </div>
+        </div>`;
+}
+
+function _jurRedeOpenItem(id) {
+    const item = _jurRedeItens.find(i => i.id === id);
+    if (!item) return;
+    const st = _jurRedeSt(item.status);
+    const tp = _jurRedeTipoCfg(item.tipo);
+    const iconMap = {trabalhista:'fa-hard-hat', judicial:'fa-gavel', procon:'fa-building-columns', documentacao:'fa-file-contract', compliance:'fa-shield-halved', financeiro:'fa-money-bill-wave'};
+    const icon = iconMap[item.tipo] || 'fa-circle-exclamation';
+    const dias = item.criadoEm ? Math.round((Date.now() - item.criadoEm) / 86400000) : null;
+    const tituloLimpo = item.titulo.replace(/^[🔴✅⚠️🟡🟠]\s*/u,'');
+
+    const iconEl = document.getElementById('jur-rede-modal-icon');
+    iconEl.style.background = `rgba(${_jurRgb(tp.color)},.14)`;
+    iconEl.style.border = `1px solid rgba(${_jurRgb(tp.color)},.28)`;
+    iconEl.innerHTML = `<i class="fas ${icon}" style="color:${tp.color};font-size:.75rem;"></i>`;
+
+    document.getElementById('jur-rede-modal-titulo').textContent = tituloLimpo;
+    document.getElementById('jur-rede-modal-badges').innerHTML = `
+        <span style="font-size:.56rem;padding:.18rem .55rem;border-radius:999px;background:rgba(${_jurRgb(tp.color)},.1);color:${tp.color};border:1px solid rgba(${_jurRgb(tp.color)},.25);">${tp.label}</span>
+        <span style="font-size:.56rem;padding:.18rem .55rem;border-radius:999px;background:${st.bg};color:${st.color};border:1px solid ${st.border};">${st.label}</span>
+        ${dias !== null ? `<span style="font-size:.56rem;color:#4b5563;">${dias}d em aberto</span>` : ''}`;
+
+    document.getElementById('jur-rede-modal-body').innerHTML = `
+        <div style="border-radius:13px;padding:14px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);line-height:1.7;font-size:.72rem;color:#d1d5db;">
+            ${item.descricao}
+        </div>
+        <div style="display:flex;flex-direction:column;gap:7px;">
+            ${item.responsavel ? `<div style="display:flex;align-items:center;gap:8px;padding:9px 12px;border-radius:10px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);">
+                <i class="fas fa-user-tie" style="color:#6b7280;font-size:.65rem;width:14px;"></i>
+                <div><div style="font-size:.55rem;color:#4b5563;text-transform:uppercase;letter-spacing:.06em;">Responsável</div><div style="font-size:.68rem;color:#e5e7eb;font-weight:600;">${item.responsavel}</div></div>
+            </div>` : ''}
+            ${item.grupo ? `<div style="display:flex;align-items:center;gap:8px;padding:9px 12px;border-radius:10px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);">
+                <i class="fas fa-comments" style="color:#6b7280;font-size:.65rem;width:14px;"></i>
+                <div><div style="font-size:.55rem;color:#4b5563;text-transform:uppercase;letter-spacing:.06em;">Grupo</div><div style="font-size:.68rem;color:#e5e7eb;">${item.grupo}</div></div>
+            </div>` : ''}
+            ${item.prazo ? `<div style="display:flex;align-items:center;gap:8px;padding:9px 12px;border-radius:10px;background:rgba(234,179,8,.05);border:1px solid rgba(234,179,8,.2);">
+                <i class="fas fa-calendar-clock" style="color:#fbbf24;font-size:.65rem;width:14px;"></i>
+                <div><div style="font-size:.55rem;color:#6b7280;text-transform:uppercase;letter-spacing:.06em;">Prazo</div><div style="font-size:.68rem;color:#fbbf24;font-weight:700;">${item.prazo}</div></div>
+            </div>` : ''}
+        </div>`;
+
+    const modal = document.getElementById('jur-rede-modal');
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+}
+
+function _jurRedeClose() {
+    document.getElementById('jur-rede-modal').style.display = 'none';
+    document.body.style.overflow = '';
+}
+// ─── fim Pendências Corporativas ───
+
+function _jurSortProcessos(processos) {
+    const hoje = _jurGetHoje();
+    const isEnc = p => (p.status||'').toLowerCase().includes('encerrado');
+    const diasAud = p => {
+        if (!p.dtAud) return 99999;
+        const [d,m,a] = p.dtAud.split('/').map(Number);
+        if (!d||!m||!a) return 99999;
+        return Math.round((new Date(a,m-1,d) - hoje) / 86400000);
+    };
+    return [...processos].sort((a, b) => {
+        const ea = isEnc(a), eb = isEnc(b);
+        if (ea !== eb) return ea ? 1 : -1;
+        return diasAud(a) - diasAud(b);
+    });
+}
+
+function _jurTarefasPendentesHtml(processos) {
+    const hoje = _jurGetHoje();
+    const tarefas = [];
+    processos.forEach(p => {
+        if ((p.status||'').toLowerCase().includes('encerrado')) return;
+        if (p.docJur && p.docJur !== '—' && p.docJur.toLowerCase() !== 'sim') {
+            tarefas.push({urgencia:'alta', icon:'fa-file-arrow-up', color:'#f97316',
+                texto:`Enviar documentação ao escritório — <strong>${p.reclamante}</strong>`, prazo:null});
+        }
+        if (p.dtAud) {
+            const [d,m,a] = p.dtAud.split('/').map(Number);
+            if (d&&m&&a) {
+                const diff = Math.round((new Date(a,m-1,d) - hoje) / 86400000);
+                if (diff >= 0 && diff <= 30) {
+                    const cor = diff <= 3 ? '#ef4444' : diff <= 7 ? '#f97316' : '#eab308';
+                    const prazoLabel = diff === 0 ? '🔴 HOJE' : diff === 1 ? '🔴 Amanhã' : `Em ${diff} dia${diff>1?'s':''}`;
+                    tarefas.push({urgencia: diff<=3?'critica':diff<=7?'alta':'media',
+                        icon:'fa-gavel', color:cor,
+                        texto:`Preparar documentação para audiência — <strong>${p.reclamante}</strong>`,
+                        prazo:`${p.dtAud} · ${prazoLabel}`});
+                }
+            }
+        }
+        const obs = (p.obs||'').toLowerCase();
+        if (obs.includes('recurso') || obs.includes('prazo recurso')) {
+            tarefas.push({urgencia:'alta', icon:'fa-clock-rotate-left', color:'#a855f7',
+                texto:`Verificar prazo de recurso — <strong>${p.reclamante}</strong>`, prazo:null});
+        }
+        if (obs.includes('depósito') || obs.includes('guia') || obs.includes('cumprimento de sentença')) {
+            tarefas.push({urgencia:'critica', icon:'fa-money-bill-wave', color:'#ef4444',
+                texto:`Regularizar depósito/guia judicial — <strong>${p.reclamante}</strong>`, prazo:null});
+        }
+        if (obs.includes('contestação') || obs.includes('contestacao') || obs.includes('resposta')) {
+            tarefas.push({urgencia:'media', icon:'fa-pen-to-square', color:'#f59e0b',
+                texto:`Enviar contestação — <strong>${p.reclamante}</strong>`, prazo:null});
+        }
+        if (obs.includes('procon')) {
+            tarefas.push({urgencia:'alta', icon:'fa-building-columns', color:'#f97316',
+                texto:`Responder notificação PROCON — <strong>${p.reclamante}</strong>`, prazo:null});
+        }
+    });
+    if (!tarefas.length) return '';
+    const ordUr = {critica:0, alta:1, media:2};
+    tarefas.sort((a,b) => (ordUr[a.urgencia]??3) - (ordUr[b.urgencia]??3));
+    return `<div style="border-radius:14px;padding:14px;background:linear-gradient(135deg,rgba(239,68,68,.05),rgba(0,0,0,0));border:1px solid rgba(239,68,68,.22);">
+        <div style="font-size:.6rem;font-weight:800;color:#f87171;letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px;"><i class="fas fa-list-check" style="margin-right:4px;"></i>Tarefas Pendentes · ${tarefas.length}</div>
+        <div style="display:flex;flex-direction:column;gap:6px;">
+            ${tarefas.map(t => `
+            <div style="display:flex;align-items:flex-start;gap:8px;padding:8px 10px;border-radius:10px;background:rgba(${_jurRgb(t.color)},.06);border:1px solid rgba(${_jurRgb(t.color)},.18);">
+                <div style="width:24px;height:24px;border-radius:7px;display:flex;align-items:center;justify-content:center;background:rgba(${_jurRgb(t.color)},.14);flex-shrink:0;margin-top:1px;">
+                    <i class="fas ${t.icon}" style="color:${t.color};font-size:.58rem;"></i>
+                </div>
+                <div style="flex:1;min-width:0;">
+                    <div style="font-size:.66rem;color:#f3f4f6;line-height:1.5;">${t.texto}</div>
+                    ${t.prazo ? `<div style="font-size:.6rem;color:${t.color};font-weight:700;margin-top:3px;"><i class="fas fa-calendar-check" style="margin-right:3px;"></i>${t.prazo}</div>` : ''}
+                </div>
+            </div>`).join('')}
+        </div>
+    </div>`;
+}
+
 function _jurDiasAteAud(processos) {
     const hoje = _jurGetHoje();
     let min = null;
@@ -5518,6 +5810,7 @@ async function _jurRender() {
     try {
         const data = await _jurLoadData();
         _jurRenderCards(data);
+        _jurRedeRender();
     } catch(e) {
         grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:2rem;color:#f87171;font-size:.8rem;"><i class="fas fa-exclamation-triangle" style="display:block;font-size:1.5rem;margin-bottom:.5rem;"></i>Erro ao carregar planilha. Verifique a conexão.</div>';
     }
@@ -5535,19 +5828,42 @@ function _jurOpenLoja(key) {
         `${loja.processos.length} processo${loja.processos.length!==1?'s':''} &nbsp;<span style="font-size:.58rem;font-weight:800;color:${nivel.color};padding:.1rem .5rem;border-radius:999px;background:rgba(${_jurRgb(nivel.color)},.1);border:1px solid rgba(${_jurRgb(nivel.color)},.3);">${nivel.label.toUpperCase()}</span>`;
 
     if (!loja.processos.length) {
-        body.innerHTML = '<div style="text-align:center;padding:2.5rem 1rem;color:#6b7280;"><i class="fas fa-check-circle" style="color:#22c55e;font-size:2rem;display:block;margin-bottom:.75rem;"></i><div style="font-size:.82rem;">Nenhum processo para esta loja.</div></div>';
+        body.innerHTML = '<div style="text-align:center;padding:2rem 1rem;color:#6b7280;"><i class="fas fa-check-circle" style="color:#22c55e;font-size:2rem;display:block;margin-bottom:.75rem;"></i><div style="font-size:.82rem;">Nenhum processo para esta loja.</div></div>' + `<div id="jur-pend-wrap-${key}"></div>`;
+        _jurPendRender(key);
     } else {
-        const processosHtml = loja.processos.map(p => {
+        const sorted = _jurSortProcessos(loja.processos);
+        const tarefasHtml = _jurTarefasPendentesHtml(sorted);
+        let lastIsEnc = false;
+        const processosHtml = sorted.map(p => {
             const sc = _jurStatusColor(p.status);
-            return `<div style="border-radius:14px;padding:14px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);">
+            const isEnc = (p.status||'').toLowerCase().includes('encerrado');
+            let separator = '';
+            if (isEnc && !lastIsEnc && sorted.some(x => !(x.status||'').toLowerCase().includes('encerrado'))) {
+                separator = `<div style="display:flex;align-items:center;gap:8px;margin:4px 0;">
+                    <div style="flex:1;height:1px;background:rgba(34,197,94,.15);"></div>
+                    <span style="font-size:.56rem;color:#4b5563;font-weight:700;letter-spacing:.06em;text-transform:uppercase;">Encerrados</span>
+                    <div style="flex:1;height:1px;background:rgba(34,197,94,.15);"></div>
+                </div>`;
+            }
+            lastIsEnc = isEnc;
+            const hoje = _jurGetHoje();
+            let audDiff = null;
+            if (p.dtAud && !isEnc) {
+                const [d,m,a] = p.dtAud.split('/').map(Number);
+                if (d&&m&&a) audDiff = Math.round((new Date(a,m-1,d) - hoje) / 86400000);
+            }
+            const audColor = audDiff !== null ? (audDiff <= 3 ? '#ef4444' : audDiff <= 7 ? '#f97316' : '#f59e0b') : '#f59e0b';
+            const cardBg = isEnc ? 'rgba(34,197,94,.03)' : 'rgba(255,255,255,.03)';
+            const cardBorder = isEnc ? 'rgba(34,197,94,.1)' : (audDiff !== null && audDiff <= 7 ? `rgba(${_jurRgb(audColor)},.25)` : 'rgba(255,255,255,.06)');
+            return separator + `<div style="border-radius:14px;padding:14px;background:${cardBg};border:1px solid ${cardBorder};${isEnc?'opacity:.65;':''}">
                 <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;gap:8px;">
                     <div style="font-size:.6rem;color:#6b7280;font-family:monospace;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${p.num}">Nº ${p.num}</div>
                     <span style="font-size:.58rem;padding:.15rem .5rem;border-radius:999px;background:rgba(${_jurRgb(sc)},.12);color:${sc};border:1px solid rgba(${_jurRgb(sc)},.25);white-space:nowrap;flex-shrink:0;">${p.status||'—'}</span>
                 </div>
-                <div style="font-size:.78rem;font-weight:700;color:#f3f4f6;margin-bottom:7px;">${p.reclamante}</div>
+                <div style="font-size:.78rem;font-weight:700;color:${isEnc?'#9ca3af':'#f3f4f6'};margin-bottom:7px;">${p.reclamante}</div>
                 <div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:${p.obs?'8':'0'}px;">
                     ${p.dtNotif ? `<span style="font-size:.62rem;color:#9ca3af;"><i class="fas fa-bell" style="margin-right:3px;"></i>${p.dtNotif}</span>` : ''}
-                    ${p.dtAud   ? `<span style="font-size:.62rem;color:#f59e0b;"><i class="fas fa-calendar-day" style="margin-right:3px;"></i>Aud.: ${p.dtAud}</span>` : ''}
+                    ${p.dtAud   ? `<span style="font-size:.62rem;color:${audColor};font-weight:${audDiff!==null&&audDiff<=7?'700':'400'};"><i class="fas fa-calendar-day" style="margin-right:3px;"></i>Aud.: ${p.dtAud}${audDiff!==null&&audDiff<=7?' · '+( audDiff===0?'HOJE':audDiff===1?'amanhã':'em '+audDiff+'d'):''}</span>` : ''}
                     ${p.docJur && p.docJur!=='—' ? `<span style="font-size:.62rem;color:${p.docJur==='Sim'?'#22c55e':'#f97316'};"><i class="fas fa-file-contract" style="margin-right:3px;"></i>Doc: ${p.docJur}</span>` : ''}
                 </div>
                 ${p.obs ? `<div style="font-size:.64rem;color:#9ca3af;line-height:1.55;padding:8px 10px;background:rgba(0,0,0,.25);border-radius:8px;border-left:3px solid rgba(${_jurRgb(sc)},.4);">${p.obs}</div>` : ''}
@@ -5561,7 +5877,8 @@ function _jurOpenLoja(key) {
                 ${_jurInsightsHtml(insLoja)}
             </div>` : '';
 
-        body.innerHTML = processosHtml + insHtml;
+        body.innerHTML = tarefasHtml + processosHtml + insHtml + `<div id="jur-pend-wrap-${key}"></div>`;
+        _jurPendRender(key);
     }
     const modal = document.getElementById('jur-modal');
     modal.style.display = 'flex';

@@ -52,5 +52,13 @@ service cloud.firestore {
     match /ts_avaliacao_cdc_respostas/{docId} {
       allow read, write: if true;
     }
+
+    match /ts_jur_rede/{docId} {
+      allow read, write: if true;
+    }
+
+    match /ts_jur_pendencias/{docId} {
+      allow read, write: if true;
+    }
   }
 }

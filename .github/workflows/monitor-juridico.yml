@@ -1,0 +1,29 @@
+name: Monitor Jurídico — Prazos e Audiências
+
+on:
+  schedule:
+    - cron: '0 */6 * * *'   # A cada 6h UTC (03h/09h/15h/21h BRT)
+  workflow_dispatch:
+
+concurrency:
+  group: monitor-juridico
+  cancel-in-progress: true
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Instalar dependências
+        run: pip install requests
+
+      - name: Executar monitor de prazos
+        run: python scripts/monitor_juridico.py

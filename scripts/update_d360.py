@@ -536,11 +536,14 @@ def find_section(content, store_key):
     if not m:
         return None, None
     start = m.start()
-    end = len(content)
+    # Limite superior: fechamento do objeto D360 (\n    }\n};) — evita que a última
+    # loja (praiadacosta) tenha seção que abranja o restante do arquivo
+    d360_close = _re.search(r'\n    \}\n\};', content[start:])
+    end = (start + d360_close.end()) if d360_close else len(content)
     for sk in STORE_MAP.values():
         if sk == store_key:
             continue
-        m2 = _re.search(f'\n        {sk}:\\s*\\{{', content[start + 1:])
+        m2 = _re.search(f'\n        {sk}:\\s*\\{{', content[start + 1:end])
         if m2:
             pos = start + 1 + m2.start()
             if 0 < pos < end:
@@ -641,60 +644,67 @@ def update_store(content, store_key, total, acess_total, agend_total, agend_top,
         )
 
     # 5. top[] de vendedores (o ÚLTIMO top:[] da seção = top principal, não agendamentos/acessorios)
-    if sellers_top:
-        # Preservar ds e ult do top[] PRINCIPAL (último na seção)
-        ds_ult = {}
-        all_tops = list(re.finditer(r'\btop:\[([\s\S]*?)\](?=\s*[\}\]])', sec))
-        if all_tops:
-            # O top principal é o último que contém ds: (campo exclusivo do top de vendas)
-            main_top_match = None
-            for m in reversed(all_tops):
-                if 'ds:' in m.group(0) or (',p:' in m.group(0) and 'ult:' in m.group(0)):
-                    main_top_match = m
-                    break
-            # Fallback: usar o último top[]
-            if not main_top_match:
-                main_top_match = all_tops[-1]
-            for item in re.finditer(r"\{[^}]*\bn:'([^']+)'[^}]*\}", main_top_match.group(0)):
-                txt = item.group(0)
-                nm  = re.search(r"n:'([^']+)'", txt)
-                ds  = re.search(r"ds:(\d+)", txt)
-                ult = re.search(r"ult:'([^']+)'", txt)
-                if nm:
-                    key = nm.group(1).lower()
-                    ds_ult[key] = {
-                        'ds':  int(ds.group(1)) if ds else 0,
-                        'ult': ult.group(1) if ult else ''
-                    }
-        # Data de hoje em formato dd/mm (para atualizar ult dos que venderam hoje)
-        from datetime import date as _date
-        today_fmt = _date.today().strftime('%d/%m')
-
-        # Construir novo top[]
-        top_items = []
-        for v in sellers_top:
-            nm_key = v['n'].lower()
-            preserved = ds_ult.get(nm_key, {})
-            old_ult = preserved.get('ult', '')
-            ds_val  = preserved.get('ds', 0)
-
-            # Se o vendedor vendeu hoje, atualiza ult e incrementa ds
-            vendeu_hoje = sellers_today and nm_key in sellers_today
-            if vendeu_hoje:
-                ult_val = today_fmt
-                if old_ult != today_fmt:   # dia novo → +1 dia ativo
-                    ds_val = ds_val + 1
-            else:
-                ult_val = old_ult
-
-            item = f"{{n:'{v['n']}',i:'{v['i']}',p:{v['p']},t:{v['t']}"
-            if ds_val:   item += f",ds:{ds_val}"
-            if ult_val:  item += f",ult:'{ult_val}'"
-            item += '}'
-            top_items.append(item)
-        new_top = 'top:[' + ',\n                '.join(top_items) + ']'
-        # Substituir o ÚLTIMO top:[] da seção (top principal de vendas)
+    # sellers_top=None  → não tocar no top
+    # sellers_top=[]    → zerar (ex: dia 1 do mês sem vendedores no salão)
+    # sellers_top=[...] → atualizar normalmente
+    if sellers_top is not None:
         all_tops_new = list(re.finditer(r'\btop:\[[\s\S]*?\](?=\s*[\}\]])', sec))
+        if sellers_top:
+            # Preservar ds e ult do top[] PRINCIPAL (último na seção)
+            ds_ult = {}
+            all_tops = list(re.finditer(r'\btop:\[([\s\S]*?)\](?=\s*[\}\]])', sec))
+            if all_tops:
+                # O top principal é o último que contém ds: (campo exclusivo do top de vendas)
+                main_top_match = None
+                for m in reversed(all_tops):
+                    if 'ds:' in m.group(0) or (',p:' in m.group(0) and 'ult:' in m.group(0)):
+                        main_top_match = m
+                        break
+                # Fallback: usar o último top[]
+                if not main_top_match:
+                    main_top_match = all_tops[-1]
+                for item in re.finditer(r"\{[^}]*\bn:'([^']+)'[^}]*\}", main_top_match.group(0)):
+                    txt = item.group(0)
+                    nm  = re.search(r"n:'([^']+)'", txt)
+                    ds  = re.search(r"ds:(\d+)", txt)
+                    ult = re.search(r"ult:'([^']+)'", txt)
+                    if nm:
+                        key = nm.group(1).lower()
+                        ds_ult[key] = {
+                            'ds':  int(ds.group(1)) if ds else 0,
+                            'ult': ult.group(1) if ult else ''
+                        }
+            # Data de hoje em formato dd/mm (para atualizar ult dos que venderam hoje)
+            from datetime import date as _date
+            today_fmt = _date.today().strftime('%d/%m')
+
+            # Construir novo top[]
+            top_items = []
+            for v in sellers_top:
+                nm_key = v['n'].lower()
+                preserved = ds_ult.get(nm_key, {})
+                old_ult = preserved.get('ult', '')
+                ds_val  = preserved.get('ds', 0)
+
+                # Se o vendedor vendeu hoje, atualiza ult e incrementa ds
+                vendeu_hoje = sellers_today and nm_key in sellers_today
+                if vendeu_hoje:
+                    ult_val = today_fmt
+                    if old_ult != today_fmt:   # dia novo → +1 dia ativo
+                        ds_val = ds_val + 1
+                else:
+                    ult_val = old_ult
+
+                item = f"{{n:'{v['n']}',i:'{v['i']}',p:{v['p']},t:{v['t']}"
+                if ds_val:   item += f",ds:{ds_val}"
+                if ult_val:  item += f",ult:'{ult_val}'"
+                item += '}'
+                top_items.append(item)
+            new_top = 'top:[' + ',\n                '.join(top_items) + ']'
+        else:
+            # sellers_top=[] → zerar top acumulado (evita stale do mês anterior)
+            new_top = 'top:[]'
+
         if all_tops_new:
             last = all_tops_new[-1]
             sec = sec[:last.start()] + new_top + sec[last.end():]

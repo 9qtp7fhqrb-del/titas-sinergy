@@ -115,7 +115,18 @@ jobs:
         if: steps.threshold.outputs.should_update == 'true' && steps.diff.outputs.changed == 'true'
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
-        run: firebase deploy --only hosting --token "$FIREBASE_TOKEN" --non-interactive
+        run: |
+          for attempt in 1 2 3; do
+            echo "Deploy tentativa $attempt/3..."
+            if firebase deploy --only hosting --token "$FIREBASE_TOKEN" --non-interactive; then
+              echo "✅ Deploy OK (tentativa $attempt)"
+              exit 0
+            fi
+            echo "⚠️ Tentativa $attempt falhou."
+            [ $attempt -lt 3 ] && sleep 20
+          done
+          echo "❌ Todas as 3 tentativas falharam."
+          exit 1
 
       - name: Salvar total do fat_dia (threshold próximo run)
         if: steps.threshold.outputs.should_update == 'true' && steps.diff.outputs.changed == 'true'

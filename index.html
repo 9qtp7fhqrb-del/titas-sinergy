@@ -5531,21 +5531,22 @@ async function _jurRedeRender() {
             </details>
         </div>` : '';
 
+    const totalAbertos = abertos.length;
     wrap.innerHTML = `
-        <div class="glass rounded-2xl p-4 mb-4" style="border-color:rgba(245,158,11,.2);background:linear-gradient(135deg,rgba(245,158,11,.03),rgba(0,0,0,0));">
-            <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
-                <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.25);flex-shrink:0;">
-                    <i class="fas fa-network-wired" style="color:#f59e0b;font-size:.75rem;"></i>
-                </div>
-                <div style="flex:1;">
-                    <div style="font-size:.7rem;font-weight:800;color:#fbbf24;letter-spacing:.04em;">Pendências Corporativas</div>
-                    <div style="font-size:.58rem;color:#6b7280;">Assuntos da rede — extraídos das conversas do grupo</div>
-                </div>
-                ${abertos.length ? `<span style="font-size:.62rem;font-weight:800;color:#f59e0b;background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.28);border-radius:999px;padding:.2rem .7rem;white-space:nowrap;">${abertos.length} em aberto</span>` : ''}
+        <div style="border-radius:1rem;background:#08060f;border:1.5px solid rgba(245,158,11,.35);overflow:hidden;margin-bottom:12px;">
+            <div id="jur-rede-header" onclick="_jurRedeToggle()" style="padding:.75rem 1rem;background:rgba(245,158,11,.1);border-bottom:1.5px solid rgba(245,158,11,.2);font-size:.75rem;font-weight:900;color:#fbbf24;display:flex;align-items:center;justify-content:space-between;gap:.5rem;cursor:pointer;">
+                <span style="display:flex;align-items:center;gap:.55rem;">
+                    <i class="fas fa-network-wired" style="font-size:.75rem;"></i>
+                    Pendências Corporativas${totalAbertos ? ` — ${totalAbertos} em aberto` : ''}
+                    <span style="font-weight:400;font-size:.65rem;color:#9ca3af;" id="jur-rede-hint">(clique para expandir)</span>
+                </span>
+                <i id="jur-rede-chev" class="fas fa-chevron-down" style="font-size:.65rem;color:#9ca3af;transition:transform .2s;"></i>
             </div>
-            <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;">
-                ${abertos.map(i => cardHtml(i, false)).join('')}
-                ${resolvidosToggle}
+            <div id="jur-rede-body" style="display:none;padding:12px;background:#060410;">
+                <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;">
+                    ${abertos.map(i => cardHtml(i, false)).join('')}
+                    ${resolvidosToggle}
+                </div>
             </div>
         </div>`;
 }
@@ -5593,6 +5594,17 @@ function _jurRedeOpenItem(id) {
     const modal = document.getElementById('jur-rede-modal');
     modal.style.display = 'flex';
     document.body.style.overflow = 'hidden';
+}
+
+function _jurRedeToggle() {
+    const body  = document.getElementById('jur-rede-body');
+    const chev  = document.getElementById('jur-rede-chev');
+    const hint  = document.getElementById('jur-rede-hint');
+    if (!body) return;
+    const open = body.style.display !== 'none';
+    body.style.display = open ? 'none' : 'block';
+    chev.style.transform = open ? '' : 'rotate(180deg)';
+    hint.textContent = open ? '(clique para expandir)' : '(clique para recolher)';
 }
 
 function _jurRedeClose() {

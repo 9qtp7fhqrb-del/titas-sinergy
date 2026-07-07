@@ -2,6 +2,8 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2">
+    <link rel="apple-touch-icon" href="favicon.svg?v=2">
     <script>
     // Cache-buster: força reload se a versão mudou
     (function(){
@@ -6105,18 +6107,19 @@ function atualizarTodasAbas() {
 ══════════════════════════════════════════════════════════════════ */
 function renderPlanningLive() {
     if (typeof D360 === 'undefined') return;
+    const _d = _360D();
 
     // ── métricas base ──────────────────────────────────────────────
-    const fat   = Object.values(D360.lojas).reduce((s,l)=>s+l.total,0);
-    const ped   = Object.values(D360.lojas).reduce((s,l)=>s+l.ped,0);
-    const meta  = D360.meta_rede;
-    const dias  = D360.diasDecorridos;
-    const diasM = D360.diasMes;
+    const fat   = Object.values(_d.lojas).reduce((s,l)=>s+l.total,0);
+    const ped   = Object.values(_d.lojas).reduce((s,l)=>s+l.ped,0);
+    const meta  = _d.meta_rede;
+    const dias  = _d.diasDecorridos;
+    const diasM = _d.diasMes;
     const proj  = Math.round(fat / dias * diasM);
     const pct   = Math.min(Math.round(fat / meta * 100), 100);
     const pctP  = Math.round(proj / meta * 100);
     const ticket= ped ? Math.round(fat / ped) : 0;
-    const per   = D360.periodo;
+    const per   = _d.periodo;
 
     const brl = v => 'R$ ' + Number(v).toLocaleString('pt-BR',{minimumFractionDigits:0,maximumFractionDigits:0});
     const pBRL= v => 'R$ ' + Number(v).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
@@ -6144,11 +6147,11 @@ function renderPlanningLive() {
         t3:{nome:'Titãs 3', cor:'#818cf8', bgCol:'rgba(99,102,241,.06)', barCol:'bg-indigo-500'},
     };
     const subTotals = {};
-    Object.values(D360.lojas).forEach(l => {
+    Object.values(_d.lojas).forEach(l => {
         if (!subTotals[l.sub]) subTotals[l.sub] = {fat:0, meta:0};
         subTotals[l.sub].fat += l.total;
     });
-    Object.entries(D360.subredes).forEach(([k,s]) => {
+    Object.entries(_d.subredes).forEach(([k,s]) => {
         if (subTotals[k]) subTotals[k].meta = s.meta;
     });
 
@@ -6168,7 +6171,7 @@ function renderPlanningLive() {
     }
 
     // ── acessórios totais ──────────────────────────────────────────
-    const acess = Object.values(D360.lojas).reduce((s,l)=>s+(l.acessorios?.total||0),0);
+    const acess = Object.values(_d.lojas).reduce((s,l)=>s+(l.acessorios?.total||0),0);
 
     // ── KPIs ───────────────────────────────────────────────────────
     set('pl-kpi-fat',   brl(fat));
@@ -6269,18 +6272,19 @@ function renderPlanningLive() {
 ══════════════════════════════════════════════════════════════════ */
 function renderAcademyLive() {
     if (typeof D360 === 'undefined') return;
+    const _d = _360D();
 
-    const fat    = Object.values(D360.lojas).reduce((s,l)=>s+l.total,0);
-    const ped    = Object.values(D360.lojas).reduce((s,l)=>s+l.ped,0);
-    const cancel = Object.values(D360.lojas).reduce((s,l)=>s+l.cancel,0);
-    const agendN = Object.values(D360.lojas).reduce((s,l)=>s+(l.agendCount||0),0);
-    const meta   = D360.meta_rede;
-    const dias   = D360.diasDecorridos;
-    const diasM  = D360.diasMes;
+    const fat    = Object.values(_d.lojas).reduce((s,l)=>s+l.total,0);
+    const ped    = Object.values(_d.lojas).reduce((s,l)=>s+l.ped,0);
+    const cancel = Object.values(_d.lojas).reduce((s,l)=>s+l.cancel,0);
+    const agendN = Object.values(_d.lojas).reduce((s,l)=>s+(l.agendCount||0),0);
+    const meta   = _d.meta_rede;
+    const dias   = _d.diasDecorridos;
+    const diasM  = _d.diasMes;
     const proj   = Math.round(fat/dias*diasM);
     const pct    = Math.round(fat/meta*100);
     const ticket = ped ? Math.round(fat/ped) : 0;
-    const per    = D360.periodo;
+    const per    = _d.periodo;
     const brl    = v => 'R$ '+Number(v).toLocaleString('pt-BR',{minimumFractionDigits:0,maximumFractionDigits:0});
     const pBRL   = v => 'R$ '+Number(v).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
     const pctCancel = ped ? ((cancel/(ped+cancel))*100).toFixed(1) : '0.0';
@@ -6317,11 +6321,11 @@ function renderAcademyLive() {
             t3:{nome:'Titãs 3',gestor:'Arthur',  cor:'#4ade80'},
         };
         const subTot = {};
-        Object.values(D360.lojas).forEach(l => {
+        Object.values(_d.lojas).forEach(l => {
             if (!subTot[l.sub]) subTot[l.sub] = {fat:0,meta:0};
             subTot[l.sub].fat += l.total;
         });
-        Object.entries(D360.subredes).forEach(([k,s]) => { if(subTot[k]) subTot[k].meta=s.meta; });
+        Object.entries(_d.subredes).forEach(([k,s]) => { if(subTot[k]) subTot[k].meta=s.meta; });
 
         subEl.innerHTML = Object.entries(subDef).map(([key,def])=>{
             const d = subTot[key]||{fat:0,meta:1};
@@ -6354,7 +6358,7 @@ function renderAcademyLive() {
     // ── top lojas ─────────────────────────────────────────────────
     const topEl = document.getElementById('academy-top-lojas');
     if (topEl) {
-        const sorted = Object.entries(D360.lojas)
+        const sorted = Object.entries(_d.lojas)
             .map(([k,v])=>({...v, key:k}))
             .sort((a,b)=>b.total-a.total)
             .slice(0,5);
@@ -6362,7 +6366,7 @@ function renderAcademyLive() {
         const medal = ['🥇','🥈','🥉','4°','5°'];
         topEl.innerHTML = sorted.map((l,i)=>{
             const p = Math.round(l.total/maxFat*100);
-            const sub = D360.subredes[l.sub];
+            const sub = _d.subredes[l.sub];
             return `<div class="flex items-center gap-3 py-2" style="border-bottom:1px solid rgba(255,255,255,.04);">
                 <span class="text-sm w-6 text-center flex-shrink-0">${medal[i]}</span>
                 <div class="flex-1 min-w-0">
@@ -6761,7 +6765,7 @@ function _filtrarSalaoFin(key) {
 function _renderSalaoFin() {
     var wrap = document.getElementById('modal-salao-fin-body');
     if (!wrap) return;
-    var _d=D360, filt=window._salaoFinFilter||'all';
+    var _d=_360D(), filt=window._salaoFinFilter||'all';
     var lojas=Object.values(_d.lojas);
     if(filt!=='all') lojas=lojas.filter(function(l){return l.sub===filt;});
     lojas=lojas.filter(function(l){return (l.total||0)>0||(l.fin_mes||0)>0;});
@@ -7128,9 +7132,7 @@ function _renderAgendRanking() {
     var wrap = document.getElementById('modal-agend-body');
     if (!wrap) return;
     var _d    = _360D();
-    var now   = new Date();
-    var meses = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
-    var mes   = meses[now.getMonth()] + ' ' + now.getFullYear();
+    var mes   = _d.periodo || (function(){ var n=new Date(); return ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'][n.getMonth()]+' '+n.getFullYear(); })();
     var diasD = Math.max(1, _d.diasDecorridos || 1);
     var diasM = _d.diasMes || 30;
     var _brl  = function(v) { return 'R$ ' + Number(v).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}); };
@@ -10813,9 +10815,19 @@ async function _360CarregarHistorico(anoNum, mesNum) {
     // Monta objeto compatível com D360 para renderização
     const hist = {
         lojas: Object.fromEntries(Object.entries(D360.lojas).map(([k,l]) => [k, {
+            // 1) base estrutural do D360 atual (label, sigla, sub, acessorios, etc.)
             ...l,
+            // 2) dados históricos do Firestore sobrescrevem (total, ped, cancel, top…)
             ...(data.lojas?.[k] || {}),
-            meta: data.lojas?.[k]?.meta || l.meta || 0
+            // 3) campos que NÃO estão no snapshot → zerar para não vazar do mês atual
+            meta:        data.lojas?.[k]?.meta        || l.meta || 0,
+            fin_mes:     data.lojas?.[k]?.fin_mes     ?? 0,
+            fin_bd:      data.lojas?.[k]?.fin_bd      ?? [],
+            top_fin_mes: data.lojas?.[k]?.top_fin_mes ?? [],
+            agendamentos:data.lojas?.[k]?.agendamentos?? null,
+            agendFat:    data.lojas?.[k]?.agendFat    ?? 0,
+            // dados diários sempre zerados no histórico
+            fat_dia: 0, fin_dia: 0, acess_dia: 0, top_dia: [], acess_dia_top: []
         }])),
         subredes: Object.fromEntries(Object.entries(D360.subredes).map(([k,s]) => [k, {
             ...s,
@@ -10839,6 +10851,8 @@ async function _360CarregarHistorico(anoNum, mesNum) {
     const pill = document.querySelector('.f360-pill.active');
     render360(pill?.dataset.tipo||'geral', pill?.dataset.val||'');
     try { _renderHistAcessAbr26(); } catch(e){}
+    try { renderPlanningLive(); } catch(e){}
+    try { renderAcademyLive();  } catch(e){}
     toast('Visualizando: ' + label, 'success');
 }
 
@@ -10852,6 +10866,8 @@ function _360VoltarAtual() {
     const pill = document.querySelector('.f360-pill.active');
     render360(pill?.dataset.tipo||'geral', pill?.dataset.val||'');
     try { _renderHistAcessAbr26(); } catch(e){}
+    try { renderPlanningLive(); } catch(e){}
+    try { renderAcademyLive();  } catch(e){}
     toast('Exibindo ' + D360.periodo, 'success');
 }
 

@@ -6149,10 +6149,11 @@ function renderPlanningLive() {
     const subTotals = {};
     Object.values(_d.lojas).forEach(l => {
         if (!subTotals[l.sub]) subTotals[l.sub] = {fat:0, meta:0};
-        subTotals[l.sub].fat += l.total;
+        subTotals[l.sub].fat  += l.total;
+        subTotals[l.sub].meta += (l.meta || 0);
     });
     Object.entries(_d.subredes).forEach(([k,s]) => {
-        if (subTotals[k]) subTotals[k].meta = s.meta;
+        if (subTotals[k] && s.meta) subTotals[k].meta = s.meta;
     });
 
     const subEl = document.getElementById('pl-q2-subredes');
@@ -10571,7 +10572,8 @@ function render360(tipo, val) {
             const subAcessPct = subT > 0 ? Math.round(subAcess/subT*100) : 0;
             const acessCor = subAcessPct>=5?'#4ade80':subAcessPct>=3?'#f59e0b':'#f87171';
             const pedInfo  = `<span style="font-size:.6rem;color:#94a3b8;margin-left:.5rem;">📦 ${subPed} ped. · <span style="color:${acessCor};">🎧 ${subAcessPct}% acess.</span></span>`;
-            return metaBar(s.nome, s.gestor, s.lojas.length+' lojas' + ` · ${pedInfo}`, subT, s.meta);
+            const subMeta = s.meta || s.lojas.reduce((a,lk)=>a+(lojas[lk].meta||0),0);
+            return metaBar(s.nome, s.gestor, s.lojas.length+' lojas' + ` · ${pedInfo}`, subT, subMeta);
         }).join('');
         metas = `<h3 class="text-xs font-bold text-white tracking-widest uppercase mb-4">
                     <i class="fas fa-network-wired mr-2" style="color:#a855f7;"></i>Metas por Sub-rede

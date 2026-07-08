@@ -7125,9 +7125,27 @@ function fecharAgendamentos() {
     if (modal) modal.classList.add('hidden');
 }
 
+window._agendView = window._agendView || 'ranking'; // 'ranking' | 'cartaofin'
+
 function _filtrarRankingAgend(key) {
     window._agendSubFilter = key;
-    _renderAgendRanking();
+    window._agendView === 'cartaofin' ? _renderAgendCartaoFin() : _renderAgendRanking();
+}
+
+function _toggleAgendView(view) {
+    window._agendView = view;
+    view === 'cartaofin' ? _renderAgendCartaoFin() : _renderAgendRanking();
+}
+
+function _agendViewToggleHtml() {
+    var vc = window._agendView || 'ranking';
+    var base = 'cursor:pointer;font-size:10px;font-weight:700;padding:5px 13px;border-radius:8px;border:1px solid;transition:all .15s;';
+    var act  = base + 'background:rgba(6,182,212,.18);border-color:rgba(6,182,212,.4);color:#06b6d4;';
+    var inact= base + 'background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.1);color:#6b7280;';
+    return '<div style="display:flex;gap:6px;margin-bottom:12px;">'
+        + '<button onclick="_toggleAgendView(\'ranking\')" style="'+(vc==='ranking'?act:inact)+'">📅 Agendamentos</button>'
+        + '<button onclick="_toggleAgendView(\'cartaofin\')" style="'+(vc==='cartaofin'?act:inact)+'">💳 Cartão vs Financeiras</button>'
+        + '</div>';
 }
 
 function _renderAgendRanking() {
@@ -7259,8 +7277,175 @@ function _renderAgendRanking() {
                 '<div style="text-align:right;"><div style="font-size:14px;font-weight:800;color:'+projCor+';">↗ '+_brl(projGeral)+'</div><div style="font-size:9px;color:#6b7280;">projeção mês</div></div>' +
             '</div>' +
         '</div>' +
-        filterButtons + lojaRows +
+        _agendViewToggleHtml() + filterButtons + lojaRows +
         (lojas.length === 0 ? '<p style="text-align:center;font-size:11px;color:#6b7280;padding:20px 0;">Nenhum agendamento nesta subrede.</p>' : '');
+}
+
+/* ─── Cartão vs Financeiras — view dentro do modal de Agendamentos ────────── */
+function _renderAgendCartaoFin() {
+    var wrap = document.getElementById('modal-agend-body');
+    if (!wrap) return;
+    var _d   = _360D();
+    var filt = window._agendSubFilter || 'geral';
+    var _brl = function(v){ return 'R$ ' + Number(v).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}); };
+    var subLojasMap = { t1:['cariacica','itabuna','moxuara','praiadacosta'], t2:['barreiras','teixeira','laranjeiras'], t3:['saomateus','serra','montserrat','linhares'] };
+
+    // Lojas filtradas
+    var lojas = Object.values(_d.lojas).filter(function(l){
+        if ((l.total||0) <= 0 && (l.fin_mes||0) <= 0) return false;
+        if (filt !== 'geral' && subLojasMap[filt]) return subLojasMap[filt].indexOf(l.sub) >= 0;
+        return true;
+    }).sort(function(a,b){ return (b.total||0)-(a.total||0); });
+
+    // Totais rede
+    var totalMes   = lojas.reduce(function(s,l){ return s+(l.total||0); }, 0);
+    var totalFin   = lojas.reduce(function(s,l){ return s+(l.fin_mes||0); }, 0);
+    var totalCartao = Math.max(0, totalMes - totalFin);
+    var totalGeral  = totalMes;
+    var finBdTotal  = {PayJoy:0, OdresCred:0, Outras:0};
+    lojas.forEach(function(l){ (l.fin_bd||[]).forEach(function(b){ if (finBdTotal[b.nm]!==undefined) finBdTotal[b.nm]+=b.t; }); });
+    var pctCartao = totalGeral>0 ? Math.round(totalCartao/totalGeral*100) : 0;
+    var pctPJ  = totalGeral>0 ? Math.round(finBdTotal.PayJoy/totalGeral*100) : 0;
+    var pctOD  = totalGeral>0 ? Math.round(finBdTotal.OdresCred/totalGeral*100) : 0;
+    var pctOut = totalGeral>0 ? Math.round(finBdTotal.Outras/totalGeral*100) : 0;
+
+    // Tabs de subrede
+    var TABS=[{key:'geral',label:'Geral'},{key:'t1',label:'Titãs 1'},{key:'t2',label:'Titãs 2'},{key:'t3',label:'Titãs 3'}];
+    var tabsHtml = '<div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1rem;">';
+    TABS.forEach(function(t){
+        var a = filt===t.key;
+        tabsHtml += '<button onclick="_filtrarRankingAgend(\''+t.key+'\')" style="font-size:.7rem;font-weight:700;padding:.3rem .85rem;border-radius:999px;cursor:pointer;border:none;background:'+(a?'#06b6d4':'rgba(6,182,212,.1)')+';color:'+(a?'#fff':'#67e8f9')+';transition:all .2s;">'+t.label+'</button>';
+    });
+    tabsHtml += '</div>';
+
+    // Card total rede
+    var totalCard =
+        '<div style="background:rgba(6,182,212,.07);border:1px solid rgba(6,182,212,.2);border-radius:1rem;padding:1rem 1.1rem;margin-bottom:1.1rem;">'
+        +'<div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:.6rem;">'
+        +'<div><div style="font-size:.52rem;color:#67e8f9;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px;">Cartão / PDV</div><div style="font-size:1.45rem;font-weight:900;color:#fff;">'+_brl(totalCartao)+'</div></div>'
+        +'<div style="font-size:.8rem;color:#4b5563;font-weight:700;">vs</div>'
+        +'<div style="text-align:right"><div style="font-size:.52rem;color:#34d399;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px;">Financeiras</div><div style="font-size:1.45rem;font-weight:900;color:#fff;">'+_brl(totalFin)+'</div></div>'
+        +'</div>'
+        // Barra de progresso
+        +'<div style="height:20px;background:#1f2937;border-radius:5px;overflow:hidden;display:flex;">'
+        +'<div style="height:100%;width:'+pctCartao+'%;background:linear-gradient(90deg,#0e7490,#06b6d4);display:flex;align-items:center;justify-content:center;overflow:hidden;">'+(pctCartao>=12?'<span style="font-size:.48rem;font-weight:700;color:#fff;white-space:nowrap;">Cartão '+pctCartao+'%</span>':'')+'</div>'
+        +'<div style="height:100%;width:'+pctPJ+'%;background:#059669;display:flex;align-items:center;justify-content:center;overflow:hidden;">'+(pctPJ>=10?'<span style="font-size:.48rem;font-weight:700;color:#fff;white-space:nowrap;">PayJoy '+pctPJ+'%</span>':'')+'</div>'
+        +'<div style="height:100%;width:'+pctOD+'%;background:#34d399;display:flex;align-items:center;justify-content:center;overflow:hidden;">'+(pctOD>=8?'<span style="font-size:.48rem;font-weight:700;color:#065f46;white-space:nowrap;">OdresCred '+pctOD+'%</span>':'')+'</div>'
+        +'<div style="height:100%;width:'+pctOut+'%;background:#6ee7b7;display:flex;align-items:center;justify-content:center;overflow:hidden;">'+(pctOut>=8?'<span style="font-size:.48rem;font-weight:700;color:#065f46;white-space:nowrap;">Outras '+pctOut+'%</span>':'')+'</div>'
+        +'</div>'
+        +'<div style="display:flex;justify-content:space-between;margin-top:.4rem;flex-wrap:wrap;gap:.25rem;">'
+        +'<span style="font-size:.6rem;color:#06b6d4;font-weight:600;">Cartão/PDV '+pctCartao+'%</span>'
+        +'<span style="font-size:.6rem;color:#059669;font-weight:600;">PayJoy '+pctPJ+'%</span>'
+        +'<span style="font-size:.6rem;color:#34d399;font-weight:600;">OdresCred '+pctOD+'%</span>'
+        +(pctOut>0?'<span style="font-size:.6rem;color:#6ee7b7;font-weight:600;">Outras '+pctOut+'%</span>':'')
+        +'</div></div>';
+
+    // Cards por loja
+    var MEDALS = ['🥇','🥈','🥉'];
+    var cardsHtml = lojas.map(function(l, idx){
+        var fatD    = l.total||0;
+        var finD    = l.fin_mes||0;
+        var cartaoL = Math.max(0, fatD - finD);
+        var pctFinL    = fatD>0 ? Math.round(finD/fatD*100) : 0;
+        var pctCartaoL = fatD>0 ? 100-pctFinL : 0;
+        var pctDaRede  = totalGeral>0 ? ((fatD/totalGeral)*100).toFixed(0) : '0';
+        var medal = idx<3 ? MEDALS[idx] : '<span style="font-size:.75rem;font-weight:800;color:#6b7280;">'+(idx+1)+'</span>';
+
+        // fin_bd por loja
+        var lBdPJ=0, lBdOD=0, lBdOut=0;
+        (l.fin_bd||[]).forEach(function(b){
+            if (b.nm==='PayJoy') lBdPJ=b.t;
+            else if (b.nm==='OdresCred') lBdOD=b.t;
+            else if (b.nm==='Outras') lBdOut=b.t;
+        });
+        var pctLCartao = fatD>0 ? Math.round(cartaoL/fatD*100) : 0;
+        var pctLPJ  = fatD>0 ? Math.round(lBdPJ/fatD*100) : 0;
+        var pctLOD  = fatD>0 ? Math.round(lBdOD/fatD*100) : 0;
+        var pctLOut = fatD>0 ? Math.round(lBdOut/fatD*100) : 0;
+
+        // Mapa financeiras por vendedor
+        var finMap={}, finBdMap={};
+        (l.top_fin_mes||[]).forEach(function(v){ finMap[v.n.toLowerCase()]=v.t; finBdMap[v.n.toLowerCase()]=v.bd||[]; });
+
+        // Vendedores
+        var topAll = l.top||[];
+        var vendHtml = '';
+        if (topAll.length > 0) {
+            vendHtml = '<div id="agcf-acc-'+idx+'" style="display:none;margin-top:.65rem;">'
+                +'<table style="width:100%;border-collapse:collapse;font-size:.61rem;">'
+                +'<thead><tr style="color:#6b7280;border-bottom:1px solid #1f2937;">'
+                +'<th style="padding:3px 4px;text-align:left;">#</th>'
+                +'<th style="padding:3px 4px;text-align:left;">Vendedor</th>'
+                +'<th style="padding:3px 4px;text-align:right;color:#06b6d4;">Cartão/PDV</th>'
+                +'<th style="padding:3px 4px;text-align:right;color:#34d399;">Fin.</th>'
+                +'<th style="padding:3px 4px;">Split</th>'
+                +'</tr></thead><tbody>';
+            topAll.forEach(function(v, vi){
+                var vFin   = finMap[v.n.toLowerCase()]||0;
+                var vBd    = finBdMap[v.n.toLowerCase()]||[];
+                var vCartao = Math.max(0, v.t-vFin);
+                var vPctC  = v.t>0 ? Math.round(vCartao/v.t*100) : 0;
+                var vPctF  = v.t>0 ? 100-vPctC : 0;
+                var hasVBd = vFin>0 && vBd.length>0;
+                var vBdHtml = '';
+                if (hasVBd) {
+                    vBdHtml = '<tr id="agcf-vbd-'+idx+'-'+vi+'" style="display:none;background:rgba(52,211,153,.04);border-bottom:1px solid #111827;">'
+                        +'<td colspan="5" style="padding:3px 8px 6px 20px;">'
+                        +'<div style="display:flex;gap:.5rem;flex-wrap:wrap;padding-top:3px;">';
+                    vBd.forEach(function(b){
+                        if (b.t>0) {
+                            var bPct = vFin>0 ? Math.round(b.t/vFin*100) : 0;
+                            vBdHtml += '<span style="display:inline-flex;align-items:center;gap:3px;background:rgba(52,211,153,.1);border-radius:4px;padding:2px 6px;">'
+                                +'<span style="font-size:.5rem;color:#9ca3af;">'+b.nm+'</span>'
+                                +'<span style="font-size:.55rem;font-weight:700;color:#34d399;">'+_brl(b.t)+'</span>'
+                                +'<span style="font-size:.48rem;color:#6b7280;">'+bPct+'%</span>'
+                                +'</span>';
+                        }
+                    });
+                    vBdHtml += '</div></td></tr>';
+                }
+                vendHtml += '<tr '+(hasVBd?'onclick="var el=document.getElementById(\'agcf-vbd-'+idx+'-'+vi+'\');el.style.display=el.style.display===\'none\'?\'table-row\':\'none\';" style="border-bottom:1px solid #111827;cursor:pointer;"':'style="border-bottom:1px solid #111827;"')+'>'
+                    +'<td style="padding:4px 4px;color:#4b5563;">'+(vi+1)+'</td>'
+                    +'<td style="padding:4px 4px;color:#d1d5db;font-weight:600;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+(hasVBd?'<span style="color:#34d399;font-size:.55rem;">▾</span> ':'')+v.n+'</td>'
+                    +'<td style="padding:4px 4px;text-align:right;color:#06b6d4;font-weight:700;">'+_brl(vCartao)+'</td>'
+                    +'<td style="padding:4px 4px;text-align:right;color:#34d399;font-weight:700;">'+(vFin>0?_brl(vFin):'—')+'</td>'
+                    +'<td style="padding:4px 4px;min-width:60px;">'
+                    +'<div style="height:5px;background:#1f2937;border-radius:3px;overflow:hidden;display:flex;">'
+                    +'<div style="height:100%;width:'+vPctC+'%;background:#06b6d4;"></div>'
+                    +'<div style="height:100%;width:'+vPctF+'%;background:#34d399;"></div>'
+                    +'</div>'
+                    +'<div style="font-size:.45rem;color:#6b7280;margin-top:1px;">'+vPctC+'% C · '+vPctF+'% F</div>'
+                    +'</td>'
+                    + vBdHtml + '</tr>';
+            });
+            vendHtml += '</tbody></table></div>';
+        }
+
+        return '<div style="border-radius:12px;margin-bottom:8px;border:1px solid rgba(6,182,212,.18);background:rgba(0,0,0,.22);">'
+            +'<div onclick="var d=document.getElementById(\'agcf-acc-'+idx+'\');var i=this.querySelector(\'.agcf-chev\');d.style.display=d.style.display===\'none\'?\'block\':\'none\';i.style.transform=d.style.display===\'block\'?\'rotate(180deg)\':\'\';" style="cursor:pointer;padding:10px 14px;" onmouseover="this.style.background=\'rgba(255,255,255,.03)\'" onmouseout="this.style.background=\'\'">'
+            +'<div style="display:flex;align-items:center;gap:10px;">'
+            +'<span style="font-size:14px;min-width:24px;text-align:center;">'+medal+'</span>'
+            +'<div style="flex:1;min-width:0;">'
+            +'<div style="font-size:12px;font-weight:700;color:#f3f4f6;display:flex;align-items:center;gap:6px;">'+(l.label||l.sigla||'')+'<span style="font-size:9px;color:#6b7280;">'+pctDaRede+'% da rede · '+(topAll.length)+' vendedores</span></div>'
+            +'<div style="display:flex;gap:8px;margin-top:4px;flex-wrap:wrap;">'
+            +'<span style="font-size:10px;font-weight:700;color:#06b6d4;">Cartão '+_brl(cartaoL)+'</span>'
+            +'<span style="font-size:9px;color:#4b5563;margin-top:1px;">vs</span>'
+            +'<span style="font-size:10px;font-weight:700;color:#34d399;">Fin. '+_brl(finD)+'</span>'
+            +'</div>'
+            +'<div style="height:5px;background:#1f2937;border-radius:3px;overflow:hidden;display:flex;margin-top:5px;">'
+            +'<div style="height:100%;width:'+pctLCartao+'%;background:linear-gradient(90deg,#0e7490,#06b6d4);"></div>'
+            +'<div style="height:100%;width:'+pctLPJ+'%;background:#059669;"></div>'
+            +'<div style="height:100%;width:'+pctLOD+'%;background:#34d399;"></div>'
+            +'<div style="height:100%;width:'+pctLOut+'%;background:#6ee7b7;"></div>'
+            +'</div>'
+            +'</div>'
+            +'<i class="fas fa-chevron-down agcf-chev" style="color:#6b7280;font-size:10px;margin-left:4px;transition:transform .22s;flex-shrink:0;"></i>'
+            +'</div></div>'
+            + (vendHtml ? '<div style="border-top:1px solid rgba(255,255,255,.06);padding:0 8px 8px;">'+vendHtml+'</div>' : '')
+            +'</div>';
+    }).join('');
+
+    wrap.innerHTML = _agendViewToggleHtml() + tabsHtml + totalCard + cardsHtml;
 }
 
 /* ─── Filtro de subrede para o Ranking de Acessórios ─────────────────────── */

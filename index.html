@@ -7,7 +7,7 @@
     <script>
     // Cache-buster: força reload se a versão mudou
     (function(){
-      var BUILD = '20260708231051';
+      var BUILD = '20260708231750';
       var stored = localStorage.getItem('d360_build');
       if (stored && stored !== BUILD) {
         localStorage.setItem('d360_build', BUILD);
@@ -6442,8 +6442,8 @@ const D360 = {
     // O sistema deriva automaticamente: margem por loja → subrede → rede
     // COMO ATUALIZAR: edite apenas margem_lojas com os valores do ERP por loja
     // ─────────────────────────────────────────────────────────────────────────────
-    margem_dia: 0.00,              // rede hoje · zerado automaticamente à meia-noite
-    margem_dia_subredes: { t1: 0.00, t2: 0.00, t3: 0.00 },
+    margem_dia: 45.47,              // rede hoje · zerado automaticamente à meia-noite
+    margem_dia_subredes: { t1: 46.81, t2: 43.60, t3: 44.59 },
     margem_lojas: {
         // ── FONTE PRIMÁRIA — atualizar aqui com o Relatório Gerencial por Loja ──
         // T1 — Titãs 1 (Talysson)
@@ -6462,10 +6462,10 @@ const D360 = {
         linhares:    46.03,
     },
     margem_subredes: {  // fallback quando margem_lojas estiver incompleta
-        t1: 44.67, t2: 41.88, t3: 46.03
+        t1: 45.12, t2: 45.63, t3: 47.08
     },
     // margem_mes: derivada automaticamente pelo _calcMargemPonderada (não editar)
-    margem_mes: 44.67,
+    margem_mes: 45.86,
 
     subredes: {
         t1: { nome:'Titãs 1', gestor:'Talysson', meta:0,

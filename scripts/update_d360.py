@@ -314,21 +314,29 @@ def fetch_gerencial(token, start, end, payment_method_ids=None, store_ids=None, 
             time.sleep(wait)
     raise last_err
 
-def _parse_margem_pct(val):
-    """Converte um valor bruto de margem (float, string, decimal 0-1) para percentual."""
+def _parse_brl(val):
+    """Parseia string monetária BR (ex: 'R$  73.666,00') para float."""
     try:
-        v = float(str(val).replace(',', '.').replace('%', '').strip())
-        if 0 < v <= 1:
-            v = round(v * 100, 2)
-        if 0 < v < 100:
-            return round(v, 2)
+        s = str(val).replace('R$', '').replace(' ', '').replace('.', '').replace(',', '.').replace('%', '').strip()
+        return float(s)
     except Exception:
-        pass
+        return None
+
+
+def _parse_margem_pct(val):
+    """Converte valor de margem (float, '45,47%', 'R$...', 0-1 decimal) para percentual."""
+    v = _parse_brl(val)
+    if v is None:
+        return None
+    if 0 < v <= 1:
+        v = round(v * 100, 2)
+    if 0 < v < 100:
+        return round(v, 2)
     return None
 
 
 def _extract_from_dict(d):
-    """Tenta extrair margem bruta de um dicionário (nível raiz ou summary)."""
+    """Tenta extrair margem bruta de um dicionário plano."""
     candidates = [
         'gross_margin', 'margem_bruta', 'gross_margin_percentage',
         'gross_profit_margin', 'margin', 'brute_margin',
@@ -340,78 +348,81 @@ def _extract_from_dict(d):
             if v:
                 return v
     # Calcular de receita bruta + lucro bruto
-    rev_keys    = ['gross_revenue', 'receita_bruta', 'total_revenue', 'revenue', 'total']
+    rev_keys    = ['gross_revenue', 'receita_bruta', 'total_revenue', 'revenue', 'net_revenue']
     profit_keys = ['gross_profit', 'lucro_bruto', 'brute_profit', 'profit', 'gross_profit_value']
     try:
-        rev = next((d[k] for k in rev_keys if d.get(k)), None)
-        prf = next((d[k] for k in profit_keys if d.get(k)), None)
-        if rev and prf:
-            rev = float(str(rev).replace(',', '.'))
-            prf = float(str(prf).replace(',', '.'))
-            if rev > 0:
-                return round(prf / rev * 100, 2)
+        rev = next((_parse_brl(d[k]) for k in rev_keys if d.get(k)), None)
+        prf = next((_parse_brl(d[k]) for k in profit_keys if d.get(k)), None)
+        if rev and prf and rev > 0:
+            return round(prf / rev * 100, 2)
     except Exception:
         pass
-    # Calcular de receita - custo (revenue_breakdown - cost_breakdown)
+    # Calcular de receita - custo
     try:
-        rev = next((d[k] for k in rev_keys if d.get(k)), None)
-        cost_keys = ['cost', 'custo', 'total_cost', 'cost_of_goods', 'cogs']
-        cost = next((d[k] for k in cost_keys if d.get(k)), None)
-        if rev and cost:
-            rev  = float(str(rev).replace(',', '.'))
-            cost = float(str(cost).replace(',', '.'))
-            if rev > 0:
-                return round((rev - cost) / rev * 100, 2)
+        rev  = next((_parse_brl(d[k]) for k in rev_keys if d.get(k)), None)
+        cost_keys = ['total_costs', 'cost', 'custo', 'total_cost', 'cost_of_goods', 'cogs']
+        cost = next((_parse_brl(d[k]) for k in cost_keys if d.get(k)), None)
+        if rev and cost and rev > 0:
+            return round((rev - cost) / rev * 100, 2)
     except Exception:
         pass
+    return None
+
+
+def _deep_search_margem(obj, depth=0, skip_keys=('trends', 'metadata', 'employee_ranking', 'list', 'by_payment_method', 'by_brand')):
+    """Busca recursiva de margem bruta em qualquer nível do objeto."""
+    if depth > 3 or not isinstance(obj, dict):
+        return None
+    v = _extract_from_dict(obj)
+    if v:
+        return v
+    for key, val in obj.items():
+        if key in skip_keys:
+            continue
+        if isinstance(val, dict):
+            v = _deep_search_margem(val, depth + 1, skip_keys)
+            if v:
+                return v
     return None
 
 
 def extract_margem_bruta(data):
     """
     Extrai a Margem Bruta (%) do relatório gerencial da API CDC.
-    A API retorna: {summary:{...}, revenue_breakdown:{...}, cost_breakdown:{...}, ...}
-    Tenta múltiplas estruturas. Retorna float (ex: 44.60) ou None.
+    Estrutura real: {summary:{financial_overview:{gross_margin:'45,47%',...},...}, revenue_breakdown:{...}, cost_breakdown:{...}}
+    Faz busca profunda para lidar com mudanças de estrutura. Retorna float (ex: 45.47) ou None.
     """
     if not data:
         return None
 
-    # 1. Tentar no nível raiz
-    v = _extract_from_dict(data)
-    if v:
-        return v
-
-    # 2. Tentar dentro de 'summary' (estrutura atual da API CDC)
-    summary = data.get('summary')
-    if isinstance(summary, dict):
-        v = _extract_from_dict(summary)
+    # 1. Busca profunda em summary.financial_overview (caminho confirmado da API CDC)
+    try:
+        fo = data['summary']['financial_overview']
+        v = _extract_from_dict(fo)
         if v:
             return v
+    except Exception:
+        pass
 
-    # 3. Calcular a partir de revenue_breakdown e cost_breakdown
+    # 2. Calcular de revenue_breakdown e cost_breakdown (nível raiz)
     try:
         rb = data.get('revenue_breakdown') or {}
         cb = data.get('cost_breakdown') or {}
-        rev  = float(str(rb.get('total') or rb.get('gross') or rb.get('revenue') or 0).replace(',', '.'))
-        cost = float(str(cb.get('total') or cb.get('cost') or cb.get('cogs') or 0).replace(',', '.'))
-        if rev > 0:
+        rev  = _parse_brl(rb.get('total_revenue') or rb.get('gross_revenue') or rb.get('total') or 0)
+        cost = _parse_brl(cb.get('total_costs') or cb.get('total_cost') or cb.get('total') or 0)
+        if rev and cost and rev > 0:
             return round((rev - cost) / rev * 100, 2)
     except Exception:
         pass
 
-    # 4. Buscar recursivamente em qualquer sub-objeto
-    for key, val in data.items():
-        if isinstance(val, dict) and key not in ('trends', 'metadata', 'employee_ranking'):
-            v = _extract_from_dict(val)
-            if v:
-                print(f"  Margem encontrada em data['{key}']")
-                return v
+    # 3. Busca profunda em toda a estrutura
+    v = _deep_search_margem(data)
+    if v:
+        return v
 
     print(f"  AVISO: margem_bruta não encontrada. Chaves da API: {list(data.keys())[:20]}")
     if isinstance(data.get('summary'), dict):
         print(f"  Chaves de summary: {list(data['summary'].keys())[:20]}")
-    if isinstance(data.get('revenue_breakdown'), dict):
-        print(f"  Chaves de revenue_breakdown: {list(data['revenue_breakdown'].keys())[:10]}")
     return None
 
 

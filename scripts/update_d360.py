@@ -766,6 +766,7 @@ def update_store(content, store_key, total, acess_total, agend_total, agend_top,
     sec = re.sub(r'(\bacessorios:\{total:)\d+(?:\.\d+)?', f'\\g<1>{acess_total}', sec, count=1)
 
     # 4. agendamentos (inclui fin e fin_bd do canal 6)
+    agend_fin = min(round(agend_fin or 0, 2), agend_total)  # fin nunca pode exceder o total da loja no canal
     top_str   = fmt_top(agend_top)
     agend_fin_bd_fmt = fmt_fin_bd(agend_fin_bd) if agend_fin_bd else '[]'
     new_agend = f'agendamentos:{{total:{agend_total}, fin:{round(agend_fin,2)}, fin_bd:{agend_fin_bd_fmt}, top:{top_str}}}'

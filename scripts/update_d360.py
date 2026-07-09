@@ -628,6 +628,55 @@ def get_collaborators(data):
 
 # ── Processamento ─────────────────────────────────────────────────────────────
 
+def process_tickets(data):
+    """
+    Extrai tickets médios por grupo (SBON/celulares e ACESSÓRIOS) da resposta da API.
+    Tenta usar group_sales_counts da API; se ausente, estima inversamente pelo ticket médio.
+    Retorna: {'cel_rev', 'cel_ped', 'acess_rev', 'acess_ped', 'total_rev', 'total_ped',
+              'ticket_cel', 'ticket_acess', 'ticket_geral'}
+    """
+    cel_rev = 0.0; cel_ped = 0
+    acess_rev = 0.0; acess_ped = 0
+    total_rev = 0.0; total_ped = 0
+    has_group_counts = False
+
+    for c in get_collaborators(data):
+        if c.get('profile_key') != 'seller':
+            continue
+        g  = c.get('group_totals') or {}
+        gc = c.get('group_sales_counts') or c.get('group_counts') or c.get('group_orders') or {}
+        sc = c.get('sales_count', 0) or 0
+        ts = c.get('total_sold', 0) or 0
+
+        cr = g.get('SBON', 0) or 0
+        ar = g.get('ACESSÓRIOS', 0) or 0
+
+        cel_rev   += cr
+        acess_rev += ar
+        total_rev += ts
+        total_ped += sc
+
+        if gc:
+            has_group_counts = True
+            cel_ped   += gc.get('SBON', gc.get('sbon', 0)) or 0
+            acess_ped += gc.get('ACESSÓRIOS', gc.get('acessorios', 0)) or 0
+
+    # Fallback: se API não trouxe contagens por grupo, inferir pela proporção inversa ao ticket
+    # total_ped * (cel_rev/total_rev) seria proporcional em receita — mas ticket cel >> ticket acess,
+    # então estimamos: ped_cel = ped - ped_acess, onde ped_acess estimado pelo ticket médio esperado
+    if not has_group_counts and total_ped > 0 and total_rev > 0:
+        cel_ped   = round(total_ped * (cel_rev   / total_rev)) if cel_rev   else 0
+        acess_ped = round(total_ped * (acess_rev / total_rev)) if acess_rev else 0
+
+    ticket_cel   = round(cel_rev   / cel_ped)   if cel_ped   else 0
+    ticket_acess = round(acess_rev / acess_ped) if acess_ped else 0
+    ticket_geral = round(total_rev / total_ped) if total_ped else 0
+    print(f"  Tickets → cel: R${ticket_cel:,} ({cel_ped} ped) | acess: R${ticket_acess:,} ({acess_ped} ped) | geral: R${ticket_geral:,} ({total_ped} ped) | api_counts={has_group_counts}")
+    return dict(cel_rev=round(cel_rev,2), cel_ped=cel_ped, acess_rev=round(acess_rev,2), acess_ped=acess_ped,
+                total_rev=round(total_rev,2), total_ped=total_ped,
+                ticket_cel=ticket_cel, ticket_acess=ticket_acess, ticket_geral=ticket_geral)
+
+
 def process(data, value_fn):
     """
     Filtra sellers, agrega por loja.
@@ -970,6 +1019,9 @@ def main():
     else:
         print("  IDs de lojas não disponíveis — agend_fin não será atualizado")
 
+    print("Calculando tickets médios por grupo...")
+    tickets = process_tickets(sales_data)
+
     sales     = process(sales_data, lambda c: c.get('total_sold', 0))
     acess     = process(sales_data, lambda c: (c.get('group_totals') or {}).get('ACESSÓRIOS', 0))
     acess_dia = process(today_data, lambda c: (c.get('group_totals') or {}).get('ACESSÓRIOS', 0))
@@ -1092,6 +1144,17 @@ def main():
         if sub not in margem_dia_subredes:
             margem_dia_subredes[sub] = 0.0
     content = update_margem_dia_subredes(content, margem_dia_subredes)
+
+    # Atualiza tickets médios por grupo no D360
+    for field, val in [('ticket_cel', tickets['ticket_cel']),
+                       ('ticket_acess', tickets['ticket_acess']),
+                       ('ped_cel', tickets['cel_ped']),
+                       ('ped_acess', tickets['acess_ped'])]:
+        updated = re.sub(rf'(\b{field}\s*:\s*)\d+', rf'\g<1>{val}', content, count=1)
+        if updated != content:
+            content = updated
+        else:
+            print(f"  AVISO: campo {field} não encontrado no HTML")
 
     # Atualiza o timestamp de build (força browsers a recarregar após deploy)
     from datetime import datetime as _dt

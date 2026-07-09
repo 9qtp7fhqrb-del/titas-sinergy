@@ -77,3 +77,4 @@ node_modules/
 
 # Claude Code — contém histórico de comandos com tokens sensíveis
 .claude/
+scripts/dispatch_fallback.sh

@@ -628,17 +628,127 @@ def get_collaborators(data):
 
 # ── Processamento ─────────────────────────────────────────────────────────────
 
-def process_tickets(data):
+def _extract_tickets_from_gerencial(gdata):
+    """
+    Tenta extrair contagens e tickets médios por grupo (SBON/celulares, ACESSÓRIOS)
+    do relatório gerencial da API CDC.
+    Retorna dict com cel_ped, acess_ped, ticket_cel, ticket_acess ou {} se não encontrado.
+    """
+    if not gdata:
+        return {}
+
+    # Debug: imprimir estrutura de nível 1 e 2 para descoberta de campos
+    l1 = list(gdata.keys())
+    print(f"  [gerencial keys L1]: {l1}")
+    for k in l1:
+        if isinstance(gdata.get(k), dict):
+            print(f"  [gerencial.{k} keys L2]: {list(gdata[k].keys())}")
+        elif isinstance(gdata.get(k), list) and gdata[k]:
+            item0 = gdata[k][0]
+            if isinstance(item0, dict):
+                print(f"  [gerencial.{k}[0] keys]: {list(item0.keys())}")
+
+    result = {}
+
+    # 1. Tentar summary.financial_overview para total_sales e avg_ticket geral
+    try:
+        fo = gdata['summary']['financial_overview']
+        print(f"  [financial_overview fields]: {list(fo.keys())}")
+        for k, v in fo.items():
+            print(f"    {k}: {v}")
+    except Exception:
+        pass
+
+    # 2. Procurar por product_group breakdown em revenue_breakdown ou diretamente no root
+    def _search_product_groups(obj, path='', depth=0):
+        if depth > 4 or not isinstance(obj, dict):
+            return None
+        # Tentar chaves comuns de breakdown por grupo de produto
+        for key in ('by_product_group', 'product_groups', 'by_group', 'groups',
+                    'product_group_breakdown', 'grupo_produto', 'sales_by_group'):
+            val = obj.get(key)
+            if isinstance(val, list) and val:
+                print(f"  [product group list found at {path}.{key}]: {len(val)} items")
+                if isinstance(val[0], dict):
+                    print(f"    fields: {list(val[0].keys())}")
+                    for item in val:
+                        print(f"    item: {item}")
+                return val
+            elif isinstance(val, dict):
+                print(f"  [product group dict at {path}.{key}]: {list(val.keys())}")
+                return val
+        for k, v in obj.items():
+            if k in ('trends', 'metadata', 'employee_ranking', 'by_payment_method', 'by_brand'):
+                continue
+            sub = _search_product_groups(v, f'{path}.{k}', depth + 1)
+            if sub is not None:
+                return sub
+        return None
+
+    groups_data = _search_product_groups(gdata)
+    if groups_data is None:
+        print("  [gerencial]: nenhum breakdown por grupo de produto encontrado")
+        return result
+
+    # Normalizar: pode ser lista ou dict
+    if isinstance(groups_data, list):
+        groups_list = groups_data
+    elif isinstance(groups_data, dict):
+        groups_list = [{'name': k, **v} if isinstance(v, dict) else {'name': k, 'value': v}
+                       for k, v in groups_data.items()]
+    else:
+        return result
+
+    # Extrair por nome SBON e ACESSÓRIOS
+    name_fields = ('name', 'group_name', 'product_group', 'grupo', 'description')
+    count_fields = ('total_sales', 'sales_count', 'quantity', 'qty', 'count', 'pedidos', 'total_orders')
+    ticket_fields = ('avg_ticket', 'average_ticket', 'ticket_medio', 'ticket')
+    rev_fields = ('gross_revenue', 'total_revenue', 'revenue', 'total', 'value')
+
+    for item in groups_list:
+        if not isinstance(item, dict):
+            continue
+        nm = next((str(item.get(f, '')).upper() for f in name_fields if item.get(f)), '')
+        if not nm:
+            continue
+
+        cnt = next((_parse_brl(item.get(f)) for f in count_fields if item.get(f) is not None), None)
+        tck = next((_parse_brl(item.get(f)) for f in ticket_fields if item.get(f) is not None), None)
+        rev = next((_parse_brl(item.get(f)) for f in rev_fields if item.get(f) is not None), None)
+
+        # Calcular ticket a partir de rev/cnt se ticket não veio direto
+        if tck is None and cnt and rev and cnt > 0:
+            tck = rev / cnt
+
+        if 'SBON' in nm or 'CELULAR' in nm:
+            if cnt:
+                result['cel_ped'] = int(cnt)
+            if tck:
+                result['ticket_cel'] = int(round(tck))
+        elif 'ACESS' in nm:
+            if cnt:
+                result['acess_ped'] = int(cnt)
+            if tck:
+                result['ticket_acess'] = int(round(tck))
+
+    if result:
+        print(f"  [gerencial]: extraído por grupo → {result}")
+    return result
+
+
+def process_tickets(data, gerencial_data=None):
     """
     Extrai tickets médios por grupo (SBON/celulares e ACESSÓRIOS) da resposta da API.
-    Tenta usar group_sales_counts da API; se ausente, estima inversamente pelo ticket médio.
+    Tenta primeiro extrair do relatório gerencial (que tem contagens por grupo);
+    fallback: usa group_sales_counts do sales_by_collaborator (raramente presente).
     Retorna: {'cel_rev', 'cel_ped', 'acess_rev', 'acess_ped', 'total_rev', 'total_ped',
               'ticket_cel', 'ticket_acess', 'ticket_geral'}
     """
-    cel_rev = 0.0; cel_ped = 0
-    acess_rev = 0.0; acess_ped = 0
+    cel_rev = 0.0
+    acess_rev = 0.0
     total_rev = 0.0; total_ped = 0
     has_group_counts = False
+    cel_ped = 0; acess_ped = 0
 
     for c in get_collaborators(data):
         if c.get('profile_key') != 'seller':
@@ -648,11 +758,8 @@ def process_tickets(data):
         sc = c.get('sales_count', 0) or 0
         ts = c.get('total_sold', 0) or 0
 
-        cr = g.get('SBON', 0) or 0
-        ar = g.get('ACESSÓRIOS', 0) or 0
-
-        cel_rev   += cr
-        acess_rev += ar
+        cel_rev   += g.get('SBON', 0) or 0
+        acess_rev += g.get('ACESSÓRIOS', 0) or 0
         total_rev += ts
         total_ped += sc
 
@@ -661,12 +768,22 @@ def process_tickets(data):
             cel_ped   += gc.get('SBON', gc.get('sbon', 0)) or 0
             acess_ped += gc.get('ACESSÓRIOS', gc.get('acessorios', 0)) or 0
 
-    # Fallback: se API não trouxe contagens por grupo, inferir pela proporção inversa ao ticket
-    # total_ped * (cel_rev/total_rev) seria proporcional em receita — mas ticket cel >> ticket acess,
-    # então estimamos: ped_cel = ped - ped_acess, onde ped_acess estimado pelo ticket médio esperado
-    if not has_group_counts and total_ped > 0 and total_rev > 0:
-        cel_ped   = round(total_ped * (cel_rev   / total_rev)) if cel_rev   else 0
-        acess_ped = round(total_ped * (acess_rev / total_rev)) if acess_rev else 0
+    # Tentar extrair contagens por grupo do relatório gerencial
+    if not has_group_counts and gerencial_data:
+        print("  Tentando extrair contagens por grupo do relatório gerencial...")
+        gext = _extract_tickets_from_gerencial(gerencial_data)
+        if gext.get('cel_ped') and gext.get('acess_ped'):
+            cel_ped = gext['cel_ped']
+            acess_ped = gext['acess_ped']
+            has_group_counts = True
+            print(f"  Contagens extraídas do gerencial: cel={cel_ped} | acess={acess_ped}")
+
+    # Se ainda não temos contagens, não podemos calcular ticket correto por grupo
+    # (fallback proporcional é inútil pois ticket cel >> ticket acess)
+    if not has_group_counts:
+        print("  AVISO: contagens por grupo não disponíveis — ticket_cel/ticket_acess serão 0")
+        cel_ped = 0
+        acess_ped = 0
 
     ticket_cel   = round(cel_rev   / cel_ped)   if cel_ped   else 0
     ticket_acess = round(acess_rev / acess_ped) if acess_ped else 0
@@ -1020,7 +1137,7 @@ def main():
         print("  IDs de lojas não disponíveis — agend_fin não será atualizado")
 
     print("Calculando tickets médios por grupo...")
-    tickets = process_tickets(sales_data)
+    tickets = process_tickets(sales_data, gerencial_rede)
 
     sales     = process(sales_data, lambda c: c.get('total_sold', 0))
     acess     = process(sales_data, lambda c: (c.get('group_totals') or {}).get('ACESSÓRIOS', 0))

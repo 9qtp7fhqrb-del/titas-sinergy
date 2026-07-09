@@ -7,7 +7,7 @@
     <script>
     // Cache-buster: força reload se a versão mudou
     (function(){
-      var BUILD = '20260709145343';
+      var BUILD = '20260709115516';
       var stored = localStorage.getItem('d360_build');
       if (stored && stored !== BUILD) {
         localStorage.setItem('d360_build', BUILD);
@@ -22262,6 +22262,12 @@ async function _fsRead(docId) {
   if (!json.fields) return null;
   return Object.fromEntries(Object.entries(json.fields).map(([k,v])=>[k,_fsFromVal(v)]));
 }
+// Apaga documento de ts_d360 via REST API
+async function _fsDelete(docId) {
+  const url = `${_FS_BASE}/ts_d360/${encodeURIComponent(docId)}?key=${_FS_KEY}`;
+  const res  = await fetch(url, { method: 'DELETE' });
+  if (!res.ok && res.status !== 404) { const t = await res.text(); throw new Error(`HTTP ${res.status}: ${t.slice(0,200)}`); }
+}
 
 // ── Modelo de dado por dia:
 // { tasks:[{checked,desc},...], acumuladas:[{texto,origem,checked,desc},...],
@@ -22660,6 +22666,20 @@ async function _chklMarkStarted(lojaKey, dateStr) {
   } catch(e) { console.warn('_chklMarkStarted:', e); }
 }
 
+async function _chklZerar(lojaKey) {
+  const loja = _CHKL_LOJAS[lojaKey];
+  if (!loja) return;
+  if (!['diretoria','admin','franqueado'].includes(user?.cargo)) { toast('Acesso restrito à diretoria.', 'error'); return; }
+  const dateStr = _chklDateStr(0);
+  if (!confirm(`Zerar o checklist de ${loja.label} de hoje (${dateStr})?\n\nEsta ação apaga o preenchimento atual e permite novo preenchimento.`)) return;
+  try {
+    await _fsDelete(_chklDocId(lojaKey, dateStr));
+    localStorage.removeItem(_chklDraftKey(lojaKey, dateStr));
+    toast(`Checklist de ${loja.label} zerado com sucesso.`, 'success');
+    _chklMonitor();
+  } catch(e) { toast('Erro ao zerar: ' + e.message, 'error'); }
+}
+
 // ── Init ─────────────────────────────────────────────────────────────────────
 function _chklInit() {
   _diarioShowView('checklist');
@@ -23027,6 +23047,7 @@ async function _chklMonitor() {
 
   const fmtDate = ds => new Date(ds+'T12:00:00').toLocaleDateString('pt-BR',{weekday:'short',day:'2-digit',month:'2-digit'});
   let filledToday=0, pendToday=0, alertas=[];
+  const isDiretoriaChkl = ['diretoria','admin','franqueado'].includes(user?.cargo);
 
   const rows = lojaKeys.map(lk => {
     const loja = _CHKL_LOJAS[lk];
@@ -23058,6 +23079,9 @@ async function _chklMonitor() {
         <td style="padding:11px 10px;text-align:center">
           <button onclick="_chklViewDir('${lk}')" style="background:rgba(96,165,250,.1);border:1px solid rgba(96,165,250,.2);border-radius:7px;padding:4px 10px;color:#60a5fa;font-size:.68rem;font-weight:600;cursor:pointer">Ver</button>
         </td>
+        ${isDiretoriaChkl ? `<td style="padding:11px 10px;text-align:center">
+          <button onclick="_chklZerar('${lk}')" style="background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);border-radius:7px;padding:4px 10px;color:#f87171;font-size:.68rem;font-weight:700;cursor:pointer"><i class="fas fa-trash-can" style="margin-right:3px"></i>Zerar</button>
+        </td>` : ''}
       </tr>`;
   }).join('');
 
@@ -23098,6 +23122,7 @@ async function _chklMonitor() {
             <th style="padding:11px 10px;text-align:center;color:#9ca3af;font-size:.68rem;font-weight:700">${fmtDate(yst)}</th>
             <th style="padding:11px 10px;text-align:center;color:#9ca3af;font-size:.68rem;font-weight:700">${fmtDate(d2)}</th>
             <th style="padding:11px 10px;text-align:center;color:#9ca3af;font-size:.68rem;font-weight:700">VER</th>
+            ${isDiretoriaChkl ? `<th style="padding:11px 10px;text-align:center;color:#f87171;font-size:.68rem;font-weight:700">ZERAR</th>` : ''}
           </tr>
         </thead>
         <tbody>${rows}</tbody>
@@ -23132,6 +23157,7 @@ window._chklRenderParabens  = _chklRenderParabens;
 window._chklMonitor         = _chklMonitor;
 window._chklViewDir         = _chklViewDir;
 window._chklSetUserLoja     = _chklSetUserLoja;
+window._chklZerar           = _chklZerar;
 window._chklMarkStarted     = _chklMarkStarted;
 
 // ─── Landing ──────────────────────────────────────────────────────────────────

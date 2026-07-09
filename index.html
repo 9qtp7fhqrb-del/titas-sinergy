@@ -7383,6 +7383,8 @@ function _renderAgendCartaoFin() {
 
         // Top vendedores de agendamentos
         var topAll = ag.top || [];
+        // Ratio fin/total da loja para estimar por vendedor
+        var lojaFinRatio = fatD > 0 ? finD / fatD : 0;
         var vendHtml = '';
         if (topAll.length > 0) {
             vendHtml = '<div id="agcf-acc-'+idx+'" style="display:none;margin-top:.65rem;">'
@@ -7390,16 +7392,29 @@ function _renderAgendCartaoFin() {
                 +'<thead><tr style="color:#6b7280;border-bottom:1px solid #1f2937;">'
                 +'<th style="padding:3px 4px;text-align:left;">#</th>'
                 +'<th style="padding:3px 4px;text-align:left;">Vendedor</th>'
-                +'<th style="padding:3px 4px;text-align:right;color:#67e8f9;">Agend.</th>'
-                +'<th style="padding:3px 4px;text-align:right;color:#e5e7eb;">% loja</th>'
+                +'<th style="padding:3px 4px;text-align:right;color:#67e8f9;">Total</th>'
+                +'<th style="padding:3px 4px;text-align:right;color:#06b6d4;">Cartão</th>'
+                +'<th style="padding:3px 4px;text-align:right;color:#34d399;">Fin.</th>'
+                +'<th style="padding:3px 4px;min-width:50px;"></th>'
                 +'</tr></thead><tbody>';
             topAll.forEach(function(v, vi){
-                var vPct = fatD>0 ? ((v.t/fatD)*100).toFixed(0) : '0';
+                var vFin    = Math.round(v.t * lojaFinRatio);
+                var vCartao = Math.max(0, v.t - vFin);
+                var vPctC   = v.t > 0 ? Math.round(vCartao/v.t*100) : 0;
+                var vPctF   = v.t > 0 ? 100 - vPctC : 0;
                 vendHtml += '<tr style="border-bottom:1px solid #111827;">'
                     +'<td style="padding:4px 4px;color:#4b5563;">'+(vi+1)+'</td>'
-                    +'<td style="padding:4px 4px;color:#d1d5db;font-weight:600;max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+v.n+'</td>'
+                    +'<td style="padding:4px 4px;color:#d1d5db;font-weight:600;max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+v.n+'</td>'
                     +'<td style="padding:4px 4px;text-align:right;color:#67e8f9;font-weight:700;">'+_brl(v.t)+'</td>'
-                    +'<td style="padding:4px 4px;text-align:right;color:#6b7280;font-weight:600;">'+vPct+'%</td>'
+                    +'<td style="padding:4px 4px;text-align:right;color:#06b6d4;font-weight:700;">'+_brl(vCartao)+'</td>'
+                    +'<td style="padding:4px 4px;text-align:right;color:#34d399;font-weight:700;">'+_brl(vFin)+'</td>'
+                    +'<td style="padding:4px 4px;">'
+                    +'<div style="height:5px;background:#1f2937;border-radius:3px;overflow:hidden;display:flex;">'
+                    +'<div style="height:100%;width:'+vPctC+'%;background:#06b6d4;"></div>'
+                    +'<div style="height:100%;width:'+vPctF+'%;background:#34d399;"></div>'
+                    +'</div>'
+                    +'<div style="font-size:.45rem;color:#6b7280;margin-top:1px;">'+vPctC+'%C·'+vPctF+'%F</div>'
+                    +'</td>'
                     +'</tr>';
             });
             vendHtml += '</tbody></table></div>';

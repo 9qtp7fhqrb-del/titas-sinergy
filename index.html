@@ -7294,7 +7294,7 @@ function _renderAgendCartaoFin() {
     var lojas = Object.values(_d.lojas).filter(function(l){
         var ag = l.agendamentos || {};
         if ((ag.total||0) <= 0) return false;
-        if (filt !== 'geral' && subLojasMap[filt]) return subLojasMap[filt].indexOf(l.sub) >= 0;
+        if (filt !== 'geral') return l.sub === filt;
         return true;
     }).sort(function(a,b){ return ((b.agendamentos||{}).total||0)-((a.agendamentos||{}).total||0); });
 

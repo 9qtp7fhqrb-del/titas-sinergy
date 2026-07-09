@@ -279,19 +279,21 @@ def fetch_store_ids(token, retries=3, wait=10):
     return {}
 
 
-def fetch_gerencial(token, start, end, payment_method_ids=None, store_ids=None, retries=4, wait=15):
-    """Busca relatório gerencial, opcionalmente filtrado por meios de pagamento e/ou lojas."""
+def fetch_gerencial(token, start, end, payment_method_ids=None, store_ids=None, channel_ids=None, retries=4, wait=15):
+    """Busca relatório gerencial, opcionalmente filtrado por meios de pagamento, lojas e/ou canais."""
     import time
     params = {'start_date': start, 'end_date': end}
     last_err = None
     for attempt in range(1, retries + 1):
         try:
-            # Monta query string manual para suportar arrays (payment_method_ids[] e store_ids[])
+            # Monta query string manual para suportar arrays (payment_method_ids[], store_ids[], channel_ids[])
             qs_parts = []
             if payment_method_ids:
                 qs_parts += [f'payment_method_ids[]={i}' for i in payment_method_ids]
             if store_ids:
                 qs_parts += [f'store_ids[]={i}' for i in store_ids]
+            if channel_ids:
+                qs_parts += [f'channel_ids[]={i}' for i in channel_ids]
             if qs_parts:
                 url = f'{ERP_BASE}/reports/gerencial?' + '&'.join(qs_parts)
             else:
@@ -508,6 +510,29 @@ def update_margem_subredes(content, margens):
     return content
 
 
+def update_margem_lojas(content, margem_subredes):
+    """
+    Propaga a margem da subrede para cada loja em margem_lojas.
+    _calcMargemPonderada usa margem_lojas como prioridade — sem essa atualização
+    o JS sempre exibe valores antigos ignorando margem_subredes atualizado.
+    """
+    for sub, lojas in SUBREDE_LOJAS.items():
+        val = margem_subredes.get(sub)
+        if not val:
+            continue
+        for lk in lojas:
+            # margem_lojas é um objeto JS inline: cariacica: 44.67,
+            pattern = rf'(margem_lojas\s*:[^}}]*?\b{lk}\s*:\s*)\d+(?:\.\d+)?'
+            new = f'\\g<1>{val:.2f}'
+            updated = re.sub(pattern, new, content, count=1, flags=re.DOTALL)
+            if updated != content:
+                content = updated
+                print(f"  margem_lojas.{lk} → {val:.2f}%")
+            else:
+                print(f"  AVISO: margem_lojas.{lk} não encontrado no HTML")
+    return content
+
+
 def process_gerencial(data):
     """
     Processa employee_ranking do relatório gerencial.
@@ -543,6 +568,46 @@ def process_gerencial(data):
         s['top'].sort(key=lambda x: x['t'], reverse=True)
         s['total'] = round(s['total'], 2)
     return stores
+
+
+def process_agend_fin_per_loja(token, start, today, store_id_map):
+    """
+    Busca breakdown de pagamento do canal 6 (agendamentos) por loja.
+    Retorna: {store_key: {'total': float, 'fin': float, 'fin_bd': [{'nm','t'}]}}
+    """
+    result = {}
+    ALL_FIN_IDS = [ids for grp in FINANCEIRAS_GROUPS for ids in grp['ids']]
+    for loja_key, store_id in store_id_map.items():
+        try:
+            data = fetch_gerencial(token, start, today, store_ids=[store_id], channel_ids=[6])
+            if not data:
+                continue
+            summary = (data.get('summary') or {})
+            fo = summary.get('financial_overview') or {}
+            rev_keys = ['gross_revenue', 'total_revenue', 'net_revenue', 'revenue']
+            total = next((_parse_brl(fo.get(k)) for k in rev_keys if fo.get(k)), None)
+            if total is None:
+                rb = data.get('revenue_breakdown') or {}
+                total = next((_parse_brl(rb.get(k)) for k in rev_keys + ['total'] if rb.get(k)), 0.0)
+            total = round(total or 0, 2)
+            # buscar financeiras por grupo para este canal
+            bd = []
+            fin_total = 0.0
+            for grp in FINANCEIRAS_GROUPS:
+                gd = fetch_gerencial(token, start, today, store_ids=[store_id], channel_ids=[6], payment_method_ids=grp['ids'])
+                gfo = ((gd or {}).get('summary') or {}).get('financial_overview') or {}
+                grev = next((_parse_brl(gfo.get(k)) for k in rev_keys if gfo.get(k)), None)
+                if grev is None:
+                    grb = (gd or {}).get('revenue_breakdown') or {}
+                    grev = next((_parse_brl(grb.get(k)) for k in rev_keys + ['total'] if grb.get(k)), 0.0)
+                grev = round(grev or 0, 2)
+                fin_total += grev
+                bd.append({'nm': grp['nm'], 't': grev})
+            result[loja_key] = {'total': total, 'fin': round(fin_total, 2), 'fin_bd': bd}
+            print(f"  agend_fin {loja_key}: total={total:.2f} fin={fin_total:.2f} bd={bd}")
+        except Exception as e:
+            print(f"  AVISO: erro ao buscar agend_fin {loja_key}: {e}")
+    return result
 
 
 def get_collaborators(data):
@@ -633,7 +698,7 @@ def fmt_top(top_list):
     items = [f"{{n:'{e['n']}',i:'{e['i']}',t:{e['t']}}}" for e in top_list]
     return '[' + ', '.join(items) + ']'
 
-def update_store(content, store_key, total, acess_total, agend_total, agend_top, fat_dia=0, top_dia=None, acess_dia=0, acess_dia_top=None, fin_dia=0, top_fin=None, fin_mes=0, top_fin_mes=None, fin_bd=None, sellers_top=None, sellers_today=None):
+def update_store(content, store_key, total, acess_total, agend_total, agend_top, fat_dia=0, top_dia=None, acess_dia=0, acess_dia_top=None, fin_dia=0, top_fin=None, fin_mes=0, top_fin_mes=None, fin_bd=None, sellers_top=None, sellers_today=None, agend_fin=0, agend_fin_bd=None):
     start, end = find_section(content, store_key)
     if start is None:
         print(f"  AVISO: seção '{store_key}' não encontrada no HTML")
@@ -697,17 +762,18 @@ def update_store(content, store_key, total, acess_total, agend_total, agend_top,
     # 3. acessorios.total
     sec = re.sub(r'(\bacessorios:\{total:)\d+(?:\.\d+)?', f'\\g<1>{acess_total}', sec, count=1)
 
-    # 4. agendamentos (single-line)
-    top_str = fmt_top(agend_top)
-    new_agend = f'agendamentos:{{total:{agend_total}, top:{top_str}}}'
+    # 4. agendamentos (inclui fin e fin_bd do canal 6)
+    top_str   = fmt_top(agend_top)
+    agend_fin_bd_fmt = fmt_fin_bd(agend_fin_bd) if agend_fin_bd else '[]'
+    new_agend = f'agendamentos:{{total:{agend_total}, fin:{round(agend_fin,2)}, fin_bd:{agend_fin_bd_fmt}, top:{top_str}}}'
+    # Substituir formato antigo (sem fin) ou novo (com fin)
     sec, n = re.subn(
-        r'agendamentos:\{total:\d+(?:\.\d+)?,\s*top:\[[^\]]*\]\}',
+        r'agendamentos:\{total:\d+(?:\.\d+)?,(?:\s*fin:\d+(?:\.\d+)?,\s*fin_bd:\[[^\]]*\],)?\s*top:\[[^\]]*\]\}',
         new_agend, sec, count=1
     )
-    # 4b. agendamentos (multi-line)
     if n == 0:
         sec = re.sub(
-            r'agendamentos:\{total:\d+(?:\.\d+)?,\s*top:\[[\s\S]*?\]\}',
+            r'agendamentos:\{total:\d+(?:\.\d+)?,(?:\s*fin:\d+(?:\.\d+)?,\s*fin_bd:\[[\s\S]*?\],)?\s*top:\[[\s\S]*?\]\}',
             new_agend, sec, count=1
         )
 
@@ -893,6 +959,13 @@ def main():
     for grp in FINANCEIRAS_GROUPS:
         fin_groups_data[grp['nm']] = fetch_gerencial(token, start, today, payment_method_ids=grp['ids'])
 
+    print("Buscando breakdown de agendamentos (canal 6) por loja...")
+    agend_fin_by_store = {}
+    if store_id_map:
+        agend_fin_by_store = process_agend_fin_per_loja(token, start, today, store_id_map)
+    else:
+        print("  IDs de lojas não disponíveis — agend_fin não será atualizado")
+
     sales     = process(sales_data, lambda c: c.get('total_sold', 0))
     acess     = process(sales_data, lambda c: (c.get('group_totals') or {}).get('ACESSÓRIOS', 0))
     acess_dia = process(today_data, lambda c: (c.get('group_totals') or {}).get('ACESSÓRIOS', 0))
@@ -965,6 +1038,7 @@ def main():
             else:
                 print(f"  {sk}: sem dados de vendas, pulando")
             continue
+        _af = agend_fin_by_store.get(sk, {})
         content = update_store(
             content, sk,
             total          = sales[sk]['total'],
@@ -982,6 +1056,8 @@ def main():
             fin_bd         = fin_bd_by_store.get(sk, []),
             sellers_top    = sales[sk]['top'],
             sellers_today  = sellers_today_by_store.get(sk, set()),
+            agend_fin      = _af.get('fin', 0),
+            agend_fin_bd   = _af.get('fin_bd', [{'nm': g['nm'], 't': 0} for g in FINANCEIRAS_GROUPS]),
         )
         print(f"  {sk}: atualizado")
 
@@ -1004,6 +1080,8 @@ def main():
     # Atualiza margem_subredes
     if margem_subredes:
         content = update_margem_subredes(content, margem_subredes)
+        # Propaga para margem_lojas (fonte primária do _calcMargemPonderada no JS)
+        content = update_margem_lojas(content, margem_subredes)
 
     # Atualiza margem_dia_subredes — zera subredes sem vendas no dia
     for sub in SUBREDE_LOJAS:

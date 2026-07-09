@@ -576,34 +576,37 @@ def process_agend_fin_per_loja(token, start, today, store_id_map):
     Retorna: {store_key: {'total': float, 'fin': float, 'fin_bd': [{'nm','t'}]}}
     """
     result = {}
-    ALL_FIN_IDS = [ids for grp in FINANCEIRAS_GROUPS for ids in grp['ids']]
+    ALL_FIN_IDS = [i for grp in FINANCEIRAS_GROUPS for i in grp['ids']]
+    rev_keys = ['gross_revenue', 'total_revenue', 'net_revenue', 'revenue']
+
+    def _extract_rev(data):
+        fo = ((data or {}).get('summary') or {}).get('financial_overview') or {}
+        v = next((_parse_brl(fo.get(k)) for k in rev_keys if fo.get(k)), None)
+        if v is None:
+            rb = (data or {}).get('revenue_breakdown') or {}
+            v = next((_parse_brl(rb.get(k)) for k in rev_keys + ['total'] if rb.get(k)), 0.0)
+        return round(v or 0, 2)
+
     for loja_key, store_id in store_id_map.items():
         try:
+            # Total canal 6
             data = fetch_gerencial(token, start, today, store_ids=[store_id], channel_ids=[6])
             if not data:
                 continue
-            summary = (data.get('summary') or {})
-            fo = summary.get('financial_overview') or {}
-            rev_keys = ['gross_revenue', 'total_revenue', 'net_revenue', 'revenue']
-            total = next((_parse_brl(fo.get(k)) for k in rev_keys if fo.get(k)), None)
-            if total is None:
-                rb = data.get('revenue_breakdown') or {}
-                total = next((_parse_brl(rb.get(k)) for k in rev_keys + ['total'] if rb.get(k)), 0.0)
-            total = round(total or 0, 2)
-            # buscar financeiras por grupo para este canal
+            total = _extract_rev(data)
+
+            # Financeiras totais em UMA chamada (evita dupla contagem entre grupos)
+            gd_all = fetch_gerencial(token, start, today, store_ids=[store_id], channel_ids=[6], payment_method_ids=ALL_FIN_IDS)
+            fin_total = min(_extract_rev(gd_all), total)  # nunca pode exceder o total
+
+            # Breakdown por grupo (informativo; cada grupo filtrado individualmente)
             bd = []
-            fin_total = 0.0
             for grp in FINANCEIRAS_GROUPS:
                 gd = fetch_gerencial(token, start, today, store_ids=[store_id], channel_ids=[6], payment_method_ids=grp['ids'])
-                gfo = ((gd or {}).get('summary') or {}).get('financial_overview') or {}
-                grev = next((_parse_brl(gfo.get(k)) for k in rev_keys if gfo.get(k)), None)
-                if grev is None:
-                    grb = (gd or {}).get('revenue_breakdown') or {}
-                    grev = next((_parse_brl(grb.get(k)) for k in rev_keys + ['total'] if grb.get(k)), 0.0)
-                grev = round(grev or 0, 2)
-                fin_total += grev
+                grev = min(_extract_rev(gd), fin_total)  # cap no fin_total
                 bd.append({'nm': grp['nm'], 't': grev})
-            result[loja_key] = {'total': total, 'fin': round(fin_total, 2), 'fin_bd': bd}
+
+            result[loja_key] = {'total': total, 'fin': fin_total, 'fin_bd': bd}
             print(f"  agend_fin {loja_key}: total={total:.2f} fin={fin_total:.2f} bd={bd}")
         except Exception as e:
             print(f"  AVISO: erro ao buscar agend_fin {loja_key}: {e}")

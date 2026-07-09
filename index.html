@@ -6958,6 +6958,29 @@ function abrirDetalhesFat(tipo, val) {
     if (d.antLine) html += d.antLine;
     // margem mês
     if (d.margLine) html += d.margLine;
+    // tickets médios
+    if (d.ticketGeral || d.ticketCel || d.ticketAcess) {
+        var brlK = function(v){ return 'R$ '+Number(v).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}); };
+        html += '<div style="margin-top:.5rem;border-top:1px solid #1f2937;padding-top:.5rem;">';
+        html += '<div style="font-size:.55rem;color:#6b7280;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.4rem;">Ticket Médio · '+(d.pedidos||0)+' pedidos</div>';
+        html += '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.4rem;">';
+        // Celulares
+        html += '<div style="background:rgba(124,58,237,.08);border:1px solid rgba(124,58,237,.2);border-radius:.5rem;padding:.45rem .5rem;text-align:center;">'
+            +'<div style="font-size:.48rem;color:#a78bfa;font-weight:700;text-transform:uppercase;margin-bottom:.2rem;">📱 Celulares</div>'
+            +'<div style="font-size:.72rem;font-weight:900;color:#c4b5fd;line-height:1;">'+(d.ticketCel ? brlK(d.ticketCel) : '—')+'</div>'
+            +'</div>';
+        // Acessórios
+        html += '<div style="background:rgba(6,182,212,.08);border:1px solid rgba(6,182,212,.2);border-radius:.5rem;padding:.45rem .5rem;text-align:center;">'
+            +'<div style="font-size:.48rem;color:#67e8f9;font-weight:700;text-transform:uppercase;margin-bottom:.2rem;">🎧 Acessórios</div>'
+            +'<div style="font-size:.72rem;font-weight:900;color:#a5f3fc;line-height:1;">'+(d.ticketAcess ? brlK(d.ticketAcess) : '—')+'</div>'
+            +'</div>';
+        // Geral
+        html += '<div style="background:rgba(249,115,22,.08);border:1px solid rgba(249,115,22,.2);border-radius:.5rem;padding:.45rem .5rem;text-align:center;">'
+            +'<div style="font-size:.48rem;color:#fb923c;font-weight:700;text-transform:uppercase;margin-bottom:.2rem;">🧾 Geral</div>'
+            +'<div style="font-size:.72rem;font-weight:900;color:#fdba74;line-height:1;">'+(d.ticketGeral ? brlK(d.ticketGeral) : '—')+'</div>'
+            +'</div>';
+        html += '</div></div>';
+    }
     body.innerHTML = html;
     modal.style.display = 'flex';
     modal.classList.remove('hidden');
@@ -10209,6 +10232,11 @@ function render360(tipo, val) {
     const cancel  = scope.reduce((s,l)=>s+l.cancel,0);
     const ticket  = pedidos ? Math.round(total/pedidos) : 0;
     const pctCancel = (pedidos+cancel) ? ((cancel/(pedidos+cancel))*100).toFixed(1) : '0';
+    const _acessTotal  = scope.reduce((s,l)=>s+((l.acessorios||{}).total||0),0);
+    const _celTotal    = Math.max(0, total - _acessTotal);
+    const _ticketGeral = pedidos ? Math.round(total/pedidos)      : 0;
+    const _ticketCel   = pedidos ? Math.round(_celTotal/pedidos)  : 0;
+    const _ticketAcess = pedidos ? Math.round(_acessTotal/pedidos): 0;
     const BAR = 'linear-gradient(90deg,#7c3aed,#06b6d4)';
 
     /* ── KPIs ── */
@@ -10363,7 +10391,7 @@ function render360(tipo, val) {
     const _fatNota    = `${pct(total,meta)}% da meta (${brl(meta)})` + (_d.diasDecorridos > 0 ? ` · méd. ${brl(Math.round(total/_d.diasDecorridos))}/dia` : '');
     const _fatProjVal = _d.diasDecorridos ? Math.round(total / _d.diasDecorridos * _d.diasMes) : 0;
     // Salva dados para o popup
-    window._fatCardDetalhe = { total, meta, barPct: _fatBarPct, nota: _fatNota, antLine: _antLine, margLine: _margLine, projVal: _fatProjVal, periodo: _d.periodo, tipo, val };
+    window._fatCardDetalhe = { total, meta, barPct: _fatBarPct, nota: _fatNota, antLine: _antLine, margLine: _margLine, projVal: _fatProjVal, periodo: _d.periodo, tipo, val, ticketGeral: _ticketGeral, ticketCel: _ticketCel, ticketAcess: _ticketAcess, pedidos };
     const _fatCard = (() => {
         const _mediaDia = _d.diasDecorridos > 0 ? Math.round(total / _d.diasDecorridos) : 0;
         return `<div class="glass-360 rounded-2xl p-4 card-lift" style="display:flex;flex-direction:column;justify-content:space-between;gap:.3rem;cursor:pointer;" onclick="abrirDetalhesFat('${tipo}','${val}')">

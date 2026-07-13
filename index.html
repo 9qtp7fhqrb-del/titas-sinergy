@@ -2787,6 +2787,17 @@
 </div>
 
 <!-- ════════════════════════════════════════
+     MODAL DIAGNÓSTICO DE LOJA
+════════════════════════════════════════ -->
+<div id="_modal-diag" onclick="if(event.target===this){this.style.display='none';document.body.style.overflow=''}"
+     style="display:none;position:fixed;inset:0;z-index:950;background:rgba(0,0,0,.75);backdrop-filter:blur(12px);align-items:flex-end;justify-content:center;padding:0;box-sizing:border-box;">
+    <div style="background:#0f172a;border:1px solid rgba(255,255,255,.1);border-top:1px solid rgba(239,68,68,.3);border-radius:1.4rem 1.4rem 0 0;width:100%;max-width:640px;max-height:92vh;overflow-y:auto;padding:1.5rem;box-sizing:border-box;-webkit-overflow-scrolling:touch;">
+        <div style="width:40px;height:4px;background:rgba(255,255,255,.15);border-radius:2px;margin:0 auto 1rem;"></div>
+        <div id="_modal-diag-body"></div>
+    </div>
+</div>
+
+<!-- ════════════════════════════════════════
      MODAL 360° — BUSCA E RELATÓRIOS
 ════════════════════════════════════════ -->
 <div id="modal-360" class="hidden" onclick="if(event.target===this)fechar360Modal()">
@@ -9059,6 +9070,9 @@ function abrirPopupLoja(lojaKey) {
                 <div style="font-size:1.05rem;font-weight:900;color:#fff;line-height:1.2;">${l.label}</div>
                 <div style="font-size:.6rem;color:#9ca3af;">${sub.nome||''} · Gestor ${sub.gestor||''}</div>
             </div>
+            <button onclick="abrirDiagnostico('${lojaKey}')" style="background:linear-gradient(135deg,rgba(239,68,68,.2),rgba(249,115,22,.2));border:1px solid rgba(239,68,68,.4);border-radius:.55rem;padding:.35rem .65rem;color:#fca5a5;font-size:.6rem;font-weight:800;cursor:pointer;flex-shrink:0;line-height:1;letter-spacing:.03em;display:flex;align-items:center;gap:.3rem;">
+                <i class="fas fa-stethoscope" style="font-size:.7rem;"></i>DIAG.
+            </button>
             <button onclick="fecharPopupLoja()" style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:.55rem;padding:.3rem .7rem;color:#9ca3af;font-size:1rem;cursor:pointer;flex-shrink:0;line-height:1;">✕</button>
         </div>
 
@@ -9118,7 +9132,11 @@ function abrirPopupLoja(lojaKey) {
         <div class="space-y-1">${vendHtml}</div>
 
         <!-- Footer -->
-        <div style="margin-top:1rem;padding-top:.75rem;border-top:1px solid rgba(255,255,255,.06);">
+        <div style="margin-top:1rem;padding-top:.75rem;border-top:1px solid rgba(255,255,255,.06);display:flex;flex-direction:column;gap:.45rem;">
+            <button onclick="abrirDiagnostico('${lojaKey}')"
+                style="width:100%;background:linear-gradient(135deg,rgba(239,68,68,.15),rgba(249,115,22,.15));border:1px solid rgba(239,68,68,.3);border-radius:.85rem;padding:.7rem;color:#fca5a5;font-size:.72rem;font-weight:800;cursor:pointer;letter-spacing:.05em;">
+                <i class="fas fa-stethoscope" style="margin-right:.45rem;"></i>DIAGNÓSTICO
+            </button>
             <button onclick="fecharPopupLoja();filtrar360Loja('${lojaKey}')"
                 style="width:100%;background:linear-gradient(135deg,rgba(168,85,247,.2),rgba(6,182,212,.2));border:1px solid rgba(168,85,247,.35);border-radius:.85rem;padding:.7rem;color:#c084fc;font-size:.72rem;font-weight:800;cursor:pointer;letter-spacing:.05em;">
                 <i class="fas fa-chart-line" style="margin-right:.45rem;"></i>VER ANÁLISE COMPLETA
@@ -9217,6 +9235,128 @@ function fecharPopupLoja() {
     const m = document.getElementById('_popup-loja-360');
     if (m) m.style.display = 'none';
     document.body.style.overflow = '';
+}
+
+/* ── Diagnóstico de Loja ── */
+async function abrirDiagnostico(lojaKey) {
+    const NOMES = {cariacica:'Cariacica',itabuna:'Itabuna',moxuara:'Moxuara',praiadacosta:'Praia da Costa',
+                   barreiras:'Barreiras',teixeira:'Teixeira',laranjeiras:'Laranjeiras',
+                   saomateus:'São Mateus',serra:'Serra',montserrat:'Montserrat',linhares:'Linhares'};
+    const nomeL = NOMES[lojaKey] || lojaKey;
+    fecharPopupLoja();
+    const modal = document.getElementById('_modal-diag');
+    const body  = document.getElementById('_modal-diag-body');
+    body.innerHTML = `<div style="text-align:center;padding:2.5rem 0;"><div style="font-size:1.5rem;margin-bottom:.75rem;">🔍</div><div style="color:#9ca3af;font-size:.75rem;">Carregando diagnóstico...</div></div>`;
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    const hoje = new Date().toISOString().slice(0,10);
+    let diagData = null;
+    let dataUsada = hoje;
+    try {
+        if (window._acadDB) {
+            for (let i = 0; i < 14; i++) {
+                const d = new Date(); d.setDate(d.getDate() - i);
+                const ds = d.toISOString().slice(0,10);
+                const snap = await window._acadDB.collection('ts_diagnostico').doc(`${lojaKey}_${ds}`).get();
+                if (snap.exists) { diagData = snap.data(); dataUsada = ds; break; }
+            }
+        }
+    } catch(e) {}
+    _renderDiagnostico(body, nomeL, lojaKey, diagData, dataUsada);
+}
+
+function _renderDiagnostico(el, nomeL, lojaKey, data, hoje) {
+    const an   = data?.analise || {};
+    const ul   = data?.ultima_atualizacao || null;
+    const total  = an.total_clientes || 0;
+    const vendas = an.total_vendas   || 0;
+    const nv     = total - vendas;
+    const taxa   = total > 0 ? ((vendas/total)*100).toFixed(1) : null;
+    const motivos = Object.entries(an.motivos_nv || {}).sort((a,b)=>b[1]-a[1]);
+    const corTaxa = !taxa ? '#9ca3af' : parseFloat(taxa)>=40 ? '#34d399' : parseFloat(taxa)>=25 ? '#fbbf24' : '#f87171';
+    const dataFmt = hoje.split('-').reverse().join('/');
+
+    const chipKpi = (lbl,val,cor) => `
+        <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:.75rem;padding:.6rem .8rem;text-align:center;">
+            <div style="font-size:.45rem;color:#6b7280;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:.2rem;">${lbl}</div>
+            <div style="font-size:1.15rem;font-weight:900;color:${cor};">${val}</div>
+        </div>`;
+
+    el.innerHTML = `
+        <div style="display:flex;align-items:center;gap:.85rem;margin-bottom:1.1rem;">
+            <div style="width:42px;height:42px;border-radius:10px;background:rgba(239,68,68,.15);color:#fca5a5;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;border:1px solid rgba(239,68,68,.25);">
+                <i class="fas fa-stethoscope"></i>
+            </div>
+            <div style="flex:1;min-width:0;">
+                <div style="font-size:1rem;font-weight:900;color:#fff;">Diagnóstico · ${nomeL}</div>
+                <div style="font-size:.58rem;color:#6b7280;">${dataFmt}${ul?' · Atualizado às '+ul:''}</div>
+            </div>
+            <button onclick="document.getElementById('_modal-diag').style.display='none';document.body.style.overflow=''"
+                style="width:42px;height:42px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:10px;color:#9ca3af;font-size:1rem;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;">✕</button>
+        </div>
+
+        ${!data ? `
+        <div style="text-align:center;padding:2.5rem 1rem;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:.9rem;margin-bottom:.75rem;">
+            <div style="font-size:2rem;margin-bottom:.75rem;">📋</div>
+            <div style="color:#e2e8f0;font-weight:700;font-size:.85rem;margin-bottom:.45rem;">Nenhum diagnóstico hoje</div>
+            <div style="color:#6b7280;font-size:.65rem;line-height:1.7;">O diagnóstico é atualizado automaticamente<br>às <strong style="color:#fbbf24;">15h</strong> e às <strong style="color:#fbbf24;">22h</strong> com base nas<br>folhas de Controle de Atendimento<br>enviadas no grupo de gerentes.</div>
+        </div>` : `
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.4rem;margin-bottom:.65rem;">
+            ${chipKpi('Clientes',total,'#a78bfa')}
+            ${chipKpi('Vendas',vendas,'#34d399')}
+            ${chipKpi('Conversão',(taxa||'—')+'%',corTaxa)}
+        </div>
+
+        <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:.75rem;padding:.7rem 1rem;margin-bottom:.65rem;">
+            <div style="display:flex;justify-content:space-between;font-size:.55rem;color:#9ca3af;margin-bottom:.4rem;">
+                <span>${vendas} vendas · ${nv} não-vendas</span>
+                <span style="color:${corTaxa};font-weight:700;">${taxa||'—'}% de conversão</span>
+            </div>
+            <div style="height:8px;background:#1f2937;border-radius:4px;">
+                <div style="height:100%;width:${Math.min(parseFloat(taxa)||0,100)}%;background:${corTaxa};border-radius:4px;transition:width .5s;"></div>
+            </div>
+        </div>
+
+        ${motivos.length ? `
+        <div style="background:rgba(239,68,68,.05);border:1px solid rgba(239,68,68,.15);border-radius:.9rem;padding:.8rem 1rem;margin-bottom:.65rem;">
+            <div style="font-size:.5rem;color:#fca5a5;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:.6rem;">
+                <i class="fas fa-times-circle" style="margin-right:.3rem;"></i>Motivos de Não-Venda
+            </div>
+            ${motivos.map(([mot,qtd])=>{
+                const pct=total>0?Math.round(qtd/total*100):0;
+                return `<div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.35rem;">
+                    <div style="flex:1;font-size:.65rem;color:#e2e8f0;">${mot}</div>
+                    <div style="width:72px;height:5px;background:#1f2937;border-radius:3px;">
+                        <div style="height:100%;width:${pct}%;background:#f87171;border-radius:3px;"></div>
+                    </div>
+                    <div style="font-size:.6rem;color:#f87171;font-weight:700;min-width:2rem;text-align:right;">${qtd}x</div>
+                </div>`;
+            }).join('')}
+        </div>` : ''}
+
+        ${an.padrao ? `
+        <div style="background:rgba(251,191,36,.06);border:1px solid rgba(251,191,36,.2);border-radius:.9rem;padding:.8rem 1rem;margin-bottom:.65rem;">
+            <div style="font-size:.5rem;color:#fbbf24;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:.4rem;">
+                <i class="fas fa-lightbulb" style="margin-right:.3rem;"></i>Padrão Identificado
+            </div>
+            <div style="font-size:.68rem;color:#fef3c7;line-height:1.65;">${an.padrao}</div>
+        </div>` : ''}
+
+        ${an.recomendacoes ? `
+        <div style="background:rgba(52,211,153,.06);border:1px solid rgba(52,211,153,.2);border-radius:.9rem;padding:.8rem 1rem;margin-bottom:.65rem;">
+            <div style="font-size:.5rem;color:#34d399;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:.4rem;">
+                <i class="fas fa-arrow-trend-up" style="margin-right:.3rem;"></i>Recomendações
+            </div>
+            <div style="font-size:.68rem;color:#d1fae5;line-height:1.65;">${an.recomendacoes}</div>
+        </div>` : ''}
+        `}
+
+        <div style="margin-top:.75rem;padding-top:.65rem;border-top:1px solid rgba(255,255,255,.06);">
+            <button onclick="document.getElementById('_modal-diag').style.display='none';document.body.style.overflow=''"
+                style="width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:.85rem;padding:.65rem;color:#6b7280;font-size:.7rem;font-weight:700;cursor:pointer;">
+                Fechar
+            </button>
+        </div>`;
 }
 
 /* ── Feriados nacionais BR 2026 ── */

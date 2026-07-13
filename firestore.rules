@@ -60,5 +60,9 @@ service cloud.firestore {
     match /ts_jur_pendencias/{docId} {
       allow read, write: if true;
     }
+
+    match /ts_diagnostico/{docId} {
+      allow read, write: if true;
+    }
   }
 }

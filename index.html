@@ -9022,6 +9022,7 @@ function abrirPopupLoja(lojaKey) {
     const subs = _d.subredes;
     if (!l) return;
     const sub  = subs[l.sub] || {};
+    const _showDiag = ['diretoria','franqueado','gerente-senior','gerente-senior-acess','gerente','subgerente','escritorio'].includes(user?.cargo || '');
     const meta = l.meta || (sub.meta && sub.lojas ? sub.meta / sub.lojas.length : 0);
     const p    = meta ? Math.min(100, Math.round(l.total / meta * 100)) : 0;
     const pCor = p >= 100 ? '#4ade80' : p >= 80 ? '#10b981' : p >= 60 ? '#c084fc' : '#fbbf24';
@@ -9070,9 +9071,9 @@ function abrirPopupLoja(lojaKey) {
                 <div style="font-size:1.05rem;font-weight:900;color:#fff;line-height:1.2;">${l.label}</div>
                 <div style="font-size:.6rem;color:#9ca3af;">${sub.nome||''} · Gestor ${sub.gestor||''}</div>
             </div>
-            <button onclick="abrirDiagnostico('${lojaKey}')" style="background:linear-gradient(135deg,rgba(239,68,68,.2),rgba(249,115,22,.2));border:1px solid rgba(239,68,68,.4);border-radius:.55rem;padding:.35rem .65rem;color:#fca5a5;font-size:.6rem;font-weight:800;cursor:pointer;flex-shrink:0;line-height:1;letter-spacing:.03em;display:flex;align-items:center;gap:.3rem;">
+            ${_showDiag ? `<button onclick="abrirDiagnostico('${lojaKey}')" style="background:linear-gradient(135deg,rgba(239,68,68,.2),rgba(249,115,22,.2));border:1px solid rgba(239,68,68,.4);border-radius:.55rem;padding:.35rem .65rem;color:#fca5a5;font-size:.6rem;font-weight:800;cursor:pointer;flex-shrink:0;line-height:1;letter-spacing:.03em;display:flex;align-items:center;gap:.3rem;">
                 <i class="fas fa-stethoscope" style="font-size:.7rem;"></i>DIAG.
-            </button>
+            </button>` : ''}
             <button onclick="fecharPopupLoja()" style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:.55rem;padding:.3rem .7rem;color:#9ca3af;font-size:1rem;cursor:pointer;flex-shrink:0;line-height:1;">✕</button>
         </div>
 
@@ -9133,10 +9134,10 @@ function abrirPopupLoja(lojaKey) {
 
         <!-- Footer -->
         <div style="margin-top:1rem;padding-top:.75rem;border-top:1px solid rgba(255,255,255,.06);display:flex;flex-direction:column;gap:.45rem;">
-            <button onclick="abrirDiagnostico('${lojaKey}')"
+            ${_showDiag ? `<button onclick="abrirDiagnostico('${lojaKey}')"
                 style="width:100%;background:linear-gradient(135deg,rgba(239,68,68,.15),rgba(249,115,22,.15));border:1px solid rgba(239,68,68,.3);border-radius:.85rem;padding:.7rem;color:#fca5a5;font-size:.72rem;font-weight:800;cursor:pointer;letter-spacing:.05em;">
                 <i class="fas fa-stethoscope" style="margin-right:.45rem;"></i>DIAGNÓSTICO
-            </button>
+            </button>` : ''}
             <button onclick="fecharPopupLoja();filtrar360Loja('${lojaKey}')"
                 style="width:100%;background:linear-gradient(135deg,rgba(168,85,247,.2),rgba(6,182,212,.2));border:1px solid rgba(168,85,247,.35);border-radius:.85rem;padding:.7rem;color:#c084fc;font-size:.72rem;font-weight:800;cursor:pointer;letter-spacing:.05em;">
                 <i class="fas fa-chart-line" style="margin-right:.45rem;"></i>VER ANÁLISE COMPLETA

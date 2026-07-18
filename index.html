@@ -7,7 +7,7 @@
     <script>
     // Cache-buster: força reload se a versão mudou
     (function(){
-      var BUILD = '20260718163514';
+      var BUILD = '20260718170514';
       var stored = localStorage.getItem('d360_build');
       if (stored && stored !== BUILD) {
         localStorage.setItem('d360_build', BUILD);
@@ -6436,25 +6436,25 @@ const D360 = {
     },
     diasDecorridos: 18, // atualizado pelo script de automação — não alterar manualmente
     diasMes: 31,          // julho tem 31 dias
-    ticket_cel: 1639,        // ticket médio celulares (SBON) — atualizado pelo bot
+    ticket_cel: 1640,        // ticket médio celulares (SBON) — atualizado pelo bot
     ticket_acess: 81,      // ticket médio acessórios — atualizado pelo bot
-    ped_cel: 806,           // pedidos celulares — atualizado pelo bot
-    ped_acess: 734,         // pedidos acessórios — atualizado pelo bot
+    ped_cel: 807,           // pedidos celulares — atualizado pelo bot
+    ped_acess: 735,         // pedidos acessórios — atualizado pelo bot
 
     // ── Margem Bruta Mensal ──────────────────────────────────────────────────────
     // FONTE PRIMÁRIA: margem_lojas (por loja, do Relatório Gerencial ERP CDC)
     // O sistema deriva automaticamente: margem por loja → subrede → rede
     // COMO ATUALIZAR: edite apenas margem_lojas com os valores do ERP por loja
     // ─────────────────────────────────────────────────────────────────────────────
-    margem_dia: 45.06,              // rede hoje · zerado automaticamente à meia-noite
-    margem_dia_subredes: { t1: 38.13, t2: 48.66, t3: 45.68 },
+    margem_dia: 45.36,              // rede hoje · zerado automaticamente à meia-noite
+    margem_dia_subredes: { t1: 40.85, t2: 48.66, t3: 45.68 },
     margem_lojas: {
         // ── FONTE PRIMÁRIA — atualizar aqui com o Relatório Gerencial por Loja ──
         // T1 — Titãs 1 (Talysson)
-        cariacica:   44.24,
-        itabuna:     44.24,
-        moxuara:     44.24,
-        praiadacosta:44.24,
+        cariacica:   44.26,
+        itabuna:     44.26,
+        moxuara:     44.26,
+        praiadacosta:44.26,
         // T2 — Titãs 2 (Adriel)
         barreiras:   44.83,
         teixeira:    44.83,
@@ -6466,10 +6466,10 @@ const D360 = {
         linhares:    46.15,
     },
     margem_subredes: {  // fallback quando margem_lojas estiver incompleta
-        t1: 44.24, t2: 44.83, t3: 46.15
+        t1: 44.26, t2: 44.83, t3: 46.15
     },
     // margem_mes: derivada automaticamente pelo _calcMargemPonderada (não editar)
-    margem_mes: 45.04,
+    margem_mes: 45.05,
 
     subredes: {
         t1: { nome:'Titãs 1', gestor:'Talysson', meta:0,
@@ -6497,7 +6497,7 @@ const D360 = {
                 {n:'LEANDRO DA CRUZ SILVA',i:'LD',p:21,t:23455.0,ds:13,ult:'18/07'},
                 {n:'RANDECLAY MARIANO GOMES',i:'RM',p:19,t:19618.0,ds:30,ult:'18/07'},
                 {n:'ALICE CHRISTINO MONTEIRO',i:'AC',p:1,t:500.0,ds:2,ult:'16/07'}]},
-        cariacica:   { label:'Cariacica',          sigla:'CC', sub:'t1', meta:500000,  total:225342.0, ped:193,  cancel:0, agend:0, agendCount:0, agendFat:47548.0,  fat_dia:1520.0, acess_dia:120.0, acess_dia_top:[{n:'mirelly vieira portugal',i:'MV',t:120.0}], top_dia:[{n:'ANA CAROLINA DA SILVA',i:'AC',t:1400.0}, {n:'mirelly vieira portugal',i:'MV',t:120.0}], fin_dia:0, fin_mes:140222.0, top_fin_mes:[{n:'ROBERTA FELIPE MALAQUIAS',i:'RF',t:74166.0,bd:[{nm:'PayJoy',t:37990.0},{nm:'OdresCred',t:34676.0},{nm:'Outras',t:1500.0}]},{n:'Liz Sophia Andrade Pereira',i:'LS',t:61306.0,bd:[{nm:'PayJoy',t:38182.0},{nm:'OdresCred',t:21124.0},{nm:'Outras',t:2000.0}]},{n:'Glaupierre oliveira da silvaa',i:'GO',t:4750.0,bd:[{nm:'PayJoy',t:4750.0},{nm:'OdresCred',t:0},{nm:'Outras',t:0}]}], fin_bd:[{nm:'PayJoy',t:80922.0},{nm:'OdresCred',t:55800.0},{nm:'Outras',t:3500.0}], top_fin:[], metaAcess:20000,
+        cariacica:   { label:'Cariacica',          sigla:'CC', sub:'t1', meta:500000,  total:227442.0, ped:194,  cancel:0, agend:0, agendCount:0, agendFat:47548.0,  fat_dia:3620.0, acess_dia:120.0, acess_dia_top:[{n:'mirelly vieira portugal',i:'MV',t:120.0}], top_dia:[{n:'Liz Sophia Andrade Pereira',i:'LS',t:2100.0}, {n:'ANA CAROLINA DA SILVA',i:'AC',t:1400.0}, {n:'mirelly vieira portugal',i:'MV',t:120.0}], fin_dia:2100.0, fin_mes:142322.0, top_fin_mes:[{n:'ROBERTA FELIPE MALAQUIAS',i:'RF',t:74166.0,bd:[{nm:'PayJoy',t:37990.0},{nm:'OdresCred',t:34676.0},{nm:'Outras',t:1500.0}]},{n:'Liz Sophia Andrade Pereira',i:'LS',t:63406.0,bd:[{nm:'PayJoy',t:40282.0},{nm:'OdresCred',t:21124.0},{nm:'Outras',t:2000.0}]},{n:'Glaupierre oliveira da silvaa',i:'GO',t:4750.0,bd:[{nm:'PayJoy',t:4750.0},{nm:'OdresCred',t:0},{nm:'Outras',t:0}]}], fin_bd:[{nm:'PayJoy',t:83022.0},{nm:'OdresCred',t:55800.0},{nm:'Outras',t:3500.0}], top_fin:[{n:'Liz Sophia Andrade Pereira',i:'LS',t:2100.0}], metaAcess:20000,
             agendamentos:{total:47548.0, fin:43111.0, fin_bd:[{nm:'PayJoy',t:31103.0},{nm:'OdresCred',t:12008.0},{nm:'Outras',t:0}], top:[{n:'Liz Sophia Andrade Pereira',i:'LS',t:25898.0}, {n:'ROBERTA FELIPE MALAQUIAS',i:'RF',t:16650.0}, {n:'Glaupierre oliveira da silvaa',i:'GO',t:2900.0}, {n:'mirelly vieira portugal',i:'MV',t:2100.0}]},
             acessorios:{total:9023.0, top:[
                 {n:'Roberta Felipe Malaquias',i:'RF',t:3580,ds:12,ult:'12/06'},
@@ -6506,7 +6506,7 @@ const D360 = {
                 {n:'Glaupierre Oliveira da Silvaa',i:'GO',t:350,ds:12,ult:'12/06'}
             ], dias:[{d:'01/06',ac:210,cel:10749},{d:'06/06',ac:3350,cel:105393},{d:'08/06',ac:630,cel:10099}]},
             top:[{n:'ROBERTA FELIPE MALAQUIAS',i:'RF',p:84,t:112216.0,ds:44,ult:'18/07'},
-                {n:'Liz Sophia Andrade Pereira',i:'LS',p:72,t:97071.0,ds:42,ult:'18/07'},
+                {n:'Liz Sophia Andrade Pereira',i:'LS',p:73,t:99171.0,ds:42,ult:'18/07'},
                 {n:'Glaupierre oliveira da silvaa',i:'GO',p:17,t:7755.0,ds:6,ult:'08/07'},
                 {n:'mirelly vieira portugal',i:'MV',p:7,t:4440.0,ds:10,ult:'18/07'},
                 {n:'ANA CAROLINA DA SILVA',i:'AC',p:13,t:3860.0,ds:19,ult:'18/07'}]},

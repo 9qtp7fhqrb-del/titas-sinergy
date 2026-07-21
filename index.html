@@ -7,7 +7,7 @@
     <script>
     // Cache-buster: força reload se a versão mudou
     (function(){
-      var BUILD = '20260721200700';
+      var BUILD = '20260721204309';
       var stored = localStorage.getItem('d360_build');
       if (stored && stored !== BUILD) {
         localStorage.setItem('d360_build', BUILD);
@@ -6438,16 +6438,16 @@ const D360 = {
     diasMes: 31,          // julho tem 31 dias
     ticket_cel: 1646,        // ticket médio celulares (SBON) — atualizado pelo bot
     ticket_acess: 81,      // ticket médio acessórios — atualizado pelo bot
-    ped_cel: 911,           // pedidos celulares — atualizado pelo bot
-    ped_acess: 823,         // pedidos acessórios — atualizado pelo bot
+    ped_cel: 912,           // pedidos celulares — atualizado pelo bot
+    ped_acess: 824,         // pedidos acessórios — atualizado pelo bot
 
     // ── Margem Bruta Mensal ──────────────────────────────────────────────────────
     // FONTE PRIMÁRIA: margem_lojas (por loja, do Relatório Gerencial ERP CDC)
     // O sistema deriva automaticamente: margem por loja → subrede → rede
     // COMO ATUALIZAR: edite apenas margem_lojas com os valores do ERP por loja
     // ─────────────────────────────────────────────────────────────────────────────
-    margem_dia: 45.75,              // rede hoje · zerado automaticamente à meia-noite
-    margem_dia_subredes: { t1: 44.22, t2: 48.83, t3: 46.33 },
+    margem_dia: 45.58,              // rede hoje · zerado automaticamente à meia-noite
+    margem_dia_subredes: { t1: 44.22, t2: 47.05, t3: 46.33 },
     margem_lojas: {
         // ── FONTE PRIMÁRIA — atualizar aqui com o Relatório Gerencial por Loja ──
         // T1 — Titãs 1 (Talysson)
@@ -6456,9 +6456,9 @@ const D360 = {
         moxuara:     43.96,
         praiadacosta:43.96,
         // T2 — Titãs 2 (Adriel)
-        barreiras:   44.89,
-        teixeira:    44.89,
-        laranjeiras: 44.89,
+        barreiras:   44.88,
+        teixeira:    44.88,
+        laranjeiras: 44.88,
         // T3 — Titãs 3 (Arthur)
         saomateus:   46.40,
         serra:        46.40,
@@ -6466,7 +6466,7 @@ const D360 = {
         linhares:    46.40,
     },
     margem_subredes: {  // fallback quando margem_lojas estiver incompleta
-        t1: 43.96, t2: 44.89, t3: 46.40
+        t1: 43.96, t2: 44.88, t3: 46.40
     },
     // margem_mes: derivada automaticamente pelo _calcMargemPonderada (não editar)
     margem_mes: 45.05,
@@ -6550,9 +6550,9 @@ const D360 = {
                 {n:'Iasmim vitoria medeiros gaio',i:'IV',p:56,t:51829.0,ds:45,ult:'21/07'},
                 {n:'LUCCAS DA SILVA MEDEIROS MARTINS',i:'LD',p:47,t:38757.0,ds:18,ult:'19/07'},
                 {n:'GABRIEL BARRETO PEREIRA',i:'GB',p:21,t:16084.0,ds:12,ult:'15/07'}]},
-        teixeira:    { label:'Teixeira de Freitas',sigla:'TF', sub:'t2', meta:260000,  total:119714.0,  ped:126,  cancel:0, agend:0, agendCount:0, agendFat:12378.0,  fat_dia:935.0, acess_dia:35.0, acess_dia_top:[{n:'CARINE FERREIRA FRANCO',i:'CF',t:35.0}], top_dia:[{n:'CARINE FERREIRA FRANCO',i:'CF',t:935.0}], fin_dia:0, fin_mes:72802.0, top_fin_mes:[{n:'CARINE FERREIRA FRANCO',i:'CF',t:22054.0,bd:[{nm:'PayJoy',t:11255.0},{nm:'OdresCred',t:10799.0},{nm:'Outras',t:0}]},{n:'AMANDA GOULART ANDRADE',i:'AG',t:21429.0,bd:[{nm:'PayJoy',t:13730.0},{nm:'OdresCred',t:7699.0},{nm:'Outras',t:0}]},{n:'BEATRIZ HELLEN FAGUNDES',i:'BH',t:15594.0,bd:[{nm:'PayJoy',t:11395.0},{nm:'OdresCred',t:4199.0},{nm:'Outras',t:0}]},{n:'PALOMA DE JESUS SANTOS',i:'PD',t:13725.0,bd:[{nm:'PayJoy',t:10016.0},{nm:'OdresCred',t:3709.0},{nm:'Outras',t:0}]}], fin_bd:[{nm:'PayJoy',t:46396.0},{nm:'OdresCred',t:26406.0},{nm:'Outras',t:0}], top_fin:[], metaAcess:8000,
+        teixeira:    { label:'Teixeira de Freitas',sigla:'TF', sub:'t2', meta:260000,  total:121344.0,  ped:128,  cancel:0, agend:0, agendCount:0, agendFat:12378.0,  fat_dia:2565.0, acess_dia:185.0, acess_dia_top:[{n:'PALOMA DE JESUS SANTOS',i:'PD',t:150.0}, {n:'CARINE FERREIRA FRANCO',i:'CF',t:35.0}], top_dia:[{n:'CARINE FERREIRA FRANCO',i:'CF',t:2415.0}, {n:'PALOMA DE JESUS SANTOS',i:'PD',t:150.0}], fin_dia:1480.0, fin_mes:74282.0, top_fin_mes:[{n:'CARINE FERREIRA FRANCO',i:'CF',t:23534.0,bd:[{nm:'PayJoy',t:11255.0},{nm:'OdresCred',t:12279.0},{nm:'Outras',t:0}]},{n:'AMANDA GOULART ANDRADE',i:'AG',t:21429.0,bd:[{nm:'PayJoy',t:13730.0},{nm:'OdresCred',t:7699.0},{nm:'Outras',t:0}]},{n:'BEATRIZ HELLEN FAGUNDES',i:'BH',t:15594.0,bd:[{nm:'PayJoy',t:11395.0},{nm:'OdresCred',t:4199.0},{nm:'Outras',t:0}]},{n:'PALOMA DE JESUS SANTOS',i:'PD',t:13725.0,bd:[{nm:'PayJoy',t:10016.0},{nm:'OdresCred',t:3709.0},{nm:'Outras',t:0}]}], fin_bd:[{nm:'PayJoy',t:46396.0},{nm:'OdresCred',t:27886.0},{nm:'Outras',t:0}], top_fin:[{n:'CARINE FERREIRA FRANCO',i:'CF',t:1480.0}], metaAcess:8000,
             agendamentos:{total:12378.0, fin:12378.0, fin_bd:[{nm:'PayJoy',t:5780.0},{nm:'OdresCred',t:6598.0},{nm:'Outras',t:0}], top:[{n:'AMANDA GOULART ANDRADE',i:'AG',t:10579.0}, {n:'BEATRIZ HELLEN FAGUNDES',i:'BH',t:1799.0}]},
-            acessorios:{total:3269.0, top:[
+            acessorios:{total:3419.0, top:[
                 {n:'Amanda Goulart Andrade',i:'AG',t:740,ds:12,ult:'12/06'},
                 {n:'Carla Santos Luiz',i:'CL',t:690,ds:12,ult:'12/06'},
                 {n:'Wilghyner de Padua Soares de Souza',i:'WS',t:440,ds:12,ult:'12/06'},
@@ -6560,8 +6560,8 @@ const D360 = {
                 {n:'Paloma de Jesus Santos',i:'PS',t:469,ds:12,ult:'12/06'},
                 {n:'Beatriz Hellen Fagundes',i:'BH',t:350,ds:12,ult:'12/06'}
             ], dias:[{d:'01/06',ac:200,cel:11060},{d:'06/06',ac:1331,cel:43146},{d:'08/06',ac:160,cel:10100}]},
-            top:[{n:'CARINE FERREIRA FRANCO',i:'CF',p:43,t:42732.0,ds:18,ult:'21/07'},
-                {n:'PALOMA DE JESUS SANTOS',i:'PD',p:23,t:29195.0,ds:36,ult:'19/07'},
+            top:[{n:'CARINE FERREIRA FRANCO',i:'CF',p:44,t:44212.0,ds:18,ult:'21/07'},
+                {n:'PALOMA DE JESUS SANTOS',i:'PD',p:24,t:29345.0,ds:37,ult:'21/07'},
                 {n:'AMANDA GOULART ANDRADE',i:'AG',p:32,t:29138.0,ds:44,ult:'21/07'},
                 {n:'BEATRIZ HELLEN FAGUNDES',i:'BH',p:19,t:16159.0,ds:30,ult:'14/07'},
                 {n:'WILGHYNER DE PADUA SOARES DE SOUZA',i:'WD',p:9,t:2490.0,ds:9,ult:'17/07'}]},

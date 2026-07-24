@@ -1115,7 +1115,7 @@
                 <span>Dicta</span>
             </button>
             <!-- 6ª aba — Usuários (exclusiva Diretoria) -->
-            <button id="btn-diario" class="tab-btn hidden px-4 sm:px-6 py-4 text-sm font-semibold text-gray-400 tracking-wider flex items-center gap-2 whitespace-nowrap" onclick="switchTab('diario')">
+            <button id="btn-diario" class="tab-btn px-4 sm:px-6 py-4 text-sm font-semibold text-gray-400 tracking-wider flex items-center gap-2 whitespace-nowrap" onclick="switchTab('diario')">
                 <i class="fas fa-clipboard-check" style="color:#60a5fa;"></i>
                 <span>Diário</span>
             </button>
@@ -2759,7 +2759,8 @@
           <div id="diario-view-adriel"    class="hidden"></div>
           <div id="diario-view-arthur"    class="hidden"></div>
           <div id="diario-view-dias"      class="hidden"></div>
-          <div id="diario-view-teste"     class="hidden"></div>
+          <div id="diario-view-melo"      class="hidden"></div>
+          <div id="diario-view-neto"      class="hidden"></div>
           <div id="diario-view-diretoria" class="hidden"></div>
           <div id="diario-view-checklist" class="hidden"></div>
         </div>
@@ -4716,10 +4717,30 @@ async function _excluirDuplicadosInativos(usuarioLogado) {
     }
 }
 
+function _ensureDiarioBtn() {
+    // Mostra btn-diario para todos os cargos com acesso, via setTimeout para garantir
+    // que roda após qualquer re-render que possa ter sobrescrito a visibilidade.
+    const CARGOS_DIARIO = ['diretoria','admin','franqueado','gerente-senior','gerente-senior-acess','gerente','subgerente'];
+    setTimeout(function() {
+        if (user && CARGOS_DIARIO.includes(user.cargo)) {
+            const btn = document.getElementById('btn-diario');
+            if (btn) btn.classList.remove('hidden');
+        }
+    }, 0);
+    setTimeout(function() {
+        if (user && CARGOS_DIARIO.includes(user.cargo)) {
+            const btn = document.getElementById('btn-diario');
+            if (btn) btn.classList.remove('hidden');
+        }
+    }, 800);
+}
+
 function proceedToDash() {
     try {
         // Persiste sessão para sobreviver a reloads na mesma aba
         _saveSession();
+        // Flag de acesso ao Diagnóstico — setada aqui onde user.cargo é garantido
+        window._diagAccess = ['admin','diretoria','franqueado','gerente-senior','gerente-senior-acess','gerente','subgerente','escritorio'].includes(user && user.cargo);
 
         // Registrar último acesso em background (sem bloquear)
         if (user && user.name) {
@@ -4740,7 +4761,7 @@ function proceedToDash() {
             }, 3000);
         }
         const ov = document.getElementById('loading-overlay');
-        if (!ov) { openDash(); return; }
+        if (!ov) { openDash(); _ensureDiarioBtn(); return; }
         ov.classList.remove('hidden');
         ov.classList.add('flex');
 
@@ -4818,11 +4839,15 @@ function proceedToDash() {
                 openDash();
                 _360AutoArquivar().catch(()=>{});
                 _setupFlagsAdmin().catch(()=>{});
+                // Garantia dupla: btn-diario sempre visível para cargos autorizados
+                // (evita sumiço por race condition ou erro silencioso antes da linha de show)
+                _ensureDiarioBtn();
             } catch(err) {
                 console.error('openDash error:', err);
                 ov.classList.add('hidden');
                 ov.classList.remove('flex');
                 toast('Erro ao abrir dashboard: ' + (err.message || err), 'error');
+                _ensureDiarioBtn();
             }
         });
     } catch(err) {
@@ -4903,7 +4928,8 @@ function openDash() {
     if (allowedUsuarios || user.cargo === 'escritorio')   _showBtn('btn-juridico');
     if (allowedUsuarios || ['diretoria','franqueado','gerente-senior','gerente-senior-acess','gerente','subgerente'].includes(user.cargo))
         _showBtn('btn-lancar-metas');
-    if (['diretoria','admin','franqueado','gerente-senior','gerente-senior-acess','gerente','subgerente'].includes(user.cargo)) _showBtn('btn-diario');
+    // btn-diario: visível por padrão no HTML → esconde apenas para cargos sem acesso
+    if (!['diretoria','admin','franqueado','gerente-senior','gerente-senior-acess','gerente','subgerente'].includes(user.cargo)) _hideEl('btn-diario');
 
     // Não-diretoria com acesso 360°: badge por cargo
     if (['franqueado','gerente-senior','gerente-senior-acess','subgerente','gerente','vendedor'].includes(user.cargo)) {
@@ -8350,7 +8376,6 @@ const VEND_METAS_DB = {
         {k:'thaymmon',   meta: 70000},   // sem meta lançada
         {k:'nicolas',    meta: 70000},   // sem meta lançada
         {k:'thauany',    meta: 70000},   // sem meta lançada
-        {k:'renato',     meta: 50000},   // sem meta lançada (gerente)
     ],
     saomateus: [
         {k:'alice',      meta:161670},   // Firestore: 161.670
@@ -9015,6 +9040,23 @@ function _lojaHistDetalhe(label, val, isBest, isAtual) {
 }
 
 /* ── Popup de detalhes de loja ── */
+function _currentCargo() {
+    if (user && user.cargo) return user.cargo;
+    try { return JSON.parse(sessionStorage.getItem('_ts_sess') || '{}').cargo || ''; } catch(e) { return ''; }
+}
+function _hasDiagAccess() {
+    const CARGOS = ['admin','diretoria','franqueado','gerente-senior','gerente-senior-acess','gerente','subgerente','escritorio'];
+    if (window._diagAccess) return true;
+    const c = _currentCargo();
+    if (CARGOS.includes(c)) return true;
+    // fallback: re-verificar user global diretamente
+    if (user && user.cargo && CARGOS.includes(user.cargo)) {
+        window._diagAccess = true;
+        return true;
+    }
+    return false;
+}
+
 function abrirPopupLoja(lojaKey) {
     const _d   = _360D();
     if (!_d || !_d.lojas) return;
@@ -9022,7 +9064,7 @@ function abrirPopupLoja(lojaKey) {
     const subs = _d.subredes;
     if (!l) return;
     const sub  = subs[l.sub] || {};
-    const _showDiag = ['diretoria','franqueado','gerente-senior','gerente-senior-acess','gerente','subgerente','escritorio'].includes(user?.cargo || '');
+    const _showDiag = _hasDiagAccess();
     const meta = l.meta || (sub.meta && sub.lojas ? sub.meta / sub.lojas.length : 0);
     const p    = meta ? Math.min(100, Math.round(l.total / meta * 100)) : 0;
     const pCor = p >= 100 ? '#4ade80' : p >= 80 ? '#10b981' : p >= 60 ? '#c084fc' : '#fbbf24';
@@ -9352,12 +9394,138 @@ function _renderDiagnostico(el, nomeL, lojaKey, data, hoje) {
         </div>` : ''}
         `}
 
-        <div style="margin-top:.75rem;padding-top:.65rem;border-top:1px solid rgba(255,255,255,.06);">
+        <div style="margin-top:.75rem;padding-top:.65rem;border-top:1px solid rgba(255,255,255,.06);display:flex;gap:.5rem;">
+            ${_hasDiagAccess() ? `
+            <button onclick="_diagAbrirLancar('${lojaKey}','${nomeL.replace(/'/g,'\\\'')}')"
+                style="flex:1;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);border-radius:.85rem;padding:.65rem;color:#fca5a5;font-size:.7rem;font-weight:700;cursor:pointer;">
+                <i class="fas fa-plus" style="margin-right:.3rem;"></i>Lançar Dados
+            </button>` : ''}
             <button onclick="document.getElementById('_modal-diag').style.display='none';document.body.style.overflow=''"
-                style="width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:.85rem;padding:.65rem;color:#6b7280;font-size:.7rem;font-weight:700;cursor:pointer;">
+                style="flex:1;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:.85rem;padding:.65rem;color:#6b7280;font-size:.7rem;font-weight:700;cursor:pointer;">
                 Fechar
             </button>
         </div>`;
+}
+
+function _diagAbrirLancar(lojaKey, nomeL) {
+    const body = document.getElementById('_modal-diag-body');
+    // Gera opções dos últimos 14 dias
+    const opts = Array.from({length:14}, (_,i) => {
+        const d = new Date(); d.setDate(d.getDate() - i);
+        const ds = d.toISOString().slice(0,10);
+        const fmt = ds.split('-').reverse().join('/');
+        return `<option value="${ds}">${fmt}${i===0?' (hoje)':''}</option>`;
+    }).join('');
+
+    const _MOTIVOS = ['Sem interesse','Preço alto','Sem dinheiro','Já tem','Vai pensar','Crédito negado','Falta de estoque','Outro'];
+    const motivosHtml = _MOTIVOS.map(m => `
+        <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.3rem;">
+            <span style="flex:1;font-size:.65rem;color:#9ca3af;">${m}</span>
+            <input type="number" min="0" max="999" value="0" data-motivo="${m}"
+                style="width:52px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:.4rem;padding:.25rem .4rem;color:#fff;font-size:.65rem;text-align:center;">
+        </div>`).join('');
+
+    body.innerHTML = `
+        <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:1rem;">
+            <div style="width:38px;height:38px;border-radius:9px;background:rgba(239,68,68,.15);color:#fca5a5;display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0;border:1px solid rgba(239,68,68,.25);">
+                <i class="fas fa-plus"></i>
+            </div>
+            <div style="flex:1;">
+                <div style="font-size:.9rem;font-weight:900;color:#fff;">Lançar Diagnóstico</div>
+                <div style="font-size:.6rem;color:#6b7280;">${nomeL}</div>
+            </div>
+        </div>
+
+        <div style="margin-bottom:.6rem;">
+            <label style="font-size:.55rem;color:#6b7280;font-weight:700;text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:.3rem;">Data</label>
+            <select id="_diag-data" style="width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:.6rem;padding:.5rem .7rem;color:#fff;font-size:.72rem;">${opts}</select>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:.6rem;">
+            <div>
+                <label style="font-size:.55rem;color:#a78bfa;font-weight:700;text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:.3rem;">Total Clientes</label>
+                <input id="_diag-clientes" type="number" min="0" value="" placeholder="0"
+                    style="width:100%;background:rgba(167,139,250,.08);border:1px solid rgba(167,139,250,.25);border-radius:.6rem;padding:.5rem .7rem;color:#fff;font-size:.85rem;font-weight:700;text-align:center;">
+            </div>
+            <div>
+                <label style="font-size:.55rem;color:#34d399;font-weight:700;text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:.3rem;">Vendas Fechadas</label>
+                <input id="_diag-vendas" type="number" min="0" value="" placeholder="0"
+                    style="width:100%;background:rgba(52,211,153,.08);border:1px solid rgba(52,211,153,.25);border-radius:.6rem;padding:.5rem .7rem;color:#fff;font-size:.85rem;font-weight:700;text-align:center;">
+            </div>
+        </div>
+
+        <div style="background:rgba(239,68,68,.05);border:1px solid rgba(239,68,68,.12);border-radius:.75rem;padding:.75rem;margin-bottom:.65rem;">
+            <div style="font-size:.5rem;color:#fca5a5;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:.55rem;">Motivos de Não-Venda (qtd)</div>
+            ${motivosHtml}
+        </div>
+
+        <div style="display:flex;gap:.5rem;margin-top:.5rem;">
+            <button onclick="_diagSalvarLancar('${lojaKey}','${nomeL.replace(/'/g,'\\\'')}')"
+                style="flex:2;background:linear-gradient(135deg,rgba(239,68,68,.3),rgba(249,115,22,.2));border:1px solid rgba(239,68,68,.4);border-radius:.85rem;padding:.7rem;color:#fca5a5;font-size:.72rem;font-weight:800;cursor:pointer;">
+                <i class="fas fa-save" style="margin-right:.35rem;"></i>Salvar
+            </button>
+            <button onclick="abrirDiagnostico('${lojaKey}')"
+                style="flex:1;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:.85rem;padding:.7rem;color:#6b7280;font-size:.72rem;font-weight:700;cursor:pointer;">
+                Cancelar
+            </button>
+        </div>`;
+}
+
+async function _diagSalvarLancar(lojaKey, nomeL) {
+    const data     = document.getElementById('_diag-data')?.value;
+    const clientes = parseInt(document.getElementById('_diag-clientes')?.value || '0', 10) || 0;
+    const vendas   = parseInt(document.getElementById('_diag-vendas')?.value || '0', 10) || 0;
+    if (!data) return;
+
+    // Coleta motivos de não-venda
+    const motivos_nv = {};
+    document.querySelectorAll('[data-motivo]').forEach(inp => {
+        const v = parseInt(inp.value, 10);
+        if (v > 0) motivos_nv[inp.dataset.motivo] = v;
+    });
+
+    // Gera padrão e recomendações automáticos
+    const taxa = clientes > 0 ? ((vendas / clientes) * 100).toFixed(1) : null;
+    let padrao, recomendacoes;
+    if (clientes === 0) {
+        padrao = `Sem dados — loja nao enviou folha de atendimento no dia ${data.split('-').reverse().join('/')}.`;
+        recomendacoes = '1. Cobrar envio diario da folha de atendimento. 2. Verificar com o gerente o motivo da ausencia do registro.';
+    } else {
+        const nv = clientes - vendas;
+        const topMotivo = Object.entries(motivos_nv).sort((a,b)=>b[1]-a[1])[0];
+        if (parseFloat(taxa) >= 40) {
+            padrao = `Boa conversão (${taxa}%). ${vendas} vendas em ${clientes} atendimentos.`;
+            recomendacoes = '1. Manter o padrão de atendimento. 2. Reforçar técnicas que geraram bons resultados.';
+        } else if (parseFloat(taxa) >= 25) {
+            padrao = `Conversão regular (${taxa}%). ${nv} clientes saíram sem comprar.${topMotivo ? ` Principal motivo: ${topMotivo[0]}.` : ''}`;
+            recomendacoes = `1. Trabalhar objeção "${topMotivo?topMotivo[0]:'principal'}". 2. Reforçar técnica de fechamento. 3. Revisar abordagem inicial.`;
+        } else {
+            padrao = `Conversão baixa (${taxa||'—'}%). ${nv} de ${clientes} clientes não compraram.${topMotivo ? ` Principal barreira: ${topMotivo[0]}.` : ''}`;
+            recomendacoes = `1. Reunião urgente com equipe sobre técnica de vendas. 2. Trabalhar objeção "${topMotivo?topMotivo[0]:'principal'}". 3. Verificar se preço/estoque são gargalo.`;
+        }
+    }
+
+    const now  = new Date();
+    const hora = now.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
+    const docId = `${lojaKey}_${data}`;
+    const payload = {
+        analise: { total_clientes: clientes, total_vendas: vendas, motivos_nv, padrao, recomendacoes },
+        ultima_atualizacao: hora,
+        savedAt: Date.now(),
+        lancadoPor: user?.name || 'diretoria'
+    };
+
+    const btnSalvar = document.querySelector('[onclick*="_diagSalvarLancar"]');
+    if (btnSalvar) { btnSalvar.disabled = true; btnSalvar.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Salvando…'; }
+
+    try {
+        await window._acadDB.collection('ts_diagnostico').doc(docId).set(payload);
+        // Abre o diagnóstico recém-salvo
+        abrirDiagnostico(lojaKey);
+    } catch(e) {
+        if (btnSalvar) { btnSalvar.disabled = false; btnSalvar.innerHTML = '<i class="fas fa-save"></i> Salvar'; }
+        alert('Erro ao salvar: ' + (e.message || e));
+    }
 }
 
 /* ── Feriados nacionais BR 2026 ── */
@@ -9399,7 +9567,7 @@ const _GESTORES_D360 = new Set([
     'maxwell cezar oliveira','wilghyner de padua soares de souza','gabriel barreto pereira',
     'gabriela mel dutra','jhennyfer eduarda rodrigues dos santos','jorge gustavo lima firmiano',
     'krystian lincoln dalfior goncalves','jhenifer goncalves de souza',
-    'luiz henrique viana da rocha','renato lembranci metzke junior',
+    'luiz henrique viana da rocha',
     'lucas loyola araujo'
 ]);
 const _nomeGestorNorm = s => (s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').trim();
@@ -10778,7 +10946,7 @@ function render360(tipo, val) {
             serra:        ['Karen Scavelo Souza','Luiz Henrique Viana da Rocha','Marcela da Silva Lopes','Guilherme Souza Nascimento','Hismênia Alves Tavares'],
             linhares:     ['Rayca Mendes Morais','Natalia Rocha Leonel','Krystian Lincoln Dalfior Gonçalves','Thais Soares Vieira','Kauan Teixeira'],
             montserrat:   ['Joaquin Emiliano Rodrigo','Vinicius de Almeida Medeiros Vargas','Adriano Jeremias Cardoso Monteiro','Jhenifer Gonçalves de Souza','Vitor Santos Barreto','Arthur Renan Santana Lins','Lucas Loyola Araujo'],
-            praiadacosta: ['Filipe Mattos Queiroz','Renato Lembranci Metzke Junior','Nicolas Santos Borges','Thaymmon Teodoro Freitas'],
+            praiadacosta: ['Filipe Mattos Queiroz','Nicolas Santos Borges','Thaymmon Teodoro Freitas'],
         };
         const _normNome = s => (s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').split(/\s+/)[0];
         const topPrimeiros = new Set(l.top.map(v => _normNome(v.n)));
@@ -11678,7 +11846,7 @@ const MATINAIS = {
     /* ── Participantes ── */
     seniors: ['Talysson','Adriel','Arthur','Junior Dias'],
     operacionais: ['Daniela','Maxuel','Gabriel','Kristian','Luiz','Jhenifer Eduarda',
-                   'Juliana','Ana','Portugal','Reinan','Sandy','Renato','Jhenyfer','Wilghyner','Wesley'],
+                   'Juliana','Ana','Portugal','Reinan','Sandy','Lucas Loyola','Jhenyfer','Wilghyner','Wesley'],
 
     /* ── Dias da semana ── */
     dias: [
@@ -22103,14 +22271,23 @@ const _DIARIO_MGR = {
     cargo: 'gerente-senior-acess',
     lojas: 'Todas as lojas da rede'
   },
-  teste: {
-    nome: 'Teste', titulo: 'Ambiente de Teste', sub: null,
-    cor: '#06b6d4',
-    bg: 'linear-gradient(145deg,#00121a 0%,#0d0d0d 100%)',
-    bordCor: 'rgba(6,182,212,.35)',
-    ico: '🧪',
-    cargo: '_teste',
-    lojas: 'Simulação de fluxo Diretoria → Gerente Sênior'
+  melo: {
+    nome: 'Melo', titulo: 'ROTINA DIÁRIA', sub: null,
+    cor: '#f59e0b',
+    bg: 'linear-gradient(145deg,#1a0e00 0%,#0d0d0d 100%)',
+    bordCor: 'rgba(245,158,11,.4)',
+    ico: '📋',
+    cargo: '_melo',
+    lojas: 'Visão geral da rede Titãs · Diretor'
+  },
+  neto: {
+    nome: 'Neto', titulo: 'ROTINA DIÁRIA', sub: null,
+    cor: '#38bdf8',
+    bg: 'linear-gradient(145deg,#00111a 0%,#0d0d0d 100%)',
+    bordCor: 'rgba(56,189,248,.4)',
+    ico: '🎯',
+    cargo: '_neto',
+    lojas: 'Visão geral da rede Titãs · Diretor'
   }
 };
 
@@ -22264,42 +22441,12 @@ const _DIARIO_TASKS = {
       'Enviar relatório semanal de acessórios para a diretoria'
     ]
   ],
-  teste: [
-    [ // Segunda
-      '[TESTE] Tarefa de verificação 1 — Segunda',
-      '[TESTE] Tarefa de verificação 2 — Segunda',
-      '[TESTE] Tarefa de verificação 3 — Segunda',
-      '[TESTE] Tarefa de verificação 4 — Segunda',
-      '[TESTE] Tarefa de verificação 5 — Segunda'
-    ],
-    [ // Terça
-      '[TESTE] Tarefa de verificação 1 — Terça',
-      '[TESTE] Tarefa de verificação 2 — Terça',
-      '[TESTE] Tarefa de verificação 3 — Terça',
-      '[TESTE] Tarefa de verificação 4 — Terça',
-      '[TESTE] Tarefa de verificação 5 — Terça'
-    ],
-    [ // Quarta
-      '[TESTE] Tarefa de verificação 1 — Quarta',
-      '[TESTE] Tarefa de verificação 2 — Quarta',
-      '[TESTE] Tarefa de verificação 3 — Quarta',
-      '[TESTE] Tarefa de verificação 4 — Quarta',
-      '[TESTE] Tarefa de verificação 5 — Quarta'
-    ],
-    [ // Quinta
-      '[TESTE] Tarefa de verificação 1 — Quinta',
-      '[TESTE] Tarefa de verificação 2 — Quinta',
-      '[TESTE] Tarefa de verificação 3 — Quinta',
-      '[TESTE] Tarefa de verificação 4 — Quinta',
-      '[TESTE] Tarefa de verificação 5 — Quinta'
-    ],
-    [ // Sexta
-      '[TESTE] Tarefa de verificação 1 — Sexta',
-      '[TESTE] Tarefa de verificação 2 — Sexta',
-      '[TESTE] Tarefa de verificação 3 — Sexta',
-      '[TESTE] Tarefa de verificação 4 — Sexta',
-      '[TESTE] Tarefa de verificação 5 — Sexta'
-    ]
+  melo: [
+    Array(10).fill('⏳ Gerando rotina...'),
+    Array(10).fill('⏳ Gerando rotina...'),
+    Array(10).fill('⏳ Gerando rotina...'),
+    Array(10).fill('⏳ Gerando rotina...'),
+    Array(10).fill('⏳ Gerando rotina...')
   ]
 };
 
@@ -22361,10 +22508,41 @@ function _diarioIsOwner(mgrId) {
   return false;
 }
 
+function _isMeloUser() {
+  if (!user) return false;
+  const cargo = (user.cargo || '').toLowerCase();
+  const n = (user.name || '').toLowerCase();
+  if (!['diretoria','admin'].includes(cargo)) return false;
+  return n.includes('melo') || n.includes('marcelo') || n === 'higo';
+}
+
+function _isNetoUser() {
+  if (!user) return false;
+  const cargo = (user.cargo || '').toLowerCase();
+  const n = (user.name || '').toLowerCase();
+  if (!['diretoria','admin'].includes(cargo)) return false;
+  return n.includes('neto');
+}
+
+// Retorna 11 em Seg/Qua/Sex de julho/2026 (Mutirão de likes), senão 10
+function _meloNTarefas(dateStr) {
+  if (!dateStr) return 10;
+  const d = new Date(dateStr + 'T12:00:00');
+  return (d.getMonth() === 6 && d.getFullYear() === 2026 && [1,3,5].includes(d.getDay())) ? 11 : 10;
+}
+
+// Nº de tarefas para melo/neto/outros
+function _dirRotinaNTarefas(mgrId, dateStr) {
+  if (mgrId === 'melo') return _meloNTarefas(dateStr);
+  if (mgrId === 'neto') return 10;
+  return 5;
+}
+
 function _diarioCanView(mgrId) {
   if (!user || !user.cargo) return false;
+  if (mgrId === 'melo') return _isMeloUser() || _isNetoUser(); // exclusivo Melo e Neto
+  if (mgrId === 'neto') return _isMeloUser() || _isNetoUser(); // exclusivo Melo e Neto
   if (['diretoria','admin','franqueado'].includes(user.cargo)) return true;
-  if (mgrId === 'teste') return false; // apenas diretoria/admin acessa o teste
   return _diarioIsOwner(mgrId);
 }
 
@@ -22495,6 +22673,406 @@ async function _diarioLoadWeek(mgrId, semana) {
   return results;
 }
 
+// ════════════════════════════════════════════════════════════════════════════════
+//   ROTINA DIÁRIA MELO — geração dinâmica de 10 tarefas via D360 + Jurídico
+// ════════════════════════════════════════════════════════════════════════════════
+window._meloTitulosCache = {};
+
+async function _meloGerarRotina(dateStr, forcar = false) {
+  // Se já está em cache nesta sessão e não forçando, usar cache
+  if (!forcar && window._meloTitulosCache[dateStr]) return;
+
+  if (!forcar) {
+    // Verificar Firestore (salvo por sessão anterior)
+    try {
+      const docId = `diario_melo_titulos_${dateStr}`;
+      const data  = await _fsRead(docId);
+      // Validar: deve ter 10 títulos E já ter o prefixo de horário
+      if (data && Array.isArray(data.titulos) && data.titulos.length >= 10
+          && data.titulos[0] && data.titulos[0].startsWith('⏰')) {
+        window._meloTitulosCache[dateStr] = data.titulos;
+        return;
+      }
+    } catch(e) {}
+  }
+
+  // Gerar do zero
+  const titulos = await _meloGerarTarefas(dateStr);
+  window._meloTitulosCache[dateStr] = titulos;
+
+  // Salvar no Firestore para persistir
+  try {
+    await _fsDelete(`diario_melo_titulos_${dateStr}`);
+    await _fsWrite(`diario_melo_titulos_${dateStr}`, { titulos, geradoEm: new Date().toISOString() });
+  } catch(e) {}
+}
+
+// ── Busca diagnóstico do dia (ou dia anterior) para todas as lojas ──────────
+async function _diagFetchHoje(dateStr) {
+  const LOJAS = ['cariacica','itabuna','moxuara','praiadacosta','barreiras','teixeira','laranjeiras','saomateus','serra','montserrat','linhares'];
+  const BASE  = 'https://firestore.googleapis.com/v1/projects/titas-sinergy/databases/(default)/documents';
+  const KEY   = 'AIzaSyDFrLshzqf8Ct9U1SkM9MSveDNPuy_2--8';
+  const results = {};
+  const d1 = new Date(dateStr + 'T12:00:00'); d1.setDate(d1.getDate() - 1);
+  const datas = [dateStr, d1.toISOString().slice(0,10)];
+  await Promise.all(LOJAS.map(async k => {
+    for (const ds of datas) {
+      try {
+        const r = await fetch(`${BASE}/ts_diagnostico/${k}_${ds}?key=${KEY}`);
+        if (r.ok) {
+          const j = await r.json();
+          if (j.fields) { results[k] = _fsFromVal({ mapValue: { fields: j.fields } }); break; }
+        }
+      } catch(e) {}
+    }
+  }));
+  return results;
+}
+
+// ── Análise compartilhada entre melo e neto ──────────────────────────────────
+async function _dirRotinaAnalisar(dateStr) {
+  const fCur = v => 'R$ ' + (v >= 1000000 ? (v/1000000).toFixed(1) + 'M' : Math.round(v/1000) + 'k');
+  const fPct = v => Math.round(v) + '%';
+
+  const dias    = D360.diasDecorridos || 1;
+  const diasMes = D360.diasMes || 31;
+  const prop    = dias / diasMes;
+
+  const lojasPct = Object.entries(D360.lojas).map(([k, l]) => {
+    const metaP = (l.meta || 0) * prop;
+    const pct   = metaP > 0 ? (l.total / metaP) * 100 : 0;
+    return { k, l, pct, gap: l.total - metaP };
+  }).sort((a, b) => a.pct - b.pct);
+
+  const subRes = {};
+  Object.entries(D360.subredes).forEach(([sk, s]) => {
+    const tot  = Object.values(D360.lojas).filter(l => l.sub === sk).reduce((sum, l) => sum + (l.total||0), 0);
+    const metaP = (s.meta || 0) * prop;
+    subRes[sk] = { ...s, total: tot, metaP, pct: metaP > 0 ? (tot/metaP)*100 : 0 };
+  });
+
+  const totalRede    = Object.values(D360.lojas).reduce((s, l) => s + (l.total||0), 0);
+  const metaRedeProp = (D360.meta_rede || 0) * prop;
+  const pctRede      = metaRedeProp > 0 ? (totalRede / metaRedeProp) * 100 : 0;
+  const diasRest     = diasMes - dias;
+
+  const totalAcess = Object.values(D360.lojas).reduce((s, l) => s + ((l.acessorios?.total)||0), 0);
+  const metaAcessP = Object.values(D360.lojas).reduce((s, l) => s + ((l.metaAcess||0)*prop), 0);
+  const pctAcess   = metaAcessP > 0 ? (totalAcess/metaAcessP)*100 : 0;
+  const acessPorLoja = Object.entries(D360.lojas)
+    .map(([k,l]) => ({ k, l, pct: (l.metaAcess||0)*prop > 0 ? ((l.acessorios?.total||0)/((l.metaAcess||1)*prop))*100 : 0 }))
+    .sort((a,b) => a.pct - b.pct);
+
+  const agendMetaLoja = D360.agendMetaPorLoja || 90000;
+  const agendPorLoja  = Object.entries(D360.lojas).map(([k, l]) => {
+    const metaP = agendMetaLoja * prop;
+    const fat   = l.agendFat || 0;
+    const pct   = metaP > 0 ? (fat / metaP) * 100 : 0;
+    return { k, label: l.label, sigla: l.sigla, fat, metaP, pct };
+  }).sort((a, b) => b.pct - a.pct);
+  const totalAgend   = agendPorLoja.reduce((s, x) => s + x.fat, 0);
+  const metaTotAgend = agendMetaLoja * agendPorLoja.length * prop;
+  const pctAgendRede = metaTotAgend > 0 ? (totalAgend / metaTotAgend) * 100 : 0;
+
+  const antLojas   = (D360.performance?.mesAnterior?.lojas)   || {};
+  const antDiasMes = (D360.performance?.mesAnterior?.diasMes) || 30;
+  const lojaDecline = Object.entries(D360.lojas).map(([k, l]) => {
+    const antTotal    = antLojas[k] || 0;
+    const expectedAnt = antTotal * (dias / antDiasMes);
+    const curTotal    = l.total || 0;
+    const decline     = curTotal - expectedAnt;
+    const declinePct  = expectedAnt > 0 ? (decline / expectedAnt) * 100 : 0;
+    return { k, l, decline, declinePct, curTotal, expectedAnt, antTotal };
+  }).filter(x => x.antTotal > 0).sort((a, b) => a.declinePct - b.declinePct);
+
+  const lojas90    = lojasPct.filter(x => x.pct >= 90).sort((a, b) => b.pct - a.pct);
+  const lojasBoas  = lojas90.length >= 2 ? lojas90 : lojasPct.slice(-2).reverse();
+  const lojasAbaixo = lojasPct.filter(x => x.pct < 70).sort((a, b) => a.pct - b.pct);
+
+  const diagData = await _diagFetchHoje(dateStr);
+
+  const diagSub = sk => {
+    const ks = Object.entries(D360.lojas).filter(([,l]) => l.sub === sk).map(([k]) => k);
+    const items = ks.map(k => {
+      const d = diagData[k];
+      const an = d?.analise || {};
+      const taxa = an.total_clientes > 0 ? Math.round((an.total_vendas / an.total_clientes) * 100) : null;
+      return { k, label: D360.lojas[k]?.label || k, taxa, total: an.total_clientes || 0, vendas: an.total_vendas || 0 };
+    });
+    const comDados = items.filter(x => x.taxa !== null);
+    return { items, comDados };
+  };
+
+  return { fCur, fPct, dias, diasMes, prop, lojasPct, subRes, totalRede, metaRedeProp, pctRede, diasRest,
+           totalAcess, metaAcessP, pctAcess, acessPorLoja,
+           agendPorLoja, totalAgend, metaTotAgend, pctAgendRede,
+           lojaDecline, lojasBoas, lojasAbaixo, diagData, diagSub };
+}
+
+async function _meloGerarTarefas(dateStr) {
+  const a = await _dirRotinaAnalisar(dateStr);
+  const { fCur, fPct, subRes, lojasPct, totalAcess, pctAcess, acessPorLoja,
+          agendPorLoja, totalAgend, metaTotAgend, pctAgendRede,
+          lojaDecline, lojasBoas, lojasAbaixo, diagSub } = a;
+
+  const tarefas = [];
+
+  // 1 — T1 Talysson (diagnóstico + D360)
+  const d1 = diagSub('t1');
+  const piorT1 = lojasPct.filter(x => x.l.sub === 't1')[0];
+  tarefas.push(
+    `📞 T1 Talysson — Sub-rede em ${fPct(subRes.t1.pct)} da meta proporcional (${fCur(subRes.t1.total)}). ` +
+    (d1.comDados.length > 0
+      ? `Conversão hoje: ${d1.comDados.map(x => `${x.label} ${x.taxa}% (${x.vendas}V/${x.total - x.vendas}NV)`).join(' · ')}. `
+      : `Sem folha de atendimento nas lojas T1 hoje. `) +
+    (subRes.t1.pct < 90
+      ? `Mais crítica: ${piorT1.l.label} (${fPct(piorT1.pct)}) — cobrar plano de ação.`
+      : `Sub-rede no ritmo — manter pressão.`)
+  );
+
+  // 2 — T2 Adriel (diagnóstico + agendamentos)
+  const d2 = diagSub('t2');
+  const piorT2 = lojasPct.filter(x => x.l.sub === 't2')[0];
+  tarefas.push(
+    `📞 T2 Adriel — Sub-rede em ${fPct(subRes.t2.pct)} (${fCur(subRes.t2.total)}) | Agend.: ${fPct(pctAgendRede)} (${fCur(totalAgend)} de ${fCur(metaTotAgend)}). ` +
+    (d2.comDados.length > 0
+      ? `Conversão hoje: ${d2.comDados.map(x => `${x.label} ${x.taxa}%`).join(' · ')}. `
+      : `Sem folha de atendimento nas lojas T2 hoje. `) +
+    (subRes.t2.pct < 90 ? `Mais crítica: ${piorT2.l.label} (${fPct(piorT2.pct)}) — checar ações de recuperação.` : `Sub-rede no ritmo.`)
+  );
+
+  // 3 — T3 Arthur (diagnóstico)
+  const d3 = diagSub('t3');
+  const piorT3 = lojasPct.filter(x => x.l.sub === 't3')[0];
+  tarefas.push(
+    `📞 T3 Arthur — Sub-rede em ${fPct(subRes.t3.pct)} (${fCur(subRes.t3.total)}). ` +
+    (d3.comDados.length > 0
+      ? `Conversão hoje: ${d3.comDados.map(x => `${x.label} ${x.taxa}%`).join(' · ')}. `
+      : `Sem folha de atendimento nas lojas T3 hoje. `) +
+    (subRes.t3.pct < 90 ? `Mais crítica: ${piorT3.l.label} (${fPct(piorT3.pct)}) — avaliar ritmo e ações.` : `Sub-rede no ritmo.`)
+  );
+
+  // 4 — Acessórios (macro)
+  const piorAcess = acessPorLoja[0];
+  tarefas.push(
+    `💎 Acessórios da rede: ${fPct(pctAcess)} da meta proporcional (${fCur(totalAcess)}). ` +
+    `Ligar para Dias (Gerente de Acessórios) — cobrar alinhamento e verificar oferta ativa nas lojas. ` +
+    (piorAcess ? `Mais crítica: ${piorAcess.l.label} (${fPct(piorAcess.pct)}).` : '')
+  );
+
+  // 5-7 — Lojas com maior queda vs mês anterior
+  const top3Queda = lojaDecline.slice(0, 3);
+  const quedaLabel = ['1ª loja em queda','2ª loja em queda','3ª loja em queda'];
+  top3Queda.forEach((x, i) => {
+    const sinal = x.declinePct < 0 ? `${Math.abs(Math.round(x.declinePct))}% abaixo` : `${Math.round(x.declinePct)}% acima`;
+    tarefas.push(
+      `📉 ${quedaLabel[i]}: ${x.l.label} — ${sinal} do ritmo do mês anterior no mesmo período ` +
+      `(atual ${fCur(x.curTotal)} vs esperado ${fCur(x.expectedAnt)}). ` +
+      `Ligar para o gerente, identificar causa da queda e cobrar plano de recuperação.`
+    );
+  });
+  while (tarefas.length < 7) {
+    const loja = lojasPct[tarefas.length - 4] || lojasPct[0];
+    tarefas.push(`📉 ${quedaLabel[tarefas.length - 4]}: ${loja.l.label} — ${fPct(loja.pct)} da meta proporcional. Ligar para o gerente e cobrar plano de ação.`);
+  }
+
+  // 8-9 — Elogio + aceleração (lojas boas)
+  const boas = lojasBoas.slice(0, 2);
+  const elogioLabel = ['destaque da rede','2ª loja destaque'];
+  boas.forEach((x, i) => {
+    tarefas.push(
+      `🏆 Elogio — ${x.l.label} (${x.l.sigla}), ${elogioLabel[i]}: ${fPct(x.pct)} da meta (${fCur(x.l.total)}). ` +
+      `Ligar para o gerente, reconhecer a equipe e levantar o que está funcionando bem para replicar nas demais lojas.`
+    );
+  });
+  while (tarefas.length < 9) {
+    tarefas.push(`🏆 Elogio — Identificar loja destaque e ligar para o gerente reconhecer a equipe.`);
+  }
+
+  // 10 — Central de Agendamentos (lojas abaixo de 70%)
+  const criticas = lojasAbaixo.slice(0, 3);
+  tarefas.push(
+    `📅 Central de Agendamentos (Adriel) — Lojas muito abaixo da meta mensal (< 70%): ` +
+    (criticas.length > 0 ? criticas.map(x => `${x.l.label} ${fPct(x.pct)}`).join(' · ') : 'nenhuma abaixo de 70%') + `. ` +
+    `Cobrar agenda agressiva para essas lojas e confirmar metas diárias de ligação.`
+  );
+
+  // Mutirão de likes: Seg/Qua/Sex de julho/2026
+  const dObj = new Date(dateStr + 'T12:00:00');
+  const isMutiraoDay = dObj.getMonth() === 6 && dObj.getFullYear() === 2026 && [1,3,5].includes(dObj.getDay());
+  const SLOTS_10 = ['10:00','10:20','10:40','11:00','11:20','11:40','12:00','14:00','14:20','14:40'];
+  const SLOTS_11 = ['10:00','10:20','10:40','11:00','11:20','11:40','12:00','12:20','14:00','14:20','14:40'];
+
+  if (isMutiraoDay) {
+    tarefas.splice(7, 0,
+      '👍 Mutirão de Likes — Enviar link das publicações das redes sociais para os gerentes de todas as lojas.' +
+      ' Pedir engajamento da equipe: curtidas, comentários e compartilhamentos.' +
+      ' Monitorar resultado e confirmar participação de cada loja até as 12:30.'
+    );
+    return tarefas.map((t, i) => `⏰ ${SLOTS_11[i]||''} (10min) — ${t}`);
+  }
+  return tarefas.map((t, i) => `⏰ ${SLOTS_10[i]||''} (10min) — ${t}`);
+}
+
+// ── Neto: mesma análise, abordagem operacional/desenvolvimento de equipe ──────
+async function _netoGerarTarefas(dateStr) {
+  const a = await _dirRotinaAnalisar(dateStr);
+  const { fCur, fPct, subRes, lojasPct, totalAcess, pctAcess, acessPorLoja,
+          agendPorLoja, totalAgend, metaTotAgend, pctAgendRede,
+          lojaDecline, lojasBoas, lojasAbaixo, diagData, diagSub } = a;
+
+  const tarefas = [];
+
+  // 1 — T1 Talysson (desenvolvimento de equipe)
+  const d1 = diagSub('t1');
+  const piorT1 = lojasPct.filter(x => x.l.sub === 't1')[0];
+  tarefas.push(
+    `🎯 T1 — Desenvolvimento Talysson: sub-rede em ${fPct(subRes.t1.pct)}. ` +
+    (d1.comDados.length > 0
+      ? `Taxa de conversão hoje: ${d1.comDados.map(x => `${x.label} ${x.taxa}%`).join(' · ')}. `
+      : `Sem diagnóstico de atendimento em T1 hoje. `) +
+    `Foco na ${piorT1.l.label} (${fPct(piorT1.pct)}): ouvir os vendedores, identificar objeções frequentes e ` +
+    `propor roteiro de abordagem e técnica de fechamento para o turno da tarde.`
+  );
+
+  // 2 — T2 Adriel (processo de vendas)
+  const d2 = diagSub('t2');
+  const piorT2 = lojasPct.filter(x => x.l.sub === 't2')[0];
+  tarefas.push(
+    `🎯 T2 — Desenvolvimento Adriel: sub-rede em ${fPct(subRes.t2.pct)} | Agend.: ${fPct(pctAgendRede)}. ` +
+    (d2.comDados.length > 0
+      ? `Conversão hoje: ${d2.comDados.map(x => `${x.label} ${x.taxa}%`).join(' · ')}. `
+      : `Sem diagnóstico de atendimento em T2 hoje. `) +
+    `Mapear o processo de atendimento em ${piorT2.l.label} (${fPct(piorT2.pct)}): ` +
+    `analisar abordagem, identificar o gargalo entre entrada de cliente e fechamento.`
+  );
+
+  // 3 — T3 Arthur (equipe/motivação)
+  const d3 = diagSub('t3');
+  const piorT3 = lojasPct.filter(x => x.l.sub === 't3')[0];
+  tarefas.push(
+    `🎯 T3 — Desenvolvimento Arthur: sub-rede em ${fPct(subRes.t3.pct)}. ` +
+    (d3.comDados.length > 0
+      ? `Conversão hoje: ${d3.comDados.map(x => `${x.label} ${x.taxa}%`).join(' · ')}. `
+      : `Sem diagnóstico de atendimento em T3 hoje. `) +
+    `Entrar em contato com os vendedores de ${piorT3.l.label}: levantar o que está travando, ` +
+    `trabalhar postura de atendimento e motivação para o período da tarde.`
+  );
+
+  // 4 — Acessórios (vendedores)
+  const piorAcess = acessPorLoja[0];
+  tarefas.push(
+    `💎 Acessórios da rede: ${fPct(pctAcess)} da meta proporcional (${fCur(totalAcess)}). ` +
+    `Verificar com os vendedores se estão ofertando acessórios ativamente. ` +
+    (piorAcess ? `Prioridade: ${piorAcess.l.label} (${fPct(piorAcess.pct)}) — criar desafio de acessório do dia.` : '')
+  );
+
+  // 5-7 — Lojas com maior queda vs mês anterior
+  const top3Queda = lojaDecline.slice(0, 3);
+  const quedaLabel = ['1ª loja em queda','2ª loja em queda','3ª loja em queda'];
+  top3Queda.forEach((x, i) => {
+    const sinal = x.declinePct < 0 ? `${Math.abs(Math.round(x.declinePct))}% abaixo` : `${Math.round(x.declinePct)}% acima`;
+    const diagLoja = diagData[x.k]?.analise;
+    const motivos  = diagLoja?.motivos_nv
+      ? Object.entries(diagLoja.motivos_nv).sort((a,b)=>b[1]-a[1]).slice(0,2).map(([m])=>m).join(', ')
+      : null;
+    tarefas.push(
+      `🔍 ${quedaLabel[i]}: ${x.l.label} — ${sinal} do ritmo do mês anterior. ` +
+      (motivos ? `Principais motivos de não-venda: ${motivos}. ` : '') +
+      `Ligar para os vendedores desta loja: simular atendimento ao vivo e ` +
+      `definir meta individual de fechamento para o restante do dia.`
+    );
+  });
+  while (tarefas.length < 7) {
+    const loja = lojasPct[tarefas.length - 4] || lojasPct[0];
+    tarefas.push(`🔍 ${quedaLabel[tarefas.length - 4]}: ${loja.l.label} — ${fPct(loja.pct)} da meta. Ligar para a equipe e aplicar técnica de atendimento.`);
+  }
+
+  // 8-9 — Prática de sucesso + replicar
+  const boas = lojasBoas.slice(0, 2);
+  const elogioLabel = ['destaque da rede','2ª loja destaque'];
+  boas.forEach((x, i) => {
+    tarefas.push(
+      `✨ Prática vencedora — ${x.l.label} (${x.l.sigla}), ${elogioLabel[i]}: ${fPct(x.pct)} da meta (${fCur(x.l.total)}). ` +
+      `Gravar depoimento rápido do gerente ou vendedor destaque e compartilhar na rede. ` +
+      `Identificar o que está funcionando e propor replicar em outra loja ainda hoje.`
+    );
+  });
+  while (tarefas.length < 9) {
+    tarefas.push(`✨ Prática vencedora — Identificar loja destaque e capturar o diferencial para compartilhar na rede.`);
+  }
+
+  // 10 — Agendamentos (desenvolvimento da equipe)
+  const criticas = lojasAbaixo.slice(0, 3);
+  tarefas.push(
+    `📅 Agendamentos — Lojas muito abaixo da meta mensal (< 70%): ` +
+    (criticas.length > 0 ? criticas.map(x => `${x.l.label} ${fPct(x.pct)}`).join(' · ') : 'nenhuma abaixo de 70%') + `. ` +
+    `Entrar em contato direto com a equipe de agendamentos: definir meta de ligações para hoje, ` +
+    `analisar roteiro de abordagem e acompanhar o resultado no fim do turno.`
+  );
+
+  const SLOTS_10 = ['10:00','10:20','10:40','11:00','11:20','11:40','12:00','14:00','14:20','14:40'];
+  return tarefas.map((t, i) => `⏰ ${SLOTS_10[i]||''} (10min) — ${t}`);
+}
+
+
+// ── Botão para regenerar rotina (usado no header do card melo) ───────────────
+async function _meloRegerarRotina() {
+  const dateStr = _dDiaSel;
+  if (!dateStr) return;
+
+  // Feedback visual imediato
+  const btn = document.querySelector('[onclick="_meloRegerarRotina()"]');
+  if (btn) { btn.disabled = true; btn.textContent = '⏳ Gerando...'; }
+
+  delete window._meloTitulosCache[dateStr];
+  try { await _fsDelete(`diario_melo_titulos_${dateStr}`); } catch(e) {}
+
+  await _meloGerarRotina(dateStr, true); // forçar regeneração
+  _diarioRenderMgr('melo');
+}
+
+// ── Rotina Neto ───────────────────────────────────────────────────────────────
+window._netoTitulosCache = {};
+
+async function _netoGerarRotina(dateStr, forcar = false) {
+  if (!forcar && window._netoTitulosCache[dateStr]) return;
+
+  if (!forcar) {
+    try {
+      const data = await _fsRead(`diario_neto_titulos_${dateStr}`);
+      if (data && Array.isArray(data.titulos) && data.titulos.length >= 10
+          && data.titulos[0] && data.titulos[0].startsWith('⏰')) {
+        window._netoTitulosCache[dateStr] = data.titulos;
+        return;
+      }
+    } catch(e) {}
+  }
+
+  const titulos = await _netoGerarTarefas(dateStr);
+  window._netoTitulosCache[dateStr] = titulos;
+
+  try {
+    await _fsDelete(`diario_neto_titulos_${dateStr}`);
+    await _fsWrite(`diario_neto_titulos_${dateStr}`, { titulos, geradoEm: new Date().toISOString() });
+  } catch(e) {}
+}
+
+async function _netoRegerarRotina() {
+  const dateStr = _dDiaSel;
+  if (!dateStr) return;
+
+  const btn = document.querySelector('[onclick="_netoRegerarRotina()"]');
+  if (btn) { btn.disabled = true; btn.textContent = '⏳ Gerando...'; }
+
+  delete window._netoTitulosCache[dateStr];
+  try { await _fsDelete(`diario_neto_titulos_${dateStr}`); } catch(e) {}
+
+  await _netoGerarRotina(dateStr, true);
+  _diarioRenderMgr('neto');
+}
+window._netoRegerarRotina = _netoRegerarRotina;
+
 // ─── Estado UI ────────────────────────────────────────────────────────────────
 let _dMgrAtivo   = null;
 let _dDiaSel     = null;
@@ -22557,7 +23135,7 @@ function _diarioInit() {
 }
 
 function _diarioShowView(which) {
-  const ids = ['landing','talysson','adriel','arthur','dias','teste','diretoria','checklist'];
+  const ids = ['landing','talysson','adriel','arthur','dias','melo','neto','diretoria','checklist'];
   ids.forEach(id => {
     const el = document.getElementById(`diario-view-${id}`);
     if (el) el.classList.toggle('hidden', id !== which);
@@ -22877,7 +23455,10 @@ function _chklRenderLanding() {
   Object.entries(_CHKL_LOJAS).forEach(([key, loja]) => {
     // ── Filtro por cargo ────────────────────────────────────────────
     if (loja.oculta && !isSuperAdmin) return;          // Loja Teste: só diretoria
-    if (isGer && key !== userLoja) return;             // Gerente: só sua loja
+    if (isGer) {
+      const _multiChkl = (typeof _gerenteMultiLojas === 'function') ? _gerenteMultiLojas() : null;
+      if (_multiChkl ? !_multiChkl.includes(key) : key !== userLoja) return;
+    }
     if (isGerSenior && !_chklCanAccess(key)) return;  // GerSenior: só sub-rede
     // ────────────────────────────────────────────────────────────────
 
@@ -23388,33 +23969,35 @@ function _diarioRenderLanding() {
         </div>
       </div>`;
 
-  const mTeste = _DIARIO_MGR.teste;
-  const cardTeste = `
-      <div onclick="_diarioOpenMgr('teste')"
-           style="background:${mTeste.bg};border:2px dashed ${mTeste.bordCor};cursor:pointer;transition:.2s;position:relative"
+  const _cardDir = (mgrId) => {
+    const mc = _DIARIO_MGR[mgrId];
+    return `
+      <div onclick="_diarioOpenMgr('${mgrId}')"
+           style="background:${mc.bg};border:2px solid ${mc.bordCor};cursor:pointer;transition:.2s;position:relative"
            class="rounded-2xl p-6 flex flex-col gap-3 hover:scale-[1.02]">
-        <div style="position:absolute;top:.75rem;right:.75rem;background:rgba(6,182,212,.2);
-                    border:1px solid rgba(6,182,212,.4);border-radius:999px;
-                    padding:.15rem .6rem;font-size:.65rem;font-weight:700;color:#06b6d4;letter-spacing:.05em">
-          TESTE
+        <div style="position:absolute;top:.75rem;right:.75rem;background:${mc.cor}26;
+                    border:1px solid ${mc.cor}66;border-radius:999px;
+                    padding:.15rem .6rem;font-size:.65rem;font-weight:700;color:${mc.cor};letter-spacing:.05em">
+          DIRETOR
         </div>
         <div class="flex items-center gap-3">
-          <span style="font-size:2rem">${mTeste.ico}</span>
+          <span style="font-size:2rem">${mc.ico}</span>
           <div>
-            <div style="color:${mTeste.cor};font-size:1.1rem;font-weight:700">${mTeste.nome}</div>
-            <div style="color:#9ca3af;font-size:.8rem">${mTeste.titulo}</div>
+            <div style="color:${mc.cor};font-size:1.1rem;font-weight:700">${mc.nome}</div>
+            <div style="color:#9ca3af;font-size:.8rem">${mc.titulo}</div>
           </div>
         </div>
-        <div style="color:#6b7280;font-size:.75rem">${mTeste.lojas}</div>
-        <div style="color:${mTeste.cor};font-size:.75rem;font-weight:600">🔬 Simular fluxo completo</div>
+        <div style="color:#6b7280;font-size:.75rem">${mc.lojas}</div>
+        <div style="color:${mc.cor};font-size:.75rem;font-weight:600">📋 10 tarefas diárias · Diagnóstico + D360</div>
       </div>`;
+  };
 
   const m = _DIARIO_MGR;
+  const isMeloOuNeto = ['diretoria','admin'].includes((user && user.cargo) ? user.cargo.toLowerCase() : '');
 
   // ── Gerente Sênior: apenas seu card + Checklists ──────────────────────────
   if (isGerSenior) {
     grid.style.gridTemplateColumns = 'repeat(2,1fr)';
-    // Descobre qual card pertence a este gerente sênior
     let myCard = '';
     for (const id of ['talysson','adriel','arthur','dias']) {
       if (_diarioIsOwner(id)) { myCard = _cardMgr(id, m[id]); break; }
@@ -23426,12 +24009,13 @@ function _diarioRenderLanding() {
   // ── Diretoria / Franqueado: grid completo 3 colunas ──────────────────────
   grid.style.gridTemplateColumns = 'repeat(3,1fr)';
   grid.innerHTML =
-    _cardMgr('talysson', m.talysson) +
-    _cardMgr('adriel',   m.adriel)   +
-    cardDiretoria                     +
-    _cardMgr('arthur',   m.arthur)   +
-    _cardMgr('dias',     m.dias)     +
-    cardTeste                         +
+    (isMeloOuNeto ? _cardDir('melo') : '')   +
+    (isMeloOuNeto ? _cardDir('neto') : '')   +
+    _cardMgr('talysson', m.talysson)      +
+    _cardMgr('adriel',   m.adriel)        +
+    cardDiretoria                          +
+    _cardMgr('arthur',   m.arthur)        +
+    _cardMgr('dias',     m.dias)          +
     cardChecklists;
 }
 
@@ -23765,10 +24349,27 @@ async function _diarioOpenMgr(mgrId) {
   }));
   _dPsData = _dWeekPsData[_dDiaSel] || null;
 
-  // Acumular tarefas incompletas do dia anterior para hoje
-  await _diarioAcumular(mgrId, _dDiaSel);
+  // Acumular tarefas incompletas (melo/neto: multi-dia; demais: apenas ontem)
+  try {
+    if (mgrId === 'melo' || mgrId === 'neto') {
+      await _meloAcumularMultiDia(_dDiaSel);
+    } else {
+      await _diarioAcumular(mgrId, _dDiaSel);
+    }
+  } catch(e) { console.warn('_acumular falhou (não crítico):', e); }
 
   _diarioRenderMgr(mgrId);
+
+  // ── Geração de rotina diária (melo e neto) ────────────────────────────────
+  if (mgrId === 'melo') {
+    _meloGerarRotina(_dDiaSel)
+      .then(() => { if (_dMgrAtivo === 'melo') _diarioRenderMgr('melo'); })
+      .catch(e => { console.warn('_meloGerarRotina falhou:', e); });
+  } else if (mgrId === 'neto') {
+    _netoGerarRotina(_dDiaSel)
+      .then(() => { if (_dMgrAtivo === 'neto') _diarioRenderMgr('neto'); })
+      .catch(e => { console.warn('_netoGerarRotina falhou:', e); });
+  }
 
   // ── Listeners em tempo real ────────────────────────────────────────────────
   if (window._acadFBOk && window._acadDB) {
@@ -23811,6 +24412,60 @@ async function _diarioOpenMgr(mgrId) {
   }
 }
 
+// ─── Acumulação multi-dia para melo e neto ───────────────────────────────────
+async function _meloAcumularMultiDia(dateStr) {
+  const mgrId = _dMgrAtivo || 'melo';
+  const base = new Date(dateStr + 'T12:00:00');
+
+  const diasPassados = [];
+  for (let i = 1; diasPassados.length < 7 && i <= 14; i++) {
+    const d = new Date(base); d.setDate(base.getDate() - i);
+    const dow = d.getDay();
+    if (dow >= 1 && dow <= 5) diasPassados.push(_dToStr(d));
+  }
+
+  await Promise.all(diasPassados.map(async ds => {
+    if (_dWeekData[ds] === undefined)
+      _dWeekData[ds] = await _diarioLoad(mgrId, ds).catch(() => null);
+  }));
+
+  const todasIncompletas = [];
+  const vistas = new Set();
+  const titulosCache = mgrId === 'neto' ? window._netoTitulosCache : window._meloTitulosCache;
+
+  for (const ds of diasPassados) {
+    const dado = _dWeekData[ds];
+    if (!dado) continue;
+    const titulos = (titulosCache?.[ds]) || [];
+
+    (dado.tasks || []).forEach((t, i) => {
+      if (t.locked) return;
+      if (t.checked && (t.desc||'').trim()) return;
+      const texto = titulos[i] || `Tarefa ${i+1}`;
+      const key   = texto + '|' + ds;
+      if (!vistas.has(key)) { vistas.add(key); todasIncompletas.push({ texto, origem: ds, checked: false, desc: '' }); }
+    });
+    (dado.acumuladas || []).forEach(a => {
+      if (a.checked && (a.desc||'').trim()) return;
+      const key = a.texto + '|' + (a.origem||ds);
+      if (!vistas.has(key)) { vistas.add(key); todasIncompletas.push({ ...a, checked: false, desc: '' }); }
+    });
+  }
+
+  if (!todasIncompletas.length) return;
+
+  const hojeDados = _dWeekData[dateStr];
+  const jaAcum = new Set((hojeDados?.acumuladas||[]).map(a => a.texto+'|'+(a.origem||'')));
+  const novas  = todasIncompletas.filter(a => !jaAcum.has(a.texto+'|'+(a.origem||'')));
+  if (!novas.length) return;
+
+  const payload = hojeDados
+    ? { ...hojeDados, acumuladas: [...(hojeDados.acumuladas||[]), ...novas] }
+    : { tasks: Array(_dirRotinaNTarefas(mgrId,dateStr)).fill(null).map(()=>({checked:false,desc:''})), acumuladas: novas, fotos:[], docs:[], obs:'' };
+  await _diarioSave(mgrId, dateStr, payload);
+  _dWeekData[dateStr] = payload;
+}
+
 // ─── Acumular tarefas do dia anterior ────────────────────────────────────────
 async function _diarioAcumular(mgrId, dateStr) {
   const diaAnt  = _diaAnterior(dateStr);
@@ -23843,7 +24498,7 @@ async function _diarioAcumular(mgrId, dateStr) {
   // Salvar acumuladas no Firestore
   const payload = hoje
     ? { ...hoje, acumuladas: [...(hoje.acumuladas||[]), ...novas] }
-    : { tasks: Array(5).fill(null).map(()=>({checked:false,desc:''})), acumuladas: novas, fotos:[], docs:[], obs:'' };
+    : { tasks: Array(_dirRotinaNTarefas(mgrId,dateStr)).fill(null).map(()=>({checked:false,desc:''})), acumuladas: novas, fotos:[], docs:[], obs:'' };
   await _diarioSave(mgrId, dateStr, payload);
   _dWeekData[dateStr] = payload;
 }
@@ -23878,7 +24533,14 @@ function _diarioRenderMgr(mgrId) {
         </div>
       </div>`;
 
-  if (isSab || _isFimDeMes()) {
+  if ((mgrId === 'melo' || mgrId === 'neto') && isSab) {
+    html += `
+      <div style="text-align:center;padding:3rem 1rem">
+        <div style="font-size:3rem;margin-bottom:1rem">🌴</div>
+        <div style="font-size:1.1rem;font-weight:700;color:${m.cor}">Sem rotina aos sábados</div>
+        <div style="font-size:.85rem;color:#6b7280;margin-top:.5rem">Rotina disponível de segunda a sexta, das 10h às 17h.</div>
+      </div>`;
+  } else if (isSab || _isFimDeMes()) {
     html += _diarioRenderRelatorioHTML(mgrId, semana);
   } else {
     // Seletor de dias
@@ -23907,12 +24569,45 @@ function _diarioRenderMgr(mgrId) {
     html += `</div>`;
 
     if (_dDiaSel) {
-      html += _diarioPrestHtml(mgrId, _dDiaSel);
+      if (mgrId === 'melo' || mgrId === 'neto') {
+        _diarioFillChecks(mgrId, _dDiaSel);
+        const regerarFn  = mgrId === 'melo' ? '_meloRegerarRotina()' : '_netoRegerarRotina()';
+        const autoSaveId = mgrId === 'melo' ? 'melo-autosave-ind' : 'neto-autosave-ind';
+        html += `
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem;flex-wrap:wrap;gap:.5rem">
+            <div style="display:flex;align-items:center;gap:.6rem">
+              <div style="color:${m.cor};font-size:.8rem;font-weight:700;letter-spacing:.05em">📋 ROTINA DIÁRIA · ${_dDiaSel}</div>
+              <span id="${autoSaveId}" style="color:#10b981;font-size:.68rem;font-weight:600"></span>
+            </div>
+            <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+              ${mgrId === 'melo' ? `<button onclick="_meloAbrirResumoMes()"
+                      style="background:rgba(99,102,241,.12);border:1px solid rgba(99,102,241,.35);color:#818cf8;
+                             border-radius:.65rem;padding:.35rem .9rem;font-size:.75rem;font-weight:700;cursor:pointer;
+                             min-height:36px;-webkit-tap-highlight-color:transparent">
+                📊 Resumo do Mês
+              </button>` : ''}
+              <button onclick="${regerarFn}"
+                      style="background:${m.cor}1e;border:1px solid ${m.cor}59;color:${m.cor};
+                             border-radius:.65rem;padding:.35rem .9rem;font-size:.75rem;font-weight:700;cursor:pointer;
+                             min-height:36px;-webkit-tap-highlight-color:transparent">
+                🔄 Regenerar
+              </button>
+            </div>
+          </div>`;
+        html += _diarioChecklistHTML(mgrId, _dDiaSel);
+      } else {
+        html += _diarioPrestHtml(mgrId, _dDiaSel);
+      }
     }
   }
 
   html += `</div>`; // end max-w container
   container.innerHTML = html;
+
+  // Anexar listeners após render para melo e neto
+  if ((mgrId === 'melo' || mgrId === 'neto') && _dDiaSel) {
+    _meloAnexarListeners(_dDiaSel);
+  }
 }
 
 // ─── Seleção de dia ───────────────────────────────────────────────────────────
@@ -23927,11 +24622,20 @@ function _diarioChecklistHTML(mgrId, dateStr) {
   const m       = _DIARIO_MGR[mgrId];
   const dayIdx  = _weekDayIdx(dateStr);
   if (dayIdx < 0) return '';
-  const taskTitles = _DIARIO_TASKS[mgrId][dayIdx];
+  const isMelo     = mgrId === 'melo';
+  const isNeto     = mgrId === 'neto';
+  const isDirRot   = isMelo || isNeto;
+  const nTasks     = isDirRot ? _dirRotinaNTarefas(mgrId, dateStr) : 5;
+  const taskTitles = isMelo
+    ? (window._meloTitulosCache?.[dateStr] || _DIARIO_TASKS.melo?.[dayIdx] || [])
+    : isNeto
+      ? (window._netoTitulosCache?.[dateStr] || _DIARIO_TASKS.melo?.[dayIdx] || [])
+      : _DIARIO_TASKS[mgrId]?.[dayIdx] || [];
   // Diretoria/admin têm acesso de edição completo (única role com acesso enquanto em construção)
   const isOwner    = _diarioIsOwner(mgrId) || (user && ['diretoria','admin','franqueado'].includes(user.cargo));
-  const data       = _dWeekData[dateStr] || { tasks: Array(5).fill(null).map(()=>({checked:false,desc:''})), acumuladas:[], fotos:[], docs:[], obs:'' };
-  const tasks      = data.tasks.length ? data.tasks : Array(5).fill(null).map(()=>({checked:false,desc:''}));
+  const emptyTasks = () => Array(nTasks).fill(null).map(()=>({checked:false,desc:''}));
+  const data       = _dWeekData[dateStr] || { tasks: emptyTasks(), acumuladas:[], fotos:[], docs:[], obs:'' };
+  const tasks      = data.tasks.length ? data.tasks : emptyTasks();
   const acumuladas = data.acumuladas || [];
   const fotos      = data.fotos || [];
   const docs       = data.docs  || [];
@@ -23939,41 +24643,64 @@ function _diarioChecklistHTML(mgrId, dateStr) {
   // Tarefas e agenda criadas pela Diretoria (já pré-carregadas em _dCurrentExtras)
   const extrasDir  = (window._dCurrentExtras||{})[dateStr] || [];
 
+  // ── Verificação de atraso > 3 dias (apenas melo/neto) ───────────
+  const hoje3d = new Date(); hoje3d.setDate(hoje3d.getDate() - 3);
+  const overdueIncompletas = isDirRot ? acumuladas.filter(a => {
+    if (a.checked && (a.desc||'').trim()) return false;
+    return new Date((a.origem||dateStr)+'T12:00:00') < hoje3d;
+  }) : [];
+  const lockByOverdue = overdueIncompletas.length > 0;
+
   // Verificar conclusão geral
   const allTasks = [...tasks, ...acumuladas, ...extrasDir];
   const totalDone = allTasks.filter(t => t.checked && (t.desc||'').trim().length > 0).length;
   const done = allTasks.length > 0 && totalDone === allTasks.length;
 
   // ── Função que gera um bloco de tarefa ──────────────────────────
-  function taskBlock(titulo, t, id, cor, acum) {
-    const isDone = t.checked && (t.desc||'').trim().length > 0;
-    const bgCard = isDone ? 'rgba(16,185,129,.08)' : 'rgba(31,41,55,.6)';
-    const bord   = isDone ? '1px solid rgba(16,185,129,.3)' : '1px solid #1f2937';
+  function taskBlock(titulo, t, id, cor, acum, isOverdueAcum) {
+    const isLocked     = isDirRot && t.locked === true;
+    const forceDisable = isDirRot && lockByOverdue && !isOverdueAcum;
+    const isDone   = t.checked && (t.desc||'').trim().length > 0;
+    const editable = isOwner && !isLocked && !forceDisable;
+    const bgCard   = isLocked ? 'rgba(16,185,129,.05)' : (isDone ? 'rgba(16,185,129,.08)' : 'rgba(31,41,55,.6)');
+    const bord     = isLocked ? '1px solid rgba(16,185,129,.2)' : (isDone ? '1px solid rgba(16,185,129,.3)' : '1px solid #1f2937');
+    const canSave  = isDirRot && isOwner && !isLocked && isDone;
     return `
       <div style="background:${bgCard};border:${bord};border-radius:.75rem;padding:1rem;transition:.2s"
            id="task-card-${id}">
         ${acum ? `<div style="color:#f59e0b;font-size:.7rem;font-weight:600;margin-bottom:.4rem">⚠️ Acumulada do dia anterior (${acum.origem.slice(8)})</div>` : ''}
+        ${isLocked ? `<div style="color:#10b981;font-size:.68rem;font-weight:600;margin-bottom:.4rem;text-align:right">🔒 Salvo às ${t.savedAt||'—'} · somente leitura</div>` : ''}
         <div style="display:flex;align-items:flex-start;gap:.75rem;margin-bottom:.75rem">
           <input type="checkbox" id="dchk_${id}" ${t.checked?'checked':''}
-                 ${!isOwner?'disabled':''}
-                 onchange="_diarioToggleTask('${id}', this.checked)"
-                 style="width:1.2rem;height:1.2rem;accent-color:${cor};flex-shrink:0;margin-top:.2rem;cursor:${isOwner?'pointer':'default'}">
-          <span style="color:${isDone?'#6b7280':'#e5e7eb'};text-decoration:${isDone?'line-through':'none'};font-size:.95rem;font-weight:500;line-height:1.4">${titulo}</span>
-          ${isDone ? '<span style="color:#10b981;margin-left:auto;flex-shrink:0">✅</span>' : ''}
+                 ${!editable?'disabled':''}
+                 onchange="${editable?`_diarioToggleTask('${id}', this.checked)`:''}"
+                 style="width:1.2rem;height:1.2rem;accent-color:${cor};flex-shrink:0;margin-top:.2rem;cursor:${editable?'pointer':'default'}">
+          <span style="color:${isDone?'#6b7280':'#e5e7eb'};text-decoration:${isDone?'line-through':'none'};font-size:.9rem;font-weight:500;line-height:1.45">${titulo}</span>
+          ${isDone ? `<span style="color:#10b981;margin-left:auto;flex-shrink:0">${isLocked?'🔒':'✅'}</span>` : ''}
         </div>
         <div>
           <label style="color:${isDone?'#6b7280':'#9ca3af'};font-size:.75rem;display:block;margin-bottom:.3rem">
-            📝 Descrição da execução <span style="color:#ef4444">*</span>
-            ${!t.checked && (t.desc||'').trim().length > 0 ? '<span style="color:#f59e0b;font-size:.7rem"> (marque a caixa para concluir)</span>' : ''}
-            ${t.checked && !(t.desc||'').trim() ? '<span style="color:#ef4444;font-size:.7rem"> (descrição obrigatória para concluir)</span>' : ''}
+            📝 ${isLocked ? 'Execução registrada' : 'Descrição da execução'} ${!isLocked?'<span style="color:#ef4444">*</span>':''}
+            ${!isLocked && !t.checked && (t.desc||'').trim().length > 0 ? '<span style="color:#f59e0b;font-size:.7rem"> (marque a caixa para concluir)</span>' : ''}
+            ${!isLocked && t.checked && !(t.desc||'').trim() ? '<span style="color:#ef4444;font-size:.7rem"> (descrição obrigatória para salvar)</span>' : ''}
           </label>
-          <textarea id="ddesc_${id}" rows="5" ${!isOwner?'disabled':''}
-                    oninput="_diarioDescInput('${id}', this.value)"
-                    style="width:100%;background:${isOwner?'#0d1117':'#111827'};border:1px solid ${isDone?'rgba(16,185,129,.3)':'#374151'};
-                           border-radius:.5rem;color:${isDone?'#6b7280':'#e5e7eb'};padding:.6rem;font-size:.85rem;resize:vertical;
-                           line-height:1.5;${!isOwner?'cursor:default;opacity:.7':''}"
-                    placeholder="Descreva como esta tarefa foi executada, resultados, observações relevantes...">${t.desc||''}</textarea>
+          <textarea id="ddesc_${id}" rows="${isLocked?3:4}" ${!editable?'disabled':''}
+                    oninput="${editable?`_diarioDescInput('${id}', this.value)`:''}"
+                    style="width:100%;box-sizing:border-box;background:${editable?'#0d1117':'#111827'};
+                           border:1px solid ${isLocked?'rgba(16,185,129,.15)':(isDone?'rgba(16,185,129,.3)':'#374151')};
+                           border-radius:.5rem;color:${isLocked?'#4b5563':(isDone?'#6b7280':'#e5e7eb')};
+                           padding:.6rem;font-size:.85rem;resize:${editable?'vertical':'none'};
+                           line-height:1.5;cursor:${editable?'text':'default'};opacity:${isLocked?.7:1}"
+                    placeholder="${isLocked?'—':'Descreva como esta tarefa foi executada, resultados, observações relevantes...'}">${t.desc||''}</textarea>
         </div>
+        ${isDirRot && editable ? `
+          <button onclick="_meloSalvarTask('${id}')" id="btn-save-${id}"
+                  style="margin-top:.75rem;width:100%;background:rgba(16,185,129,.15);border:1px solid rgba(16,185,129,.4);
+                         color:#10b981;border-radius:.65rem;padding:.65rem 1rem;font-size:.85rem;font-weight:700;
+                         cursor:pointer;min-height:44px;-webkit-tap-highlight-color:transparent;box-sizing:border-box;
+                         display:${canSave?'block':'none'}">
+            💾 Salvar esta tarefa
+          </button>` : ''}
       </div>`;
   }
 
@@ -23996,18 +24723,47 @@ function _diarioChecklistHTML(mgrId, dateStr) {
       <!-- Tarefas do dia -->
       <div class="flex flex-col gap-3" id="diario-checklist-items">`;
 
+  // Banner de bloqueio por atraso > 3 dias
+  if (isDirRot && lockByOverdue) {
+    html += `
+      <div style="background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.4);border-radius:.75rem;
+                  padding:.85rem 1rem;display:flex;gap:.75rem;align-items:flex-start">
+        <span style="font-size:1.3rem;flex-shrink:0">🔴</span>
+        <div>
+          <div style="color:#ef4444;font-weight:700;font-size:.85rem;margin-bottom:.3rem">
+            Checklist bloqueado — tarefas com mais de 3 dias de atraso
+          </div>
+          <div style="color:#9ca3af;font-size:.78rem">
+            ${overdueIncompletas.length} tarefa(s) marcada(s) em vermelho abaixo precisam ser concluídas
+            para desbloquear o checklist do dia.
+          </div>
+        </div>
+      </div>`;
+  }
+
   taskTitles.forEach((titulo, i) => {
     const t = tasks[i] || { checked: false, desc: '' };
-    html += taskBlock(titulo, t, `r${i}`, m.cor, null);
+    html += taskBlock(titulo, t, `r${i}`, m.cor, null, false);
   });
 
-  // Acumuladas do dia anterior
+  // Acumuladas (agrupadas: vencidas em vermelho primeiro, recentes em amarelo)
   if (acumuladas.length) {
-    html += `<div style="margin-top:.5rem;padding-top:.5rem;border-top:1px dashed #374151">
-      <div style="color:#f59e0b;font-size:.75rem;font-weight:700;margin-bottom:.75rem">⚠️ Tarefas acumuladas do dia anterior</div>`;
-    acumuladas.forEach((a, i) => {
-      html += taskBlock(a.texto, a, `a${i}`, '#f59e0b', a);
-    });
+    const vencidas  = acumuladas.filter(a => new Date((a.origem||dateStr)+'T12:00:00') < hoje3d);
+    const recentes  = acumuladas.filter(a => new Date((a.origem||dateStr)+'T12:00:00') >= hoje3d);
+    html += `<div style="margin-top:.5rem;padding-top:.5rem;border-top:1px dashed #374151">`;
+    if (vencidas.length) {
+      html += `<div style="color:#ef4444;font-size:.75rem;font-weight:700;margin-bottom:.75rem">🔴 Tarefas vencidas (+ 3 dias)</div>`;
+      vencidas.forEach((a, i) => {
+        html += taskBlock(a.texto, a, `a${i}`, '#ef4444', a, true);
+      });
+    }
+    if (recentes.length) {
+      const offset = vencidas.length;
+      html += `<div style="color:#f59e0b;font-size:.75rem;font-weight:700;margin:${vencidas.length?'.75rem':0} 0 .75rem">⚠️ Tarefas pendentes acumuladas</div>`;
+      recentes.forEach((a, i) => {
+        html += taskBlock(a.texto, a, `a${offset+i}`, '#f59e0b', a, false);
+      });
+    }
     html += '</div>';
   }
 
@@ -24102,10 +24858,15 @@ function _diarioChecklistHTML(mgrId, dateStr) {
 
 // ─── Preencher estado a partir do weekData ────────────────────────────────────
 function _diarioFillChecks(mgrId, dateStr) {
+  const n    = _dirRotinaNTarefas(mgrId, dateStr);
   const data = _dWeekData[dateStr];
   _dPayload  = data
     ? { ...data }
-    : { tasks: Array(5).fill(null).map(()=>({checked:false,desc:''})), acumuladas:[], fotos:[], docs:[], obs:'' };
+    : { tasks: Array(n).fill(null).map(()=>({checked:false,desc:''})), acumuladas:[], fotos:[], docs:[], obs:'' };
+  // Garantir tamanho correto do array de tasks para melo/neto
+  if ((mgrId === 'melo' || mgrId === 'neto') && _dPayload.tasks.length < n) {
+    while (_dPayload.tasks.length < n) _dPayload.tasks.push({checked:false,desc:''});
+  }
 }
 
 // ─── Toggle tarefa (checkbox) ─────────────────────────────────────────────────
@@ -24114,9 +24875,7 @@ function _diarioToggleTask(id, checked) {
   const t = _diarioGetTask(id);
   if (!t) return;
   t.checked = checked;
-  // Se for extra da diretoria, persiste imediatamente
   if (id.startsWith('x')) _diarioSalvarExtrasDir(_dMgrAtivo, _dDiaSel);
-  // Atualizar visual imediato do card
   const card = document.getElementById(`task-card-${id}`);
   const desc = (document.getElementById(`ddesc_${id}`)?.value||'').trim();
   const isDone = checked && desc.length > 0;
@@ -24124,6 +24883,7 @@ function _diarioToggleTask(id, checked) {
     card.style.background = isDone ? 'rgba(16,185,129,.08)' : 'rgba(31,41,55,.6)';
     card.style.border     = isDone ? '1px solid rgba(16,185,129,.3)' : '1px solid #1f2937';
   }
+  _meloAtualizarBotaoSalvar(id, isDone);
 }
 
 // ─── Atualizar descrição ──────────────────────────────────────────────────────
@@ -24132,7 +24892,6 @@ function _diarioDescInput(id, val) {
   if (!t) return;
   t.desc = val;
   if (id.startsWith('x')) _diarioSalvarExtrasDir(_dMgrAtivo, _dDiaSel);
-  // Atualizar visual
   const card    = document.getElementById(`task-card-${id}`);
   const checked = document.getElementById(`dchk_${id}`)?.checked || false;
   const isDone  = checked && val.trim().length > 0;
@@ -24140,6 +24899,14 @@ function _diarioDescInput(id, val) {
     card.style.background = isDone ? 'rgba(16,185,129,.08)' : 'rgba(31,41,55,.6)';
     card.style.border     = isDone ? '1px solid rgba(16,185,129,.3)' : '1px solid #1f2937';
   }
+  _meloAtualizarBotaoSalvar(id, isDone);
+}
+
+// ─── Mostrar/ocultar botão de salvar individual (melo) ───────────────────────
+function _meloAtualizarBotaoSalvar(id, isDone) {
+  if (_dMgrAtivo !== 'melo') return;
+  const btn = document.getElementById(`btn-save-${id}`);
+  if (btn) btn.style.display = isDone ? 'block' : 'none';
 }
 
 function _diarioGetTask(id) {
@@ -24221,7 +24988,7 @@ async function _diarioSalvar() {
 
   // Coletar todos os dados do DOM
   const obs = document.getElementById('diario-obs')?.value || '';
-  if (!_dPayload) _dPayload = { tasks: Array(5).fill(null).map(()=>({checked:false,desc:''})), acumuladas:[], fotos:[], docs:[], obs:'' };
+  if (!_dPayload) _dPayload = { tasks: Array(_dirRotinaNTarefas(_dMgrAtivo,dateStr)).fill(null).map(()=>({checked:false,desc:''})), acumuladas:[], fotos:[], docs:[], obs:'' };
   _dPayload.obs = obs;
 
   // Verificar se todas as tarefas marcadas têm descrição
@@ -24334,6 +25101,423 @@ window._diarioRemAnexo      = _diarioRemAnexo;
 window._diarioAcumular      = _diarioAcumular;
 window._mgrStopListeners    = _mgrStopListeners;
 window._mgrShowUpdateBanner = _mgrShowUpdateBanner;
+window._meloRegerarRotina   = _meloRegerarRotina;
+
+// ── Autosave com debounce ─────────────────────────────────────────────────────
+let _meloAutoSaveTimer = null;
+function _meloAgendarAutoSave() {
+  clearTimeout(_meloAutoSaveTimer);
+  _meloAutoSaveTimer = setTimeout(async () => {
+    if (!_dMgrAtivo || !['melo','neto'].includes(_dMgrAtivo) || !_dPayload || !_dDiaSel) return;
+    try {
+      await _diarioSave(_dMgrAtivo, _dDiaSel, _dPayload);
+      _dWeekData[_dDiaSel] = JSON.parse(JSON.stringify(_dPayload));
+      const ind = document.getElementById(`${_dMgrAtivo}-autosave-ind`);
+      if (ind) { ind.textContent = '✓ salvo'; setTimeout(() => { if (ind) ind.textContent = ''; }, 2500); }
+    } catch(e) {}
+  }, 3500);
+}
+
+// ── Listeners diretos no DOM para os cards do melo ───────────────────────────
+function _meloAnexarTask(id) {
+  const cb  = document.getElementById(`dchk_${id}`);
+  const ta  = document.getElementById(`ddesc_${id}`);
+  const btn = document.getElementById(`btn-save-${id}`);
+  if (!cb || !ta) return;
+
+  const atualizar = () => {
+    const isDone = cb.checked && ta.value.trim().length > 0;
+    const card = document.getElementById(`task-card-${id}`);
+    if (card) {
+      card.style.background = isDone ? 'rgba(16,185,129,.08)' : 'rgba(31,41,55,.6)';
+      card.style.border     = isDone ? '1px solid rgba(16,185,129,.3)' : '1px solid #1f2937';
+    }
+    if (btn) btn.style.display = isDone ? 'block' : 'none';
+    // Se era tarefa acumulada, verificar se o lock pode ser removido
+    if (id.startsWith('a')) _meloVerificarDesbloqueio();
+  };
+
+  cb.addEventListener('change', function() {
+    const t = _diarioGetTask(id);
+    if (t) t.checked = this.checked;
+    atualizar();
+    _meloAgendarAutoSave();
+  });
+  ta.addEventListener('input', function() {
+    const t = _diarioGetTask(id);
+    if (t) t.desc = this.value;
+    atualizar();
+    _meloAgendarAutoSave();
+  });
+  if (btn && id.startsWith('r')) btn.addEventListener('click', () => _meloSalvarTask(id));
+}
+
+function _meloVerificarDesbloqueio() {
+  if (!_dPayload) return;
+  const hoje3d = new Date(); hoje3d.setDate(hoje3d.getDate() - 3);
+  const aindaVencidas = (_dPayload.acumuladas||[]).filter(a => {
+    if (a.checked && (a.desc||'').trim()) return false;
+    return new Date((a.origem||_dDiaSel)+'T12:00:00') < hoje3d;
+  });
+  if (aindaVencidas.length === 0) {
+    // Todas as vencidas concluídas → re-render para remover o lock
+    _diarioRenderMgr(_dMgrAtivo || 'melo');
+  }
+}
+
+function _meloAnexarListeners(dateStr) {
+  // Tarefas regulares (r0…r9)
+  for (let i = 0; i < _dirRotinaNTarefas(_dMgrAtivo, _dDiaSel); i++) _meloAnexarTask(`r${i}`);
+  // Tarefas acumuladas (a0…aN)
+  for (let i = 0; i < 30; i++) {
+    if (!document.getElementById(`dchk_a${i}`)) break;
+    _meloAnexarTask(`a${i}`);
+  }
+  // Obs gerais
+  const obsEl = document.getElementById('diario-obs');
+  if (obsEl) obsEl.addEventListener('input', function() {
+    if (_dPayload) _dPayload.obs = this.value;
+    _meloAgendarAutoSave();
+  });
+}
+window._meloAnexarListeners = _meloAnexarListeners;
+
+// ── Salvar tarefa individual do Melo (imutável após salvo) ────────────────────
+async function _meloSalvarTask(id) {
+  if (!_dPayload || !_dMgrAtivo || !_dDiaSel) return;
+  const t = _diarioGetTask(id);
+  if (!t || !t.checked || !(t.desc||'').trim()) return;
+
+  const btn = document.getElementById(`btn-save-${id}`);
+  if (btn) { btn.disabled = true; btn.textContent = '⏳ Salvando...'; }
+
+  const now  = new Date();
+  const hora = now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
+  t.locked  = true;
+  t.savedAt = hora;
+
+  try {
+    await _diarioSave(_dMgrAtivo, _dDiaSel, _dPayload);
+    _dWeekData[_dDiaSel] = JSON.parse(JSON.stringify(_dPayload));
+
+    // Atualizar visual do card sem re-render completo
+    const card = document.getElementById(`task-card-${id}`);
+    if (card) {
+      card.style.background = 'rgba(16,185,129,.05)';
+      card.style.border     = '1px solid rgba(16,185,129,.2)';
+      const ta = document.getElementById(`ddesc_${id}`);
+      if (ta) { ta.disabled = true; ta.style.opacity = '.7'; ta.style.cursor = 'default'; ta.style.resize = 'none'; }
+      const cb = document.getElementById(`dchk_${id}`);
+      if (cb) cb.disabled = true;
+      if (btn) btn.outerHTML =
+        `<div style="color:#10b981;font-size:.72rem;margin-top:.5rem;text-align:right">🔒 Salvo às ${hora} · somente leitura</div>`;
+      // Badge no topo do card
+      const existing = card.querySelector('[data-lock-badge]');
+      if (!existing) {
+        const badge = document.createElement('div');
+        badge.dataset.lockBadge = '1';
+        badge.style.cssText = 'color:#10b981;font-size:.68rem;font-weight:600;margin-bottom:.4rem;text-align:right';
+        badge.textContent   = `🔒 Salvo às ${hora} · somente leitura`;
+        card.insertBefore(badge, card.firstChild);
+      }
+    }
+    // Atualizar contador de concluídas
+    _meloAtualizarContador();
+  } catch(e) {
+    t.locked  = false;
+    t.savedAt = null;
+    if (btn) { btn.disabled = false; btn.textContent = '💾 Salvar esta tarefa'; }
+  }
+}
+
+function _meloAtualizarContador() {
+  if (!_dPayload) return;
+  const allTasks = [...(_dPayload.tasks||[]), ...(_dPayload.acumuladas||[])];
+  const done = allTasks.filter(t => t.checked && (t.desc||'').trim()).length;
+  const el   = document.querySelector('#diario-checklist-items')?.closest('[style*="background:#111827"]')?.querySelector('[style*="font-weight:600"]');
+  if (el) el.textContent = `${done}/${allTasks.length} concluídas ${done === allTasks.length && allTasks.length ? '✅' : ''}`;
+}
+window._meloSalvarTask = _meloSalvarTask;
+
+// ── Resumo Mensal ─────────────────────────────────────────────────────────────
+async function _meloAbrirResumoMes() {
+  const overlay = document.createElement('div');
+  overlay.id = 'melo-resumo-overlay';
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:9999;display:flex;align-items:flex-start;justify-content:center;overflow-y:auto;padding:1.5rem 0';
+  overlay.innerHTML = '<div style="color:#f59e0b;font-size:1rem;margin:auto;padding:3rem">⏳ Carregando dados do mês...</div>';
+  document.body.appendChild(overlay);
+
+  try {
+    const hoje   = new Date();
+    const ano    = hoje.getFullYear();
+    const mes    = hoje.getMonth() + 1;
+    const dMes   = hoje.getDate();
+    const mesNome = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'][mes-1];
+
+    // Datas do mês até hoje
+    const dateStrs = [];
+    for (let d = 1; d <= dMes; d++)
+      dateStrs.push(`${ano}-${String(mes).padStart(2,'0')}-${String(d).padStart(2,'0')}`);
+
+    // Dias úteis (seg-sex)
+    const diasUteis = dateStrs.filter(ds => { const dw = new Date(ds+'T12:00:00').getDay(); return dw >= 1 && dw <= 5; });
+
+    // Carregar dados e títulos em paralelo
+    const [resDados, resTitulos] = await Promise.all([
+      Promise.all(dateStrs.map(ds => _fsRead(`diario_melo_${ds}`).then(d=>({ds,d})).catch(()=>({ds,d:null})))),
+      Promise.all(dateStrs.map(ds => _fsRead(`diario_melo_titulos_${ds}`).then(d=>({ds,d})).catch(()=>({ds,d:null}))))
+    ]);
+    const dadosPorDia   = Object.fromEntries(resDados.map(({ds,d})=>[ds,d]));
+    const titulosPorDia = Object.fromEntries(resTitulos.map(({ds,d})=>[ds,d]));
+
+    // Estatísticas globais
+    let diasComRotina = 0, totalPoss = 0, totalConc = 0;
+    diasUteis.forEach(ds => {
+      const dado  = dadosPorDia[ds];
+      const tasks = dado?.tasks || [];
+      const conc  = tasks.filter(t => t.checked && (t.desc||'').trim()).length;
+      if (conc > 0) diasComRotina++;
+      totalPoss += tasks.length;
+      totalConc += conc;
+    });
+    const txExec = totalPoss > 0 ? Math.round(totalConc/totalPoss*100) : 0;
+
+    // D360
+    const fCur = v => 'R$ ' + (v >= 1000000 ? (v/1000000).toFixed(2)+'M' : Math.round(v/1000)+'k');
+    const prop  = (D360.diasDecorridos||1)/(D360.diasMes||31);
+    const totalRede = Object.values(D360.lojas).reduce((s,l)=>s+(l.total||0),0);
+    const metaP    = D360.meta_rede * prop;
+    const pctRede  = metaP>0 ? Math.round(totalRede/metaP*100) : 0;
+    const subRes   = {};
+    ['t1','t2','t3'].forEach(sk => {
+      const s   = D360.subredes[sk];
+      const tot = Object.values(D360.lojas).filter(l=>l.sub===sk).reduce((s,l)=>s+(l.total||0),0);
+      const mp  = (s.meta||0)*prop;
+      subRes[sk] = { tot, mp, pct: mp>0?Math.round(tot/mp*100):0 };
+    });
+
+    const DNOM = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+    const corPct = p => p>=100?'#10b981':p>=80?'#f59e0b':'#ef4444';
+
+    // ── HTML do modal ────────────────────────────────────────────────
+    let html = `
+      <div style="background:#0d1117;border:1px solid rgba(99,102,241,.35);border-radius:1.25rem;
+           max-width:780px;width:95vw;padding:1.75rem;position:relative;margin:auto">
+
+        <!-- Header -->
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:.75rem;margin-bottom:1.5rem">
+          <div>
+            <div style="color:#818cf8;font-size:1.25rem;font-weight:800">📋 Rotina Melo — ${mesNome} ${ano}</div>
+            <div style="color:#6b7280;font-size:.75rem;margin-top:.2rem">Gerado em ${hoje.toLocaleString('pt-BR')}</div>
+          </div>
+          <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+            <button onclick="_meloBaixarResumoMes()"
+                    style="background:rgba(99,102,241,.15);border:1px solid rgba(99,102,241,.4);color:#818cf8;
+                           border-radius:.65rem;padding:.45rem 1rem;font-size:.8rem;font-weight:700;cursor:pointer;min-height:38px">
+              📥 Baixar PDF
+            </button>
+            <button onclick="document.getElementById('melo-resumo-overlay').remove()"
+                    style="background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);color:#ef4444;
+                           border-radius:.65rem;padding:.45rem 1rem;font-size:.8rem;font-weight:700;cursor:pointer;min-height:38px">
+              ✕ Fechar
+            </button>
+          </div>
+        </div>
+
+        <!-- KPIs -->
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:.65rem;margin-bottom:1.25rem">
+          <div style="background:#111827;border:1px solid #1f2937;border-radius:.75rem;padding:.9rem;text-align:center">
+            <div style="color:${corPct(pctRede)};font-size:1.5rem;font-weight:800">${pctRede}%</div>
+            <div style="color:#6b7280;font-size:.7rem">Meta da rede</div>
+            <div style="color:#9ca3af;font-size:.72rem">${fCur(totalRede)}</div>
+          </div>
+          <div style="background:#111827;border:1px solid #1f2937;border-radius:.75rem;padding:.9rem;text-align:center">
+            <div style="font-size:.85rem;font-weight:700;color:#6366f1">T1 ${subRes.t1.pct}%</div>
+            <div style="font-size:.8rem;font-weight:600;color:#818cf8">T2 ${subRes.t2.pct}%</div>
+            <div style="font-size:.75rem;color:#a78bfa">T3 ${subRes.t3.pct}%</div>
+          </div>
+          <div style="background:#111827;border:1px solid #1f2937;border-radius:.75rem;padding:.9rem;text-align:center">
+            <div style="color:#10b981;font-size:1.5rem;font-weight:800">${diasComRotina}</div>
+            <div style="color:#6b7280;font-size:.7rem">Dias com rotina</div>
+            <div style="color:#9ca3af;font-size:.72rem">de ${diasUteis.length} dias úteis</div>
+          </div>
+          <div style="background:#111827;border:1px solid #1f2937;border-radius:.75rem;padding:.9rem;text-align:center">
+            <div style="color:${corPct(txExec)};font-size:1.5rem;font-weight:800">${txExec}%</div>
+            <div style="color:#6b7280;font-size:.7rem">Taxa de execução</div>
+            <div style="color:#9ca3af;font-size:.72rem">${totalConc}/${totalPoss} tarefas</div>
+          </div>
+        </div>
+
+        <!-- Barra meta rede -->
+        <div style="margin-bottom:1.5rem">
+          <div style="display:flex;justify-content:space-between;color:#6b7280;font-size:.72rem;margin-bottom:.3rem">
+            <span>Meta proporcional: ${fCur(metaP)}</span><span>${fCur(totalRede)} · ${pctRede}%</span>
+          </div>
+          <div style="background:#1f2937;border-radius:999px;height:.45rem">
+            <div style="background:${corPct(pctRede)};width:${Math.min(pctRede,100)}%;height:.45rem;border-radius:999px"></div>
+          </div>
+        </div>
+
+        <!-- Histórico diário -->
+        <div style="border-top:1px solid #1f2937;padding-top:1.1rem">
+          <div style="color:#818cf8;font-size:.85rem;font-weight:700;margin-bottom:.85rem">📅 Histórico por dia</div>`;
+
+    for (const ds of [...diasUteis].reverse()) {
+      const dado    = dadosPorDia[ds];
+      const titDoc  = titulosPorDia[ds];
+      const tasks   = dado?.tasks || [];
+      const conc    = tasks.filter(t => t.checked && (t.desc||'').trim()).length;
+      const dow     = new Date(ds+'T12:00:00').getDay();
+      const label   = `${DNOM[dow]} ${ds.slice(8)}/${String(mes).padStart(2,'0')}`;
+      const titulos = titDoc?.titulos || [];
+
+      if (!dado || conc === 0) {
+        html += `<div style="margin-bottom:.4rem;padding:.5rem .75rem;background:#111827;border:1px solid #1a2332;
+                      border-radius:.55rem;display:flex;justify-content:space-between">
+          <span style="color:#374151;font-size:.78rem">${label}</span>
+          <span style="color:#374151;font-size:.72rem">— sem registro</span></div>`;
+        continue;
+      }
+
+      const corD = conc===tasks.length?'#10b981':conc>0?'#f59e0b':'#6b7280';
+      html += `<details style="margin-bottom:.45rem">
+        <summary style="cursor:pointer;padding:.6rem .75rem;background:#111827;border:1px solid #1f2937;
+                 border-radius:.6rem;list-style:none;display:flex;justify-content:space-between;align-items:center">
+          <span style="color:#e5e7eb;font-size:.82rem;font-weight:600">${label}</span>
+          <span style="color:${corD};font-size:.78rem;font-weight:700">${conc}/${tasks.length} ✓</span>
+        </summary>
+        <div style="padding:.65rem .75rem .5rem;background:rgba(17,24,39,.6);border:1px solid #1f2937;
+                    border-top:none;border-radius:0 0 .6rem .6rem">`;
+
+      tasks.forEach((t, i) => {
+        const titulo = (titulos[i]||`Tarefa ${i+1}`).replace(/^⏰\s*\d{2}:\d{2}\s*\(\d+min\)\s*—\s*/,'');
+        const hora   = t.savedAt ? ` <span style="color:#10b981;font-size:.62rem">🔒${t.savedAt}</span>` : '';
+        const icon   = t.checked&&(t.desc||'').trim() ? '✅' : t.checked ? '☑️' : '○';
+        const cor    = t.checked&&(t.desc||'').trim() ? '#6b7280' : '#4b5563';
+        html += `<div style="padding:.4rem 0;border-bottom:1px solid #1a2332">
+          <div style="display:flex;gap:.4rem;align-items:flex-start;margin-bottom:${(t.desc||'').trim()?'.25rem':'0'}">
+            <span style="flex-shrink:0;font-size:.8rem">${icon}</span>
+            <span style="color:${cor};font-size:.75rem;line-height:1.4">${titulo}${hora}</span>
+          </div>
+          ${(t.desc||'').trim()?`<div style="color:#d1d5db;font-size:.78rem;line-height:1.5;padding-left:1.3rem;
+              white-space:pre-wrap;word-break:break-word">${t.desc.trim()}</div>`:''}
+        </div>`;
+      });
+
+      if ((dado.obs||'').trim())
+        html += `<div style="margin-top:.35rem;color:#6b7280;font-size:.72rem;font-style:italic">💬 ${dado.obs.trim()}</div>`;
+
+      html += `</div></details>`;
+    }
+
+    html += `</div></div>`;
+    overlay.innerHTML = html;
+
+    // Salvar referência para PDF
+    window._meloResumoData = { ano, mes, mesNome, diasUteis, dadosPorDia, titulosPorDia,
+      totalRede, metaP, pctRede, subRes, diasComRotina, totalConc, totalPoss, txExec };
+
+  } catch(e) {
+    overlay.innerHTML = `<div style="color:#ef4444;text-align:center;padding:3rem;margin:auto">
+      Erro ao carregar: ${e.message}<br><br>
+      <button onclick="document.getElementById('melo-resumo-overlay').remove()"
+              style="color:#9ca3af;background:none;border:1px solid #374151;border-radius:.5rem;padding:.5rem 1.25rem;cursor:pointer">Fechar</button></div>`;
+  }
+}
+
+async function _meloBaixarResumoMes() {
+  const rd = window._meloResumoData;
+  if (!rd) return;
+  const { jsPDF } = window.jspdf;
+  if (!jsPDF) { alert('jsPDF não disponível'); return; }
+
+  const doc  = new jsPDF({ orientation:'portrait', unit:'mm', format:'a4' });
+  const fCur = v => 'R$ '+(v>=1000000?(v/1000000).toFixed(2)+'M':Math.round(v/1000)+'k');
+  const DNOM = ['Dom','Seg','Ter','Qua','Qui','Sex','Sab'];
+  const W = 210, M = 14, LW = W - 2*M;
+  let y = 0;
+
+  const pg = (need=15) => { if (y+need>283) { doc.addPage(); y=15; } };
+  const txt = (t,x,size=9,r=229,g=231,b=235,bold=false) => {
+    doc.setFontSize(size); doc.setTextColor(r,g,b);
+    doc.setFont('helvetica', bold?'bold':'normal');
+    const lines = doc.splitTextToSize(String(t), LW-(x-M));
+    doc.text(lines, x, y);
+    return lines.length;
+  };
+
+  // Capa
+  doc.setFillColor(13,17,23); doc.rect(0,0,210,297,'F');
+  doc.setFillColor(31,41,55); doc.rect(0,0,210,38,'F');
+  doc.setFontSize(15); doc.setFont('helvetica','bold'); doc.setTextColor(129,140,248);
+  doc.text(`ROTINA DIARIA MELO - ${rd.mesNome.toUpperCase()} ${rd.ano}`, M, 16);
+  doc.setFontSize(8); doc.setFont('helvetica','normal'); doc.setTextColor(107,114,128);
+  doc.text(`Gerado em ${new Date().toLocaleString('pt-BR')}`, M, 24);
+  doc.setFontSize(9); doc.setTextColor(156,163,175);
+  doc.text(`Faturamento: ${fCur(rd.totalRede)} / ${fCur(rd.metaP)} (${rd.pctRede}%)   T1 ${rd.subRes.t1.pct}%  T2 ${rd.subRes.t2.pct}%  T3 ${rd.subRes.t3.pct}%`, M, 31);
+  y = 46;
+
+  // Resumo execucao
+  doc.setFontSize(10); doc.setFont('helvetica','bold'); doc.setTextColor(129,140,248);
+  doc.text('EXECUCAO DA ROTINA', M, y); y += 6;
+  const linhasRes = [
+    `Dias com rotina: ${rd.diasComRotina} de ${rd.diasUteis.length} dias uteis`,
+    `Taxa de execucao: ${rd.txExec}%  (${rd.totalConc}/${rd.totalPoss} tarefas concluidas)`,
+  ];
+  linhasRes.forEach(l => { doc.setFontSize(8.5); doc.setFont('helvetica','normal'); doc.setTextColor(209,213,219); doc.text(l,M,y); y+=5.5; });
+  y += 4;
+
+  // Historico
+  doc.setFontSize(10); doc.setFont('helvetica','bold'); doc.setTextColor(129,140,248);
+  doc.text('HISTORICO DIARIO', M, y); y += 7;
+
+  for (const ds of rd.diasUteis) {
+    const dado    = rd.dadosPorDia[ds];
+    const titDoc  = rd.titulosPorDia[ds];
+    const tasks   = dado?.tasks || [];
+    const conc    = tasks.filter(t=>t.checked&&(t.desc||'').trim()).length;
+    if (!dado || conc===0) continue;
+
+    pg(14);
+    const dow = new Date(ds+'T12:00:00').getDay();
+    const lbl = `${DNOM[dow]} ${ds.slice(8)}/${String(rd.mes).padStart(2,'0')}   ${conc}/${tasks.length} concluidas`;
+    doc.setFillColor(31,41,55); doc.rect(M, y-4.5, LW, 7.5, 'F');
+    doc.setFontSize(9); doc.setFont('helvetica','bold'); doc.setTextColor(229,231,235);
+    doc.text(lbl, M+2, y); y += 6;
+
+    const titulos = titDoc?.titulos || [];
+    tasks.forEach((t,i) => {
+      if (!t.checked && !(t.desc||'').trim()) return;
+      pg(10);
+      const titulo = (titulos[i]||`Tarefa ${i+1}`).replace(/^⏰\s*\d{2}:\d{2}\s*\(\d+min\)\s*—\s*/,'');
+      const ok = t.checked&&(t.desc||'').trim();
+      doc.setFontSize(7.5); doc.setFont('helvetica','bold');
+      doc.setTextColor(ok?16:107, ok?185:114, ok?129:128);
+      doc.text(ok?'[OK]':'[  ]', M+2, y);
+      doc.setFont('helvetica','normal'); doc.setTextColor(156,163,175);
+      const tw = doc.splitTextToSize(titulo, LW-18);
+      doc.text(tw, M+12, y); y += tw.length*4.2;
+
+      if ((t.desc||'').trim()) {
+        pg(8); doc.setFontSize(7.5); doc.setTextColor(107,114,128);
+        const dw = doc.splitTextToSize(t.desc.trim(), LW-16);
+        doc.text(dw, M+14, y); y += dw.length*3.8+1.5;
+      }
+    });
+
+    if ((dado.obs||'').trim()) {
+      pg(7); doc.setFontSize(7); doc.setTextColor(107,114,128);
+      const ow = doc.splitTextToSize('Obs: '+dado.obs.trim(), LW-4);
+      doc.text(ow, M+2, y); y += ow.length*3.8;
+    }
+    y += 4;
+  }
+
+  doc.save(`Rotina_Melo_${rd.mesNome}_${rd.ano}.pdf`);
+}
+
+window._meloAbrirResumoMes  = _meloAbrirResumoMes;
+window._meloBaixarResumoMes = _meloBaixarResumoMes;
 
 // ══════════════════════════════════════════════════════════════════
 // PAINEL DIRETORIA
@@ -24392,7 +25576,7 @@ async function _diarioDirOpen() {
   _dirDiaSel = _isSabado() ? _dirSemana[4] : (new Date().getDay()===0 ? _dirSemana[0] : _hoje());
 
   // Carregar carga inicial
-  const mgrIds = Object.keys(_DIARIO_MGR);
+  const mgrIds = Object.keys(_DIARIO_MGR).filter(id => id !== 'melo');
   await Promise.all(mgrIds.map(async mgrId => {
     _dirWeekData[mgrId] = {};
     _dirExtras[mgrId]   = {};
@@ -24492,7 +25676,7 @@ function _diarioDirRender() {
   const container = document.getElementById('diario-view-diretoria');
   if (!container) return;
 
-  const mgrIds = Object.keys(_DIARIO_MGR);
+  const mgrIds = Object.keys(_DIARIO_MGR).filter(id => id !== 'melo' || _isMeloUser());
 
   // ── Macro cards de cada gerente
   const macroCards = mgrIds.map(mgrId => {

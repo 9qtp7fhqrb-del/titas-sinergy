@@ -7040,6 +7040,9 @@ function abrirDetalhesFat(tipo, val) {
     body.innerHTML = html;
     modal.style.display = 'flex';
     modal.classList.remove('hidden');
+    // Botão DIAG. REDE — só para cargos com acesso
+    var btnDR = document.getElementById('btn-diag-rede-fat');
+    if (btnDR) btnDR.style.display = _hasDiagAccess() ? 'flex' : 'none';
 }
 function _fecharDetalhesFat() {
     var modal = document.getElementById('modal-detalhes-fat');
@@ -9526,6 +9529,314 @@ async function _diagSalvarLancar(lojaKey, nomeL) {
         if (btnSalvar) { btnSalvar.disabled = false; btnSalvar.innerHTML = '<i class="fas fa-save"></i> Salvar'; }
         alert('Erro ao salvar: ' + (e.message || e));
     }
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+//   DIAGNÓSTICO DA REDE — agrega ts_diagnostico de todas as lojas
+// ════════════════════════════════════════════════════════════════════════════
+
+const _DIAG_REDE_SUBREDES = {
+    t1: { nome:'Titãs 1', gestor:'Talysson', cor:'#f59e0b', ico:'🦁',
+          lojas:['cariacica','itabuna','moxuara','praiadacosta'] },
+    t2: { nome:'Titãs 2', gestor:'Adriel',   cor:'#38bdf8', ico:'⚡',
+          lojas:['barreiras','teixeira','laranjeiras'] },
+    t3: { nome:'Titãs 3', gestor:'Arthur',   cor:'#34d399', ico:'🌊',
+          lojas:['saomateus','serra','montserrat','linhares'] }
+};
+const _DIAG_REDE_NOMES = {
+    cariacica:'Cariacica', itabuna:'Itabuna', moxuara:'Moxuara', praiadacosta:'Praia da Costa',
+    barreiras:'Barreiras', teixeira:'Teixeira', laranjeiras:'Laranjeiras',
+    saomateus:'São Mateus', serra:'Serra', montserrat:'Montserrat', linhares:'Linhares'
+};
+
+async function abrirDiagnosticoRede() {
+    if (!_hasDiagAccess()) return;
+    const modal = document.getElementById('_modal-diag');
+    const body  = document.getElementById('_modal-diag-body');
+    if (!modal || !body) return;
+    body.innerHTML = `<div style="text-align:center;padding:3rem 0;">
+        <div style="font-size:1.8rem;margin-bottom:.75rem;">🔍</div>
+        <div style="color:#9ca3af;font-size:.75rem;">Carregando diagnóstico da rede...</div>
+        <div style="color:#6b7280;font-size:.65rem;margin-top:.4rem;">Consultando todas as 11 lojas</div>
+    </div>`;
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+
+    // Buscar dados de todas as lojas (último dado disponível em até 14 dias)
+    const todasLojas = Object.values(_DIAG_REDE_SUBREDES).flatMap(s => s.lojas);
+    const hoje = new Date().toISOString().slice(0,10);
+    const dadosPorLoja = {};
+
+    if (window._acadDB) {
+        await Promise.all(todasLojas.map(async lojaKey => {
+            for (let i = 0; i < 14; i++) {
+                const d = new Date(); d.setDate(d.getDate() - i);
+                const ds = d.toISOString().slice(0,10);
+                try {
+                    const snap = await window._acadDB.collection('ts_diagnostico').doc(`${lojaKey}_${ds}`).get();
+                    if (snap.exists) { dadosPorLoja[lojaKey] = { ...snap.data(), _ds: ds }; break; }
+                } catch(e) {}
+            }
+        }));
+    }
+
+    _renderDiagnosticoRede(body, dadosPorLoja);
+}
+
+function _renderDiagnosticoRede(el, dadosPorLoja) {
+    const _d   = _360D();
+    const lojas = _d?.lojas || {};
+    const dias  = Math.max(1, _d?.diasDecorridos || 1);
+    const diasM = _d?.diasMes || 31;
+    const brl   = v => 'R$ ' + Number(v).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+    const brlK  = v => { if(v>=1000000) return 'R$'+(v/1000000).toFixed(1)+'M'; if(v>=1000) return 'R$'+(v/1000).toFixed(0)+'k'; return brl(v); };
+
+    // ── Agregar dados de diagnóstico (conversão) ──────────────────────────
+    let redeTotal=0, redeVendas=0;
+    const redeMotivos = {};
+    const dadosSubrede = {};
+    Object.entries(_DIAG_REDE_SUBREDES).forEach(([sk, sub]) => {
+        let subTotal=0, subVendas=0;
+        const subMotivos = {};
+        const lojasData = [];
+        sub.lojas.forEach(lk => {
+            const d = dadosPorLoja[lk];
+            const an = d?.analise || {};
+            const tc = an.total_clientes || 0;
+            const tv = an.total_vendas   || 0;
+            subTotal  += tc; subVendas += tv;
+            redeTotal += tc; redeVendas+= tv;
+            Object.entries(an.motivos_nv || {}).forEach(([m,q]) => {
+                redeMotivos[m]  = (redeMotivos[m]  || 0) + q;
+                subMotivos[m]   = (subMotivos[m]   || 0) + q;
+            });
+            lojasData.push({ key:lk, nome:_DIAG_REDE_NOMES[lk]||lk,
+                total:tc, vendas:tv, nv:tc-tv,
+                taxa:tc>0?((tv/tc)*100).toFixed(1):null,
+                motivos:Object.entries(an.motivos_nv||{}).sort((a,b)=>b[1]-a[1]).slice(0,2),
+                ds:d?._ds||null, an });
+        });
+        dadosSubrede[sk] = { ...sub, total:subTotal, vendas:subVendas,
+            taxa:subTotal>0?((subVendas/subTotal)*100).toFixed(1):null,
+            motivos:Object.entries(subMotivos).sort((a,b)=>b[1]-a[1]).slice(0,3),
+            lojas:lojasData };
+    });
+    const redeTaxa = redeTotal>0 ? ((redeVendas/redeTotal)*100).toFixed(1) : null;
+    const redeNV   = redeTotal - redeVendas;
+    const topMotivos = Object.entries(redeMotivos).sort((a,b)=>b[1]-a[1]).slice(0,5);
+    const corTaxa = t => !t?'#9ca3af':parseFloat(t)>=40?'#34d399':parseFloat(t)>=25?'#fbbf24':'#f87171';
+
+    // ── D360: desempenho mensal por subrede ────────────────────────────────
+    const d360sub = {};
+    Object.entries(_DIAG_REDE_SUBREDES).forEach(([sk,sub]) => {
+        let fat=0, meta=0, metaAcess=0, fatAcess=0;
+        sub.lojas.forEach(lk => {
+            const l = lojas[lk] || {};
+            fat     += l.total || 0;
+            meta    += l.meta  || 0;
+            fatAcess+= (l.acessorios?.total||0);
+            metaAcess+= (l.metaAcess||0);
+        });
+        const proj = dias > 0 ? Math.round(fat/dias*diasM) : 0;
+        d360sub[sk] = { fat, meta, proj, pct:meta>0?Math.round(fat/meta*100):0,
+            fatAcess, metaAcess, pctA:metaAcess>0?Math.round(fatAcess/metaAcess*100):0 };
+    });
+    const redeD360fat  = Object.values(lojas).reduce((s,l)=>s+(l.total||0),0);
+    const redeD360meta = Object.values(lojas).reduce((s,l)=>s+(l.meta||0),0);
+    const redeD360pct  = redeD360meta>0?Math.round(redeD360fat/redeD360meta*100):0;
+    const redeD360proj = dias>0?Math.round(redeD360fat/dias*diasM):0;
+
+    // ── Recomendações automáticas ──────────────────────────────────────────
+    const recRede = [];
+    if (redeTaxa && parseFloat(redeTaxa) < 25)
+        recRede.push('Taxa de conversão crítica na rede — revisar abordagem e qualificação de cliente com todos os gerentes.');
+    else if (redeTaxa && parseFloat(redeTaxa) < 38)
+        recRede.push('Taxa de conversão abaixo do ideal — reforçar técnicas de fechamento e tratamento de objeções.');
+    if (topMotivos[0]) recRede.push(`Motivo #1 de NV: "${topMotivos[0][0]}" (${topMotivos[0][1]}x) — este ponto deve ser trabalhado na próxima matinal de cada subrede.`);
+    if (redeD360pct < 60) recRede.push(`Faturamento mensal em ${redeD360pct}% da meta — ritmo atual projeta ${brlK(redeD360proj)}, requer aceleração urgente.`);
+    else if (redeD360pct < 80) recRede.push(`Faturamento em ${redeD360pct}% da meta — projeção de ${brlK(redeD360proj)}, manter ritmo e focar nos próximos dias.`);
+
+    // Lojas abaixo de 25% de conversão (críticas)
+    const lojasCrit = Object.values(dadosSubrede).flatMap(s=>s.lojas)
+        .filter(l=>l.taxa!==null&&parseFloat(l.taxa)<25&&l.total>0);
+    if (lojasCrit.length) recRede.push(`Atenção prioritária: ${lojasCrit.map(l=>l.nome).join(', ')} — conversão crítica, intervenção imediata.`);
+
+    // Lojas sem dado de diagnóstico
+    const semDiag = Object.values(dadosSubrede).flatMap(s=>s.lojas).filter(l=>!l.ds);
+    if (semDiag.length) recRede.push(`Sem diagnóstico recente: ${semDiag.map(l=>l.nome).join(', ')} — cobrar lançamento nas folhas de controle.`);
+
+    // ── Chips utilitários ─────────────────────────────────────────────────
+    const chip = (lbl,val,cor,bg='rgba(255,255,255,.04)',border='rgba(255,255,255,.08)') => `
+        <div style="background:${bg};border:1px solid ${border};border-radius:.65rem;padding:.55rem .7rem;text-align:center;">
+            <div style="font-size:.44rem;color:#6b7280;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:.18rem;">${lbl}</div>
+            <div style="font-size:1.05rem;font-weight:900;color:${cor};line-height:1.1;">${val}</div>
+        </div>`;
+
+    const lojaRow = (l, cor) => {
+        const taxa = l.taxa;
+        const cT   = corTaxa(taxa);
+        const pct  = taxa ? parseFloat(taxa) : 0;
+        const barW = Math.min(100, pct/50*100);
+        const motPrincipal = l.motivos[0] ? `<span style="font-size:.52rem;color:#f87171;background:rgba(239,68,68,.1);border-radius:.3rem;padding:.1rem .35rem;">${l.motivos[0][0]} ${l.motivos[0][1]}x</span>` : '';
+        const semDado = !l.ds ? `<span style="font-size:.52rem;color:#6b7280;font-style:italic;">sem dado</span>` : '';
+        return `
+        <div style="display:flex;align-items:center;gap:.5rem;padding:.45rem .6rem;border-radius:.5rem;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.05);margin-bottom:.28rem;">
+            <div style="width:28px;height:28px;border-radius:6px;background:${cor}18;border:1px solid ${cor}33;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <span style="font-size:.6rem;font-weight:900;color:${cor};">${l.nome.slice(0,2).toUpperCase()}</span>
+            </div>
+            <div style="flex:1;min-width:0;">
+                <div style="font-size:.65rem;font-weight:700;color:#e2e8f0;margin-bottom:.2rem;">${l.nome} ${motPrincipal}${semDado}</div>
+                <div style="height:4px;background:#1f2937;border-radius:2px;">
+                    <div style="height:100%;width:${barW}%;background:${cT};border-radius:2px;"></div>
+                </div>
+            </div>
+            <div style="text-align:right;flex-shrink:0;min-width:44px;">
+                <div style="font-size:.8rem;font-weight:900;color:${cT};">${taxa||'—'}${taxa?'%':''}</div>
+                <div style="font-size:.5rem;color:#6b7280;">${l.total>0?`${l.vendas}/${l.total}`:''}</div>
+            </div>
+        </div>`;
+    };
+
+    const subredeBlock = (sk) => {
+        const s  = dadosSubrede[sk];
+        const d3 = d360sub[sk];
+        const cT = corTaxa(s.taxa);
+        return `
+        <div style="background:rgba(255,255,255,.03);border:1px solid ${s.cor}28;border-radius:.85rem;padding:.8rem;margin-bottom:.6rem;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.6rem;flex-wrap:wrap;gap:.35rem;">
+                <div style="display:flex;align-items:center;gap:.5rem;">
+                    <span style="font-size:1.1rem;">${s.ico}</span>
+                    <div>
+                        <div style="font-size:.7rem;font-weight:900;color:${s.cor};">${s.nome} · ${s.gestor}</div>
+                        <div style="font-size:.52rem;color:#6b7280;">${s.lojas.length} lojas · ${s.total} clientes · ${s.vendas} vendas</div>
+                    </div>
+                </div>
+                <div style="display:flex;gap:.5rem;align-items:center;">
+                    <div style="text-align:right;">
+                        <div style="font-size:.62rem;font-weight:900;color:${cT};">Conv. ${s.taxa||'—'}${s.taxa?'%':''}</div>
+                        <div style="font-size:.5rem;color:#6b7280;">${d3.pct}% meta fat.</div>
+                    </div>
+                </div>
+            </div>
+            ${s.lojas.map(l=>lojaRow(l,s.cor)).join('')}
+            ${s.motivos.length?`
+            <div style="margin-top:.45rem;padding:.45rem .6rem;background:rgba(239,68,68,.05);border:1px solid rgba(239,68,68,.12);border-radius:.55rem;">
+                <div style="font-size:.5rem;color:#fca5a5;font-weight:700;margin-bottom:.3rem;">TOP NV — ${s.nome}</div>
+                <div style="display:flex;flex-wrap:wrap;gap:.25rem;">
+                    ${s.motivos.map(([m,q])=>`<span style="font-size:.55rem;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);border-radius:.3rem;padding:.1rem .4rem;color:#fca5a5;">${m} <strong>${q}x</strong></span>`).join('')}
+                </div>
+            </div>` : ''}
+        </div>`;
+    };
+
+    const lojasSemDado = semDiag.length;
+    const dataRef = Object.values(dadosPorLoja).map(d=>d._ds).filter(Boolean).sort().reverse()[0];
+    const dataFmt = dataRef ? dataRef.split('-').reverse().join('/') : '—';
+
+    el.innerHTML = `
+        <!-- Cabeçalho -->
+        <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:1rem;">
+            <div style="width:40px;height:40px;border-radius:10px;background:rgba(239,68,68,.15);color:#fca5a5;display:flex;align-items:center;justify-content:center;font-size:.95rem;flex-shrink:0;border:1px solid rgba(239,68,68,.25);">
+                <i class="fas fa-stethoscope"></i>
+            </div>
+            <div style="flex:1;min-width:0;">
+                <div style="font-size:.95rem;font-weight:900;color:#fff;">Diagnóstico · Rede Titãs</div>
+                <div style="font-size:.57rem;color:#6b7280;">Ref. ${dataFmt} · ${11-lojasSemDado}/11 lojas com dado · ${lojasSemDado>0?`<span style="color:#fbbf24;">${lojasSemDado} sem diagnóstico</span>`:'todas preenchidas'}</div>
+            </div>
+            <button onclick="document.getElementById('_modal-diag').style.display='none';document.body.style.overflow=''"
+                style="width:38px;height:38px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:10px;color:#9ca3af;font-size:.9rem;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;">✕</button>
+        </div>
+
+        <!-- KPIs da rede -->
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.4rem;margin-bottom:.6rem;">
+            ${chip('Clientes',redeTotal,'#a78bfa')}
+            ${chip('Vendas',redeVendas,'#34d399')}
+            ${chip('Conversão',(redeTaxa||'—')+(redeTaxa?'%':''),corTaxa(redeTaxa))}
+        </div>
+
+        <!-- Barra de conversão da rede -->
+        <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:.7rem;padding:.65rem .9rem;margin-bottom:.6rem;">
+            <div style="display:flex;justify-content:space-between;font-size:.55rem;color:#9ca3af;margin-bottom:.4rem;">
+                <span>${redeVendas} vendas · ${redeNV} não-vendas · ${11-lojasSemDado} lojas</span>
+                <span style="color:${corTaxa(redeTaxa)};font-weight:700;">${redeTaxa||'—'}% conversão</span>
+            </div>
+            <div style="height:7px;background:#1f2937;border-radius:4px;">
+                <div style="height:100%;width:${Math.min(parseFloat(redeTaxa)||0,50)/50*100}%;background:${corTaxa(redeTaxa)};border-radius:4px;transition:width .5s;"></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:.48rem;color:#4b5563;margin-top:.25rem;"><span>0%</span><span>25%</span><span>50%+</span></div>
+        </div>
+
+        <!-- D360 performance -->
+        <div style="background:rgba(168,85,247,.05);border:1px solid rgba(168,85,247,.2);border-radius:.7rem;padding:.65rem .9rem;margin-bottom:.6rem;">
+            <div style="font-size:.5rem;color:#a78bfa;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:.5rem;"><i class="fas fa-chart-line" style="margin-right:.3rem;"></i>Faturamento Mensal · Rede</div>
+            <div style="display:flex;align-items:baseline;gap:.5rem;margin-bottom:.35rem;">
+                <span style="font-size:1rem;font-weight:900;color:#fff;">${brl(redeD360fat)}</span>
+                <span style="font-size:.6rem;color:#a78bfa;font-weight:700;">${redeD360pct}% meta</span>
+                <span style="font-size:.57rem;color:#9ca3af;">proj. ${brlK(redeD360proj)}</span>
+            </div>
+            <div style="height:5px;background:#1f2937;border-radius:3px;margin-bottom:.5rem;">
+                <div style="height:100%;width:${Math.min(redeD360pct,100)}%;background:${redeD360pct>=100?'#4ade80':redeD360pct>=80?'#10b981':redeD360pct>=60?'linear-gradient(90deg,#7c3aed,#06b6d4)':'#f59e0b'};border-radius:3px;"></div>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.35rem;">
+                ${Object.entries(dadosSubrede).map(([sk,s]) => {
+                    const d3 = d360sub[sk];
+                    return `<div style="text-align:center;background:rgba(255,255,255,.03);border:1px solid ${s.cor}25;border-radius:.45rem;padding:.35rem;">
+                        <div style="font-size:.48rem;color:${s.cor};font-weight:700;margin-bottom:.12rem;">${s.ico} ${s.nome}</div>
+                        <div style="font-size:.68rem;font-weight:800;color:#fff;">${brlK(d3.fat)}</div>
+                        <div style="font-size:.5rem;color:${d3.pct>=80?'#34d399':d3.pct>=60?'#fbbf24':'#f87171'};">${d3.pct}%</div>
+                    </div>`;
+                }).join('')}
+            </div>
+        </div>
+
+        <!-- Top NV motivos da rede -->
+        ${topMotivos.length ? `
+        <div style="background:rgba(239,68,68,.05);border:1px solid rgba(239,68,68,.15);border-radius:.85rem;padding:.75rem .9rem;margin-bottom:.6rem;">
+            <div style="font-size:.5rem;color:#fca5a5;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:.55rem;">
+                <i class="fas fa-times-circle" style="margin-right:.3rem;"></i>Top Motivos de Não-Venda · Rede
+            </div>
+            ${topMotivos.map(([mot,qtd],i) => {
+                const pct = redeTotal>0?Math.round(qtd/redeTotal*100):0;
+                const corBar = i===0?'#f87171':i===1?'#fb923c':'#fbbf24';
+                return `<div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.3rem;">
+                    <span style="font-size:.58rem;color:#6b7280;min-width:.8rem;font-weight:700;">${i+1}º</span>
+                    <div style="flex:1;font-size:.63rem;color:#e2e8f0;">${mot}</div>
+                    <div style="width:70px;height:5px;background:#1f2937;border-radius:3px;">
+                        <div style="height:100%;width:${pct}%;background:${corBar};border-radius:3px;"></div>
+                    </div>
+                    <div style="font-size:.6rem;color:${corBar};font-weight:700;min-width:2.2rem;text-align:right;">${qtd}x</div>
+                </div>`;
+            }).join('')}
+        </div>` : ''}
+
+        <!-- Recomendações -->
+        ${recRede.length ? `
+        <div style="background:rgba(52,211,153,.05);border:1px solid rgba(52,211,153,.2);border-radius:.85rem;padding:.75rem .9rem;margin-bottom:.7rem;">
+            <div style="font-size:.5rem;color:#34d399;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:.5rem;">
+                <i class="fas fa-arrow-trend-up" style="margin-right:.3rem;"></i>Recomendações para a Rede
+            </div>
+            ${recRede.map((r,i)=>`<div style="display:flex;gap:.5rem;margin-bottom:.35rem;">
+                <span style="font-size:.6rem;color:#34d399;font-weight:800;flex-shrink:0;">${i+1}.</span>
+                <span style="font-size:.63rem;color:#d1fae5;line-height:1.6;">${r}</span>
+            </div>`).join('')}
+        </div>` : ''}
+
+        <!-- Divisor subredes -->
+        <div style="font-size:.55rem;color:#6b7280;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.5rem;display:flex;align-items:center;gap:.5rem;">
+            <span style="flex:1;height:1px;background:rgba(255,255,255,.07);"></span>
+            DIAGNÓSTICO POR SUBREDE
+            <span style="flex:1;height:1px;background:rgba(255,255,255,.07);"></span>
+        </div>
+
+        ${Object.keys(_DIAG_REDE_SUBREDES).map(sk => subredeBlock(sk)).join('')}
+
+        <!-- Rodapé -->
+        <div style="margin-top:.6rem;padding-top:.55rem;border-top:1px solid rgba(255,255,255,.06);">
+            <button onclick="document.getElementById('_modal-diag').style.display='none';document.body.style.overflow=''"
+                style="width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:.85rem;padding:.65rem;color:#6b7280;font-size:.7rem;font-weight:700;cursor:pointer;">
+                Fechar
+            </button>
+        </div>`;
 }
 
 /* ── Feriados nacionais BR 2026 ── */
@@ -20602,7 +20913,12 @@ cursosInit();
           <div id="detalhes-fat-periodo" style="font-size:.62rem;color:#a855f7;font-weight:600;"></div>
         </div>
       </div>
-      <button onclick="_fecharDetalhesFat()" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:#9ca3af;border-radius:8px;width:30px;height:30px;cursor:pointer;font-size:.85rem;">✕</button>
+      <div style="display:flex;align-items:center;gap:.5rem;">
+        <button id="btn-diag-rede-fat" onclick="_fecharDetalhesFat();abrirDiagnosticoRede()" style="display:none;background:linear-gradient(135deg,rgba(239,68,68,.2),rgba(249,115,22,.2));border:1px solid rgba(239,68,68,.4);border-radius:8px;padding:.3rem .65rem;color:#fca5a5;font-size:.62rem;font-weight:800;cursor:pointer;gap:.3rem;align-items:center;">
+          <i class="fas fa-stethoscope" style="font-size:.65rem;"></i> DIAG. REDE
+        </button>
+        <button onclick="_fecharDetalhesFat()" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:#9ca3af;border-radius:8px;width:30px;height:30px;cursor:pointer;font-size:.85rem;">✕</button>
+      </div>
     </div>
     <div id="detalhes-fat-body" style="padding:1.25rem 1.5rem;overflow-y:auto;display:flex;flex-direction:column;gap:.75rem;"></div>
   </div>

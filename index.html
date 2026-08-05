@@ -7,7 +7,7 @@
     <script>
     // Cache-buster: força reload se a versão mudou
     (function(){
-      var BUILD = '20260805180018';
+      var BUILD = '20260805183058';
       var stored = localStorage.getItem('d360_build');
       if (stored && stored !== BUILD) {
         localStorage.setItem('d360_build', BUILD);
@@ -6473,9 +6473,9 @@ const D360 = {
     },
     diasDecorridos: 5, // atualizado pelo script de automação — não alterar manualmente
     diasMes: 31,          // julho tem 31 dias
-    ticket_cel: 1795,        // ticket médio celulares (SBON) — atualizado pelo bot
+    ticket_cel: 1792,        // ticket médio celulares (SBON) — atualizado pelo bot
     ticket_acess: 84,      // ticket médio acessórios — atualizado pelo bot
-    ped_cel: 159,           // pedidos celulares — atualizado pelo bot
+    ped_cel: 160,           // pedidos celulares — atualizado pelo bot
     ped_acess: 141,         // pedidos acessórios — atualizado pelo bot
 
     // ── Margem Bruta Mensal ──────────────────────────────────────────────────────
@@ -6483,15 +6483,15 @@ const D360 = {
     // O sistema deriva automaticamente: margem por loja → subrede → rede
     // COMO ATUALIZAR: edite apenas margem_lojas com os valores do ERP por loja
     // ─────────────────────────────────────────────────────────────────────────────
-    margem_dia: 52.69,              // rede hoje · zerado automaticamente à meia-noite
-    margem_dia_subredes: { t1: 51.24, t2: 53.75, t3: 56.40 },
+    margem_dia: 52.62,              // rede hoje · zerado automaticamente à meia-noite
+    margem_dia_subredes: { t1: 51.23, t2: 53.75, t3: 56.40 },
     margem_lojas: {
         // ── FONTE PRIMÁRIA — atualizar aqui com o Relatório Gerencial por Loja ──
         // T1 — Titãs 1 (Talysson)
-        cariacica:   48.46,
-        itabuna:     48.46,
-        moxuara:     48.46,
-        praiadacosta:48.46,
+        cariacica:   48.50,
+        itabuna:     48.50,
+        moxuara:     48.50,
+        praiadacosta:48.50,
         // T2 — Titãs 2 (Adriel)
         barreiras:   47.56,
         teixeira:    47.56,
@@ -6503,10 +6503,10 @@ const D360 = {
         linhares:    50.12,
     },
     margem_subredes: {  // fallback quando margem_lojas estiver incompleta
-        t1: 48.46, t2: 47.56, t3: 50.12
+        t1: 48.50, t2: 47.56, t3: 50.12
     },
     // margem_mes: derivada automaticamente pelo _calcMargemPonderada (não editar)
-    margem_mes: 48.89,
+    margem_mes: 48.90,
 
     subredes: {
         t1: { nome:'Titãs 1', gestor:'Talysson', meta:0,
@@ -6546,8 +6546,8 @@ const D360 = {
                 {n:'Fabiano Francisco Fontes',i:'FF',p:7,t:11854.0,ds:3,ult:'05/08'},
                 {n:'ANA CAROLINA DA SILVA',i:'AC',p:3,t:250.0,ds:2,ult:'02/08'},
                 {n:'mirelly vieira portugal',i:'MV',p:1,t:100.0,ds:1,ult:'05/08'}]},
-        itabuna:     { label:'Itabuna',            sigla:'IT', sub:'t1', meta:400000,  total:30329.5,  ped:33,  cancel:0, agend:0, agendCount:0, agendFat:8699.0,  fat_dia:10773.0, acess_dia:405.0, acess_dia_top:[{n:'MIKAELLE SANTOS VIRGENS',i:'MS',t:300.0}, {n:'SANDY DE ARAUJO SANTOS LIMA',i:'SD',t:80.0}, {n:'ANDREZA DE JESUS SOUZA',i:'AD',t:25.0}], top_dia:[{n:'MIKAELLE SANTOS VIRGENS',i:'MS',t:7498.0}, {n:'jhonatas lucas machado pereira',i:'JL',t:1870.0}, {n:'ANDREZA DE JESUS SOUZA',i:'AD',t:1325.0}, {n:'SANDY DE ARAUJO SANTOS LIMA',i:'SD',t:80.0}], fin_dia:7498.0, fin_mes:16097.0, top_fin_mes:[{n:'MIKAELLE SANTOS VIRGENS',i:'MS',t:14297.0,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:10597.0},{nm:'Outras',t:3700.0}]},{n:'ANDREZA DE JESUS SOUZA',i:'AD',t:1800.0,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:0},{nm:'Outras',t:1800.0}]}], fin_bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:10597.0},{nm:'Outras',t:5500.0}], top_fin:[{n:'MIKAELLE SANTOS VIRGENS',i:'MS',t:7498.0}], metaAcess:18000,
-            agendamentos:{total:8699.0, fin:8699.0, fin_bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:7299.0},{nm:'Outras',t:1400.0}], top:[{n:'MIKAELLE SANTOS VIRGENS',i:'MS',t:8699.0}]},
+        itabuna:     { label:'Itabuna',            sigla:'IT', sub:'t1', meta:400000,  total:31604.5,  ped:34,  cancel:0, agend:0, agendCount:0, agendFat:9974.0,  fat_dia:12048.0, acess_dia:405.0, acess_dia_top:[{n:'MIKAELLE SANTOS VIRGENS',i:'MS',t:300.0}, {n:'SANDY DE ARAUJO SANTOS LIMA',i:'SD',t:80.0}, {n:'ANDREZA DE JESUS SOUZA',i:'AD',t:25.0}], top_dia:[{n:'MIKAELLE SANTOS VIRGENS',i:'MS',t:8773.0}, {n:'jhonatas lucas machado pereira',i:'JL',t:1870.0}, {n:'ANDREZA DE JESUS SOUZA',i:'AD',t:1325.0}, {n:'SANDY DE ARAUJO SANTOS LIMA',i:'SD',t:80.0}], fin_dia:8773.0, fin_mes:17372.0, top_fin_mes:[{n:'MIKAELLE SANTOS VIRGENS',i:'MS',t:15572.0,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:11872.0},{nm:'Outras',t:3700.0}]},{n:'ANDREZA DE JESUS SOUZA',i:'AD',t:1800.0,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:0},{nm:'Outras',t:1800.0}]}], fin_bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:11872.0},{nm:'Outras',t:5500.0}], top_fin:[{n:'MIKAELLE SANTOS VIRGENS',i:'MS',t:8773.0}], metaAcess:18000,
+            agendamentos:{total:9974.0, fin:9974.0, fin_bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:8574.0},{nm:'Outras',t:1400.0}], top:[{n:'MIKAELLE SANTOS VIRGENS',i:'MS',t:9974.0}]},
             acessorios:{total:1050.0, top:[
                 {n:'Hericles Lisboa de Freitas',i:'HL',t:1792,ds:12,ult:'12/06'},
                 {n:'Andreza de Jesus Souza',i:'AJ',t:1365,ds:12,ult:'12/06'},
@@ -6556,7 +6556,7 @@ const D360 = {
                 {n:'Keifit Moreira dos Santos',i:'KM',t:385,ds:12,ult:'12/06'},
                 {n:'Sandy de Araujo Santos Lima',i:'SA',t:240,ds:12,ult:'12/06'}
             ], dias:[{d:'01/06',ac:845,cel:8090},{d:'06/06',ac:2757,cel:51905},{d:'08/06',ac:320,cel:15339}]},
-            top:[{n:'MIKAELLE SANTOS VIRGENS',i:'MS',p:16,t:14657.0,ds:5,ult:'05/08'},
+            top:[{n:'MIKAELLE SANTOS VIRGENS',i:'MS',p:17,t:15932.0,ds:5,ult:'05/08'},
                 {n:'KEIFIT MOREIRA DOS SANTOS',i:'KM',p:5,t:7047.5,ds:5,ult:'05/08'},
                 {n:'jhonatas lucas machado pereira',i:'JL',p:6,t:5310.0,ds:17,ult:'05/08'},
                 {n:'ANDREZA DE JESUS SOUZA',i:'AD',p:5,t:3235.0,ds:17,ult:'05/08'},

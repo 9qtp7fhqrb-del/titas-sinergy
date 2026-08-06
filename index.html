@@ -7,7 +7,7 @@
     <script>
     // Cache-buster: força reload se a versão mudou
     (function(){
-      var BUILD = '20260806192017';
+      var BUILD = '20260806195014';
       var stored = localStorage.getItem('d360_build');
       if (stored && stored !== BUILD) {
         localStorage.setItem('d360_build', BUILD);
@@ -6473,9 +6473,9 @@ const D360 = {
     },
     diasDecorridos: 6, // atualizado pelo script de automação — não alterar manualmente
     diasMes: 31,          // julho tem 31 dias
-    ticket_cel: 1768,        // ticket médio celulares (SBON) — atualizado pelo bot
+    ticket_cel: 1766,        // ticket médio celulares (SBON) — atualizado pelo bot
     ticket_acess: 81,      // ticket médio acessórios — atualizado pelo bot
-    ped_cel: 214,           // pedidos celulares — atualizado pelo bot
+    ped_cel: 215,           // pedidos celulares — atualizado pelo bot
     ped_acess: 174,         // pedidos acessórios — atualizado pelo bot
 
     // ── Margem Bruta Mensal ──────────────────────────────────────────────────────
@@ -6483,8 +6483,8 @@ const D360 = {
     // O sistema deriva automaticamente: margem por loja → subrede → rede
     // COMO ATUALIZAR: edite apenas margem_lojas com os valores do ERP por loja
     // ─────────────────────────────────────────────────────────────────────────────
-    margem_dia: 51.47,              // rede hoje · zerado automaticamente à meia-noite
-    margem_dia_subredes: { t1: 50.35, t2: 52.40, t3: 51.37 },
+    margem_dia: 51.33,              // rede hoje · zerado automaticamente à meia-noite
+    margem_dia_subredes: { t1: 50.35, t2: 52.03, t3: 51.37 },
     margem_lojas: {
         // ── FONTE PRIMÁRIA — atualizar aqui com o Relatório Gerencial por Loja ──
         // T1 — Titãs 1 (Talysson)
@@ -6493,9 +6493,9 @@ const D360 = {
         moxuara:     48.96,
         praiadacosta:48.96,
         // T2 — Titãs 2 (Adriel)
-        barreiras:   48.94,
-        teixeira:    48.94,
-        laranjeiras: 48.94,
+        barreiras:   48.90,
+        teixeira:    48.90,
+        laranjeiras: 48.90,
         // T3 — Titãs 3 (Arthur)
         saomateus:   50.29,
         serra:        50.29,
@@ -6503,10 +6503,10 @@ const D360 = {
         linhares:    50.29,
     },
     margem_subredes: {  // fallback quando margem_lojas estiver incompleta
-        t1: 48.96, t2: 48.94, t3: 50.29
+        t1: 48.96, t2: 48.90, t3: 50.29
     },
     // margem_mes: derivada automaticamente pelo _calcMargemPonderada (não editar)
-    margem_mes: 49.47,
+    margem_mes: 49.45,
 
     subredes: {
         t1: { nome:'Titãs 1', gestor:'Talysson', meta:0,
@@ -6588,7 +6588,7 @@ const D360 = {
                 {n:'LUCCAS DA SILVA MEDEIROS MARTINS',i:'LD',p:5,t:5260.0,ds:16,ult:'04/08'},
                 {n:'Iasmim vitoria medeiros gaio',i:'IV',p:9,t:4170.0,ds:18,ult:'06/08'},
                 {n:'GABRIEL BARRETO PEREIRA',i:'GB',p:1,t:40.0,ds:2,ult:'05/08'}]},
-        teixeira:    { label:'Teixeira de Freitas',sigla:'TF', sub:'t2', meta:260000,  total:41148.0,  ped:31,  cancel:0, agend:0, agendCount:0, agendFat:4999.0,  fat_dia:11251.0, acess_dia:265.0, acess_dia_top:[{n:'CARLA SANTOS LUIZ',i:'CS',t:265.0}], top_dia:[{n:'CARLA SANTOS LUIZ',i:'CS',t:11251.0}], fin_dia:11021.0, fin_mes:27753.0, top_fin_mes:[{n:'CARLA SANTOS LUIZ',i:'CS',t:14649.0,bd:[{nm:'PayJoy',t:4723.0},{nm:'OdresCred',t:9926.0},{nm:'Outras',t:0}]},{n:'CARINE FERREIRA FRANCO',i:'CF',t:8424.0,bd:[{nm:'PayJoy',t:3250.0},{nm:'OdresCred',t:5174.0},{nm:'Outras',t:0}]},{n:'GUSTAVO SANTANA BATISTA',i:'GS',t:3300.0,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:3300.0},{nm:'Outras',t:0}]},{n:'PALOMA DE JESUS SANTOS',i:'PD',t:1380.0,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:1380.0},{nm:'Outras',t:0}]}], fin_bd:[{nm:'PayJoy',t:7973.0},{nm:'OdresCred',t:19780.0},{nm:'Outras',t:0}], top_fin:[{n:'CARLA SANTOS LUIZ',i:'CS',t:11021.0}], metaAcess:8000,
+        teixeira:    { label:'Teixeira de Freitas',sigla:'TF', sub:'t2', meta:260000,  total:42348.0,  ped:32,  cancel:0, agend:0, agendCount:0, agendFat:4999.0,  fat_dia:12451.0, acess_dia:265.0, acess_dia_top:[{n:'CARLA SANTOS LUIZ',i:'CS',t:265.0}], top_dia:[{n:'CARLA SANTOS LUIZ',i:'CS',t:12451.0}], fin_dia:11021.0, fin_mes:27753.0, top_fin_mes:[{n:'CARLA SANTOS LUIZ',i:'CS',t:14649.0,bd:[{nm:'PayJoy',t:4723.0},{nm:'OdresCred',t:9926.0},{nm:'Outras',t:0}]},{n:'CARINE FERREIRA FRANCO',i:'CF',t:8424.0,bd:[{nm:'PayJoy',t:3250.0},{nm:'OdresCred',t:5174.0},{nm:'Outras',t:0}]},{n:'GUSTAVO SANTANA BATISTA',i:'GS',t:3300.0,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:3300.0},{nm:'Outras',t:0}]},{n:'PALOMA DE JESUS SANTOS',i:'PD',t:1380.0,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:1380.0},{nm:'Outras',t:0}]}], fin_bd:[{nm:'PayJoy',t:7973.0},{nm:'OdresCred',t:19780.0},{nm:'Outras',t:0}], top_fin:[{n:'CARLA SANTOS LUIZ',i:'CS',t:11021.0}], metaAcess:8000,
             agendamentos:{total:4999.0, fin:4999.0, fin_bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:4999.0},{nm:'Outras',t:0}], top:[{n:'CARLA SANTOS LUIZ',i:'CS',t:4999.0}]},
             acessorios:{total:850.0, top:[
                 {n:'Amanda Goulart Andrade',i:'AG',t:740,ds:12,ult:'12/06'},
@@ -6598,8 +6598,8 @@ const D360 = {
                 {n:'Paloma de Jesus Santos',i:'PS',t:469,ds:12,ult:'12/06'},
                 {n:'Beatriz Hellen Fagundes',i:'BH',t:350,ds:12,ult:'12/06'}
             ], dias:[{d:'01/06',ac:200,cel:11060},{d:'06/06',ac:1331,cel:43146},{d:'08/06',ac:160,cel:10100}]},
-            top:[{n:'CARINE FERREIRA FRANCO',i:'CF',p:10,t:17149.0,ds:6,ult:'06/08'},
-                {n:'CARLA SANTOS LUIZ',i:'CS',p:13,t:16279.0,ds:3,ult:'06/08'},
+            top:[{n:'CARLA SANTOS LUIZ',i:'CS',p:14,t:17479.0,ds:3,ult:'06/08'},
+                {n:'CARINE FERREIRA FRANCO',i:'CF',p:10,t:17149.0,ds:6,ult:'06/08'},
                 {n:'GUSTAVO SANTANA BATISTA',i:'GS',p:4,t:4730.0,ds:5,ult:'06/08'},
                 {n:'PALOMA DE JESUS SANTOS',i:'PD',p:4,t:2990.0,ds:16,ult:'04/08'}]},
         laranjeiras: { label:'Laranjeiras',        sigla:'LJ', sub:'t2', meta:220000,  total:27911.0,ped:23,  cancel:0, agend:0, agendCount:0, agendFat:6528.5,   fat_dia:7421.0, acess_dia:130.0, acess_dia_top:[{n:'LÍDIA DA PENHA DIOGO',i:'LD',t:70.0}, {n:'MAYARA KULL RODRIGUES',i:'MK',t:60.0}], top_dia:[{n:'jhennyfer eduarda rodrigues dos santos',i:'JE',t:1991.0}, {n:'stefany santiago rocha',i:'SS',t:1900.0}, {n:'LÍDIA DA PENHA DIOGO',i:'LD',t:1870.0}, {n:'MAYARA KULL RODRIGUES',i:'MK',t:1660.0}], fin_dia:3400.0, fin_mes:16965.5, top_fin_mes:[{n:'LÍDIA DA PENHA DIOGO',i:'LD',t:7649.0,bd:[{nm:'PayJoy',t:1800.0},{nm:'OdresCred',t:5849.0},{nm:'Outras',t:0}]},{n:'MAYARA KULL RODRIGUES',i:'MK',t:7479.0,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:7479.0},{nm:'Outras',t:0}]},{n:'Nycolly Calazans Paulo',i:'NC',t:1837.5,bd:[{nm:'PayJoy',t:1837.5},{nm:'OdresCred',t:0},{nm:'Outras',t:0}]}], fin_bd:[{nm:'PayJoy',t:3637.5},{nm:'OdresCred',t:13328.0},{nm:'Outras',t:0}], top_fin:[{n:'LÍDIA DA PENHA DIOGO',i:'LD',t:1800.0}, {n:'MAYARA KULL RODRIGUES',i:'MK',t:1600.0}], metaAcess:8000,

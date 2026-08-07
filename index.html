@@ -7,7 +7,7 @@
     <script>
     // Cache-buster: força reload se a versão mudou
     (function(){
-      var BUILD = '20260807200632';
+      var BUILD = '20260807201428';
       var stored = localStorage.getItem('d360_build');
       if (stored && stored !== BUILD) {
         localStorage.setItem('d360_build', BUILD);
@@ -6476,22 +6476,22 @@ const D360 = {
     ticket_cel: 1755,        // ticket médio celulares (SBON) — atualizado pelo bot
     ticket_acess: 87,      // ticket médio acessórios — atualizado pelo bot
     ped_cel: 260,           // pedidos celulares — atualizado pelo bot
-    ped_acess: 209,         // pedidos acessórios — atualizado pelo bot
+    ped_acess: 210,         // pedidos acessórios — atualizado pelo bot
 
     // ── Margem Bruta Mensal ──────────────────────────────────────────────────────
     // FONTE PRIMÁRIA: margem_lojas (por loja, do Relatório Gerencial ERP CDC)
     // O sistema deriva automaticamente: margem por loja → subrede → rede
     // COMO ATUALIZAR: edite apenas margem_lojas com os valores do ERP por loja
     // ─────────────────────────────────────────────────────────────────────────────
-    margem_dia: 50.39,              // rede hoje · zerado automaticamente à meia-noite
-    margem_dia_subredes: { t1: 47.65, t2: 48.17, t3: 53.53 },
+    margem_dia: 50.44,              // rede hoje · zerado automaticamente à meia-noite
+    margem_dia_subredes: { t1: 47.78, t2: 48.17, t3: 53.53 },
     margem_lojas: {
         // ── FONTE PRIMÁRIA — atualizar aqui com o Relatório Gerencial por Loja ──
         // T1 — Titãs 1 (Talysson)
-        cariacica:   48.90,
-        itabuna:     48.90,
-        moxuara:     48.90,
-        praiadacosta:48.90,
+        cariacica:   48.92,
+        itabuna:     48.92,
+        moxuara:     48.92,
+        praiadacosta:48.92,
         // T2 — Titãs 2 (Adriel)
         barreiras:   48.93,
         teixeira:    48.93,
@@ -6503,7 +6503,7 @@ const D360 = {
         linhares:    51.15,
     },
     margem_subredes: {  // fallback quando margem_lojas estiver incompleta
-        t1: 48.90, t2: 48.93, t3: 51.15
+        t1: 48.92, t2: 48.93, t3: 51.15
     },
     // margem_mes: derivada automaticamente pelo _calcMargemPonderada (não editar)
     margem_mes: 49.81,
@@ -6643,10 +6643,10 @@ const D360 = {
             top:[{n:'JOAQUIN EMILIANO RODRIGO',i:'JE',p:25,t:24594.0,ds:19,ult:'07/08'},
                 {n:'ADRIANO JEREMIAS CARDOSO MONTEIRO',i:'AJ',p:18,t:16485.0,ds:7,ult:'07/08'},
                 {n:'vinicius de almeida medeiros vargas',i:'VD',p:8,t:8965.0,ds:5,ult:'07/08'}]},
-        praiadacosta:{ label:'Praia da Costa',     sigla:'PC', sub:'t1', meta:140000,  total:16734.0,  ped:15,  cancel:0, agend:0, agendCount:0, agendFat:11759.0,  fat_dia:1595.0, acess_dia:150.0, acess_dia_top:[{n:'Nycolly Calazans Paulo',i:'NC',t:150.0}], top_dia:[{n:'Nycolly Calazans Paulo',i:'NC',t:1595.0}], fin_dia:1445.0, fin_mes:14639.0, top_fin_mes:[{n:'Nycolly Calazans Paulo',i:'NC',t:14639.0,bd:[{nm:'PayJoy',t:3245.0},{nm:'OdresCred',t:11394.0},{nm:'Outras',t:0}]}], fin_bd:[{nm:'PayJoy',t:3245.0},{nm:'OdresCred',t:11394.0},{nm:'Outras',t:0}], top_fin:[{n:'Nycolly Calazans Paulo',i:'NC',t:1445.0}], metaAcess:5000,
+        praiadacosta:{ label:'Praia da Costa',     sigla:'PC', sub:'t1', meta:140000,  total:16924.0,  ped:16,  cancel:0, agend:0, agendCount:0, agendFat:11759.0,  fat_dia:1785.0, acess_dia:340.0, acess_dia_top:[{n:'Nycolly Calazans Paulo',i:'NC',t:340.0}], top_dia:[{n:'Nycolly Calazans Paulo',i:'NC',t:1785.0}], fin_dia:1445.0, fin_mes:14639.0, top_fin_mes:[{n:'Nycolly Calazans Paulo',i:'NC',t:14639.0,bd:[{nm:'PayJoy',t:3245.0},{nm:'OdresCred',t:11394.0},{nm:'Outras',t:0}]}], fin_bd:[{nm:'PayJoy',t:3245.0},{nm:'OdresCred',t:11394.0},{nm:'Outras',t:0}], top_fin:[{n:'Nycolly Calazans Paulo',i:'NC',t:1445.0}], metaAcess:5000,
             agendamentos:{total:11759.0, fin:11759.0, fin_bd:[{nm:'PayJoy',t:3245.0},{nm:'OdresCred',t:8554.0},{nm:'Outras',t:0}], top:[{n:'Nycolly Calazans Paulo',i:'NC',t:10059.0}, {n:'stefany santiago rocha',i:'SS',t:1700.0}]},
-            acessorios:{total:575.0, top:[], dias:[]},
-            top:[{n:'Nycolly Calazans Paulo',i:'NC',p:11,t:14874.0,ds:5,ult:'07/08'},
+            acessorios:{total:765.0, top:[], dias:[]},
+            top:[{n:'Nycolly Calazans Paulo',i:'NC',p:12,t:15064.0,ds:5,ult:'07/08'},
                 {n:'stefany santiago rocha',i:'SS',p:1,t:1700.0,ds:2,ult:'02/08'},
                 {n:'vinicius de almeida medeiros vargas',i:'VD',p:3,t:160.0,ds:3,ult:'03/08'}]},
     }

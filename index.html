@@ -7,7 +7,7 @@
     <script>
     // Cache-buster: força reload se a versão mudou
     (function(){
-      var BUILD = '20260807124729';
+      var BUILD = '20260807131854';
       var stored = localStorage.getItem('d360_build');
       if (stored && stored !== BUILD) {
         localStorage.setItem('d360_build', BUILD);
@@ -6473,18 +6473,18 @@ const D360 = {
     },
     diasDecorridos: 7, // atualizado pelo script de automação — não alterar manualmente
     diasMes: 31,          // julho tem 31 dias
-    ticket_cel: 1758,        // ticket médio celulares (SBON) — atualizado pelo bot
+    ticket_cel: 1761,        // ticket médio celulares (SBON) — atualizado pelo bot
     ticket_acess: 83,      // ticket médio acessórios — atualizado pelo bot
-    ped_cel: 230,           // pedidos celulares — atualizado pelo bot
-    ped_acess: 187,         // pedidos acessórios — atualizado pelo bot
+    ped_cel: 232,           // pedidos celulares — atualizado pelo bot
+    ped_acess: 188,         // pedidos acessórios — atualizado pelo bot
 
     // ── Margem Bruta Mensal ──────────────────────────────────────────────────────
     // FONTE PRIMÁRIA: margem_lojas (por loja, do Relatório Gerencial ERP CDC)
     // O sistema deriva automaticamente: margem por loja → subrede → rede
     // COMO ATUALIZAR: edite apenas margem_lojas com os valores do ERP por loja
     // ─────────────────────────────────────────────────────────────────────────────
-    margem_dia: 52.01,              // rede hoje · zerado automaticamente à meia-noite
-    margem_dia_subredes: { t1: 52.01, t2: 0.00, t3: 0.00 },
+    margem_dia: 52.75,              // rede hoje · zerado automaticamente à meia-noite
+    margem_dia_subredes: { t1: 52.01, t2: 0.00, t3: 53.29 },
     margem_lojas: {
         // ── FONTE PRIMÁRIA — atualizar aqui com o Relatório Gerencial por Loja ──
         // T1 — Titãs 1 (Talysson)
@@ -6497,16 +6497,16 @@ const D360 = {
         teixeira:    48.96,
         laranjeiras: 48.96,
         // T3 — Titãs 3 (Arthur)
-        saomateus:   50.78,
-        serra:        50.78,
-        montserrat:  50.78,
-        linhares:    50.78,
+        saomateus:   50.81,
+        serra:        50.81,
+        montserrat:  50.81,
+        linhares:    50.81,
     },
     margem_subredes: {  // fallback quando margem_lojas estiver incompleta
-        t1: 49.14, t2: 48.96, t3: 50.78
+        t1: 49.14, t2: 48.96, t3: 50.81
     },
     // margem_mes: derivada automaticamente pelo _calcMargemPonderada (não editar)
-    margem_mes: 49.74,
+    margem_mes: 49.75,
 
     subredes: {
         t1: { nome:'Titãs 1', gestor:'Talysson', meta:0,
@@ -6518,7 +6518,7 @@ const D360 = {
     },
     lojas: {
         // ── Totais acumulados 2026-08-01 a 2026-08-07 · Atualizado automaticamente ──
-        saomateus:   { label:'São Mateus',         sigla:'SM', sub:'t3', meta:500000,  total:60034.0, ped:48,  cancel:0, agend:0, agendCount:0, agendFat:7299.0,  fat_dia:0, acess_dia:0, acess_dia_top:[], top_dia:[], fin_dia:0, fin_mes:31376.0, top_fin_mes:[{n:'RANDECLAY MARIANO GOMES',i:'RM',t:13777.0,bd:[{nm:'PayJoy',t:7500.0},{nm:'OdresCred',t:4658.0},{nm:'Outras',t:1619.0}]},{n:'ELIZA QUEIROZ DE SOUZA',i:'EQ',t:12399.0,bd:[{nm:'PayJoy',t:10700.0},{nm:'OdresCred',t:1699.0},{nm:'Outras',t:0}]},{n:'LEANDRO DA CRUZ SILVA',i:'LD',t:3700.0,bd:[{nm:'PayJoy',t:3700.0},{nm:'OdresCred',t:0},{nm:'Outras',t:0}]},{n:'CARLA SANTOS LUIZ',i:'CS',t:1500.0,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:1500.0},{nm:'Outras',t:0}]}], fin_bd:[{nm:'PayJoy',t:21900.0},{nm:'OdresCred',t:7857.0},{nm:'Outras',t:1619.0}], top_fin:[], metaAcess:20000,
+        saomateus:   { label:'São Mateus',         sigla:'SM', sub:'t3', meta:500000,  total:61834.0, ped:49,  cancel:0, agend:0, agendCount:0, agendFat:7299.0,  fat_dia:1800.0, acess_dia:0, acess_dia_top:[], top_dia:[{n:'ELIZA QUEIROZ DE SOUZA',i:'EQ',t:1800.0}], fin_dia:1800.0, fin_mes:33176.0, top_fin_mes:[{n:'ELIZA QUEIROZ DE SOUZA',i:'EQ',t:14199.0,bd:[{nm:'PayJoy',t:12500.0},{nm:'OdresCred',t:1699.0},{nm:'Outras',t:0}]},{n:'RANDECLAY MARIANO GOMES',i:'RM',t:13777.0,bd:[{nm:'PayJoy',t:7500.0},{nm:'OdresCred',t:4658.0},{nm:'Outras',t:1619.0}]},{n:'LEANDRO DA CRUZ SILVA',i:'LD',t:3700.0,bd:[{nm:'PayJoy',t:3700.0},{nm:'OdresCred',t:0},{nm:'Outras',t:0}]},{n:'CARLA SANTOS LUIZ',i:'CS',t:1500.0,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:1500.0},{nm:'Outras',t:0}]}], fin_bd:[{nm:'PayJoy',t:23700.0},{nm:'OdresCred',t:7857.0},{nm:'Outras',t:1619.0}], top_fin:[{n:'ELIZA QUEIROZ DE SOUZA',i:'EQ',t:1800.0}], metaAcess:20000,
             agendamentos:{total:7299.0, fin:7299.0, fin_bd:[{nm:'PayJoy',t:5700.0},{nm:'OdresCred',t:1699.0},{nm:'Outras',t:0}], top:[{n:'ELIZA QUEIROZ DE SOUZA',i:'EQ',t:3699.0}, {n:'LEANDRO DA CRUZ SILVA',i:'LD',t:3600.0}]},
             acessorios:{total:2083.0, top:[
                 {n:'Juliana Cristina dos Santos',i:'JC',t:2947,ds:12,ult:'12/06'},
@@ -6529,7 +6529,7 @@ const D360 = {
                 {n:'Randeclay Mariano Gomes',i:'RM',t:470,ds:12,ult:'12/06'}
             ], dias:[{d:'01/06',ac:2210,cel:13147},{d:'06/06',ac:1935,cel:69941},{d:'08/06',ac:495,cel:14645}]},
             top:[{n:'RANDECLAY MARIANO GOMES',i:'RM',p:16,t:23532.0,ds:7,ult:'07/08'},
-                {n:'ELIZA QUEIROZ DE SOUZA',i:'EQ',p:16,t:17362.0,ds:19,ult:'07/08'},
+                {n:'ELIZA QUEIROZ DE SOUZA',i:'EQ',p:17,t:19162.0,ds:19,ult:'07/08'},
                 {n:'LEANDRO DA CRUZ SILVA',i:'LD',p:7,t:13370.0,ds:17,ult:'05/08'},
                 {n:'CARLA SANTOS LUIZ',i:'CS',p:2,t:3500.0,ds:2,ult:'02/08'},
                 {n:'STEFANY SPEROTTO BARCELOS',i:'SS',p:7,t:2270.0,ds:19,ult:'07/08'}]},

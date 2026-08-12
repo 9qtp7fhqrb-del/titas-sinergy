@@ -7,7 +7,7 @@
     <script>
     // Cache-buster: força reload se a versão mudou
     (function(){
-      var BUILD = '20260812121712';
+      var BUILD = '20260812124726';
       var stored = localStorage.getItem('d360_build');
       if (stored && stored !== BUILD) {
         localStorage.setItem('d360_build', BUILD);
@@ -6691,8 +6691,8 @@ const D360 = {
     // O sistema deriva automaticamente: margem por loja → subrede → rede
     // COMO ATUALIZAR: edite apenas margem_lojas com os valores do ERP por loja
     // ─────────────────────────────────────────────────────────────────────────────
-    margem_dia: 0.00,              // rede hoje · zerado automaticamente à meia-noite
-    margem_dia_subredes: { t1: 0.00, t2: 0.00, t3: 0.00 },
+    margem_dia: 26.92,              // rede hoje · zerado automaticamente à meia-noite
+    margem_dia_subredes: { t1: 0.00, t2: 26.92, t3: 0.00 },
     margem_lojas: {
         // ── FONTE PRIMÁRIA — atualizar aqui com o Relatório Gerencial por Loja ──
         // T1 — Titãs 1 (Talysson)
@@ -6700,10 +6700,10 @@ const D360 = {
         itabuna:     48.74,
         moxuara:     48.74,
         // T2 — Titãs 2 (Adriel)
-        praiadacosta:48.42,
-        barreiras:   48.42,
-        teixeira:    48.42,
-        laranjeiras: 48.42,
+        praiadacosta:48.35,
+        barreiras:   48.35,
+        teixeira:    48.35,
+        laranjeiras: 48.35,
         // T3 — Titãs 3 (Arthur)
         saomateus:   50.79,
         serra:        50.79,
@@ -6711,10 +6711,10 @@ const D360 = {
         linhares:    50.79,
     },
     margem_subredes: {  // fallback quando margem_lojas estiver incompleta
-        t1: 48.74, t2: 48.42, t3: 50.79
+        t1: 48.74, t2: 48.35, t3: 50.79
     },
     // margem_mes: derivada automaticamente pelo _calcMargemPonderada (não editar)
-    margem_mes: 49.52,
+    margem_mes: 49.50,
 
     subredes: {
         t1: { nome:'Titãs 1', gestor:'Talysson', meta:0,
@@ -6812,7 +6812,7 @@ const D360 = {
                 {n:'PALOMA DE JESUS SANTOS',i:'PD',p:8,t:5900.0,ds:40,ult:'24/07'},
                 {n:'GUSTAVO SANTANA BATISTA',i:'GS',p:4,t:4730.0,ds:2,ult:'05/08'},
                 {n:'WILGHYNER DE PADUA SOARES DE SOUZA',i:'WD',p:1,t:40.0}]},
-        laranjeiras: { label:'Laranjeiras',        sigla:'LJ', sub:'t2', meta:180000,  total:43396.0,ped:38,  cancel:0, agend:0, agendCount:0, agendFat:8216.0,   fat_dia:0, acess_dia:0, acess_dia_top:[], top_dia:[], fin_dia:0, fin_mes:28403.0, top_fin_mes:[{n:'LÍDIA DA PENHA DIOGO',i:'LD',t:14399.0,bd:[{nm:'PayJoy',t:8550.0},{nm:'OdresCred',t:5849.0},{nm:'Outras',t:0}]},{n:'MAYARA KULL RODRIGUES',i:'MK',t:10479.0,bd:[{nm:'PayJoy',t:1700.0},{nm:'OdresCred',t:8779.0},{nm:'Outras',t:1300.0}]},{n:'Nycolly Calazans Paulo',i:'NC',t:3525.0,bd:[{nm:'PayJoy',t:3525.0},{nm:'OdresCred',t:0},{nm:'Outras',t:0}]}], fin_bd:[{nm:'PayJoy',t:13775.0},{nm:'OdresCred',t:14628.0},{nm:'Outras',t:1300.0}], top_fin:[], metaAcess:3500,
+        laranjeiras: { label:'Laranjeiras',        sigla:'LJ', sub:'t2', meta:180000,  total:44046.0,ped:39,  cancel:0, agend:0, agendCount:0, agendFat:8216.0,   fat_dia:650.0, acess_dia:0, acess_dia_top:[], top_dia:[{n:'LÍDIA DA PENHA DIOGO',i:'LD',t:650.0}], fin_dia:0, fin_mes:28403.0, top_fin_mes:[{n:'LÍDIA DA PENHA DIOGO',i:'LD',t:14399.0,bd:[{nm:'PayJoy',t:8550.0},{nm:'OdresCred',t:5849.0},{nm:'Outras',t:0}]},{n:'MAYARA KULL RODRIGUES',i:'MK',t:10479.0,bd:[{nm:'PayJoy',t:1700.0},{nm:'OdresCred',t:8779.0},{nm:'Outras',t:1300.0}]},{n:'Nycolly Calazans Paulo',i:'NC',t:3525.0,bd:[{nm:'PayJoy',t:3525.0},{nm:'OdresCred',t:0},{nm:'Outras',t:0}]}], fin_bd:[{nm:'PayJoy',t:13775.0},{nm:'OdresCred',t:14628.0},{nm:'Outras',t:1300.0}], top_fin:[], metaAcess:3500,
             agendamentos:{total:8216.0, fin:6528.5, fin_bd:[{nm:'PayJoy',t:4537.5},{nm:'OdresCred',t:1991.0},{nm:'Outras',t:0}], top:[{n:'Nycolly Calazans Paulo',i:'NC',t:3525.0}, {n:'stefany santiago rocha',i:'SS',t:2700.0}, {n:'jhennyfer eduarda rodrigues dos santos',i:'JE',t:1991.0}]},
             acessorios:{total:534.5, top:[
                 {n:'Nycolly Calazans Paulo',i:'NC',t:580,ds:12,ult:'12/06'},
@@ -6820,7 +6820,7 @@ const D360 = {
                 {n:'Lídia da Penha Diogo',i:'LD',t:295,ds:12,ult:'12/06'},
                 {n:'Jhennyfer Eduarda Rodrigues dos Santos',i:'JE',t:215,ds:12,ult:'12/06'}
             ], dias:[{d:'01/06',ac:80,cel:1800},{d:'06/06',ac:635,cel:34929},{d:'08/06',ac:265,cel:6754.25}]},
-            top:[{n:'LÍDIA DA PENHA DIOGO',i:'LD',p:15,t:17158.5,ds:49,ult:'24/07'},
+            top:[{n:'LÍDIA DA PENHA DIOGO',i:'LD',p:16,t:17808.5,ds:50,ult:'12/08'},
                 {n:'MAYARA KULL RODRIGUES',i:'MK',p:12,t:11349.0,ds:49,ult:'05/08'},
                 {n:'stefany santiago rocha',i:'SS',p:4,t:6200.0},
                 {n:'Nycolly Calazans Paulo',i:'NC',p:5,t:5317.5,ds:20,ult:'24/07'},

@@ -47,8 +47,8 @@ STORE_MAP = {
 
 # Lojas de cada subrede (chaves do STORE_MAP)
 SUBREDE_LOJAS = {
-    't1': ['cariacica', 'itabuna', 'moxuara', 'praiadacosta'],
-    't2': ['barreiras', 'teixeira', 'laranjeiras'],
+    't1': ['cariacica', 'itabuna', 'moxuara'],
+    't2': ['praiadacosta', 'barreiras', 'teixeira', 'laranjeiras'],
     't3': ['saomateus', 'serra', 'montserrat', 'linhares'],
 }
 
@@ -129,7 +129,7 @@ def save_erp_token_to_firestore(token):
         print(f'  AVISO: erro ao salvar token ERP no Firestore: {e}')
 
 
-def save_d360_to_firestore(sales, acess, acess_dia, today_sellers_proc, fin, fin_acum, agend):
+def save_d360_to_firestore(sales, acess, acess_dia, today_sellers_proc, fin, fin_acum, agend, top_fin_mes_bd_by_store=None, fin_bd_by_store=None):
     """Atualiza ts_d360/dados_360_atual no Firestore — dispara onSnapshot em todos os browsers abertos."""
     import time, calendar
     MESES = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez']
@@ -141,12 +141,15 @@ def save_d360_to_firestore(sales, acess, acess_dia, today_sellers_proc, fin, fin
     for sk in STORE_MAP.values():
         lojas_data[sk] = {
             'total':         round(sales.get(sk, {}).get('total', 0), 2),
+            'top':           sales.get(sk, {}).get('top', []),
             'fat_dia':       round(today_sellers_proc.get(sk, {}).get('total', 0), 2),
             'top_dia':       today_sellers_proc.get(sk, {}).get('top', []),
             'acess_dia':     round(acess_dia.get(sk, {}).get('total', 0), 2),
             'acess_dia_top': acess_dia.get(sk, {}).get('top', []),
             'fin_dia':       round(fin.get(sk, {}).get('total', 0), 2),
             'fin_mes':       round(fin_acum.get(sk, {}).get('total', 0), 2),
+            'top_fin_mes':   (top_fin_mes_bd_by_store or {}).get(sk, []),
+            'fin_bd':        (fin_bd_by_store or {}).get(sk, [{'nm': g['nm'], 't': 0} for g in FINANCEIRAS_GROUPS]),
             'agendFat':      round(agend.get(sk, {}).get('total', 0), 2),
             'acessorios':    {
                 'total': round(acess.get(sk, {}).get('total', 0), 2),
@@ -915,6 +918,206 @@ def update_store(content, store_key, total, acess_total, agend_total, agend_top,
 
     return content[:start] + sec + content[end:]
 
+# ── Modelos mais vendidos por forma de pagamento ──────────────────────────────
+
+def fetch_top_produtos_por_financeira(token, start, end, top_n=7, retries=3, wait=15):
+    """
+    Busca /reports/sales/product_sales (todos os grupos) em chunks de 4 dias.
+    Separa por group_name: SBON → celulares, ACESSÓRIOS → acessórios.
+    Retorna (top_modelos, top_acessorios) cada um com estrutura
+    {payjoy, odrescred, salao, lojas:{<key>:{payjoy,odrescred,salao}}}
+    """
+    import subprocess, json
+    from collections import defaultdict
+    from datetime import datetime, timedelta
+
+    STORE_MAP = {
+        'CDC BARREIRAS':                'barreiras',
+        'CDC CARIACICA':                'cariacica',
+        'CDC ITABUNA':                  'itabuna',
+        'CDC LARANJEIRAS':              'laranjeiras',
+        'CDC LINHARES':                 'linhares',
+        'CDC MONTSERRAT':               'montserrat',
+        'CDC PRAIA DA COSTA':           'praiadacosta',
+        'CDC SAO MATEUS':               'saomateus',
+        'CDC SERRA':                    'serra',
+        'CDC TEIXEIRA DE FREITAS NOVO': 'teixeira',
+        'SHOPPING MOXUARA':             'moxuara',
+    }
+
+    # Coleta todos os itens em chunks de 4 dias (sem filtro de grupo)
+    all_items = []
+    start_dt = datetime.strptime(start, '%Y-%m-%d')
+    end_dt   = datetime.strptime(end,   '%Y-%m-%d')
+    cur = start_dt
+    while cur <= end_dt:
+        chunk_end = min(cur + timedelta(days=3), end_dt)
+        url = (f'{ERP_BASE}/reports/sales/product_sales'
+               f'?min={cur.strftime("%Y-%m-%d")}&max={chunk_end.strftime("%Y-%m-%d")}')
+        for attempt in range(1, retries + 1):
+            try:
+                result = subprocess.run(
+                    ['curl', '-sv', '--http1.1', url,
+                     '-H', f'Authorization: Bearer {token}',
+                     '-H', 'Accept: application/json',
+                     '--max-time', '90'],
+                    capture_output=True, timeout=95
+                )
+                if result.returncode != 0 or not result.stdout:
+                    raise RuntimeError(f'curl exit {result.returncode}')
+                chunk_items = json.loads(result.stdout).get('data', {}).get('detailed_items', [])
+                all_items.extend(chunk_items)
+                break
+            except Exception as e:
+                if attempt < retries:
+                    import time as _t; _t.sleep(wait)
+                else:
+                    print(f'  AVISO: chunk {cur.date()}→{chunk_end.date()} falhou: {e}')
+        cur = chunk_end + timedelta(days=1)
+
+    if not all_items:
+        print('  AVISO: fetch_top_produtos retornou 0 itens')
+        return {}, {}
+
+    print(f'  {len(all_items)} itens coletados (celulares + acessórios)')
+
+    def _buckets():
+        return {k: defaultdict(lambda: {'qt': 0, 'val': 0.0})
+                for k in ('payjoy', 'odrescred', 'salao')}
+
+    # Celulares: agrupa por financeira; acessórios: agrupa só por produto
+    geral_cel  = _buckets()
+    lojas_cel  = {k: _buckets() for k in STORE_MAP.values()}
+    geral_aces = defaultdict(lambda: {'qt': 0, 'val': 0.0})
+    lojas_aces = {k: defaultdict(lambda: {'qt': 0, 'val': 0.0}) for k in STORE_MAP.values()}
+
+    for item in all_items:
+        if item.get('item_status') == 'returned':
+            continue
+        grupo     = item.get('group_name', '')
+        nm        = item.get('product_name', '').strip()
+        val       = float(item.get('net_value') or 0)
+        pms       = ' '.join(item.get('payment_methods') or []).lower()
+        store_key = STORE_MAP.get(item.get('store_name', ''))
+
+        if grupo == 'SBON':
+            cat = 'payjoy' if 'payjoy' in pms else ('odrescred' if 'odrescred' in pms else 'salao')
+            geral_cel[cat][nm]['qt'] += 1
+            geral_cel[cat][nm]['val'] += val
+            if store_key:
+                lojas_cel[store_key][cat][nm]['qt'] += 1
+                lojas_cel[store_key][cat][nm]['val'] += val
+        elif grupo == 'ACESSÓRIOS':
+            geral_aces[nm]['qt'] += 1
+            geral_aces[nm]['val'] += val
+            if store_key:
+                lojas_aces[store_key][nm]['qt'] += 1
+                lojas_aces[store_key][nm]['val'] += val
+
+    def _top(d):
+        return [{'nm': nm, 'qt': v['qt'], 'val': round(v['val'])}
+                for nm, v in sorted(d.items(), key=lambda x: -x[1]['qt'])[:top_n]]
+
+    def _abc(d, n=15):
+        """Curva ABC por quantidade vendida."""
+        items = sorted(d.items(), key=lambda x: -x[1]['qt'])[:n]
+        total = sum(v['qt'] for _, v in items)
+        if total == 0:
+            return []
+        result = []; cum = 0
+        for nm, v in items:
+            cum += v['qt']
+            pct = round(cum / total * 100, 1)
+            result.append({'nm': nm, 'qt': v['qt'], 'val': round(v['val']),
+                           'pct': pct, 'abc': 'A' if pct <= 80 else ('B' if pct <= 95 else 'C')})
+        return result
+
+    def _build_cel(geral, lojas):
+        return {
+            'payjoy':    _top(geral['payjoy']),
+            'odrescred': _top(geral['odrescred']),
+            'salao':     _top(geral['salao']),
+            'lojas': {
+                k: {'payjoy':    _top(lojas[k]['payjoy']),
+                    'odrescred': _top(lojas[k]['odrescred']),
+                    'salao':     _top(lojas[k]['salao'])}
+                for k in lojas
+            },
+        }
+
+    def _build_aces(geral, lojas):
+        return {
+            'rede':  _abc(geral),
+            'lojas': {k: _abc(lojas[k]) for k in lojas},
+        }
+
+    return _build_cel(geral_cel, lojas_cel), _build_aces(geral_aces, lojas_aces)
+
+
+# mantém alias antigo caso haja referência direta
+def fetch_top_modelos_por_financeira(token, start, end, top_n=7, retries=3, wait=15):
+    tm, _ = fetch_top_produtos_por_financeira(token, start, end, top_n, retries, wait)
+    return tm
+
+
+def update_top_modelos(content, top_modelos):
+    """Substitui o campo top_modelos:{...} no D360 do index.html."""
+    import json as _json
+
+    js_val = _json.dumps(top_modelos, ensure_ascii=False, separators=(',', ':'))
+    new_field = f'top_modelos:{js_val}'
+
+    # Busca início do campo existente
+    marker = 'top_modelos:'
+    idx = content.find(marker)
+    if idx != -1:
+        # Avança até o '{' de abertura
+        brace_start = content.index('{', idx)
+        depth = 0
+        i = brace_start
+        while i < len(content):
+            if content[i] == '{':
+                depth += 1
+            elif content[i] == '}':
+                depth -= 1
+                if depth == 0:
+                    break
+            i += 1
+        # i aponta para o '}' de fechamento; pula vírgula/espaço logo após
+        end = i + 1
+        if end < len(content) and content[end] in ',':
+            end += 1
+        return content[:idx] + new_field + ',' + content[end:]
+
+    # Campo ainda não existe — insere antes de diasDecorridos
+    updated = re.sub(r'(diasDecorridos\s*:)', new_field + ',\n    \\1', content, count=1)
+    return updated
+
+
+def update_top_acessorios(content, top_acessorios):
+    """Substitui o campo top_acessorios:{...} no D360 do index.html."""
+    import json as _json
+    js_val    = _json.dumps(top_acessorios, ensure_ascii=False, separators=(',', ':'))
+    new_field = f'top_acessorios:{js_val}'
+    marker    = 'top_acessorios:'
+    idx       = content.find(marker)
+    if idx != -1:
+        brace_start = content.index('{', idx)
+        depth = 0; i = brace_start
+        while i < len(content):
+            if content[i] == '{':   depth += 1
+            elif content[i] == '}':
+                depth -= 1
+                if depth == 0: break
+            i += 1
+        end = i + 1
+        if end < len(content) and content[end] == ',': end += 1
+        return content[:idx] + new_field + ',' + content[end:]
+    # Insere logo após top_modelos (antes de diasDecorridos)
+    updated = re.sub(r'(diasDecorridos\s*:)', new_field + ',\n    \\1', content, count=1)
+    return updated
+
+
 # ── Main ──────────────────────────────────────────────────────────────────────
 
 def main():
@@ -1029,6 +1232,11 @@ def main():
         agend_fin_by_store = process_agend_fin_per_loja(token, start, today, store_id_map)
     else:
         print("  IDs de lojas não disponíveis — agend_fin não será atualizado")
+
+    print("Buscando modelos/acessórios mais vendidos por forma de pagamento...")
+    top_modelos, top_acessorios = fetch_top_produtos_por_financeira(token, start, today)
+    print(f"  Celulares — PayJoy: {len(top_modelos.get('payjoy',[]))} | OdresCred: {len(top_modelos.get('odrescred',[]))} | Salão: {len(top_modelos.get('salao',[]))}")
+    print(f"  Acessórios — PayJoy: {len(top_acessorios.get('payjoy',[]))} | OdresCred: {len(top_acessorios.get('odrescred',[]))} | Salão: {len(top_acessorios.get('salao',[]))}")
 
     print("Buscando gerencial por grupo de produto (tickets médios)...")
     gerencial_cel   = fetch_gerencial(token, start, today, group_ids=[PRODUCT_GROUP_CEL])
@@ -1171,6 +1379,14 @@ def main():
         else:
             print(f"  AVISO: campo {field} não encontrado no HTML")
 
+    # Atualiza top_modelos e top_acessorios no D360
+    if top_modelos:
+        content = update_top_modelos(content, top_modelos)
+        print("  top_modelos atualizado no HTML")
+    if top_acessorios:
+        content = update_top_acessorios(content, top_acessorios)
+        print("  top_acessorios atualizado no HTML")
+
     # Atualiza o timestamp de build (força browsers a recarregar após deploy)
     from datetime import datetime as _dt
     build_ts = _dt.now().strftime('%Y%m%d%H%M%S')
@@ -1194,7 +1410,7 @@ def main():
 
     # Atualiza Firestore em tempo real — dispara onSnapshot em todos os browsers abertos
     print("\nSincronizando com Firestore...")
-    save_d360_to_firestore(sales, acess, acess_dia, today_sellers_proc, fin, fin_acum, agend)
+    save_d360_to_firestore(sales, acess, acess_dia, today_sellers_proc, fin, fin_acum, agend, top_fin_mes_bd_by_store, fin_bd_by_store)
 
 if __name__ == '__main__':
     main()

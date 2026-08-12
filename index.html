@@ -7,7 +7,7 @@
     <script>
     // Cache-buster: força reload se a versão mudou
     (function(){
-      var BUILD = '20260724174039';
+      var BUILD = '20260807171329';
       var stored = localStorage.getItem('d360_build');
       if (stored && stored !== BUILD) {
         localStorage.setItem('d360_build', BUILD);
@@ -1115,6 +1115,10 @@
                 <span>Dicta</span>
             </button>
             <!-- 6ª aba — Usuários (exclusiva Diretoria) -->
+            <button id="btn-rastreio" class="tab-btn hidden px-4 sm:px-6 py-4 text-sm font-semibold text-gray-400 tracking-wider flex items-center gap-2 whitespace-nowrap" onclick="switchTab('rastreio')">
+                <i class="fas fa-box-open" style="color:#f59e0b;"></i>
+                <span>Rastreio</span>
+            </button>
             <button id="btn-diario" class="tab-btn px-4 sm:px-6 py-4 text-sm font-semibold text-gray-400 tracking-wider flex items-center gap-2 whitespace-nowrap" onclick="switchTab('diario')">
                 <i class="fas fa-clipboard-check" style="color:#60a5fa;"></i>
                 <span>Diário</span>
@@ -1945,7 +1949,7 @@
 
             </div>
 
-            <!-- ── Card: Treinamento Presencial (fora do grid, sempre visível) ── -->
+            <!-- ── Card: Treinamento Presencial 06-07/08 (ativo) ── -->
             <div style="max-width:1100px;margin:1.25rem auto 0;border-radius:1.4rem;background:linear-gradient(135deg,#06050f,#0a0820,#070514);border:2px solid rgba(201,162,39,.4);position:relative;overflow:hidden;display:flex;flex-direction:column;padding:1.75rem 1.5rem;">
                 <div style="position:absolute;top:-60px;right:-60px;width:240px;height:240px;border-radius:50%;background:rgba(201,162,39,.06);pointer-events:none;"></div>
                 <div style="position:absolute;bottom:-40px;left:-40px;width:160px;height:160px;border-radius:50%;background:rgba(29,78,216,.05);pointer-events:none;"></div>
@@ -1958,7 +1962,7 @@
                     </div>
                 </div>
                 <div style="display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:1rem;position:relative;">
-                    <span style="font-size:.6rem;padding:.25rem .7rem;border-radius:999px;background:rgba(201,162,39,.12);color:#C9A227;border:1px solid rgba(201,162,39,.3);font-weight:700;">📅 18 e 19/06/2026</span>
+                    <span style="font-size:.6rem;padding:.25rem .7rem;border-radius:999px;background:rgba(201,162,39,.12);color:#C9A227;border:1px solid rgba(201,162,39,.3);font-weight:700;">📅 06 e 07/08/2026</span>
                     <span style="font-size:.6rem;padding:.25rem .7rem;border-radius:999px;background:rgba(201,162,39,.12);color:#C9A227;border:1px solid rgba(201,162,39,.3);font-weight:700;">⏱️ 20 horas</span>
                     <span style="font-size:.6rem;padding:.25rem .7rem;border-radius:999px;background:rgba(29,78,216,.15);color:#93c5fd;border:1px solid rgba(29,78,216,.3);font-weight:700;">🏆 Certificado Incluso</span>
                 </div>
@@ -1985,6 +1989,47 @@
                         <i class="fas fa-clipboard-list" style="font-size:.75rem;"></i>
                         <span id="trm-btn-avaliacao-label">📋 Avaliação CDC</span>
                     </button>
+                </div>
+            </div>
+
+            <!-- ── Treinamentos Arquivados ── -->
+            <div style="max-width:1100px;margin:.75rem auto 0;">
+                <button onclick="(function(btn){var c=document.getElementById('trm-arquivo-wrap');var aberto=c.style.display!=='none';c.style.display=aberto?'none':'flex';btn.querySelector('i').style.transform=aberto?'rotate(0deg)':'rotate(180deg)';})(this)" style="width:100%;display:flex;align-items:center;justify-content:space-between;gap:.5rem;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:.75rem;padding:.55rem 1rem;color:#6b7280;font-size:.68rem;font-weight:700;cursor:pointer;letter-spacing:.04em;">
+                    <span style="display:flex;align-items:center;gap:.5rem;"><i class="fas fa-archive" style="font-size:.6rem;"></i> Treinamentos Anteriores</span>
+                    <i class="fas fa-chevron-down" style="font-size:.55rem;transition:transform .25s;"></i>
+                </button>
+                <div id="trm-arquivo-wrap" style="display:none;flex-direction:column;border:1px solid rgba(255,255,255,.07);border-top:none;border-radius:0 0 .75rem .75rem;background:linear-gradient(135deg,#06050f,#0a0820,#070514);padding:1.5rem;gap:1rem;">
+                    <!-- Julho -->
+                    <div style="display:flex;align-items:center;justify-content:space-between;gap:.75rem;">
+                        <div style="display:flex;align-items:center;gap:.75rem;">
+                            <div style="font-size:1.6rem;opacity:.5;line-height:1;">🎓</div>
+                            <div>
+                                <p style="font-size:.72rem;font-weight:800;color:#9ca3af;margin:0;">Treinamento Presencial — Arquivado</p>
+                                <p style="font-size:.58rem;color:#4b5563;margin:0;">06 e 07/07/2026 · 20 horas</p>
+                            </div>
+                        </div>
+                        <div id="trm-arquivo-jul-dir" class="hidden">
+                            <button onclick="trmDiretorAbrirTurma('turma_2026_07')" style="display:flex;align-items:center;gap:.4rem;background:rgba(168,85,247,.1);color:#c084fc;font-weight:800;font-size:.65rem;padding:.45rem .7rem;border-radius:.6rem;border:1px solid rgba(168,85,247,.25);cursor:pointer;">
+                                <i class="fas fa-shield-halved" style="font-size:.6rem;"></i> Inscrições (Jul)
+                            </button>
+                        </div>
+                    </div>
+                    <div style="height:1px;background:rgba(255,255,255,.05);"></div>
+                    <!-- Junho -->
+                    <div style="display:flex;align-items:center;justify-content:space-between;gap:.75rem;">
+                        <div style="display:flex;align-items:center;gap:.75rem;">
+                            <div style="font-size:1.6rem;opacity:.5;line-height:1;">🎓</div>
+                            <div>
+                                <p style="font-size:.72rem;font-weight:800;color:#9ca3af;margin:0;">Treinamento Presencial — Arquivado</p>
+                                <p style="font-size:.58rem;color:#4b5563;margin:0;">18 e 19/06/2026 · 20 horas · 12 inscritos</p>
+                            </div>
+                        </div>
+                        <div id="trm-arquivo-jun-dir" class="hidden">
+                            <button onclick="trmDiretorAbrirTurma('turma_2026_06')" style="display:flex;align-items:center;gap:.4rem;background:rgba(168,85,247,.1);color:#c084fc;font-weight:800;font-size:.65rem;padding:.45rem .7rem;border-radius:.6rem;border:1px solid rgba(168,85,247,.25);cursor:pointer;">
+                                <i class="fas fa-shield-halved" style="font-size:.6rem;"></i> Inscrições (Jun)
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -2765,6 +2810,145 @@
           <div id="diario-view-checklist" class="hidden"></div>
         </div>
         <!-- ══════════ fim DIÁRIO TAB ══════════ -->
+
+        <!-- ══════════ ABA RASTREIO ══════════ -->
+        <div id="tab-rastreio" class="hidden">
+          <div class="glass rounded-2xl p-5 mb-6 flex flex-wrap items-center gap-4"
+               style="background:linear-gradient(130deg,rgba(245,158,11,.08),rgba(4,10,28,.85));">
+            <div class="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
+                 style="background:linear-gradient(135deg,rgba(245,158,11,.25),rgba(245,158,11,.06));border:1px solid rgba(245,158,11,.35);">
+              <i class="fas fa-box-open text-lg" style="color:#f59e0b;"></i>
+            </div>
+            <div class="flex-1 min-w-0">
+              <h2 class="text-white font-bold text-sm">Rastreio de <span style="color:#f59e0b;">Pedidos</span></h2>
+              <p class="text-gray-400 text-xs mt-0.5">Acompanhamento de encomendas pelos Correios por loja</p>
+            </div>
+            <button onclick="_rastreioOpenModal()" class="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition"
+                    style="background:rgba(245,158,11,.15);border:1px solid rgba(245,158,11,.35);color:#f59e0b;">
+              <i class="fas fa-plus"></i> Adicionar Rastreio
+            </button>
+          </div>
+
+          <div id="rastreio-filtros" class="flex gap-2 mb-5 flex-wrap">
+            <button onclick="_rastreioFiltro('todos',this)" class="rastreio-filtro-btn active px-3 py-1.5 rounded-lg text-xs font-semibold transition"
+                    style="background:rgba(245,158,11,.15);border:1px solid rgba(245,158,11,.4);color:#f59e0b;">Todos</button>
+            <button onclick="_rastreioFiltro('em_transito',this)" class="rastreio-filtro-btn px-3 py-1.5 rounded-lg text-xs font-semibold transition"
+                    style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:#9ca3af;">Em Trânsito</button>
+            <button onclick="_rastreioFiltro('entregue',this)" class="rastreio-filtro-btn px-3 py-1.5 rounded-lg text-xs font-semibold transition"
+                    style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:#9ca3af;">Entregues</button>
+          </div>
+
+          <div id="rastreio-grid" class="grid gap-4" style="grid-template-columns:repeat(auto-fill,minmax(320px,1fr));"></div>
+          <p id="rastreio-empty" class="hidden text-center text-gray-500 text-sm mt-12">Nenhum rastreio cadastrado.</p>
+        </div>
+
+        <!-- Modal Adicionar Rastreio -->
+        <div id="modal-rastreio" class="fixed inset-0 z-50 hidden" style="background:rgba(0,0,0,.7);">
+          <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="glass rounded-2xl p-6 w-full max-w-md" style="border:1px solid rgba(245,158,11,.25);">
+              <div class="flex items-center justify-between mb-5">
+                <h3 class="text-white font-bold text-base flex items-center gap-2"><i class="fas fa-box-open" style="color:#f59e0b;"></i> Adicionar Rastreio</h3>
+                <button onclick="_rastreioCloseModal()" class="text-gray-400 hover:text-white"><i class="fas fa-times"></i></button>
+              </div>
+              <div class="space-y-4">
+                <div>
+                  <label class="text-gray-400 text-xs mb-1 block">Loja</label>
+                  <select id="rastreio-loja" class="w-full rounded-xl px-3 py-2.5 text-sm text-white"
+                          style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);">
+                    <option value="">Selecionar loja...</option>
+                    <option value="cariacica">Cariacica</option>
+                    <option value="itabuna">Itabuna</option>
+                    <option value="moxuara">Moxuara</option>
+                    <option value="praiadacosta">Praia da Costa</option>
+                    <option value="barreiras">Barreiras</option>
+                    <option value="teixeira">Tx de Freitas</option>
+                    <option value="laranjeiras">Laranjeiras</option>
+                    <option value="saomateus">São Mateus</option>
+                    <option value="serra">Serra</option>
+                    <option value="montserrat">Montserrat</option>
+                    <option value="linhares">Linhares</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="text-gray-400 text-xs mb-1 block">Códigos de Rastreio <span class="text-gray-500">(um por linha)</span></label>
+                  <textarea id="rastreio-codigos" rows="4" placeholder="AD123456789BR&#10;AD987654321BR" class="w-full rounded-xl px-3 py-2.5 text-sm text-white font-mono resize-none"
+                            style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);"></textarea>
+                </div>
+                <div>
+                  <label class="text-gray-400 text-xs mb-1 block">Fornecedor</label>
+                  <input id="rastreio-fornecedor" type="text" placeholder="Ex: Company" class="w-full rounded-xl px-3 py-2.5 text-sm text-white"
+                         style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);">
+                </div>
+                <div>
+                  <label class="text-gray-400 text-xs mb-1 block">Descrição <span class="text-gray-500">(opcional)</span></label>
+                  <input id="rastreio-desc" type="text" placeholder="Ex: Pedido 16/07/2026 — 3 volumes" class="w-full rounded-xl px-3 py-2.5 text-sm text-white"
+                         style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);">
+                </div>
+              </div>
+              <div class="flex gap-3 mt-6">
+                <button onclick="_rastreioCloseModal()" class="flex-1 py-2.5 rounded-xl text-sm font-semibold text-gray-400" style="border:1px solid rgba(255,255,255,.1);">Cancelar</button>
+                <button onclick="_rastreioSalvar()" class="flex-1 py-2.5 rounded-xl text-sm font-semibold" style="background:rgba(245,158,11,.2);border:1px solid rgba(245,158,11,.4);color:#f59e0b;">Salvar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Modal Atualizar Status -->
+        <div id="modal-rastreio-status" class="fixed inset-0 z-50 hidden" style="background:rgba(0,0,0,.75);">
+          <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="glass rounded-2xl p-6 w-full max-w-lg" style="border:1px solid rgba(96,165,250,.25);">
+              <div class="flex items-center justify-between mb-1">
+                <h3 class="text-white font-bold text-base flex items-center gap-2"><i class="fas fa-pen" style="color:#60a5fa;"></i> Atualizar Status</h3>
+                <button onclick="_rastreioFecharStatus()" class="text-gray-400 hover:text-white"><i class="fas fa-times"></i></button>
+              </div>
+              <p class="text-gray-500 text-xs mb-5">Consulte o site dos Correios e copie as informações abaixo.</p>
+              <div class="grid grid-cols-2 gap-3 mb-3">
+                <div>
+                  <label class="text-gray-400 text-xs mb-1 block">Tipo de Serviço</label>
+                  <select id="rst-tipo" class="w-full rounded-xl px-3 py-2.5 text-sm text-white"
+                          style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);">
+                    <option value="">—</option>
+                    <option value="SEDEX">SEDEX</option>
+                    <option value="SEDEX 10">SEDEX 10</option>
+                    <option value="PAC">PAC</option>
+                    <option value="CARTA REGISTRADA">Carta Registrada</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="text-gray-400 text-xs mb-1 block">Previsão de Entrega</label>
+                  <input id="rst-previsao" type="text" placeholder="dd/mm/aaaa" class="w-full rounded-xl px-3 py-2.5 text-sm text-white"
+                         style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);">
+                </div>
+              </div>
+              <div class="mb-3">
+                <label class="text-gray-400 text-xs mb-1 block">Último Status <span class="text-gray-600">(ex: Objeto em transferência - por favor aguarde.)</span></label>
+                <input id="rst-statusTexto" type="text" placeholder="Descrição do evento mais recente" class="w-full rounded-xl px-3 py-2.5 text-sm text-white"
+                       style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);">
+              </div>
+              <div class="grid grid-cols-2 gap-3 mb-3">
+                <div>
+                  <label class="text-gray-400 text-xs mb-1 block">Local</label>
+                  <input id="rst-statusLocal" type="text" placeholder="ex: de SP para Serra - ES" class="w-full rounded-xl px-3 py-2.5 text-sm text-white"
+                         style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);">
+                </div>
+                <div>
+                  <label class="text-gray-400 text-xs mb-1 block">Data / Hora</label>
+                  <input id="rst-statusData" type="text" placeholder="ex: 04/08/2026 22:13" class="w-full rounded-xl px-3 py-2.5 text-sm text-white"
+                         style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);">
+                </div>
+              </div>
+              <div class="mb-5">
+                <label class="text-gray-400 text-xs mb-1 block">Histórico completo <span class="text-gray-600">(um evento por linha: Descrição|Local|Data)</span></label>
+                <textarea id="rst-historico" rows="4" placeholder="Objeto em transferência|de SP para Serra - ES|04/08/2026 22:13&#10;Objeto encaminhado|Agência Correios SP|04/08/2026 18:13" class="w-full rounded-xl px-3 py-2.5 text-xs text-white font-mono resize-none"
+                          style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);"></textarea>
+              </div>
+              <div class="flex gap-3">
+                <button onclick="_rastreioFecharStatus()" class="flex-1 py-2.5 rounded-xl text-sm font-semibold text-gray-400" style="border:1px solid rgba(255,255,255,.1);">Cancelar</button>
+                <button onclick="_rastreioSalvarStatus()" class="flex-1 py-2.5 rounded-xl text-sm font-semibold" style="background:rgba(96,165,250,.2);border:1px solid rgba(96,165,250,.4);color:#60a5fa;">Salvar Status</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- ══════════ fim RASTREIO TAB ══════════ -->
 
 
 
@@ -3560,7 +3744,7 @@ async function _atualizarVendasDireto() {
         const val  = parseFloat(c.total_sold || 0);
         const aVal = parseFloat((c.group_totals || {})['ACESSÓRIOS'] || 0);
         if (val <= 0) continue;
-        if (!byStore[storeKey]) byStore[storeKey] = { total: 0, acess: 0, top: [], acessTop: [] };
+        if (!byStore[storeKey]) byStore[storeKey] = { total:0, acess: 0, top: [], acessTop: [] };
         const name   = (c.collaborator_name || '').trim();
         const parts  = name.split(/\s+/).filter(Boolean);
         const initials = parts.length >= 2 ? (parts[0][0] + parts[1][0]).toUpperCase() : name.slice(0, 2).toUpperCase();
@@ -4587,16 +4771,25 @@ async function doLogin() {
         if (!isFirstAccess) {
             const localUser = _getLocal(cargo, name);
 
-            // ── Verificar flag de reset de senha (Firestore) ──
+            // ── Verificar flags Firestore (resetSenha / lojaForce) ──
             if (window._acadFBOk && window._acadDB) {
                 try {
                     const fsDoc = await window._acadDB.collection('ts_usuarios').doc(userKey(cargo, name)).get();
-                    if (fsDoc.exists && fsDoc.data().resetSenha === true) {
-                        localStorage.removeItem(userKey(cargo, name));
-                        await fsDoc.ref.update({ resetSenha: false }).catch(()=>{});
-                        switchToFirstAccessUI();
-                        toast('Cadastre uma nova senha para continuar.', 'info');
-                        return;
+                    if (fsDoc.exists) {
+                        const fsData = fsDoc.data();
+                        if (fsData.resetSenha === true) {
+                            localStorage.removeItem(userKey(cargo, name));
+                            await fsDoc.ref.update({ resetSenha: false }).catch(()=>{});
+                            switchToFirstAccessUI();
+                            toast('Cadastre uma nova senha para continuar.', 'info');
+                            return;
+                        }
+                        if (fsData.lojaForce) {
+                            const local = _getLocal(cargo, name) || {};
+                            local.loja = fsData.lojaForce;
+                            localStorage.setItem(userKey(cargo, name), JSON.stringify(local));
+                            await fsDoc.ref.update({ lojaForce: firebase.firestore.FieldValue.delete() }).catch(()=>{});
+                        }
                     }
                 } catch(e) {}
             }
@@ -4718,21 +4911,21 @@ async function _excluirDuplicadosInativos(usuarioLogado) {
 }
 
 function _ensureDiarioBtn() {
-    // Mostra btn-diario para todos os cargos com acesso, via setTimeout para garantir
+    // Mostra btn-diario e btn-rastreio via setTimeout para garantir
     // que roda após qualquer re-render que possa ter sobrescrito a visibilidade.
     const CARGOS_DIARIO = ['diretoria','admin','franqueado','gerente-senior','gerente-senior-acess','gerente','subgerente'];
-    setTimeout(function() {
+    function _fixBtns() {
         if (user && CARGOS_DIARIO.includes(user.cargo)) {
-            const btn = document.getElementById('btn-diario');
-            if (btn) btn.classList.remove('hidden');
+            const b = document.getElementById('btn-diario');
+            if (b) b.classList.remove('hidden');
         }
-    }, 0);
-    setTimeout(function() {
-        if (user && CARGOS_DIARIO.includes(user.cargo)) {
-            const btn = document.getElementById('btn-diario');
-            if (btn) btn.classList.remove('hidden');
+        if (user && user.cargo === 'diretoria') {
+            const r = document.getElementById('btn-rastreio');
+            if (r) r.classList.remove('hidden');
         }
-    }, 800);
+    }
+    setTimeout(_fixBtns, 0);
+    setTimeout(_fixBtns, 800);
 }
 
 function proceedToDash() {
@@ -4779,6 +4972,17 @@ function proceedToDash() {
         Promise.all([d360Promise, timerPromise, flagsPromise]).then(([d360Data, , fsFlags]) => {
             if (fsFlags.promocao_pendente === true) user.promocao_pendente = true;
             if (fsFlags.msgBoasVindas)              user.msgBoasVindas = fsFlags.msgBoasVindas;
+            if (fsFlags.lojaForce && user && user.name) {
+                user.loja = fsFlags.lojaForce;
+                _saveSession();
+                const local = _getLocal(user.cargo, user.name) || {};
+                local.loja = fsFlags.lojaForce;
+                localStorage.setItem(userKey(user.cargo, user.name), JSON.stringify(local));
+                if (window._acadFBOk && window._acadDB) {
+                    window._acadDB.collection('ts_usuarios').doc(userKey(user.cargo, user.name))
+                        .update({ lojaForce: firebase.firestore.FieldValue.delete() }).catch(()=>{});
+                }
+            }
             try {
                 // Só aplica dados do Firestore se forem do MÊS VIGENTE
                 // Dados de meses anteriores são arquivados mas NÃO sobrescrevem a tela inicial
@@ -4926,6 +5130,7 @@ function openDash() {
     _showBtn('btn-dicta');
     if (allowedUsuarios)   _showBtn('btn-usuarios');
     if (allowedUsuarios || user.cargo === 'escritorio')   _showBtn('btn-juridico');
+    if (user.cargo === 'diretoria') _showBtn('btn-rastreio');
     if (allowedUsuarios || ['diretoria','franqueado','gerente-senior','gerente-senior-acess','gerente','subgerente'].includes(user.cargo))
         _showBtn('btn-lancar-metas');
     // btn-diario: visível por padrão no HTML → esconde apenas para cargos sem acesso
@@ -5944,7 +6149,7 @@ function _jurClose() {
 
 /* ─── Tab switcher ─── */
 function switchTab(tab) {
-    const ALL = ['planning', 'matinais', 'academy', '360', 'dicta', 'usuarios', 'diario', 'juridico'];
+    const ALL = ['planning', 'matinais', 'academy', '360', 'dicta', 'usuarios', 'diario', 'juridico', 'rastreio'];
     ALL.forEach(t => {
         const tabEl = document.getElementById('tab-' + t);
         const btnEl = document.getElementById('btn-' + t);
@@ -5997,8 +6202,9 @@ function switchTab(tab) {
     } } catch(e) { console.warn('renderUsuarios:', e); }
     try { if (tab === 'dicta')     _dictaInit();               } catch(e) { console.warn('dictaInit:', e); }
     try { if (tab === 'diario')    _diarioInit();              } catch(e) { console.warn('diarioInit:', e); }
+    try { if (tab === 'rastreio')  _rastreioInit();            } catch(e) { console.warn('rastreioInit:', e); }
     // Registra ação de troca de aba
-    const _tabNames = {planning:'Planejamento',matinais:'Matinais',academy:'Academy','360':'360°',dicta:'Dicta','usuarios':'Usuários',diario:'Diário'};
+    const _tabNames = {planning:'Planejamento',matinais:'Matinais',academy:'Academy','360':'360°',dicta:'Dicta','usuarios':'Usuários',diario:'Diário',rastreio:'Rastreio'};
     try { _registrarAcao('Acessou ' + (_tabNames[tab] || tab)); } catch(e) {}
 }
 
@@ -6430,8 +6636,8 @@ function renderAcademyLive() {
 ══════════════════════════════════════════════════ */
 const D360 = {
     periodo: '',          // preenchido automaticamente
-    meta_rede: 3230000,
-    agendFat:  0, // faturamento real da central de agendamentos (atualizar mensalmente)
+    meta_rede: 3040000,
+    agendFat:0, // faturamento real da central de agendamentos (atualizar mensalmente)
     agendMetaPorLoja: 90000,   // meta mensal por loja — central de agendamentos
 
     // ── Dados históricos para o card Performance ──
@@ -6471,56 +6677,58 @@ const D360 = {
             }
         }
     },
-    diasDecorridos: 24, // atualizado pelo script de automação — não alterar manualmente
-    diasMes: 31,          // julho tem 31 dias
-    ticket_cel: 1645,        // ticket médio celulares (SBON) — atualizado pelo bot
-    ticket_acess: 81,      // ticket médio acessórios — atualizado pelo bot
-    ped_cel: 1018,           // pedidos celulares — atualizado pelo bot
-    ped_acess: 914,         // pedidos acessórios — atualizado pelo bot
+    top_acessorios:{"rede":[{"nm":"PELICULA DE VIDRO 3D","qt":51,"val":1751,"pct":31.3,"abc":"A"},{"nm":"CAPA DIVERSAS","qt":39,"val":1450,"pct":55.2,"abc":"A"},{"nm":"PELICULA TPU SOFT CLEAR DEVIA","qt":36,"val":3235,"pct":77.3,"abc":"A"},{"nm":"PELICULA TPU SOFT FOSCA DEVIA","qt":16,"val":1805,"pct":87.1,"abc":"B"},{"nm":"CARREGADOR TIPO C","qt":8,"val":540,"pct":92.0,"abc":"B"},{"nm":"CAPA IPHONE ORIGINAL","qt":7,"val":350,"pct":96.3,"abc":"C"},{"nm":"PELICULA BR CASE","qt":5,"val":310,"pct":99.4,"abc":"C"},{"nm":"POWER BANK 10000MAH TURBO PEINING WUP-654","qt":1,"val":190,"pct":100.0,"abc":"C"}],"lojas":{"barreiras":[{"nm":"PELICULA DE VIDRO 3D","qt":5,"val":150,"pct":29.4,"abc":"A"},{"nm":"CAPA DIVERSAS","qt":4,"val":125,"pct":52.9,"abc":"A"},{"nm":"PELICULA TPU SOFT CLEAR DEVIA","qt":3,"val":300,"pct":70.6,"abc":"A"},{"nm":"CARREGADOR TIPO C","qt":2,"val":130,"pct":82.4,"abc":"B"},{"nm":"POWER BANK 10000MAH TURBO PEINING WUP-654","qt":1,"val":190,"pct":88.2,"abc":"B"},{"nm":"FONE AIR BUDS","qt":1,"val":250,"pct":94.1,"abc":"B"},{"nm":"PELICULA BR CASE","qt":1,"val":40,"pct":100.0,"abc":"C"}],"cariacica":[{"nm":"PELICULA DE VIDRO 3D","qt":9,"val":300,"pct":31.0,"abc":"A"},{"nm":"PELICULA TPU SOFT CLEAR DEVIA","qt":7,"val":615,"pct":55.2,"abc":"A"},{"nm":"CAPA DIVERSAS","qt":5,"val":175,"pct":72.4,"abc":"A"},{"nm":"PELICULA TPU SOFT FOSCA DEVIA","qt":5,"val":520,"pct":89.7,"abc":"B"},{"nm":"POWER BANK 10000MAH TURBO PEINING WUP-654","qt":1,"val":190,"pct":93.1,"abc":"B"},{"nm":"CARTAO DE MEMORIA SANDISK 128GB","qt":1,"val":100,"pct":96.6,"abc":"C"},{"nm":"PULSEIRA PARA RELOGIO BASIKE WU379","qt":1,"val":50,"pct":100.0,"abc":"C"}],"itabuna":[{"nm":"PELICULA TPU SOFT FOSCA DEVIA","qt":6,"val":585,"pct":33.3,"abc":"A"},{"nm":"PELICULA TPU SOFT CLEAR DEVIA","qt":3,"val":180,"pct":50.0,"abc":"A"},{"nm":"CAPA DIVERSAS","qt":3,"val":95,"pct":66.7,"abc":"A"},{"nm":"PELICULA DE VIDRO 3D","qt":2,"val":40,"pct":77.8,"abc":"A"},{"nm":"CARREGADOR PORTÁTIL ALTOMEX 5000MAH","qt":2,"val":200,"pct":88.9,"abc":"B"},{"nm":"CARREGADOR PD IPHONE 20W FAM FKT-PD525","qt":1,"val":120,"pct":94.4,"abc":"B"},{"nm":"CABO DE DADOS AVULSO","qt":1,"val":70,"pct":100.0,"abc":"C"}],"laranjeiras":[{"nm":"CAPA DIVERSAS","qt":2,"val":45,"pct":50.0,"abc":"A"},{"nm":"PELICULA TPU SOFT FOSCA DEVIA","qt":1,"val":80,"pct":75.0,"abc":"A"},{"nm":"CARREGADOR TIPO C","qt":1,"val":60,"pct":100.0,"abc":"C"}],"linhares":[{"nm":"CAPA DIVERSAS","qt":2,"val":80,"pct":40.0,"abc":"A"},{"nm":"PELICULA TPU SOFT CLEAR DEVIA","qt":2,"val":280,"pct":80.0,"abc":"A"},{"nm":"PELICULA DE VIDRO 3D","qt":1,"val":30,"pct":100.0,"abc":"C"}],"montserrat":[{"nm":"CAPA DIVERSAS","qt":9,"val":375,"pct":30.0,"abc":"A"},{"nm":"PELICULA DE VIDRO 3D","qt":8,"val":266,"pct":56.7,"abc":"A"},{"nm":"PELICULA TPU SOFT CLEAR DEVIA","qt":6,"val":640,"pct":76.7,"abc":"A"},{"nm":"CABO TIPO C","qt":2,"val":100,"pct":83.3,"abc":"B"},{"nm":"CABO TIPO C TIPO C DEVIA","qt":2,"val":160,"pct":90.0,"abc":"B"},{"nm":"CAPA IPHONE ORIGINAL","qt":2,"val":110,"pct":96.7,"abc":"C"},{"nm":"FONE DE OUVIDO FAM FCA-OC18C","qt":1,"val":60,"pct":100.0,"abc":"C"}],"praiadacosta":[{"nm":"PELICULA DE VIDRO 3D","qt":4,"val":150,"pct":50.0,"abc":"A"},{"nm":"CAPA DIVERSAS","qt":2,"val":80,"pct":75.0,"abc":"A"},{"nm":"PELICULA TPU SOFT CLEAR DEVIA","qt":1,"val":100,"pct":87.5,"abc":"B"},{"nm":"CAPA IPHONE ORIGINAL","qt":1,"val":50,"pct":100.0,"abc":"C"}],"saomateus":[{"nm":"PELICULA TPU SOFT CLEAR DEVIA","qt":13,"val":1020,"pct":72.2,"abc":"A"},{"nm":"CAPA DIVERSAS","qt":2,"val":65,"pct":83.3,"abc":"B"},{"nm":"PELICULA DEVIA PRIVACIDADE","qt":2,"val":240,"pct":94.4,"abc":"B"},{"nm":"SMARTWATCH BASIK W64 PRO MAX","qt":1,"val":450,"pct":100.0,"abc":"C"}],"serra":[{"nm":"PELICULA DE VIDRO 3D","qt":11,"val":380,"pct":39.3,"abc":"A"},{"nm":"PELICULA BR CASE","qt":4,"val":270,"pct":53.6,"abc":"A"},{"nm":"CAPA DIVERSAS","qt":4,"val":170,"pct":67.9,"abc":"A"},{"nm":"CARREGADOR TIPO C","qt":3,"val":210,"pct":78.6,"abc":"A"},{"nm":"CAPA IPHONE ORIGINAL","qt":2,"val":110,"pct":85.7,"abc":"B"},{"nm":"FONE AIR BUDS","qt":2,"val":310,"pct":92.9,"abc":"B"},{"nm":"POWER BANK KINTONE DEVIA 10000MAH EP095","qt":2,"val":450,"pct":100.0,"abc":"C"}],"teixeira":[{"nm":"PELICULA TPU SOFT FOSCA DEVIA","qt":2,"val":310,"pct":28.6,"abc":"A"},{"nm":"CAPA DIVERSAS","qt":2,"val":90,"pct":57.1,"abc":"A"},{"nm":"PELICULA DE VIDRO 3D","qt":2,"val":75,"pct":85.7,"abc":"B"},{"nm":"CHIP TIM","qt":1,"val":35,"pct":100.0,"abc":"C"}],"moxuara":[{"nm":"PELICULA DE VIDRO 3D","qt":9,"val":360,"pct":45.0,"abc":"A"},{"nm":"CAPA DIVERSAS","qt":4,"val":150,"pct":65.0,"abc":"A"},{"nm":"CAPA IPHONE ORIGINAL","qt":2,"val":80,"pct":75.0,"abc":"A"},{"nm":"CARREGADOR TIPO C","qt":2,"val":140,"pct":85.0,"abc":"B"},{"nm":"FONTE 20W FAM FCA-PD20","qt":1,"val":100,"pct":90.0,"abc":"B"},{"nm":"PELICULA TPU SOFT CLEAR DEVIA","qt":1,"val":100,"pct":95.0,"abc":"B"},{"nm":"PELICULA TPU SOFT FOSCA DEVIA","qt":1,"val":180,"pct":100.0,"abc":"C"}]}},
+    top_modelos:{"payjoy":[{"nm":"SMARTPHONE REALME C71","qt":16,"val":31788},{"nm":"SMARTPHONE  REALME NOTE 70","qt":13,"val":23915},{"nm":"SMARTPHONE REALME NOTE 60X","qt":11,"val":16125},{"nm":"SMARTPHONE REALME C75","qt":7,"val":16300},{"nm":"SMARTPHONE INFINIX HOT 60I","qt":7,"val":14100},{"nm":"SMARTPHONE TECNO SPARK 30C","qt":3,"val":4600},{"nm":"SMARTPHONE INFINIX SMART 10","qt":2,"val":3200}],"odrescred":[{"nm":"SMARTPHONE REALME NOTE 60X","qt":23,"val":31619},{"nm":"SMARTPHONE  REALME NOTE 70","qt":20,"val":35085},{"nm":"SMARTPHONE REALME C71","qt":12,"val":24287},{"nm":"SMARTPHONE REALME C75","qt":6,"val":13000},{"nm":"SMARTPHONE INFINIX HOT 60I","qt":6,"val":10921},{"nm":"SMARTPHONE TECNO SPARK 30C","qt":5,"val":8197},{"nm":"SMARTPHONE ITEL A100C","qt":1,"val":1280}],"salao":[{"nm":"SMARTPHONE REALME NOTE 60X","qt":25,"val":29424},{"nm":"SMARTPHONE REALME C71","qt":16,"val":28750},{"nm":"SMARTPHONE  REALME NOTE 70","qt":15,"val":26349},{"nm":"SMARTPHONE REALME C85","qt":11,"val":28400},{"nm":"SMARTPHONE INFINIX HOT 60I","qt":8,"val":15112},{"nm":"SMARTPHONE REALME C63","qt":3,"val":5080},{"nm":"SMARTPHONE ITEL A18S","qt":1,"val":800}],"lojas":{"barreiras":{"payjoy":[{"nm":"SMARTPHONE REALME C71","qt":5,"val":10550},{"nm":"SMARTPHONE  REALME NOTE 70","qt":3,"val":5515},{"nm":"SMARTPHONE INFINIX SMART 10","qt":2,"val":3200}],"odrescred":[{"nm":"SMARTPHONE REALME C71","qt":2,"val":4140}],"salao":[{"nm":"SMARTPHONE REALME C71","qt":2,"val":4100},{"nm":"SMARTPHONE  REALME NOTE 70","qt":1,"val":1900},{"nm":"SMARTPHONE ITEL A18S","qt":1,"val":800},{"nm":"SMARTPHONE INFINIX SMART 10","qt":1,"val":1405}]},"cariacica":{"payjoy":[{"nm":"SMARTPHONE REALME C75","qt":3,"val":7100},{"nm":"SMARTPHONE REALME C71","qt":3,"val":5500},{"nm":"SMARTPHONE  REALME NOTE 70","qt":2,"val":3700},{"nm":"SMARTPHONE INFINIX HOT 60I","qt":2,"val":3800},{"nm":"SMARTPHONE REALME NOTE 60X","qt":1,"val":1700},{"nm":"SMARTPHONE TECNO SPARK 30C","qt":1,"val":1900}],"odrescred":[{"nm":"SMARTPHONE  REALME NOTE 70","qt":2,"val":3600},{"nm":"SMARTPHONE REALME C71","qt":2,"val":4000},{"nm":"SMARTPHONE REALME NOTE 60X","qt":2,"val":3398},{"nm":"SMARTPHONE REALME C75","qt":1,"val":2000},{"nm":"SMARTPHONE INFINIX HOT 60I","qt":1,"val":1799}],"salao":[{"nm":"SMARTPHONE REALME NOTE 60X","qt":5,"val":6620},{"nm":"SMARTPHONE REALME C85","qt":2,"val":6200},{"nm":"SMARTPHONE REALME C71","qt":2,"val":3700},{"nm":"SMARTPHONE  REALME NOTE 70","qt":1,"val":2000},{"nm":"SMARTPHONE REALME C75","qt":1,"val":2500},{"nm":"SMARTPHONE REALME C67","qt":1,"val":1700},{"nm":"SMARTPHONE ITEL A100C","qt":1,"val":1200}]},"itabuna":{"payjoy":[],"odrescred":[{"nm":"SMARTPHONE REALME NOTE 60X","qt":5,"val":6198},{"nm":"SMARTPHONE  REALME NOTE 70","qt":2,"val":3813},{"nm":"SMARTPHONE INFINIX SMART 10","qt":1,"val":1399},{"nm":"SMARTPHONE REALME C71","qt":1,"val":2199}],"salao":[{"nm":"SMARTPHONE REALME C71","qt":5,"val":7750},{"nm":"SMARTPHONE  REALME NOTE 70","qt":3,"val":5200},{"nm":"SMARTPHONE INFINIX HOT 60I","qt":3,"val":5912},{"nm":"SMARTPHONE REALME NOTE 60X","qt":3,"val":2750},{"nm":"SMARTPHONE REALME C63","qt":1,"val":1600}]},"laranjeiras":{"payjoy":[{"nm":"SMARTPHONE TECNO SPARK 30C","qt":2,"val":2700},{"nm":"SMARTPHONE REALME C71","qt":1,"val":1838},{"nm":"SMARTPHONE  REALME NOTE 70","qt":1,"val":1600},{"nm":"SMARTPHONE REALME C75","qt":1,"val":2250}],"odrescred":[{"nm":"SMARTPHONE  REALME NOTE 70","qt":3,"val":4379},{"nm":"SMARTPHONE REALME C71","qt":1,"val":2000},{"nm":"SMARTPHONE REALME C75","qt":1,"val":2250},{"nm":"SMARTPHONE ITEL A100C","qt":1,"val":1280},{"nm":"SMARTPHONE TECNO SPARK 30C","qt":1,"val":1399}],"salao":[]},"linhares":{"payjoy":[{"nm":"SMARTPHONE  REALME NOTE 70","qt":1,"val":1900},{"nm":"SMARTPHONE REALME C71","qt":1,"val":2300}],"odrescred":[{"nm":"SMARTPHONE  REALME NOTE 70","qt":7,"val":12938},{"nm":"SMARTPHONE REALME NOTE 60X","qt":6,"val":8246},{"nm":"SMARTPHONE REALME C71","qt":1,"val":2125}],"salao":[{"nm":"SMARTPHONE REALME C63","qt":1,"val":1950}]},"montserrat":{"payjoy":[{"nm":"SMARTPHONE REALME NOTE 60X","qt":3,"val":4150},{"nm":"SMARTPHONE REALME C75","qt":2,"val":4750},{"nm":"SMARTPHONE REALME C85","qt":1,"val":2900},{"nm":"SMARTPHONE  REALME NOTE 70","qt":1,"val":2000},{"nm":"SMARTPHONE INFINIX HOT 60I","qt":1,"val":2100}],"odrescred":[{"nm":"SMARTPHONE REALME C75","qt":2,"val":4350},{"nm":"SMARTPHONE  REALME NOTE 70","qt":1,"val":1599},{"nm":"SMARTPHONE REALME NOTE 60X","qt":1,"val":1300}],"salao":[{"nm":"SMARTPHONE REALME NOTE 60X","qt":5,"val":4899},{"nm":"SMARTPHONE  REALME NOTE 70","qt":3,"val":5630},{"nm":"SMARTPHONE REALME C85","qt":2,"val":3800},{"nm":"SMARTPHONE INFINIX HOT 60I","qt":1,"val":1900}]},"praiadacosta":{"payjoy":[{"nm":"SMARTPHONE REALME C71","qt":1,"val":1800},{"nm":"SMARTPHONE REALME NOTE 60X","qt":1,"val":1275}],"odrescred":[{"nm":"SMARTPHONE REALME C75","qt":2,"val":4400},{"nm":"SMARTPHONE REALME NOTE 60X","qt":2,"val":3000},{"nm":"SMARTPHONE INFINIX HOT 60I","qt":1,"val":1700},{"nm":"SMARTPHONE REALME C71","qt":1,"val":1799}],"salao":[]},"saomateus":{"payjoy":[{"nm":"SMARTPHONE  REALME NOTE 70","qt":5,"val":9200},{"nm":"SMARTPHONE REALME C71","qt":5,"val":9800}],"odrescred":[{"nm":"SMARTPHONE  REALME NOTE 70","qt":3,"val":5058},{"nm":"SMARTPHONE REALME C71","qt":3,"val":6024},{"nm":"SMARTPHONE REALME NOTE 60X","qt":2,"val":2799},{"nm":"SMARTPHONE TECNO SPARK 30C","qt":1,"val":1799}],"salao":[{"nm":"SMARTPHONE REALME NOTE 60X","qt":6,"val":8205},{"nm":"SMARTPHONE  REALME NOTE 70","qt":5,"val":7519},{"nm":"SMARTPHONE REALME C85","qt":3,"val":7100},{"nm":"SMARTPHONE REALME C71","qt":2,"val":4250},{"nm":"SMARTPHONE ITEL CITY 100","qt":1,"val":1600}]},"serra":{"payjoy":[{"nm":"SMARTPHONE ITEL A90","qt":1,"val":1250},{"nm":"SMARTPHONE REALME NOTE 60X","qt":1,"val":1500}],"odrescred":[{"nm":"SMARTPHONE TECNO SPARK 30C","qt":3,"val":4999},{"nm":"SMARTPHONE REALME NOTE 60X","qt":2,"val":2498},{"nm":"SMARTPHONE INFINIX HOT 60I","qt":2,"val":3598},{"nm":"SMARTPHONE  REALME NOTE 70","qt":1,"val":1999}],"salao":[{"nm":"SMARTPHONE REALME NOTE 60X","qt":4,"val":5600},{"nm":"SMARTPHONE  REALME NOTE 70","qt":2,"val":4100},{"nm":"SMARTPHONE REALME C85","qt":2,"val":5600},{"nm":"SMARTPHONE REALME C71","qt":2,"val":4100},{"nm":"SMARTPHONE REALME C75X","qt":1,"val":2400},{"nm":"Smartphone  MEIZU MBLU 21","qt":1,"val":700}]},"teixeira":{"payjoy":[{"nm":"SMARTPHONE REALME NOTE 60X","qt":3,"val":4300},{"nm":"SMARTPHONE INFINIX HOT 60I","qt":1,"val":1900}],"odrescred":[{"nm":"SMARTPHONE INFINIX HOT 60I","qt":2,"val":3824},{"nm":"SMARTPHONE REALME NOTE 60X","qt":2,"val":2680},{"nm":"SMARTPHONE REALME C71","qt":1,"val":2000},{"nm":"SMARTPHONE TECNO SPARK 30 PRO","qt":1,"val":1929},{"nm":"SMARTPHONE  REALME NOTE 70","qt":1,"val":1699}],"salao":[{"nm":"SMARTPHONE REALME NOTE 60X","qt":2,"val":1350},{"nm":"SMARTPHONE REALME C63","qt":1,"val":1530}]},"moxuara":{"payjoy":[{"nm":"SMARTPHONE INFINIX HOT 60I","qt":3,"val":6300},{"nm":"SMARTPHONE REALME NOTE 60X","qt":2,"val":3200},{"nm":"SMARTPHONE REALME C75","qt":1,"val":2200}],"odrescred":[{"nm":"SMARTPHONE REALME NOTE 60X","qt":1,"val":1500}],"salao":[{"nm":"SMARTPHONE INFINIX HOT 60I","qt":4,"val":7300},{"nm":"SMARTPHONE REALME C71","qt":3,"val":4850},{"nm":"SMARTPHONE REALME C85","qt":2,"val":5700}]}}},
+    diasDecorridos: 5, // atualizado pelo script de automação — não alterar manualmente
+    diasMes: 31,          // agosto tem 31 dias
+    ticket_cel: 1789,        // ticket médio celulares (SBON) — atualizado pelo bot
+    ticket_acess: 84,      // ticket médio acessórios — atualizado pelo bot
+    ped_cel: 165,           // pedidos celulares — atualizado pelo bot
+    ped_acess: 142,         // pedidos acessórios — atualizado pelo bot
 
     // ── Margem Bruta Mensal ──────────────────────────────────────────────────────
     // FONTE PRIMÁRIA: margem_lojas (por loja, do Relatório Gerencial ERP CDC)
     // O sistema deriva automaticamente: margem por loja → subrede → rede
     // COMO ATUALIZAR: edite apenas margem_lojas com os valores do ERP por loja
     // ─────────────────────────────────────────────────────────────────────────────
-    margem_dia: 43.11,              // rede hoje · zerado automaticamente à meia-noite
-    margem_dia_subredes: { t1: 45.16, t2: 47.20, t3: 37.84 },
+    margem_dia: 52.21,              // rede hoje · zerado automaticamente à meia-noite
+    margem_dia_subredes: { t1: 50.88, t2: 53.14, t3: 56.40 },
     margem_lojas: {
         // ── FONTE PRIMÁRIA — atualizar aqui com o Relatório Gerencial por Loja ──
         // T1 — Titãs 1 (Talysson)
-        cariacica:   43.98,
-        itabuna:     43.98,
-        moxuara:     43.98,
-        praiadacosta:43.98,
+        cariacica:   48.53,
+        itabuna:     48.53,
+        moxuara:     48.53,
         // T2 — Titãs 2 (Adriel)
-        barreiras:   44.87,
-        teixeira:    44.87,
-        laranjeiras: 44.87,
+        praiadacosta:47.83,
+        barreiras:   47.83,
+        teixeira:    47.83,
+        laranjeiras: 47.83,
         // T3 — Titãs 3 (Arthur)
-        saomateus:   46.19,
-        serra:        46.19,
-        montserrat:  46.19,
-        linhares:    46.19,
+        saomateus:   50.12,
+        serra:        50.12,
+        montserrat:  50.12,
+        linhares:    50.12,
     },
     margem_subredes: {  // fallback quando margem_lojas estiver incompleta
-        t1: 43.98, t2: 44.87, t3: 46.19
+        t1: 48.53, t2: 47.83, t3: 50.12
     },
     // margem_mes: derivada automaticamente pelo _calcMargemPonderada (não editar)
-    margem_mes: 44.99,
+    margem_mes: 48.96,
 
     subredes: {
         t1: { nome:'Titãs 1', gestor:'Talysson', meta:0,
-              lojas:['cariacica','itabuna','moxuara','praiadacosta'] },
+              lojas:['cariacica','itabuna','moxuara'] },
         t2: { nome:'Titãs 2', gestor:'Adriel',   meta:0,
-              lojas:['barreiras','teixeira','laranjeiras'] },
+              lojas:['praiadacosta','barreiras','teixeira','laranjeiras'] },
         t3: { nome:'Titãs 3', gestor:'Arthur',   meta:0,
               lojas:['saomateus','serra','montserrat','linhares'] },
     },
     lojas: {
-        // ── Totais acumulados 2026-07-01 a 2026-07-24 · Atualizado automaticamente ──
-        saomateus:   { label:'São Mateus',         sigla:'SM', sub:'t3', meta:500000,  total:212944.99, ped:218,  cancel:0, agend:0, agendCount:0, agendFat:48354.0,  fat_dia:5509.0, acess_dia:310.0, acess_dia_top:[{n:'CARLA SANTOS LUIZ',i:'CS',t:160.0}, {n:'STEFANY SPEROTTO BARCELOS',i:'SS',t:150.0}], top_dia:[{n:'STEFANY SPEROTTO BARCELOS',i:'SS',t:2150.0}, {n:'RANDECLAY MARIANO GOMES',i:'RM',t:1700.0}, {n:'LEANDRO DA CRUZ SILVA',i:'LD',t:1499.0}, {n:'CARLA SANTOS LUIZ',i:'CS',t:160.0}], fin_dia:1499.0, fin_mes:103513.0, top_fin_mes:[{n:'LEANDRO DA CRUZ SILVA',i:'LD',t:32842.0,bd:[{nm:'PayJoy',t:11850.0},{nm:'OdresCred',t:20992.0},{nm:'Outras',t:0}]},{n:'ELIZA QUEIROZ DE SOUZA',i:'EQ',t:24879.0,bd:[{nm:'PayJoy',t:9740.0},{nm:'OdresCred',t:15139.0},{nm:'Outras',t:0}]},{n:'CARLA SANTOS LUIZ',i:'CS',t:23996.0,bd:[{nm:'PayJoy',t:13948.0},{nm:'OdresCred',t:13447.0},{nm:'Outras',t:0}]},{n:'RANDECLAY MARIANO GOMES',i:'RM',t:21796.0,bd:[{nm:'PayJoy',t:7800.0},{nm:'OdresCred',t:13996.0},{nm:'Outras',t:0}]}], fin_bd:[{nm:'PayJoy',t:43338.0},{nm:'OdresCred',t:63574.0},{nm:'Outras',t:0}], top_fin:[{n:'LEANDRO DA CRUZ SILVA',i:'LD',t:1499.0}], metaAcess:20000,
-            agendamentos:{total:48354.0, fin:41094.0, fin_bd:[{nm:'PayJoy',t:16479.0},{nm:'OdresCred',t:28014.0},{nm:'Outras',t:0}], top:[{n:'LEANDRO DA CRUZ SILVA',i:'LD',t:17426.0}, {n:'CARLA SANTOS LUIZ',i:'CS',t:10449.0}, {n:'ELIZA QUEIROZ DE SOUZA',i:'EQ',t:8840.0}, {n:'STEFANY SPEROTTO BARCELOS',i:'SS',t:7080.0}, {n:'RANDECLAY MARIANO GOMES',i:'RM',t:4559.0}]},
-            acessorios:{total:7789.99, top:[
+        // ── Totais acumulados 2026-08-01 a 2026-08-05 · Atualizado automaticamente ──
+        saomateus:   { label:'São Mateus',         sigla:'SM', sub:'t3', meta:350000,  total:44368.0, ped:35,  cancel:0, agend:0, agendCount:0, agendFat:5600.0,  fat_dia:120.0, acess_dia:120.0, acess_dia_top:[{n:'STEFANY SPEROTTO BARCELOS',i:'SS',t:80.0}, {n:'ELIZA QUEIROZ DE SOUZA',i:'EQ',t:40.0}], top_dia:[{n:'STEFANY SPEROTTO BARCELOS',i:'SS',t:80.0}, {n:'ELIZA QUEIROZ DE SOUZA',i:'EQ',t:40.0}], fin_dia:0, fin_mes:21678.0, top_fin_mes:[{n:'RANDECLAY MARIANO GOMES',i:'RM',t:12478.0,bd:[{nm:'PayJoy',t:7500.0},{nm:'OdresCred',t:3359.0},{nm:'Outras',t:1619.0}]},{n:'ELIZA QUEIROZ DE SOUZA',i:'EQ',t:4000.0,bd:[{nm:'PayJoy',t:4000.0},{nm:'OdresCred',t:0},{nm:'Outras',t:0}]},{n:'LEANDRO DA CRUZ SILVA',i:'LD',t:3700.0,bd:[{nm:'PayJoy',t:3700.0},{nm:'OdresCred',t:0},{nm:'Outras',t:0}]},{n:'CARLA SANTOS LUIZ',i:'CS',t:1500.0,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:1500.0},{nm:'Outras',t:0}]}], fin_bd:[{nm:'PayJoy',t:15200.0},{nm:'OdresCred',t:4859.0},{nm:'Outras',t:1619.0}], top_fin:[], metaAcess:11500,
+            agendamentos:{total:5600.0, fin:5600.0, fin_bd:[{nm:'PayJoy',t:5700.0},{nm:'OdresCred',t:0},{nm:'Outras',t:0}], top:[{n:'LEANDRO DA CRUZ SILVA',i:'LD',t:3600.0}, {n:'ELIZA QUEIROZ DE SOUZA',i:'EQ',t:2000.0}]},
+            acessorios:{total:1715.0, top:[
                 {n:'Juliana Cristina dos Santos',i:'JC',t:2947,ds:12,ult:'12/06'},
                 {n:'Alice Christino Monteiro',i:'AC',t:2470,ds:12,ult:'12/06'},
                 {n:'Eliza Queiroz de Souza',i:'EQ',t:2225,ds:12,ult:'12/06'},
@@ -6528,28 +6736,27 @@ const D360 = {
                 {n:'Leandro da Cruz Silva',i:'LC',t:755,ds:12,ult:'12/06'},
                 {n:'Randeclay Mariano Gomes',i:'RM',t:470,ds:12,ult:'12/06'}
             ], dias:[{d:'01/06',ac:2210,cel:13147},{d:'06/06',ac:1935,cel:69941},{d:'08/06',ac:495,cel:14645}]},
-            top:[{n:'CARLA SANTOS LUIZ',i:'CS',p:58,t:58058.99,ds:26,ult:'24/07'},
-                {n:'ELIZA QUEIROZ DE SOUZA',i:'EQ',p:43,t:45519.0,ds:47,ult:'24/07'},
-                {n:'STEFANY SPEROTTO BARCELOS',i:'SS',p:52,t:39630.0,ds:47,ult:'24/07'},
-                {n:'LEANDRO DA CRUZ SILVA',i:'LD',p:33,t:37572.0,ds:19,ult:'24/07'},
-                {n:'RANDECLAY MARIANO GOMES',i:'RM',p:31,t:31665.0,ds:35,ult:'24/07'},
-                {n:'ALICE CHRISTINO MONTEIRO',i:'AC',p:1,t:500.0,ds:2,ult:'16/07'}]},
-        cariacica:   { label:'Cariacica',          sigla:'CC', sub:'t1', meta:500000,  total:275570.0, ped:231,  cancel:0, agend:0, agendCount:0, agendFat:59547.0,  fat_dia:8070.0, acess_dia:230.0, acess_dia_top:[{n:'ROBERTA FELIPE MALAQUIAS',i:'RF',t:100.0}, {n:'mirelly vieira portugal',i:'MV',t:100.0}, {n:'ANA CAROLINA DA SILVA',i:'AC',t:30.0}], top_dia:[{n:'ROBERTA FELIPE MALAQUIAS',i:'RF',t:4440.0}, {n:'ANA CAROLINA DA SILVA',i:'AC',t:2030.0}, {n:'mirelly vieira portugal',i:'MV',t:1600.0}], fin_dia:2140.0, fin_mes:162861.0, top_fin_mes:[{n:'ROBERTA FELIPE MALAQUIAS',i:'RF',t:83405.0,bd:[{nm:'PayJoy',t:42330.0},{nm:'OdresCred',t:39575.0},{nm:'Outras',t:1500.0}]},{n:'Liz Sophia Andrade Pereira',i:'LS',t:74706.0,bd:[{nm:'PayJoy',t:46082.0},{nm:'OdresCred',t:26624.0},{nm:'Outras',t:2000.0}]},{n:'Glaupierre oliveira da silvaa',i:'GO',t:4750.0,bd:[{nm:'PayJoy',t:4750.0},{nm:'OdresCred',t:0},{nm:'Outras',t:0}]}], fin_bd:[{nm:'PayJoy',t:93162.0},{nm:'OdresCred',t:66199.0},{nm:'Outras',t:3500.0}], top_fin:[{n:'ROBERTA FELIPE MALAQUIAS',i:'RF',t:2140.0}], metaAcess:20000,
-            agendamentos:{total:59547.0, fin:55230.0, fin_bd:[{nm:'PayJoy',t:37623.0},{nm:'OdresCred',t:17607.0},{nm:'Outras',t:0}], top:[{n:'Liz Sophia Andrade Pereira',i:'LS',t:31898.0}, {n:'ROBERTA FELIPE MALAQUIAS',i:'RF',t:16650.0}, {n:'ANA CAROLINA DA SILVA',i:'AC',t:4299.0}, {n:'mirelly vieira portugal',i:'MV',t:3800.0}, {n:'Glaupierre oliveira da silvaa',i:'GO',t:2900.0}]},
-            acessorios:{total:10313.0, top:[
+            top:[{n:'RANDECLAY MARIANO GOMES',i:'RM',p:14,t:20433.0,ds:35,ult:'24/07'},
+                {n:'LEANDRO DA CRUZ SILVA',i:'LD',p:7,t:13370.0,ds:19,ult:'24/07'},
+                {n:'ELIZA QUEIROZ DE SOUZA',i:'EQ',p:7,t:6625.0,ds:48,ult:'05/08'},
+                {n:'CARLA SANTOS LUIZ',i:'CS',p:2,t:3500.0,ds:26,ult:'24/07'},
+                {n:'STEFANY SPEROTTO BARCELOS',i:'SS',p:5,t:440.0,ds:48,ult:'05/08'}]},
+        cariacica:   { label:'Cariacica',          sigla:'CC', sub:'t1', meta:380000,  total:45833.0, ped:36,  cancel:0, agend:0, agendCount:0, agendFat:5300.0,  fat_dia:4085.0, acess_dia:135.0, acess_dia_top:[{n:'mirelly vieira portugal',i:'MV',t:100.0}, {n:'ROBERTA FELIPE MALAQUIAS',i:'RF',t:35.0}], top_dia:[{n:'ROBERTA FELIPE MALAQUIAS',i:'RF',t:1735.0}, {n:'Fabiano Francisco Fontes',i:'FF',t:1450.0}, {n:'Liz Sophia Andrade Pereira',i:'LS',t:800.0}, {n:'mirelly vieira portugal',i:'MV',t:100.0}], fin_dia:3150.0, fin_mes:24928.0, top_fin_mes:[{n:'ROBERTA FELIPE MALAQUIAS',i:'RF',t:14104.0,bd:[{nm:'PayJoy',t:10570.0},{nm:'OdresCred',t:3534.0},{nm:'Outras',t:0}]},{n:'Fabiano Francisco Fontes',i:'FF',t:7224.0,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:7224.0},{nm:'Outras',t:0}]},{n:'Liz Sophia Andrade Pereira',i:'LS',t:3600.0,bd:[{nm:'PayJoy',t:1800.0},{nm:'OdresCred',t:1800.0},{nm:'Outras',t:0}]}], fin_bd:[{nm:'PayJoy',t:12370.0},{nm:'OdresCred',t:12558.0},{nm:'Outras',t:0}], top_fin:[{n:'ROBERTA FELIPE MALAQUIAS',i:'RF',t:1700.0}, {n:'Fabiano Francisco Fontes',i:'FF',t:1450.0}], metaAcess:13500,
+            agendamentos:{total:5300.0, fin:5300.0, fin_bd:[{nm:'PayJoy',t:3535.0},{nm:'OdresCred',t:1800.0},{nm:'Outras',t:0}], top:[{n:'Liz Sophia Andrade Pereira',i:'LS',t:3600.0}, {n:'ROBERTA FELIPE MALAQUIAS',i:'RF',t:1700.0}]},
+            acessorios:{total:1265.0, top:[
                 {n:'Roberta Felipe Malaquias',i:'RF',t:3580,ds:12,ult:'12/06'},
                 {n:'Liz Sophia Andrade Pereira',i:'LS',t:1380,ds:12,ult:'12/06'},
                 {n:'Nicolas Santos Borges',i:'NB',t:470,ds:12,ult:'12/06'},
                 {n:'Glaupierre Oliveira da Silvaa',i:'GO',t:350,ds:12,ult:'12/06'}
             ], dias:[{d:'01/06',ac:210,cel:10749},{d:'06/06',ac:3350,cel:105393},{d:'08/06',ac:630,cel:10099}]},
-            top:[{n:'ROBERTA FELIPE MALAQUIAS',i:'RF',p:92,t:127335.0,ds:48,ult:'24/07'},
-                {n:'Liz Sophia Andrade Pereira',i:'LS',p:85,t:116191.0,ds:48,ult:'24/07'},
-                {n:'ANA CAROLINA DA SILVA',i:'AC',p:25,t:16449.0,ds:25,ult:'24/07'},
-                {n:'mirelly vieira portugal',i:'MV',p:12,t:7840.0,ds:16,ult:'24/07'},
-                {n:'Glaupierre oliveira da silvaa',i:'GO',p:17,t:7755.0,ds:6,ult:'08/07'}]},
-        itabuna:     { label:'Itabuna',            sigla:'IT', sub:'t1', meta:400000,  total:182138.0,  ped:203,  cancel:0, agend:0, agendCount:0, agendFat:53111.0,  fat_dia:3010.0, acess_dia:30.0, acess_dia_top:[{n:'KEIFIT MOREIRA DOS SANTOS',i:'KM',t:30.0}], top_dia:[{n:'MIKAELLE SANTOS VIRGENS',i:'MS',t:1530.0}, {n:'ANDREZA DE JESUS SOUZA',i:'AD',t:1450.0}, {n:'KEIFIT MOREIRA DOS SANTOS',i:'KM',t:30.0}], fin_dia:1530.0, fin_mes:82672.0, top_fin_mes:[{n:'MIKAELLE SANTOS VIRGENS',i:'MS',t:54906.0,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:50686.0},{nm:'Outras',t:4220.0}]},{n:'KEIFIT MOREIRA DOS SANTOS',i:'KM',t:12948.0,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:12948.0},{nm:'Outras',t:0}]},{n:'ANDREZA DE JESUS SOUZA',i:'AD',t:11773.0,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:11693.0},{nm:'Outras',t:80.0}]},{n:'jhonatas lucas machado pereira',i:'JL',t:3045.0,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:1445.0},{nm:'Outras',t:1600.0}]}], fin_bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:76772.0},{nm:'Outras',t:5900.0}], top_fin:[{n:'MIKAELLE SANTOS VIRGENS',i:'MS',t:1530.0}], metaAcess:18000,
-            agendamentos:{total:53111.0, fin:44741.0, fin_bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:41981.0},{nm:'Outras',t:2760.0}], top:[{n:'MIKAELLE SANTOS VIRGENS',i:'MS',t:50766.0}, {n:'jhonatas lucas machado pereira',i:'JL',t:2345.0}]},
-            acessorios:{total:7089.0, top:[
+            top:[{n:'ROBERTA FELIPE MALAQUIAS',i:'RF',p:12,t:17439.0,ds:49,ult:'05/08'},
+                {n:'Liz Sophia Andrade Pereira',i:'LS',p:13,t:16190.0,ds:49,ult:'05/08'},
+                {n:'Fabiano Francisco Fontes',i:'FF',p:7,t:11854.0,ds:1,ult:'05/08'},
+                {n:'ANA CAROLINA DA SILVA',i:'AC',p:3,t:250.0,ds:25,ult:'24/07'},
+                {n:'mirelly vieira portugal',i:'MV',p:1,t:100.0,ds:17,ult:'05/08'}]},
+        itabuna:     { label:'Itabuna',            sigla:'IT', sub:'t1', meta:270000,  total:35403.5,  ped:36,  cancel:0, agend:0, agendCount:0, agendFat:13773.0,  fat_dia:15847.0, acess_dia:405.0, acess_dia_top:[{n:'MIKAELLE SANTOS VIRGENS',i:'MS',t:300.0}, {n:'SANDY DE ARAUJO SANTOS LIMA',i:'SD',t:80.0}, {n:'ANDREZA DE JESUS SOUZA',i:'AD',t:25.0}], top_dia:[{n:'MIKAELLE SANTOS VIRGENS',i:'MS',t:12572.0}, {n:'jhonatas lucas machado pereira',i:'JL',t:1870.0}, {n:'ANDREZA DE JESUS SOUZA',i:'AD',t:1325.0}, {n:'SANDY DE ARAUJO SANTOS LIMA',i:'SD',t:80.0}], fin_dia:12572.0, fin_mes:21171.0, top_fin_mes:[{n:'MIKAELLE SANTOS VIRGENS',i:'MS',t:19371.0,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:15671.0},{nm:'Outras',t:3700.0}]},{n:'ANDREZA DE JESUS SOUZA',i:'AD',t:1800.0,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:0},{nm:'Outras',t:1800.0}]}], fin_bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:15671.0},{nm:'Outras',t:5500.0}], top_fin:[{n:'MIKAELLE SANTOS VIRGENS',i:'MS',t:12572.0}], metaAcess:10000,
+            agendamentos:{total:13773.0, fin:13773.0, fin_bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:12373.0},{nm:'Outras',t:1400.0}], top:[{n:'MIKAELLE SANTOS VIRGENS',i:'MS',t:13773.0}]},
+            acessorios:{total:1050.0, top:[
                 {n:'Hericles Lisboa de Freitas',i:'HL',t:1792,ds:12,ult:'12/06'},
                 {n:'Andreza de Jesus Souza',i:'AJ',t:1365,ds:12,ult:'12/06'},
                 {n:'Mikaelle Santos Virgens',i:'MS',t:1165,ds:12,ult:'12/06'},
@@ -6557,39 +6764,40 @@ const D360 = {
                 {n:'Keifit Moreira dos Santos',i:'KM',t:385,ds:12,ult:'12/06'},
                 {n:'Sandy de Araujo Santos Lima',i:'SA',t:240,ds:12,ult:'12/06'}
             ], dias:[{d:'01/06',ac:845,cel:8090},{d:'06/06',ac:2757,cel:51905},{d:'08/06',ac:320,cel:15339}]},
-            top:[{n:'MIKAELLE SANTOS VIRGENS',i:'MS',p:81,t:71223.0,ds:51,ult:'24/07'},
-                {n:'ANDREZA DE JESUS SOUZA',i:'AD',p:54,t:47070.0,ds:46,ult:'24/07'},
-                {n:'KEIFIT MOREIRA DOS SANTOS',i:'KM',p:38,t:34820.0,ds:47,ult:'24/07'},
-                {n:'jhonatas lucas machado pereira',i:'JL',p:30,t:29025.0,ds:44,ult:'24/07'}]},
-        barreiras:   { label:'Barreiras',          sigla:'BR', sub:'t2', meta:300000,  total:162986.99,  ped:136,  cancel:0, agend:0, agendCount:0, agendFat:39666.0,   fat_dia:4999.0, acess_dia:90.0, acess_dia_top:[{n:'MATEUS DA SILVA MATOS',i:'MD',t:90.0}], top_dia:[{n:'MATEUS DA SILVA MATOS',i:'MD',t:2000.0}, {n:'Larisse Ribeiro Dos Santos',i:'LR',t:1500.0}, {n:'TÁINE OLIVEIRA DOS SANTOS',i:'TO',t:1499.0}], fin_dia:2999.0, fin_mes:121722.0, top_fin_mes:[{n:'Larisse Ribeiro Dos Santos',i:'LR',t:32199.0,bd:[{nm:'PayJoy',t:19700.0},{nm:'OdresCred',t:12499.0},{nm:'Outras',t:0}]},{n:'TÁINE OLIVEIRA DOS SANTOS',i:'TO',t:27767.0,bd:[{nm:'PayJoy',t:18290.0},{nm:'OdresCred',t:9477.0},{nm:'Outras',t:0}]},{n:'MATEUS DA SILVA MATOS',i:'MD',t:21899.0,bd:[{nm:'PayJoy',t:8320.0},{nm:'OdresCred',t:13579.0},{nm:'Outras',t:0}]},{n:'ISABELA CHAGAS',i:'IC',t:20982.0,bd:[{nm:'PayJoy',t:10750.0},{nm:'OdresCred',t:10232.0},{nm:'Outras',t:0}]},{n:'VICTOR ROBERTO DE OLIVEIRA NASCIMENTO',i:'VR',t:18875.0,bd:[{nm:'PayJoy',t:11400.0},{nm:'OdresCred',t:7475.0},{nm:'Outras',t:0}]}], fin_bd:[{nm:'PayJoy',t:68460.0},{nm:'OdresCred',t:53262.0},{nm:'Outras',t:0}], top_fin:[{n:'Larisse Ribeiro Dos Santos',i:'LR',t:1500.0}, {n:'TÁINE OLIVEIRA DOS SANTOS',i:'TO',t:1499.0}], metaAcess:12000,
-            agendamentos:{total:39666.0, fin:38066.0, fin_bd:[{nm:'PayJoy',t:24390.0},{nm:'OdresCred',t:13676.0},{nm:'Outras',t:0}], top:[{n:'TÁINE OLIVEIRA DOS SANTOS',i:'TO',t:26167.0}, {n:'MATEUS DA SILVA MATOS',i:'MD',t:5299.0}, {n:'VICTOR ROBERTO DE OLIVEIRA NASCIMENTO',i:'VR',t:4000.0}, {n:'Larisse Ribeiro Dos Santos',i:'LR',t:2400.0}, {n:'ISABELA CHAGAS',i:'IC',t:1800.0}]},
-            acessorios:{total:3984.99, top:[
+            top:[{n:'MIKAELLE SANTOS VIRGENS',i:'MS',p:19,t:19731.0,ds:52,ult:'05/08'},
+                {n:'KEIFIT MOREIRA DOS SANTOS',i:'KM',p:5,t:7047.5,ds:47,ult:'24/07'},
+                {n:'jhonatas lucas machado pereira',i:'JL',p:6,t:5310.0,ds:45,ult:'05/08'},
+                {n:'ANDREZA DE JESUS SOUZA',i:'AD',p:5,t:3235.0,ds:47,ult:'05/08'},
+                {n:'SANDY DE ARAUJO SANTOS LIMA',i:'SD',p:1,t:80.0,ds:1,ult:'05/08'}]},
+        barreiras:   { label:'Barreiras',          sigla:'BR', sub:'t2', meta:240000,  total:35913.0,  ped:29,  cancel:0, agend:0, agendCount:0, agendFat:6300.0,   fat_dia:10568.0, acess_dia:100.0, acess_dia_top:[{n:'ISABELA CHAGAS',i:'IC',t:100.0}], top_dia:[{n:'ISABELA CHAGAS',i:'IC',t:3518.0}, {n:'Larisse Ribeiro Dos Santos',i:'LR',t:3400.0}, {n:'MATEUS DA SILVA MATOS',i:'MD',t:2000.0}, {n:'VICTOR ROBERTO DE OLIVEIRA NASCIMENTO',i:'VR',t:1650.0}], fin_dia:10468.0, fin_mes:26618.0, top_fin_mes:[{n:'Larisse Ribeiro Dos Santos',i:'LR',t:7150.0,bd:[{nm:'PayJoy',t:5450.0},{nm:'OdresCred',t:1700.0},{nm:'Outras',t:0}]},{n:'TÁINE OLIVEIRA DOS SANTOS',i:'TO',t:6300.0,bd:[{nm:'PayJoy',t:4200.0},{nm:'OdresCred',t:2100.0},{nm:'Outras',t:0}]},{n:'ISABELA CHAGAS',i:'IC',t:5868.0,bd:[{nm:'PayJoy',t:2450.0},{nm:'OdresCred',t:3418.0},{nm:'Outras',t:0}]},{n:'VICTOR ROBERTO DE OLIVEIRA NASCIMENTO',i:'VR',t:5300.0,bd:[{nm:'PayJoy',t:5300.0},{nm:'OdresCred',t:0},{nm:'Outras',t:0}]},{n:'MATEUS DA SILVA MATOS',i:'MD',t:2000.0,bd:[{nm:'PayJoy',t:2000.0},{nm:'OdresCred',t:0},{nm:'Outras',t:0}]}], fin_bd:[{nm:'PayJoy',t:19400.0},{nm:'OdresCred',t:7218.0},{nm:'Outras',t:0}], top_fin:[{n:'ISABELA CHAGAS',i:'IC',t:3418.0}, {n:'Larisse Ribeiro Dos Santos',i:'LR',t:3400.0}, {n:'MATEUS DA SILVA MATOS',i:'MD',t:2000.0}, {n:'VICTOR ROBERTO DE OLIVEIRA NASCIMENTO',i:'VR',t:1650.0}], metaAcess:6500,
+            agendamentos:{total:6300.0, fin:6300.0, fin_bd:[{nm:'PayJoy',t:4200.0},{nm:'OdresCred',t:2100.0},{nm:'Outras',t:0}], top:[{n:'TÁINE OLIVEIRA DOS SANTOS',i:'TO',t:6300.0}]},
+            acessorios:{total:1090.0, top:[
                 {n:'Victor Roberto de Oliveira Nascimento',i:'VR',t:1000,ds:12,ult:'12/06'},
                 {n:'Larisse Ribeiro Dos Santos',i:'LR',t:995,ds:12,ult:'12/06'},
                 {n:'Mateus da Silva Matos',i:'MM',t:860,ds:12,ult:'12/06'},
                 {n:'Táine Oliveira dos Santos',i:'TO',t:530,ds:12,ult:'12/06'},
                 {n:'Isabela Chagas',i:'IC',t:180,ds:12,ult:'12/06'}
             ], dias:[{d:'01/06',ac:50,cel:5716},{d:'06/06',ac:1145,cel:57025},{d:'08/06',ac:230,cel:6300}]},
-            top:[{n:'Larisse Ribeiro Dos Santos',i:'LR',p:32,t:41959.0,ds:48,ult:'24/07'},
-                {n:'VICTOR ROBERTO DE OLIVEIRA NASCIMENTO',i:'VR',p:31,t:34145.0,ds:47,ult:'22/07'},
-                {n:'ISABELA CHAGAS',i:'IC',p:29,t:29621.99,ds:44,ult:'23/07'},
-                {n:'MATEUS DA SILVA MATOS',i:'MD',p:23,t:29294.0,ds:19,ult:'24/07'},
-                {n:'TÁINE OLIVEIRA DOS SANTOS',i:'TO',p:21,t:27967.0,ds:41,ult:'24/07'}]},
-        moxuara:     { label:'Moxuara',            sigla:'MX', sub:'t1', meta:300000,  total:195243.0,  ped:214, cancel:0, agend:0, agendCount:0, agendFat:83901.0,  fat_dia:160.0, acess_dia:160.0, acess_dia_top:[{n:'KHAYLLANE DE ALMEIDA FERREIRA',i:'KD',t:160.0}], top_dia:[{n:'KHAYLLANE DE ALMEIDA FERREIRA',i:'KD',t:160.0}], fin_dia:0, fin_mes:110849.0, top_fin_mes:[{n:'LUCCAS DA SILVA MEDEIROS MARTINS',i:'LD',t:38447.0,bd:[{nm:'PayJoy',t:23850.0},{nm:'OdresCred',t:14597.0},{nm:'Outras',t:0}]},{n:'KHAYLLANE DE ALMEIDA FERREIRA',i:'KD',t:36658.0,bd:[{nm:'PayJoy',t:30260.0},{nm:'OdresCred',t:6398.0},{nm:'Outras',t:0}]},{n:'Iasmim vitoria medeiros gaio',i:'IV',t:35744.0,bd:[{nm:'PayJoy',t:22750.0},{nm:'OdresCred',t:12994.0},{nm:'Outras',t:0}]}], fin_bd:[{nm:'PayJoy',t:76860.0},{nm:'OdresCred',t:33989.0},{nm:'Outras',t:0}], top_fin:[], metaAcess:18000,
-            agendamentos:{total:83901.0, fin:80301.0, fin_bd:[{nm:'PayJoy',t:53910.0},{nm:'OdresCred',t:26391.0},{nm:'Outras',t:0}], top:[{n:'LUCCAS DA SILVA MEDEIROS MARTINS',i:'LD',t:36148.0}, {n:'KHAYLLANE DE ALMEIDA FERREIRA',i:'KD',t:22859.0}, {n:'Iasmim vitoria medeiros gaio',i:'IV',t:19795.0}, {n:'GABRIEL BARRETO PEREIRA',i:'GB',t:5099.0}]},
-            acessorios:{total:9065.0, top:[
+            top:[{n:'Larisse Ribeiro Dos Santos',i:'LR',p:9,t:11840.0,ds:49,ult:'05/08'},
+                {n:'ISABELA CHAGAS',i:'IC',p:6,t:7473.0,ds:45,ult:'05/08'},
+                {n:'TÁINE OLIVEIRA DOS SANTOS',i:'TO',p:3,t:6300.0,ds:41,ult:'24/07'},
+                {n:'VICTOR ROBERTO DE OLIVEIRA NASCIMENTO',i:'VR',p:8,t:5500.0,ds:48,ult:'05/08'},
+                {n:'MATEUS DA SILVA MATOS',i:'MD',p:3,t:4800.0,ds:20,ult:'05/08'}]},
+        moxuara:     { label:'Moxuara',            sigla:'MX', sub:'t1', meta:270000,  total:20290.0,  ped:23, cancel:0, agend:0, agendCount:0, agendFat:10950.0,  fat_dia:100.0, acess_dia:100.0, acess_dia_top:[{n:'Iasmim vitoria medeiros gaio',i:'IV',t:60.0}, {n:'KHAYLLANE DE ALMEIDA FERREIRA',i:'KD',t:40.0}], top_dia:[{n:'Iasmim vitoria medeiros gaio',i:'IV',t:60.0}, {n:'KHAYLLANE DE ALMEIDA FERREIRA',i:'KD',t:40.0}], fin_dia:0, fin_mes:10950.0, top_fin_mes:[{n:'LUCCAS DA SILVA MEDEIROS MARTINS',i:'LD',t:5150.0,bd:[{nm:'PayJoy',t:5150.0},{nm:'OdresCred',t:0},{nm:'Outras',t:0}]},{n:'Iasmim vitoria medeiros gaio',i:'IV',t:3700.0,bd:[{nm:'PayJoy',t:2200.0},{nm:'OdresCred',t:1500.0},{nm:'Outras',t:0}]},{n:'KHAYLLANE DE ALMEIDA FERREIRA',i:'KD',t:2100.0,bd:[{nm:'PayJoy',t:2100.0},{nm:'OdresCred',t:0},{nm:'Outras',t:0}]}], fin_bd:[{nm:'PayJoy',t:9450.0},{nm:'OdresCred',t:1500.0},{nm:'Outras',t:0}], top_fin:[], metaAcess:12000,
+            agendamentos:{total:10950.0, fin:10950.0, fin_bd:[{nm:'PayJoy',t:9450.0},{nm:'OdresCred',t:1500.0},{nm:'Outras',t:0}], top:[{n:'LUCCAS DA SILVA MEDEIROS MARTINS',i:'LD',t:5150.0}, {n:'Iasmim vitoria medeiros gaio',i:'IV',t:3700.0}, {n:'KHAYLLANE DE ALMEIDA FERREIRA',i:'KD',t:2100.0}]},
+            acessorios:{total:1040.0, top:[
                 {n:'Khayllane de Almeida Ferreira',i:'KF',t:3495,ds:12,ult:'12/06'},
                 {n:'Gabriel Barreto Pereira',i:'GB',t:1140,ds:12,ult:'12/06'},
                 {n:'Luccas da Silva Medeiros Martins',i:'LS',t:1280,ds:12,ult:'12/06'},
                 {n:'Iasmim Vitoria Medeiros Gaio',i:'IG',t:1180,ds:12,ult:'12/06'}
             ], dias:[{d:'01/06',ac:380,cel:14400},{d:'06/06',ac:2860,cel:70428},{d:'07/06',ac:1520,cel:14100},{d:'08/06',ac:40,cel:6449}]},
-            top:[{n:'KHAYLLANE DE ALMEIDA FERREIRA',i:'KD',p:77,t:72268.0,ds:47,ult:'24/07'},
-                {n:'Iasmim vitoria medeiros gaio',i:'IV',p:59,t:56614.0,ds:47,ult:'23/07'},
-                {n:'LUCCAS DA SILVA MEDEIROS MARTINS',i:'LD',p:55,t:49107.0,ds:21,ult:'24/07'},
-                {n:'GABRIEL BARRETO PEREIRA',i:'GB',p:23,t:17254.0,ds:16,ult:'24/07'}]},
-        teixeira:    { label:'Teixeira de Freitas',sigla:'TF', sub:'t2', meta:260000,  total:132164.0,  ped:138,  cancel:0, agend:0, agendCount:0, agendFat:12378.0,  fat_dia:3085.0, acess_dia:35.0, acess_dia_top:[{n:'PALOMA DE JESUS SANTOS',i:'PD',t:35.0}], top_dia:[{n:'PALOMA DE JESUS SANTOS',i:'PD',t:1735.0}, {n:'GUSTAVO SANTANA BATISTA',i:'GS',t:1350.0}], fin_dia:0, fin_mes:80102.0, top_fin_mes:[{n:'CARINE FERREIRA FRANCO',i:'CF',t:27400.0,bd:[{nm:'PayJoy',t:11255.0},{nm:'OdresCred',t:16145.0},{nm:'Outras',t:0}]},{n:'AMANDA GOULART ANDRADE',i:'AG',t:21429.0,bd:[{nm:'PayJoy',t:13730.0},{nm:'OdresCred',t:7699.0},{nm:'Outras',t:0}]},{n:'PALOMA DE JESUS SANTOS',i:'PD',t:15679.0,bd:[{nm:'PayJoy',t:11970.0},{nm:'OdresCred',t:3709.0},{nm:'Outras',t:0}]},{n:'BEATRIZ HELLEN FAGUNDES',i:'BH',t:15594.0,bd:[{nm:'PayJoy',t:11395.0},{nm:'OdresCred',t:4199.0},{nm:'Outras',t:0}]}], fin_bd:[{nm:'PayJoy',t:48350.0},{nm:'OdresCred',t:31752.0},{nm:'Outras',t:0}], top_fin:[], metaAcess:8000,
-            agendamentos:{total:12378.0, fin:12378.0, fin_bd:[{nm:'PayJoy',t:5780.0},{nm:'OdresCred',t:6598.0},{nm:'Outras',t:0}], top:[{n:'AMANDA GOULART ANDRADE',i:'AG',t:10579.0}, {n:'BEATRIZ HELLEN FAGUNDES',i:'BH',t:1799.0}]},
-            acessorios:{total:3669.0, top:[
+            top:[{n:'KHAYLLANE DE ALMEIDA FERREIRA',i:'KD',p:9,t:10830.0,ds:48,ult:'05/08'},
+                {n:'LUCCAS DA SILVA MEDEIROS MARTINS',i:'LD',p:5,t:5260.0,ds:21,ult:'24/07'},
+                {n:'Iasmim vitoria medeiros gaio',i:'IV',p:8,t:4160.0,ds:48,ult:'05/08'},
+                {n:'GABRIEL BARRETO PEREIRA',i:'GB',p:1,t:40.0,ds:16,ult:'24/07'}]},
+        teixeira:    { label:'Teixeira de Freitas',sigla:'TF', sub:'t2', meta:190000,  total:28547.0,  ped:22,  cancel:0, agend:0, agendCount:0, agendFat:0,  fat_dia:2620.0, acess_dia:120.0, acess_dia_top:[{n:'GUSTAVO SANTANA BATISTA',i:'GS',t:80.0}, {n:'CARINE FERREIRA FRANCO',i:'CF',t:40.0}], top_dia:[{n:'CARINE FERREIRA FRANCO',i:'CF',t:1340.0}, {n:'CARLA SANTOS LUIZ',i:'CS',t:1200.0}, {n:'GUSTAVO SANTANA BATISTA',i:'GS',t:80.0}], fin_dia:0, fin_mes:15382.0, top_fin_mes:[{n:'CARINE FERREIRA FRANCO',i:'CF',t:7074.0,bd:[{nm:'PayJoy',t:3250.0},{nm:'OdresCred',t:3824.0},{nm:'Outras',t:0}]},{n:'CARLA SANTOS LUIZ',i:'CS',t:3628.0,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:3628.0},{nm:'Outras',t:0}]},{n:'GUSTAVO SANTANA BATISTA',i:'GS',t:3300.0,bd:[{nm:'PayJoy',t:1300.0},{nm:'OdresCred',t:2000.0},{nm:'Outras',t:0}]},{n:'PALOMA DE JESUS SANTOS',i:'PD',t:1380.0,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:1380.0},{nm:'Outras',t:0}]}], fin_bd:[{nm:'PayJoy',t:4550.0},{nm:'OdresCred',t:10832.0},{nm:'Outras',t:0}], top_fin:[], metaAcess:6500,
+            agendamentos:{total:0, fin:0, fin_bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:0},{nm:'Outras',t:0}], top:[]},
+            acessorios:{total:585.0, top:[
                 {n:'Amanda Goulart Andrade',i:'AG',t:740,ds:12,ult:'12/06'},
                 {n:'Carla Santos Luiz',i:'CL',t:690,ds:12,ult:'12/06'},
                 {n:'Wilghyner de Padua Soares de Souza',i:'WS',t:440,ds:12,ult:'12/06'},
@@ -6597,67 +6805,56 @@ const D360 = {
                 {n:'Paloma de Jesus Santos',i:'PS',t:469,ds:12,ult:'12/06'},
                 {n:'Beatriz Hellen Fagundes',i:'BH',t:350,ds:12,ult:'12/06'}
             ], dias:[{d:'01/06',ac:200,cel:11060},{d:'06/06',ac:1331,cel:43146},{d:'08/06',ac:160,cel:10100}]},
-            top:[{n:'CARINE FERREIRA FRANCO',i:'CF',p:49,t:49958.0,ds:20,ult:'23/07'},
-                {n:'PALOMA DE JESUS SANTOS',i:'PD',p:27,t:33034.0,ds:40,ult:'24/07'},
-                {n:'AMANDA GOULART ANDRADE',i:'AG',p:32,t:29138.0,ds:44,ult:'21/07'},
-                {n:'BEATRIZ HELLEN FAGUNDES',i:'BH',p:19,t:16159.0,ds:30,ult:'14/07'},
-                {n:'WILGHYNER DE PADUA SOARES DE SOUZA',i:'WD',p:10,t:2525.0,ds:11,ult:'24/07'},
-                {n:'GUSTAVO SANTANA BATISTA',i:'GS',p:1,t:1350.0,ds:1,ult:'24/07'}]},
-        laranjeiras: { label:'Laranjeiras',        sigla:'LJ', sub:'t2', meta:220000,  total:126560.0,ped:115,  cancel:0, agend:0, agendCount:0, agendFat:36680.0,   fat_dia:0, acess_dia:0, acess_dia_top:[], top_dia:[], fin_dia:0, fin_mes:105400.0, top_fin_mes:[{n:'LÍDIA DA PENHA DIOGO',i:'LD',t:46564.0,bd:[{nm:'PayJoy',t:25175.0},{nm:'OdresCred',t:21389.0},{nm:'Outras',t:0}]},{n:'MAYARA KULL RODRIGUES',i:'MK',t:43377.0,bd:[{nm:'PayJoy',t:28248.0},{nm:'OdresCred',t:15129.0},{nm:'Outras',t:0}]},{n:'Nycolly Calazans Paulo',i:'NC',t:15459.0,bd:[{nm:'PayJoy',t:2960.0},{nm:'OdresCred',t:12499.0},{nm:'Outras',t:0}]}], fin_bd:[{nm:'PayJoy',t:56383.0},{nm:'OdresCred',t:49017.0},{nm:'Outras',t:0}], top_fin:[], metaAcess:8000,
-            agendamentos:{total:36680.0, fin:33530.0, fin_bd:[{nm:'PayJoy',t:10500.0},{nm:'OdresCred',t:23030.0},{nm:'Outras',t:0}], top:[{n:'MAYARA KULL RODRIGUES',i:'MK',t:15680.0}, {n:'Nycolly Calazans Paulo',i:'NC',t:12700.0}, {n:'LÍDIA DA PENHA DIOGO',i:'LD',t:8300.0}]},
-            acessorios:{total:2437.0, top:[
+            top:[{n:'CARINE FERREIRA FRANCO',i:'CF',p:9,t:15799.0,ds:21,ult:'05/08'},
+                {n:'CARLA SANTOS LUIZ',i:'CS',p:5,t:5028.0,ds:1,ult:'05/08'},
+                {n:'GUSTAVO SANTANA BATISTA',i:'GS',p:4,t:4730.0,ds:2,ult:'05/08'},
+                {n:'PALOMA DE JESUS SANTOS',i:'PD',p:4,t:2990.0,ds:40,ult:'24/07'}]},
+        laranjeiras: { label:'Laranjeiras',        sigla:'LJ', sub:'t2', meta:180000,  total:17690.0,ped:15,  cancel:0, agend:0, agendCount:0, agendFat:4537.5,   fat_dia:80.0, acess_dia:80.0, acess_dia_top:[{n:'MAYARA KULL RODRIGUES',i:'MK',t:80.0}], top_dia:[{n:'MAYARA KULL RODRIGUES',i:'MK',t:80.0}], fin_dia:0, fin_mes:11765.5, top_fin_mes:[{n:'LÍDIA DA PENHA DIOGO',i:'LD',t:5849.0,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:5849.0},{nm:'Outras',t:0}]},{n:'MAYARA KULL RODRIGUES',i:'MK',t:4079.0,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:4079.0},{nm:'Outras',t:0}]},{n:'Nycolly Calazans Paulo',i:'NC',t:1837.5,bd:[{nm:'PayJoy',t:1837.5},{nm:'OdresCred',t:0},{nm:'Outras',t:0}]}], fin_bd:[{nm:'PayJoy',t:1837.5},{nm:'OdresCred',t:9928.0},{nm:'Outras',t:0}], top_fin:[], metaAcess:3500,
+            agendamentos:{total:4537.5, fin:4537.5, fin_bd:[{nm:'PayJoy',t:4537.5},{nm:'OdresCred',t:0},{nm:'Outras',t:0}], top:[{n:'stefany santiago rocha',i:'SS',t:2700.0}, {n:'Nycolly Calazans Paulo',i:'NC',t:1837.5}]},
+            acessorios:{total:244.5, top:[
                 {n:'Nycolly Calazans Paulo',i:'NC',t:580,ds:12,ult:'12/06'},
                 {n:'Mayara Kull Rodrigues',i:'MR',t:355,ds:12,ult:'12/06'},
                 {n:'Lídia da Penha Diogo',i:'LD',t:295,ds:12,ult:'12/06'},
                 {n:'Jhennyfer Eduarda Rodrigues dos Santos',i:'JE',t:215,ds:12,ult:'12/06'}
             ], dias:[{d:'01/06',ac:80,cel:1800},{d:'06/06',ac:635,cel:34929},{d:'08/06',ac:265,cel:6754.25}]},
-            top:[{n:'LÍDIA DA PENHA DIOGO',i:'LD',p:53,t:57434.0,ds:49,ult:'24/07'},
-                {n:'MAYARA KULL RODRIGUES',i:'MK',p:42,t:50442.0,ds:48,ult:'23/07'},
-                {n:'Nycolly Calazans Paulo',i:'NC',p:18,t:18614.0,ds:20,ult:'24/07'},
-                {n:'jhennyfer eduarda rodrigues dos santos',i:'JE',p:2,t:70.0,ds:3,ult:'12/07'}]},
-        serra:       { label:'Serra',              sigla:'SR', sub:'t3', meta:220000,  total:137981.98, ped:183,  cancel:0, agend:0, agendCount:0, agendFat:40296.0,  fat_dia:1499.0, acess_dia:0, acess_dia_top:[], top_dia:[{n:'JOAQUIN EMILIANO RODRIGO',i:'JE',t:1499.0}], fin_dia:1499.0, fin_mes:48687.0, top_fin_mes:[{n:'JOAQUIN EMILIANO RODRIGO',i:'JE',t:48687.0,bd:[{nm:'PayJoy',t:17400.0},{nm:'OdresCred',t:31287.0},{nm:'Outras',t:0}]}], fin_bd:[{nm:'PayJoy',t:17400.0},{nm:'OdresCred',t:31287.0},{nm:'Outras',t:0}], top_fin:[{n:'JOAQUIN EMILIANO RODRIGO',i:'JE',t:1499.0}], metaAcess:14000,
-            agendamentos:{total:40296.0, fin:38396.0, fin_bd:[{nm:'PayJoy',t:10100.0},{nm:'OdresCred',t:28296.0},{nm:'Outras',t:0}], top:[{n:'JOAQUIN EMILIANO RODRIGO',i:'JE',t:24994.0}, {n:'LUIZ HENRIQUE VIANA DA ROCHA',i:'LH',t:15302.0}]},
-            acessorios:{total:9260.0, top:[
+            top:[{n:'LÍDIA DA PENHA DIOGO',i:'LD',p:5,t:5988.5,ds:49,ult:'24/07'},
+                {n:'stefany santiago rocha',i:'SS',p:3,t:4300.0},
+                {n:'MAYARA KULL RODRIGUES',i:'MK',p:4,t:4159.0,ds:49,ult:'05/08'},
+                {n:'Nycolly Calazans Paulo',i:'NC',p:2,t:1862.5,ds:20,ult:'24/07'},
+                {n:'jhennyfer eduarda rodrigues dos santos',i:'JE',p:1,t:1380.0,ds:3,ult:'12/07'}]},
+        serra:       { label:'Serra',              sigla:'SR', sub:'t3', meta:210000,  total:23238.0, ped:30,  cancel:0, agend:0, agendCount:0, agendFat:5948.0,  fat_dia:80.0, acess_dia:80.0, acess_dia_top:[{n:'LUIZ HENRIQUE VIANA DA ROCHA',i:'LH',t:80.0}], top_dia:[{n:'LUIZ HENRIQUE VIANA DA ROCHA',i:'LH',t:80.0}], fin_dia:0, fin_mes:0, top_fin_mes:[], fin_bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:0},{nm:'Outras',t:0}], top_fin:[], metaAcess:15000,
+            agendamentos:{total:5948.0, fin:5948.0, fin_bd:[{nm:'PayJoy',t:2750.0},{nm:'OdresCred',t:3258.0},{nm:'Outras',t:0}], top:[{n:'LUIZ HENRIQUE VIANA DA ROCHA',i:'LH',t:5948.0}]},
+            acessorios:{total:2290.0, top:[
                 {n:'Marcela da Silva Lopes',i:'ML',t:1850,ds:12,ult:'12/06'},
                 {n:'Karen Scavelo Souza',i:'KS',t:1320,ds:12,ult:'12/06'},
                 {n:'Lucas Loyola Araujo',i:'LL',t:900,ds:12,ult:'12/06'},
                 {n:'Luiz Henrique Viana da Rocha',i:'LH',t:710,ds:12,ult:'12/06'}
             ], dias:[{d:'01/06',ac:190,cel:0},{d:'06/06',ac:1870,cel:34506.50},{d:'07/06',ac:770,cel:8399},{d:'08/06',ac:550,cel:6299}]},
-            top:[{n:'JOAQUIN EMILIANO RODRIGO',i:'JE',p:84,t:76367.0,ds:19,ult:'24/07'},
-                {n:'LUIZ HENRIQUE VIANA DA ROCHA',i:'LH',p:95,t:56615.98,ds:45,ult:'24/07'},
-                {n:'LUIZ GUSTAVO',i:'LG',p:4,t:4999.0,ds:4,ult:'24/07'}]},
-        linhares:    { label:'Linhares',           sigla:'LH', sub:'t3', meta:220000,  total:140692.99,  ped:170,  cancel:0, agend:0, agendCount:0, agendFat:38445.0,  fat_dia:3599.0, acess_dia:0, acess_dia_top:[], top_dia:[{n:'Juliana Pereira do Nascimento',i:'JP',t:3599.0}], fin_dia:0, fin_mes:51320.0, top_fin_mes:[{n:'RAYCA MENDES MORAIS',i:'RM',t:38472.0,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:38472.0},{nm:'Outras',t:0}]},{n:'NATALIA ROCHA LEONEL',i:'NR',t:12848.0,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:12848.0},{nm:'Outras',t:0}]}], fin_bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:51320.0},{nm:'Outras',t:0}], top_fin:[], metaAcess:8000,
-            agendamentos:{total:38445.0, fin:36845.0, fin_bd:[{nm:'PayJoy',t:2000.0},{nm:'OdresCred',t:34845.0},{nm:'Outras',t:0}], top:[{n:'Juliana Pereira do Nascimento',i:'JP',t:24747.0}, {n:'RAYCA MENDES MORAIS',i:'RM',t:8898.0}, {n:'NATALIA ROCHA LEONEL',i:'NR',t:4000.0}, {n:'KRYSTIAN LINCOLN DALFIOR GONÇALVES',i:'KL',t:800.0}]},
-            acessorios:{total:5979.99, top:[
+            top:[{n:'LUIZ HENRIQUE VIANA DA ROCHA',i:'LH',p:30,t:23238.0,ds:46,ult:'05/08'}]},
+        linhares:    { label:'Linhares',           sigla:'LH', sub:'t3', meta:210000,  total:17520.99,  ped:17,  cancel:0, agend:0, agendCount:0, agendFat:7549.99,  fat_dia:1425.0, acess_dia:145.0, acess_dia_top:[{n:'Juliana Pereira do Nascimento',i:'JP',t:80.0}, {n:'RAYCA MENDES MORAIS',i:'RM',t:65.0}], top_dia:[{n:'Juliana Pereira do Nascimento',i:'JP',t:1360.0}, {n:'RAYCA MENDES MORAIS',i:'RM',t:65.0}], fin_dia:0, fin_mes:6448.0, top_fin_mes:[{n:'RAYCA MENDES MORAIS',i:'RM',t:6448.0,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:6448.0},{nm:'Outras',t:0}]}], fin_bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:6448.0},{nm:'Outras',t:0}], top_fin:[], metaAcess:9000,
+            agendamentos:{total:7549.99, fin:7549.99, fin_bd:[{nm:'PayJoy',t:1899.99},{nm:'OdresCred',t:5650.0},{nm:'Outras',t:0}], top:[{n:'Juliana Pereira do Nascimento',i:'JP',t:7549.99}]},
+            acessorios:{total:355.0, top:[
                 {n:'Rayca Mendes Morais',i:'RM',t:940,ds:12,ult:'12/06'},
                 {n:'Natalia Rocha Leonel',i:'NL',t:820,ds:12,ult:'12/06'}
             ], dias:[{d:'01/06',ac:80,cel:3150},{d:'06/06',ac:760,cel:23220},{d:'08/06',ac:260,cel:7397}]},
-            top:[{n:'RAYCA MENDES MORAIS',i:'RM',p:75,t:68652.0,ds:41,ult:'24/07'},
-                {n:'Juliana Pereira do Nascimento',i:'JP',p:49,t:45114.99,ds:22,ult:'24/07'},
-                {n:'NATALIA ROCHA LEONEL',i:'NR',p:30,t:20118.0,ds:30,ult:'12/07'},
-                {n:'KRYSTIAN LINCOLN DALFIOR GONÇALVES',i:'KL',p:14,t:6598.0,ds:16,ult:'22/07'},
-                {n:'Wesley Felipe Bezerra dos Santos',i:'WF',p:2,t:210.0,ds:4,ult:'22/07'}]},
-        montserrat:  { label:'Montserrat',         sigla:'MT', sub:'t3', meta:170000,  total:147470.99,  ped:181,  cancel:0, agend:0, agendCount:0, agendFat:75196.99,  fat_dia:0, acess_dia:0, acess_dia_top:[], top_dia:[], fin_dia:0, fin_mes:86275.99, top_fin_mes:[{n:'ADRIANO JEREMIAS CARDOSO MONTEIRO',i:'AJ',t:62196.99,bd:[{nm:'PayJoy',t:25013.99},{nm:'OdresCred',t:37183.0},{nm:'Outras',t:0}]},{n:'vinicius de almeida medeiros vargas',i:'VD',t:16282.0,bd:[{nm:'PayJoy',t:5300.0},{nm:'OdresCred',t:10982.0},{nm:'Outras',t:0}]},{n:'JOAQUIN EMILIANO RODRIGO',i:'JE',t:7797.0,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:7797.0},{nm:'Outras',t:0}]}], fin_bd:[{nm:'PayJoy',t:30313.99},{nm:'OdresCred',t:55962.0},{nm:'Outras',t:0}], top_fin:[], metaAcess:20000,
-            agendamentos:{total:75196.99, fin:60831.99, fin_bd:[{nm:'PayJoy',t:23973.99},{nm:'OdresCred',t:36858.0},{nm:'Outras',t:0}], top:[{n:'ADRIANO JEREMIAS CARDOSO MONTEIRO',i:'AJ',t:41292.99}, {n:'vinicius de almeida medeiros vargas',i:'VD',t:22182.0}, {n:'JOAQUIN EMILIANO RODRIGO',i:'JE',t:7797.0}, {n:'LUCAS LOYOLA ARAUJO',i:'LL',t:3925.0}]},
-            acessorios:{total:12085.0, top:[
+            top:[{n:'Juliana Pereira do Nascimento',i:'JP',p:10,t:10927.99,ds:23,ult:'05/08'},
+                {n:'RAYCA MENDES MORAIS',i:'RM',p:7,t:6593.0,ds:42,ult:'05/08'}]},
+        montserrat:  { label:'Montserrat',         sigla:'MT', sub:'t3', meta:200000,  total:36209.0,  ped:38,  cancel:0, agend:0, agendCount:0, agendFat:5450.0,  fat_dia:1800.0, acess_dia:0, acess_dia_top:[], top_dia:[{n:'JOAQUIN EMILIANO RODRIGO',i:'JE',t:1800.0}], fin_dia:1800.0, fin_mes:21559.0, top_fin_mes:[{n:'JOAQUIN EMILIANO RODRIGO',i:'JE',t:9429.0,bd:[{nm:'PayJoy',t:5550.0},{nm:'OdresCred',t:3879.0},{nm:'Outras',t:0}]},{n:'ADRIANO JEREMIAS CARDOSO MONTEIRO',i:'AJ',t:8730.0,bd:[{nm:'PayJoy',t:8730.0},{nm:'OdresCred',t:0},{nm:'Outras',t:0}]},{n:'vinicius de almeida medeiros vargas',i:'VD',t:3400.0,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:3400.0},{nm:'Outras',t:0}]}], fin_bd:[{nm:'PayJoy',t:14280.0},{nm:'OdresCred',t:7279.0},{nm:'Outras',t:0}], top_fin:[{n:'JOAQUIN EMILIANO RODRIGO',i:'JE',t:1800.0}], metaAcess:20000,
+            agendamentos:{total:5450.0, fin:5450.0, fin_bd:[{nm:'PayJoy',t:3350.0},{nm:'OdresCred',t:2100.0},{nm:'Outras',t:0}], top:[{n:'vinicius de almeida medeiros vargas',i:'VD',t:2100.0}, {n:'ADRIANO JEREMIAS CARDOSO MONTEIRO',i:'AJ',t:2000.0}, {n:'JOAQUIN EMILIANO RODRIGO',i:'JE',t:1350.0}]},
+            acessorios:{total:1931.0, top:[
                 {n:'Joaquin Emiliano Rodrigo',i:'JE',t:3820,ds:12,ult:'12/06'},
                 {n:'Adriano Jeremias Cardoso Monteiro',i:'AJ',t:2050,ds:12,ult:'12/06'},
                 {n:'Vinicius de Almeida Medeiros Vargas',i:'VA',t:2030,ds:12,ult:'12/06'}
             ], dias:[{d:'01/06',ac:590,cel:3198},{d:'06/06',ac:3670,cel:20308},{d:'07/06',ac:490,cel:7100},{d:'08/06',ac:150,cel:1699}]},
-            top:[{n:'ADRIANO JEREMIAS CARDOSO MONTEIRO',i:'AJ',p:101,t:97866.99,ds:22,ult:'24/07'},
-                {n:'vinicius de almeida medeiros vargas',i:'VD',p:28,t:23752.0,ds:37,ult:'12/07'},
-                {n:'LUCAS LOYOLA ARAUJO',i:'LL',p:36,t:14250.0,ds:21,ult:'24/07'},
-                {n:'JOAQUIN EMILIANO RODRIGO',i:'JE',p:16,t:11602.0,ds:7,ult:'08/07'}]},
-        praiadacosta:{ label:'Praia da Costa',     sigla:'PC', sub:'t1', meta:140000,  total:57896.0,  ped:50,  cancel:0, agend:0, agendCount:0, agendFat:41517.0,  fat_dia:0, acess_dia:0, acess_dia_top:[], top_dia:[], fin_dia:0, fin_mes:29468.0, top_fin_mes:[{n:'FILIPE MATTOS QUEIROZ',i:'FM',t:10399.0,bd:[{nm:'PayJoy',t:6700.0},{nm:'OdresCred',t:3699.0},{nm:'Outras',t:0}]},{n:'vinicius de almeida medeiros vargas',i:'VD',t:9019.0,bd:[{nm:'PayJoy',t:1790.0},{nm:'OdresCred',t:7229.0},{nm:'Outras',t:0}]},{n:'Liz Sophia Andrade Pereira',i:'LS',t:6250.0,bd:[{nm:'PayJoy',t:6250.0},{nm:'OdresCred',t:0},{nm:'Outras',t:0}]},{n:'LUCCAS DA SILVA MEDEIROS MARTINS',i:'LD',t:2200.0,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:2200.0},{nm:'Outras',t:0}]},{n:'ROBERTA FELIPE MALAQUIAS',i:'RF',t:1600.0,bd:[{nm:'PayJoy',t:1600.0},{nm:'OdresCred',t:0},{nm:'Outras',t:0}]}], fin_bd:[{nm:'PayJoy',t:16340.0},{nm:'OdresCred',t:13128.0},{nm:'Outras',t:0}], top_fin:[], metaAcess:5000,
-            agendamentos:{total:41517.0, fin:41517.0, fin_bd:[{nm:'PayJoy',t:18640.0},{nm:'OdresCred',t:23257.0},{nm:'Outras',t:0}], top:[{n:'Renato Lembranci Metzke Junior',i:'RL',t:15299.0}, {n:'vinicius de almeida medeiros vargas',i:'VD',t:8989.0}, {n:'Liz Sophia Andrade Pereira',i:'LS',t:6000.0}, {n:'FILIPE MATTOS QUEIROZ',i:'FM',t:3800.0}, {n:'stefany santiago rocha',i:'SS',t:3629.0}, {n:'LUCCAS DA SILVA MEDEIROS MARTINS',i:'LD',t:2200.0}, {n:'ROBERTA FELIPE MALAQUIAS',i:'RF',t:1600.0}]},
-            acessorios:{total:2055.0, top:[], dias:[]},
-            top:[{n:'Renato Lembranci Metzke Junior',i:'RL',p:14,t:15869.0,ds:17,ult:'21/07'},
-                {n:'FILIPE MATTOS QUEIROZ',i:'FM',p:8,t:13119.0,ds:20,ult:'08/07'},
-                {n:'vinicius de almeida medeiros vargas',i:'VD',p:13,t:11109.0,ds:4,ult:'23/07'},
-                {n:'stefany santiago rocha',i:'SS',p:7,t:7439.0,ds:2,ult:'24/07'},
-                {n:'Liz Sophia Andrade Pereira',i:'LS',p:4,t:6310.0,ds:4,ult:'19/07'},
-                {n:'LUCCAS DA SILVA MEDEIROS MARTINS',i:'LD',p:1,t:2200.0,ds:2,ult:'12/07'},
-                {n:'ROBERTA FELIPE MALAQUIAS',i:'RF',p:3,t:1850.0,ds:6,ult:'23/07'}]},
+            top:[{n:'JOAQUIN EMILIANO RODRIGO',i:'JE',p:21,t:19294.0,ds:8,ult:'05/08'},
+                {n:'ADRIANO JEREMIAS CARDOSO MONTEIRO',i:'AJ',p:12,t:12140.0,ds:22,ult:'24/07'},
+                {n:'vinicius de almeida medeiros vargas',i:'VD',p:5,t:4775.0,ds:37,ult:'12/07'}]},
+        praiadacosta:{ label:'Praia da Costa',     sigla:'PC', sub:'t2', meta:100000,  total:10039.0,  ped:8,  cancel:0, agend:0, agendCount:0, agendFat:5299.0,  fat_dia:0, acess_dia:0, acess_dia_top:[], top_dia:[], fin_dia:0, fin_mes:8179.0, top_fin_mes:[{n:'Nycolly Calazans Paulo',i:'NC',t:8179.0,bd:[{nm:'PayJoy',t:1800.0},{nm:'OdresCred',t:6379.0},{nm:'Outras',t:0}]}], fin_bd:[{nm:'PayJoy',t:1800.0},{nm:'OdresCred',t:6379.0},{nm:'Outras',t:0}], top_fin:[], metaAcess:2500,
+            agendamentos:{total:5299.0, fin:5299.0, fin_bd:[{nm:'PayJoy',t:1800.0},{nm:'OdresCred',t:3539.0},{nm:'Outras',t:0}], top:[{n:'Nycolly Calazans Paulo',i:'NC',t:3599.0}, {n:'stefany santiago rocha',i:'SS',t:1700.0}]},
+            acessorios:{total:340.0, top:[], dias:[]},
+            top:[{n:'Nycolly Calazans Paulo',i:'NC',p:4,t:8179.0},
+                {n:'stefany santiago rocha',i:'SS',p:1,t:1700.0,ds:2,ult:'24/07'},
+                {n:'vinicius de almeida medeiros vargas',i:'VD',p:3,t:160.0,ds:4,ult:'23/07'}]},
     }
 };
 
@@ -6671,17 +6868,17 @@ var _HIST_ACESS_MAI26 = {
     totalUN: 1484,
     totalVendedores: 63,
     lojas: [
-        {nome:'Moxuara',sigla:'MX',total:16850.0,un:192,cor:'#06b6d4',vendedores:[{n:'Khayllane De Almeida Ferreira',un:71,t:7800.0},{n:'Iasmim Vitoria Medeiros Gaio',un:43,t:3260.0},{n:'Mirelly Vieira Portugal',un:21,t:1790.0},{n:'Ana Carolina Da Silva',un:20,t:1730.0},{n:'Luccas Da Silva Medeiros Martins',un:18,t:1370.0},{n:'Nicolas Santos Borges',un:19,t:900.0}]}
-,        {nome:'São Mateus',sigla:'SM',total:15569.94,un:217,cor:'#f59e0b',vendedores:[{n:'Juliana Cristina Dos Santos',un:68,t:5114.98},{n:'Eliza Queiroz De Souza',un:43,t:3391.98},{n:'Alice Christino Monteiro',un:56,t:3054.99},{n:'Randeclay Mariano Gomes',un:20,t:1809.99},{n:'Leandro Da Cruz Silva',un:11,t:990.0},{n:'Stefany Sperotto Barcelos',un:15,t:998.0},{n:'Crislany Oliveira Olegario',un:4,t:210.0}]}
-,        {nome:'Montserrat',sigla:'MT',total:13825.0,un:186,cor:'#a855f7',vendedores:[{n:'Adriano Jeremias Cardoso Monteiro',un:80,t:6835.0},{n:'Joaquin Emiliano Rodrigo',un:75,t:4890.0},{n:'Vinicius De Almeida Medeiros Vargas',un:23,t:1420.0},{n:'Jhenifer Gonçalves De Souza',un:8,t:680.0}]}
-,        {nome:'Serra',sigla:'SR',total:10639.94,un:120,cor:'#10b981',vendedores:[{n:'Lucas Loyola Araujo',un:37,t:3464.99},{n:'Marcela Da Silva Lopes',un:27,t:3279.99},{n:'Karen Scavelo Souza',un:26,t:2044.99},{n:'Luiz Henrique Viana Da Rocha',un:27,t:1689.99},{n:'Guilherme Souza Nascimento',un:2,t:119.99},{n:'Hismênia Alves Tavares',un:1,t:39.99}]}
-,        {nome:'Itabuna',sigla:'IT',total:10894.0,un:149,cor:'#84cc16',vendedores:[{n:'Mikaelle Santos Virgens',un:39,t:3480.0},{n:'Hericles Lisboa De Freitas',un:41,t:2795.0},{n:'Keifit Moreira Dos Santos',un:18,t:1064.0},{n:'Sandy De Araujo Santos Lima',un:16,t:1305.0},{n:'Andreza De Jesus Souza',un:12,t:955.0},{n:'Jhonatas Lucas Machado Pereira',un:16,t:955.0},{n:'Evelyn Batista Cruz Do Espirito Santos',un:2,t:150.0},{n:'Maikelly Moreira Dos Santos',un:4,t:150.0},{n:'Reinan Dos Santos Pacheco',un:1,t:40.0}]}
-,        {nome:'Cariacica',sigla:'CC',total:9815.15,un:125,cor:'#ef4444',vendedores:[{n:'Roberta Felipe Malaquias',un:60,t:5035.0},{n:'Liz Sophia Andrade Pereira',un:43,t:3190.15},{n:'Glaupierre Oliveira Da Silvaa',un:16,t:1360.0},{n:'Gabriel Barreto Pereira',un:4,t:150.0},{n:'Wilghyner De Padua Soares De Souza',un:2,t:80.0}]}
-,        {nome:'Linhares',sigla:'LH',total:5574.99,un:65,cor:'#8b5cf6',vendedores:[{n:'Rayca Mendes Morais',un:34,t:3569.99},{n:'Natalia Rocha Leonel',un:27,t:1665.0},{n:'Thais Soares Vieira',un:3,t:240.0},{n:'Krystian Lincoln Dalfior Gonçalves',un:1,t:100.0}]}
-,        {nome:'Barreiras',sigla:'BR',total:5181.99,un:92,cor:'#ec4899',vendedores:[{n:'Victor Roberto De Oliveira Nascimento',un:18,t:960.0},{n:'Mateus Da Silva Matos',un:15,t:879.99},{n:'Larisse Ribeiro Dos Santos',un:19,t:960.0},{n:'Maxwell Cezar Oliveira',un:7,t:577.0},{n:'Gustavo Viera Hansen',un:8,t:520.0},{n:'Isabela Chagas',un:10,t:505.0},{n:'Táine Oliveira Dos Santos',un:9,t:460.0},{n:'Daniela Milena Gomes Mares',un:5,t:280.0},{n:'Maria Fernanda Dos Santos Cruz',un:1,t:40.0}]}
-,        {nome:'Teixeira de Freitas',sigla:'TF',total:4999.0,un:117,cor:'#f97316',vendedores:[{n:'Carine Ferreira Franco',un:39,t:1890.0},{n:'Amanda Goulart Andrade',un:19,t:905.0},{n:'Carla Santos Luiz',un:22,t:761.0},{n:'Paloma De Jesus Santos',un:13,t:583.0},{n:'Gustavo Santana Batista',un:11,t:505.0},{n:'Beatriz Hellen Fagundes',un:13,t:355.0}]}
-,        {nome:'Laranjeiras',sigla:'LJ',total:2659.0,un:52,cor:'#14b8a6',vendedores:[{n:'Lídia Da Penha Diogo',un:21,t:1060.0},{n:'Mayara Kull Rodrigues',un:16,t:1019.0},{n:'Nycolly Calazans Paulo',un:8,t:380.0},{n:'Joyce Sophia Lopes Santos',un:3,t:105.0},{n:'Jhennyfer Eduarda Rodrigues Dos Santos',un:4,t:95.0}]}
-,        {nome:'Praia da Costa',sigla:'PC',total:2050.0,un:22,cor:'#0ea5e9',vendedores:[{n:'Luccas Da Silva Medeiros Martins',un:12,t:1120.0},{n:'Renato Lembranci Metzke Junior',un:9,t:850.0},{n:'Wilghyner De Padua Soares De Souza',un:1,t:80.0}]}
+        {nome:'Moxuara',sigla:'MX',total:0,un:192,cor:'#06b6d4',vendedores:[{n:'Khayllane De Almeida Ferreira',un:71,t:7800.0},{n:'Iasmim Vitoria Medeiros Gaio',un:43,t:3260.0},{n:'Mirelly Vieira Portugal',un:21,t:1790.0},{n:'Ana Carolina Da Silva',un:20,t:1730.0},{n:'Luccas Da Silva Medeiros Martins',un:18,t:1370.0},{n:'Nicolas Santos Borges',un:19,t:900.0}]}
+,        {nome:'São Mateus',sigla:'SM',total:0,un:217,cor:'#f59e0b',vendedores:[{n:'Juliana Cristina Dos Santos',un:68,t:5114.98},{n:'Eliza Queiroz De Souza',un:43,t:3391.98},{n:'Alice Christino Monteiro',un:56,t:3054.99},{n:'Randeclay Mariano Gomes',un:20,t:1809.99},{n:'Leandro Da Cruz Silva',un:11,t:990.0},{n:'Stefany Sperotto Barcelos',un:15,t:998.0},{n:'Crislany Oliveira Olegario',un:4,t:210.0}]}
+,        {nome:'Montserrat',sigla:'MT',total:0,un:186,cor:'#a855f7',vendedores:[{n:'Adriano Jeremias Cardoso Monteiro',un:80,t:6835.0},{n:'Joaquin Emiliano Rodrigo',un:75,t:4890.0},{n:'Vinicius De Almeida Medeiros Vargas',un:23,t:1420.0},{n:'Jhenifer Gonçalves De Souza',un:8,t:680.0}]}
+,        {nome:'Serra',sigla:'SR',total:0,un:120,cor:'#10b981',vendedores:[{n:'Lucas Loyola Araujo',un:37,t:3464.99},{n:'Marcela Da Silva Lopes',un:27,t:3279.99},{n:'Karen Scavelo Souza',un:26,t:2044.99},{n:'Luiz Henrique Viana Da Rocha',un:27,t:1689.99},{n:'Guilherme Souza Nascimento',un:2,t:119.99},{n:'Hismênia Alves Tavares',un:1,t:39.99}]}
+,        {nome:'Itabuna',sigla:'IT',total:0,un:149,cor:'#84cc16',vendedores:[{n:'Mikaelle Santos Virgens',un:39,t:3480.0},{n:'Hericles Lisboa De Freitas',un:41,t:2795.0},{n:'Keifit Moreira Dos Santos',un:18,t:1064.0},{n:'Sandy De Araujo Santos Lima',un:16,t:1305.0},{n:'Andreza De Jesus Souza',un:12,t:955.0},{n:'Jhonatas Lucas Machado Pereira',un:16,t:955.0},{n:'Evelyn Batista Cruz Do Espirito Santos',un:2,t:150.0},{n:'Maikelly Moreira Dos Santos',un:4,t:150.0},{n:'Reinan Dos Santos Pacheco',un:1,t:40.0}]}
+,        {nome:'Cariacica',sigla:'CC',total:0,un:125,cor:'#ef4444',vendedores:[{n:'Roberta Felipe Malaquias',un:60,t:5035.0},{n:'Liz Sophia Andrade Pereira',un:43,t:3190.15},{n:'Glaupierre Oliveira Da Silvaa',un:16,t:1360.0},{n:'Gabriel Barreto Pereira',un:4,t:150.0},{n:'Wilghyner De Padua Soares De Souza',un:2,t:80.0}]}
+,        {nome:'Linhares',sigla:'LH',total:0,un:65,cor:'#8b5cf6',vendedores:[{n:'Rayca Mendes Morais',un:34,t:3569.99},{n:'Natalia Rocha Leonel',un:27,t:1665.0},{n:'Thais Soares Vieira',un:3,t:240.0},{n:'Krystian Lincoln Dalfior Gonçalves',un:1,t:100.0}]}
+,        {nome:'Barreiras',sigla:'BR',total:0,un:92,cor:'#ec4899',vendedores:[{n:'Victor Roberto De Oliveira Nascimento',un:18,t:960.0},{n:'Mateus Da Silva Matos',un:15,t:879.99},{n:'Larisse Ribeiro Dos Santos',un:19,t:960.0},{n:'Maxwell Cezar Oliveira',un:7,t:577.0},{n:'Gustavo Viera Hansen',un:8,t:520.0},{n:'Isabela Chagas',un:10,t:505.0},{n:'Táine Oliveira Dos Santos',un:9,t:460.0},{n:'Daniela Milena Gomes Mares',un:5,t:280.0},{n:'Maria Fernanda Dos Santos Cruz',un:1,t:40.0}]}
+,        {nome:'Teixeira de Freitas',sigla:'TF',total:0,un:117,cor:'#f97316',vendedores:[{n:'Carine Ferreira Franco',un:39,t:1890.0},{n:'Amanda Goulart Andrade',un:19,t:905.0},{n:'Carla Santos Luiz',un:22,t:761.0},{n:'Paloma De Jesus Santos',un:13,t:583.0},{n:'Gustavo Santana Batista',un:11,t:505.0},{n:'Beatriz Hellen Fagundes',un:13,t:355.0}]}
+,        {nome:'Laranjeiras',sigla:'LJ',total:0,un:52,cor:'#14b8a6',vendedores:[{n:'Lídia Da Penha Diogo',un:21,t:1060.0},{n:'Mayara Kull Rodrigues',un:16,t:1019.0},{n:'Nycolly Calazans Paulo',un:8,t:380.0},{n:'Joyce Sophia Lopes Santos',un:3,t:105.0},{n:'Jhennyfer Eduarda Rodrigues Dos Santos',un:4,t:95.0}]}
+,        {nome:'Praia da Costa',sigla:'PC',total:0,un:22,cor:'#0ea5e9',vendedores:[{n:'Luccas Da Silva Medeiros Martins',un:12,t:1120.0},{n:'Renato Lembranci Metzke Junior',un:9,t:850.0},{n:'Wilghyner De Padua Soares De Souza',un:1,t:80.0}]}
     ]
 };
 
@@ -6691,7 +6888,7 @@ var _HIST_ACESS_ABR26 = {
     totalUN: 1143,
     totalVendedores: 69,
     lojas: [
-        { nome:'São Mateus', sigla:'SM', total:18087.94, un:184, cor:'#f59e0b', vendedores:[
+        { nome:'São Mateus', sigla:'SM', total:0, un:184, cor:'#f59e0b', vendedores:[
             {n:'Eliza Queiroz De Souza',t:4244.96,un:45},
             {n:'Randeclay Mariano Gomes',t:3740.00,un:32},
             {n:'Juliana Cristina Dos Santos',t:3607.99,un:40},
@@ -6700,7 +6897,7 @@ var _HIST_ACESS_ABR26 = {
             {n:'Lubia Duarte Barbosa',t:650.00,un:6},
             {n:'Leandro Da Cruz Silva',t:100.00,un:1}
         ]},
-        { nome:'Montserrat', sigla:'MT', total:14134.02, un:166, cor:'#a855f7', vendedores:[
+        { nome:'Montserrat', sigla:'MT', total:0, un:166, cor:'#a855f7', vendedores:[
             {n:'Adriano Jeremias Cardoso Monteiro',t:5269.00,un:57},
             {n:'Joaquin Emiliano Rodrigo',t:5145.00,un:61},
             {n:'Antônio Gabriel Montarroyos Almeida',t:1650.00,un:18},
@@ -6708,7 +6905,7 @@ var _HIST_ACESS_ABR26 = {
             {n:'Jhenifer Gonçalves De Souza',t:775.00,un:10},
             {n:'Vitor Santos Barreto',t:410.02,un:9}
         ]},
-        { nome:'Moxuara', sigla:'MX', total:10986.10, un:146, cor:'#06b6d4', vendedores:[
+        { nome:'Moxuara', sigla:'MX', total:0, un:146, cor:'#06b6d4', vendedores:[
             {n:'Khayllane De Almeida Ferreira',t:3640.01,un:53},
             {n:'Iasmim Vitoria Medeiros Gaio',t:3440.00,un:40},
             {n:'Luccas Da Silva Medeiros Martins',t:1205.00,un:17},
@@ -6716,14 +6913,14 @@ var _HIST_ACESS_ABR26 = {
             {n:'Ana Carolina Da Silva',t:930.10,un:13},
             {n:'Nicolas Santos Borges',t:830.99,un:9}
         ]},
-        { nome:'Cariacica', sigla:'CC', total:8486.00, un:100, cor:'#ef4444', vendedores:[
+        { nome:'Cariacica', sigla:'CC', total:0, un:100, cor:'#ef4444', vendedores:[
             {n:'Roberta Felipe Malaquias',t:5067.00,un:56},
             {n:'Wilghyner De Padua Soares De Souza',t:1999.00,un:24},
             {n:'Gabriel Barreto Pereira',t:1120.00,un:14},
             {n:'Glaupierre Oliveira Da Silvaa',t:260.00,un:4},
             {n:'Liz Sophia Andrade Pereira',t:40.00,un:2}
         ]},
-        { nome:'Serra', sigla:'SR', total:8153.97, un:117, cor:'#10b981', vendedores:[
+        { nome:'Serra', sigla:'SR', total:0, un:117, cor:'#10b981', vendedores:[
             {n:'Karen Scavelo Souza',t:2435.00,un:31},
             {n:'Lucas Loyola Araujo',t:1828.00,un:29},
             {n:'Luiz Henrique Viana Da Rocha',t:1740.99,un:25},
@@ -6731,7 +6928,7 @@ var _HIST_ACESS_ABR26 = {
             {n:'Marcela Da Silva Lopes',t:769.99,un:11},
             {n:'Joaquin Emiliano Rodrigo',t:190.00,un:2}
         ]},
-        { nome:'Teixeira de Freitas', sigla:'TF', total:7158.01, un:116, cor:'#f97316', vendedores:[
+        { nome:'Teixeira de Freitas', sigla:'TF', total:0, un:116, cor:'#f97316', vendedores:[
             {n:'Carla Santos Luiz',t:1879.00,un:29},
             {n:'Beatriz Hellen Fagundes',t:1500.00,un:26},
             {n:'Paloma De Jesus Santos',t:1294.01,un:25},
@@ -6739,7 +6936,7 @@ var _HIST_ACESS_ABR26 = {
             {n:'Gustavo Santana Batista',t:861.00,un:13},
             {n:'Carine Ferreira Franco',t:525.00,un:8}
         ]},
-        { nome:'Itabuna', sigla:'IT', total:6620.92, un:115, cor:'#84cc16', vendedores:[
+        { nome:'Itabuna', sigla:'IT', total:0, un:115, cor:'#84cc16', vendedores:[
             {n:'Arthur Cezar Pereira',t:2515.00,un:36},
             {n:'Hericles Lisboa De Freitas',t:1474.00,un:24},
             {n:'Andreza De Jesus Souza',t:595.00,un:8},
@@ -6750,7 +6947,7 @@ var _HIST_ACESS_ABR26 = {
             {n:'Marcela Da Silva Pereira',t:280.00,un:7},
             {n:'Maikelly Moreira Dos Santos',t:225.00,un:6}
         ]},
-        { nome:'Barreiras', sigla:'BR', total:4814.08, un:82, cor:'#ec4899', vendedores:[
+        { nome:'Barreiras', sigla:'BR', total:0, un:82, cor:'#ec4899', vendedores:[
             {n:'Larisse Ribeiro Dos Santos',t:1124.04,un:21},
             {n:'Victor Roberto De Oliveira Nascimento',t:850.00,un:10},
             {n:'Táine Oliveira Dos Santos',t:735.01,un:12},
@@ -6760,13 +6957,13 @@ var _HIST_ACESS_ABR26 = {
             {n:'Nara Kelly De Oliveira Ribeiro',t:329.99,un:6},
             {n:'Daniela Milena Gomes Mares',t:100.00,un:1}
         ]},
-        { nome:'Praia da Costa', sigla:'PC', total:3270.00, un:47, cor:'#0ea5e9', vendedores:[
+        { nome:'Praia da Costa', sigla:'PC', total:0, un:47, cor:'#0ea5e9', vendedores:[
             {n:'Renato Lembranci Metzke Junior',t:1650.00,un:29},
             {n:'Luccas Da Silva Medeiros Martins',t:670.00,un:8},
             {n:'Thaymmon Teodoro Freitas',t:510.00,un:6},
             {n:'Wilghyner De Padua Soares De Souza',t:440.00,un:4}
         ]},
-        { nome:'Linhares', sigla:'LH', total:2649.99, un:37, cor:'#8b5cf6', vendedores:[
+        { nome:'Linhares', sigla:'LH', total:0, un:37, cor:'#8b5cf6', vendedores:[
             {n:'Rayca Mendes Morais',t:859.99,un:12},
             {n:'Natalia Rocha Leonel',t:580.00,un:9},
             {n:'Thais Soares Vieira',t:540.00,un:5},
@@ -6774,7 +6971,7 @@ var _HIST_ACESS_ABR26 = {
             {n:'Krystian Lincoln Dalfior Gonçalves',t:210.00,un:4},
             {n:'Juliana Pereira Do Nascimento',t:80.00,un:1}
         ]},
-        { nome:'Laranjeiras', sigla:'LJ', total:2219.00, un:33, cor:'#14b8a6', vendedores:[
+        { nome:'Laranjeiras', sigla:'LJ', total:0, un:33, cor:'#14b8a6', vendedores:[
             {n:'Mayara Kull Rodrigues',t:1229.00,un:13},
             {n:'Lídia Da Penha Diogo',t:470.00,un:9},
             {n:'Nycolly Calazans Paulo',t:240.00,un:4},
@@ -6799,6 +6996,220 @@ window._histAcessToggle = _histAcessToggle;
 ══════════════════════════════════════════════════════════════════ */
 window._agendSubFilter = 'geral';
 
+
+var _mfTab = 'rede';
+var _mfLoja = null;
+var _mfProd = 'celulares';
+var _SUBREDES_MF = {
+    'T1 · Talysson': ['cariacica','itabuna','moxuara'],
+    'T2 · Adriel':   ['praiadacosta','barreiras','teixeira','laranjeiras'],
+    'T3 · Arthur':   ['saomateus','serra','montserrat','linhares']
+};
+var _LOJAS_MF = {
+    cariacica:'Cariacica', itabuna:'Itabuna', moxuara:'Moxuara',
+    praiadacosta:'Praia da Costa', barreiras:'Barreiras', teixeira:'Teixeira',
+    laranjeiras:'Laranjeiras', saomateus:'São Mateus', serra:'Serra',
+    montserrat:'Montserrat', linhares:'Linhares'
+};
+
+function abrirModelosFin(prod) {
+    var modal = document.getElementById('modal-modelos-fin');
+    modal.style.display = 'flex';
+    _mfTab = 'rede'; _mfLoja = null; _mfProd = prod || 'celulares';
+    _renderModelosFin();
+    try { _registrarAcao('Abriu Modelos por Financeira'); } catch(e) {}
+}
+function fecharModelosFin() {
+    document.getElementById('modal-modelos-fin').style.display = 'none';
+}
+function _setMfTab(tab) { _mfTab = tab; _mfLoja = null; _renderModelosFin(); }
+function _setMfLoja(key) { _mfLoja = key; _renderModelosFin(); }
+function _setMfProd(p) { _mfProd = p; _mfTab = 'rede'; _mfLoja = null; _renderModelosFin(); }
+
+function _renderModelosFin() {
+    var wrap = document.getElementById('modal-modelos-fin-body');
+    if (!wrap) return;
+    var _d = _360D();
+    var tm = (_mfProd === 'acessorios')
+        ? ((_d && _d.top_acessorios) || {})
+        : ((_d && _d.top_modelos)    || {});
+    var lojas = tm.lojas || {};
+    var hasLojas = Object.keys(lojas).length > 0;
+
+    function brlK(v) { return v >= 1000 ? 'R$' + Math.round(v/1000) + 'k' : brl(v); }
+    function _cleanNm(nm) { return nm.replace(/^SMARTPHONE\s+/i,'').replace(/\s+/g,' ').trim(); }
+
+    // ── seletor de produto ────────────────────────────────────────────────────
+    function prodBtn(id, label, active) {
+        return '<button onclick="_setMfProd(\''+id+'\')" style="padding:.3rem .85rem;border-radius:.45rem;border:1px solid '+(active?'#8b5cf6':'#374151')+';cursor:pointer;font-size:.62rem;font-weight:800;transition:all .2s;background:'+(active?'#8b5cf6':'transparent')+';color:'+(active?'#fff':'#6b7280')+';">' + label + '</button>';
+    }
+    var prodHtml = '<div style="display:flex;gap:.35rem;margin-bottom:.75rem;padding-bottom:.75rem;border-bottom:1px solid #1f2937;">'
+        + prodBtn('celulares',  '📱 Celulares',  _mfProd==='celulares')
+        + prodBtn('acessorios', '💎 Acessórios',  _mfProd==='acessorios')
+        + '</div>';
+
+    // ── tabs ──────────────────────────────────────────────────────────────────
+    function tabBtn(id, label, active) {
+        return '<button onclick="_setMfTab(\''+id+'\')" style="padding:.35rem .9rem;border-radius:.5rem;border:none;cursor:pointer;font-size:.65rem;font-weight:700;transition:all .2s;'
+            + (active ? 'background:#8b5cf6;color:#fff;' : 'background:#1f2937;color:#9ca3af;')
+            + '">' + label + '</button>';
+    }
+    var tabsHtml = '<div style="display:flex;gap:.4rem;margin-bottom:1rem;">'
+        + tabBtn('rede',    '🌐 Rede',    _mfTab==='rede')
+        + tabBtn('subredes','⚡ Subredes', _mfTab==='subredes')
+        + tabBtn('lojas',   '🏪 Lojas',   _mfTab==='lojas')
+        + '</div>';
+
+    // ── colunas PayJoy / OdresCred / Salão ────────────────────────────────────
+    function colHtml(label, color, colorBg, items) {
+        if (!items || !items.length) return '<div style="flex:1;min-width:0;padding:.4rem;background:#ffffff08;border-radius:.5rem;text-align:center;color:#4b5563;font-size:.6rem;">sem dados</div>';
+        var rows = items.map(function(m, i) {
+            var bar = items[0].qt > 0 ? Math.round(m.qt / items[0].qt * 100) : 0;
+            return '<div style="margin-bottom:.5rem;">'
+                + '<div style="display:flex;align-items:center;justify-content:space-between;gap:.3rem;margin-bottom:.18rem;">'
+                + '<div style="display:flex;align-items:center;gap:.3rem;min-width:0;">'
+                + '<span style="font-size:.58rem;font-weight:900;color:'+color+';width:13px;flex-shrink:0;">'+(i+1)+'</span>'
+                + '<span style="font-size:.6rem;font-weight:700;color:#f9fafb;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+_cleanNm(m.nm)+'</span>'
+                + '</div>'
+                + '<span style="font-size:.6rem;font-weight:800;color:'+color+';flex-shrink:0;">'+m.qt+'x</span>'
+                + '</div>'
+                + '<div style="display:flex;align-items:center;gap:.35rem;">'
+                + '<div style="flex:1;height:3px;background:#1f2937;border-radius:2px;overflow:hidden;"><div style="height:100%;width:'+bar+'%;background:'+color+';border-radius:2px;"></div></div>'
+                + '<span style="font-size:.5rem;color:#6b7280;flex-shrink:0;min-width:36px;text-align:right;">'+brlK(m.val)+'</span>'
+                + '</div></div>';
+        }).join('');
+        return '<div style="flex:1;min-width:0;">'
+            + '<div style="font-size:.58rem;font-weight:800;color:'+color+';text-transform:uppercase;letter-spacing:.06em;padding:.3rem .5rem;background:'+colorBg+';border-radius:.45rem;margin-bottom:.6rem;text-align:center;">'+label+'</div>'
+            + rows + '</div>';
+    }
+
+    function tresColHtml(pj, od, sl) {
+        return '<div style="display:flex;gap:.7rem;">'
+            + colHtml('PayJoy','#059669','#05966918',pj)
+            + colHtml('OdresCred','#3b82f6','#3b82f618',od)
+            + colHtml('Salão','#a78bfa','#a78bfa18',sl)
+            + '</div>';
+    }
+
+    // ── agrega subredes a partir de lojas ─────────────────────────────────────
+    function agregaSubrede(keys) {
+        var acc = {payjoy:{}, odrescred:{}, salao:{}};
+        keys.forEach(function(k) {
+            var lj = lojas[k] || {};
+            ['payjoy','odrescred','salao'].forEach(function(cat) {
+                (lj[cat]||[]).forEach(function(m) {
+                    acc[cat][m.nm] = acc[cat][m.nm] || {qt:0,val:0};
+                    acc[cat][m.nm].qt  += m.qt;
+                    acc[cat][m.nm].val += m.val;
+                });
+            });
+        });
+        function top(d) {
+            return Object.entries(d).sort(function(a,b){return b[1].qt-a[1].qt;})
+                .slice(0,7).map(function(e){return {nm:e[0],qt:e[1].qt,val:Math.round(e[1].val)};});
+        }
+        return {payjoy:top(acc.payjoy), odrescred:top(acc.odrescred), salao:top(acc.salao)};
+    }
+
+    // ── ABC (acessórios) ───────────────────────────────────────────────────────
+    function abcHtml(items) {
+        if (!items || !items.length) return '<p style="color:#6b7280;text-align:center;padding:.8rem;font-size:.6rem;">sem dados para este período</p>';
+        var abcClr = {A:'#4ade80', B:'#fbbf24', C:'#9ca3af'};
+        var cleanNm = function(nm) { return nm.replace(/^(PELICULA|PELÍCULA|CAPA|CARREGADOR|FONE|CABO|POWER\s*BANK|SMARTWATCH|FONTE|PULSEIRA|CHIP|CARTAO)\s+/i,'').replace(/\s+/g,' ').trim(); };
+        var rows = items.map(function(m, i) {
+            var c = m.abc || 'C'; var clr = abcClr[c];
+            var bar = items[0].qt > 0 ? Math.round(m.qt/items[0].qt*100) : 0;
+            return '<div style="display:flex;align-items:center;gap:.45rem;padding:.3rem 0;border-bottom:1px solid #1f293715;">'
+                + '<span style="font-size:.52rem;color:#4b5563;width:14px;flex-shrink:0;text-align:right;">'+(i+1)+'</span>'
+                + '<span style="font-size:.52rem;font-weight:900;color:'+clr+';background:'+clr+'20;padding:.08rem .28rem;border-radius:.2rem;flex-shrink:0;">'+c+'</span>'
+                + '<span style="font-size:.6rem;font-weight:700;color:#f9fafb;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+cleanNm(m.nm)+'</span>'
+                + '<div style="width:60px;height:3px;background:#1f2937;border-radius:2px;flex-shrink:0;overflow:hidden;">'
+                +   '<div style="height:100%;width:'+bar+'%;background:'+clr+';border-radius:2px;"></div></div>'
+                + '<span style="font-size:.58rem;font-weight:800;color:'+clr+';flex-shrink:0;min-width:22px;text-align:right;">'+m.qt+'x</span>'
+                + '<span style="font-size:.5rem;color:#6b7280;flex-shrink:0;min-width:36px;text-align:right;">'+brlK(m.val)+'</span>'
+                + '</div>';
+        }).join('');
+        return '<div>'+rows+'</div>';
+    }
+
+    function agregaSubredeAbc(keys) {
+        var acc = {};
+        keys.forEach(function(k) {
+            (lojas[k]||[]).forEach(function(m) {
+                acc[m.nm] = acc[m.nm] || {qt:0, val:0};
+                acc[m.nm].qt  += m.qt;
+                acc[m.nm].val += m.val;
+            });
+        });
+        var sorted = Object.entries(acc).sort(function(a,b){return b[1].qt-a[1].qt;}).slice(0,15);
+        var total = sorted.reduce(function(s,e){return s+e[1].qt;},0);
+        if (!total) return [];
+        var cum = 0;
+        return sorted.map(function(e) {
+            cum += e[1].qt;
+            var pct = Math.round(cum/total*100*10)/10;
+            return {nm:e[0], qt:e[1].qt, val:Math.round(e[1].val), pct:pct, abc:pct<=80?'A':pct<=95?'B':'C'};
+        });
+    }
+
+    var isAces = (_mfProd === 'acessorios');
+
+    // ── renderiza por aba ──────────────────────────────────────────────────────
+    var content = '';
+    if (_mfTab === 'rede') {
+        content = isAces
+            ? abcHtml(tm.rede || [])
+            : tresColHtml(tm.payjoy||[], tm.odrescred||[], tm.salao||[]);
+
+    } else if (_mfTab === 'subredes') {
+        if (!hasLojas) {
+            content = '<p style="color:#6b7280;text-align:center;padding:1rem;">Dados por subrede disponíveis na próxima atualização do ERP.</p>';
+        } else if (isAces) {
+            content = Object.entries(_SUBREDES_MF).map(function(entry) {
+                var nome = entry[0], keys = entry[1];
+                return '<div style="margin-bottom:1.2rem;">'
+                    + '<div style="font-size:.65rem;font-weight:800;color:#f9fafb;background:#ffffff0d;border-left:3px solid #fbbf24;padding:.35rem .7rem;border-radius:0 .4rem .4rem 0;margin-bottom:.5rem;">⚡ '+nome+'</div>'
+                    + abcHtml(agregaSubredeAbc(keys))
+                    + '</div>';
+            }).join('');
+        } else {
+            content = Object.entries(_SUBREDES_MF).map(function(entry) {
+                var nome = entry[0], keys = entry[1];
+                var ag = agregaSubrede(keys);
+                return '<div style="margin-bottom:1.2rem;">'
+                    + '<div style="font-size:.65rem;font-weight:800;color:#f9fafb;background:#ffffff0d;border-left:3px solid #8b5cf6;padding:.35rem .7rem;border-radius:0 .4rem .4rem 0;margin-bottom:.6rem;">⚡ '+nome+'</div>'
+                    + tresColHtml(ag.payjoy, ag.odrescred, ag.salao)
+                    + '</div>';
+            }).join('');
+        }
+
+    } else if (_mfTab === 'lojas') {
+        var pills = Object.entries(_LOJAS_MF).map(function(e) {
+            var key = e[0], nome = e[1], active = _mfLoja === key;
+            return '<button onclick="_setMfLoja(\''+key+'\')" style="padding:.28rem .65rem;border-radius:.4rem;border:1px solid '+(active?'#8b5cf6':'#374151')+';cursor:pointer;font-size:.6rem;font-weight:700;background:'+(active?'#8b5cf620':'transparent')+';color:'+(active?'#a78bfa':'#9ca3af')+';transition:all .15s;">'+nome+'</button>';
+        }).join('');
+        var pillsHtml = '<div style="display:flex;flex-wrap:wrap;gap:.3rem;margin-bottom:.8rem;">'+pills+'</div>';
+
+        if (!_mfLoja) {
+            content = pillsHtml + '<p style="color:#6b7280;font-size:.6rem;text-align:center;padding:.5rem;">Selecione uma loja acima</p>';
+        } else {
+            var lj = lojas[_mfLoja];
+            if (!lj || (isAces && !lj.length) || (!isAces && !lj.payjoy)) {
+                content = pillsHtml + '<p style="color:#6b7280;font-size:.6rem;text-align:center;padding:.5rem;">Dados disponíveis na próxima atualização.</p>';
+            } else {
+                content = pillsHtml
+                    + '<div style="font-size:.65rem;font-weight:800;color:#f9fafb;margin-bottom:.6rem;">🏪 '+_LOJAS_MF[_mfLoja]+'</div>'
+                    + (isAces ? abcHtml(lj) : tresColHtml(lj.payjoy||[], lj.odrescred||[], lj.salao||[]));
+            }
+        }
+    }
+
+    var rodape = _mfProd === 'acessorios'
+        ? 'Acumulado mensal · Acessórios · dados do ERP CDC'
+        : 'Acumulado mensal · SBON (celulares) · dados do ERP CDC';
+    wrap.innerHTML = prodHtml + tabsHtml + content
+        + '<p style="font-size:.52rem;color:#374151;margin:.9rem 0 0;text-align:center;">' + rodape + '</p>';
+}
 
 function abrirSalaoFin() {
     var modal = document.getElementById('modal-salao-fin');
@@ -7091,7 +7502,7 @@ function _renderFatDiario() {
         linhares:'#8b5cf6',barreiras:'#ec4899', teixeira:'#f97316',
         laranjeiras:'#14b8a6', praiadacosta:'#0ea5e9'
     };
-    var subLojasMap = { t1:['cariacica','itabuna','moxuara','praiadacosta'], t2:['barreiras','teixeira','laranjeiras'], t3:['saomateus','serra','montserrat','linhares'] };
+    var subLojasMap = { t1:['cariacica','itabuna','moxuara'], t2:['praiadacosta','barreiras','teixeira','laranjeiras'], t3:['saomateus','serra','montserrat','linhares'] };
     var sf = window._fatDiaSubFilter || 'geral';
     var _vendLoja = (typeof _vendedorLojaKey === 'function') ? _vendedorLojaKey() : null;
     // filtro de loja específica (view loja do D360)
@@ -7245,7 +7656,7 @@ function _renderAgendRanking() {
         linhares:'#8b5cf6',barreiras:'#ec4899', teixeira:'#f97316',
         laranjeiras:'#14b8a6', praiadacosta:'#0ea5e9'
     };
-    var subLojasMap = { t1:['cariacica','itabuna','moxuara','praiadacosta'], t2:['barreiras','teixeira','laranjeiras'], t3:['saomateus','serra','montserrat','linhares'] };
+    var subLojasMap = { t1:['cariacica','itabuna','moxuara'], t2:['praiadacosta','barreiras','teixeira','laranjeiras'], t3:['saomateus','serra','montserrat','linhares'] };
     var sf = window._agendSubFilter || 'geral';
     var _vendLoja = (typeof _vendedorLojaKey === 'function') ? _vendedorLojaKey() : null;
     var _lojaEspecifica = (sf.indexOf('_loja_') === 0) ? sf.replace('_loja_', '') : null;
@@ -7370,7 +7781,7 @@ function _renderAgendCartaoFin() {
     var _d   = _360D();
     var filt = window._agendSubFilter || 'geral';
     var _brl = function(v){ return 'R$ ' + Number(v).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}); };
-    var subLojasMap = { t1:['cariacica','itabuna','moxuara','praiadacosta'], t2:['barreiras','teixeira','laranjeiras'], t3:['saomateus','serra','montserrat','linhares'] };
+    var subLojasMap = { t1:['cariacica','itabuna','moxuara'], t2:['praiadacosta','barreiras','teixeira','laranjeiras'], t3:['saomateus','serra','montserrat','linhares'] };
 
     // APENAS lojas com agendamentos (canal 6) — não mistura com vendas gerais
     var lojas = Object.values(_d.lojas).filter(function(l){
@@ -7749,7 +8160,7 @@ function _renderHistAcessAbr26() {
     /* ── Aplica filtro de subrede ou loja (vendedor) ── */
     var subFilter = window._acessSubFilter || 'geral';
     var subLojasMap = {
-        t1: ['cariacica','itabuna','moxuara','praiadacosta'],
+        t1: ['cariacica','itabuna','moxuara'],
         t2: ['barreiras','teixeira','laranjeiras'],
         t3: ['saomateus','serra','montserrat','linhares']
     };
@@ -8239,7 +8650,7 @@ function restore360FromStorage() {
 ══════════════════════════════════════════════ */
 /* ─── Override de metas vindas do Firestore (ts_d360_historico) ─── */
 const _METAS_SUBREDE_LOJAS = {
-    t1:  ['cariacica','itabuna','moxuara','praiadacosta'],
+    t1:  ['cariacica','itabuna','moxuara'],
     t2:  ['barreiras','teixeira','laranjeiras'],
     t3:  ['saomateus','serra','linhares','montserrat'],
     all: ['cariacica','itabuna','moxuara','praiadacosta','barreiras','teixeira','laranjeiras','saomateus','serra','linhares','montserrat'],
@@ -8311,102 +8722,104 @@ let _metasOverride = {}; // { lojaKey: { vendKey: meta_cel } }
    Este DB é o fallback para o primeiro render — sobrescrito por _metasOverride após 2,5s. */
 const VEND_METAS_DB = {
     barreiras: [
-        {k:'larisse',    meta: 63750},   // Firestore: 63.750
-        {k:'isabela',    meta: 63750},   // Firestore: 63.750
-        {k:'victor',     meta: 63750},   // Firestore: 63.750
-        {k:'taine',      meta: 90000},   // Firestore: 90.000
-        {k:'mateus',     meta: 63750},   // Firestore: 63.750
-        {k:'gustavo',    meta: 15000},   // sem meta lançada pelo gerente
+        {k:'larisse',    meta:  63000},   // Jul/26: 63.000
+        {k:'isabela',    meta:  63000},   // Jul/26: 63.000
+        {k:'victor',     meta:  63000},   // Jul/26: 63.000
+        {k:'taine',      meta:  90000},   // Jul/26: 90.000
+        {k:'mateus',     meta:  63000},   // Jul/26: 63.000
+        {k:'gustavo',    meta:  50000},   // sem meta lançada
     ],
     cariacica: [
-        {k:'roberta',    meta:162000},   // Firestore: 162.000
-        {k:'liz',        meta:162000},   // Firestore: 162.000
-        {k:'sophia',     meta:162000},   // alias de liz sophia
-        {k:'nicolas',    meta:162000},   // Firestore: 162.000
-        {k:'glaupierre', meta: 91000},   // Firestore: 91.000
-        {k:'wilghyner',  meta: 91000},   // sem meta lançada (subgerente que vende)
-        {k:'willgner',   meta: 91000},   // alias wilghyner
-        {k:'gabriel',    meta: 50000},   // sem meta lançada
+        {k:'roberta',    meta: 250000},   // Jul/26: 250.000
+        {k:'liz',        meta: 250000},   // Jul/26: 250.000
+        {k:'sophia',     meta: 250000},   // alias liz sophia
+        {k:'nicolas',    meta:  91000},   // sem meta ago/26
+        {k:'glaupierre', meta:  75000},   // Jul/26: 75.000
+        {k:'wilghyner',  meta:  91000},   // subgerente que vende
+        {k:'willgner',   meta:  91000},   // alias wilghyner
+        {k:'gabriel',    meta:  50000},   // sem meta lançada
     ],
     itabuna: [
-        {k:'hericles',   meta: 92000},   // Firestore: 92.000
-        {k:'andreza',    meta: 92000},   // Firestore: 92.000
-        {k:'jhonatas',   meta: 92000},   // Firestore: 92.000
-        {k:'keifit',     meta: 92000},   // Firestore: 92.000
-        {k:'mikaelle',   meta: 90000},   // Firestore: 90.000
-        {k:'evelyn',     meta: 25000},   // sem meta lançada
-        {k:'sandy',      meta: 50000},   // sem meta lançada
-        {k:'maikelly',   meta: 25000},   // sem meta lançada
+        {k:'mikaelle',   meta:  91000},   // Jul/26: 91.000
+        {k:'jhonatas',   meta: 103000},   // Jul/26: 103.000
+        {k:'keifit',     meta: 103000},   // Jul/26: 103.000
+        {k:'andreza',    meta: 103000},   // Jul/26: 103.000
+        {k:'hericles',   meta:  92000},   // ref anterior
+        {k:'evelyn',     meta:  25000},   // sem meta lançada
+        {k:'sandy',      meta:  50000},   // sem meta lançada
+        {k:'maikelly',   meta:  25000},   // sem meta lançada
     ],
     laranjeiras: [
-        {k:'lidia',      meta: 81500},   // Firestore: 81.500
-        {k:'lídia',      meta: 81500},   // alias
-        {k:'mayara',     meta: 81500},   // Firestore: 81.500
-        {k:'nycolly',    meta: 90000},   // Firestore: 90.000
-        {k:'joyce',      meta: 91000},   // sem meta lançada
-        {k:'marcus',     meta: 91000},   // sem meta lançada
-        {k:'jhennyfer',  meta: 70000},   // sem meta lançada
+        {k:'lidia',      meta:  52500},   // Ago/26: 52.500
+        {k:'lídia',      meta:  52500},   // alias
+        {k:'mayara',     meta:  52500},   // Ago/26: 52.500
+        {k:'nycolly',    meta:  75000},   // Ago/26: 75.000
+        {k:'joyce',      meta:  50000},   // sem meta lançada
+        {k:'marcus',     meta:  50000},   // sem meta lançada
+        {k:'jhennyfer',  meta:  50000},   // sem meta lançada
     ],
     linhares: [
-        {k:'natalia',    meta: 81500},   // Firestore: 81.500
-        {k:'natália',    meta: 81500},   // alias
-        {k:'rayca',      meta: 81500},   // Firestore: 81.500
-        {k:'juliana',    meta: 90000},   // Firestore: 90.000
-        {k:'krystian',   meta: 50000},   // sem meta lançada
-        {k:'thais',      meta: 50000},   // sem meta lançada
-        {k:'kauan',      meta: 50000},   // sem meta lançada
+        {k:'rayca',      meta: 129500},   // Ago/26: 129.500
+        {k:'juliana',    meta:  71500},   // Ago/26: 71.500
+        {k:'natalia',    meta:  71500},   // ref jul/26
+        {k:'natália',    meta:  71500},   // alias
+        {k:'krystian',   meta:  50000},   // sem meta lançada
+        {k:'thais',      meta:  50000},   // sem meta lançada
+        {k:'kauan',      meta:  50000},   // sem meta lançada
     ],
     montserrat: [
-        {k:'joaquin',    meta: 60000},   // Firestore: 60.000
-        {k:'adriano',    meta: 60000},   // Firestore: 60.000
-        {k:'vinicius',   meta: 90000},   // Firestore: 90.000
-        {k:'jhenifer',   meta: 50000},   // sem meta lançada
-        {k:'vitor',      meta: 50000},   // sem meta lançada
-        {k:'arthur',     meta: 50000},   // sem meta lançada
+        {k:'joaquin',    meta:  60000},   // Jul/26: 60.000
+        {k:'adriano',    meta:  60000},   // Jul/26: 60.000
+        {k:'vinicius',   meta:  90000},   // Jul/26: 90.000
+        {k:'jhenifer',   meta:  50000},   // sem meta lançada
+        {k:'vitor',      meta:  50000},   // sem meta lançada
+        {k:'arthur',     meta:  50000},   // sem meta lançada
     ],
     moxuara: [
-        {k:'khayllane',  meta:128000},   // Firestore: 128.000
-        {k:'iasmim',     meta:128000},   // Firestore: 128.000
-        {k:'luccas',     meta: 91000},   // Firestore: 91.000
-        {k:'nicolas',    meta: 91000},   // sem meta lançada
-        {k:'thauany',    meta: 70000},   // sem meta lançada
-        {k:'mirelly',    meta: 70000},   // sem meta lançada
-        {k:'gabriel',    meta: 50000},   // sem meta lançada
-        {k:'almeida',    meta: 50000},   // alias khayllane
+        {k:'khayllane',  meta: 128000},   // Jul/26: 128.000
+        {k:'iasmim',     meta: 128000},   // Jul/26: 128.000
+        {k:'luccas',     meta:  91000},   // Jul/26: 91.000
+        {k:'nicolas',    meta:  70000},   // sem meta lançada
+        {k:'thauany',    meta:  70000},   // sem meta lançada
+        {k:'mirelly',    meta:  70000},   // sem meta lançada
+        {k:'gabriel',    meta:  50000},   // sem meta lançada
+        {k:'almeida',    meta:  50000},   // alias khayllane
     ],
     praiadacosta: [
-        {k:'filipe',     meta:161000},   // Firestore: 161.000
-        {k:'thaymmon',   meta: 70000},   // sem meta lançada
-        {k:'nicolas',    meta: 70000},   // sem meta lançada
-        {k:'thauany',    meta: 70000},   // sem meta lançada
+        {k:'filipe',     meta:  90000},   // Jul/26: 90.000
+        {k:'deborah',    meta:  50000},   // Jul/26: 50.000
+        {k:'thaymmon',   meta:  50000},   // sem meta lançada
+        {k:'nicolas',    meta:  50000},   // sem meta lançada
+        {k:'thauany',    meta:  50000},   // sem meta lançada
     ],
     saomateus: [
-        {k:'alice',      meta:161670},   // Firestore: 161.670
-        {k:'eliza',      meta:161670},   // Firestore: 161.670
-        {k:'randeclay',  meta:161670},   // Firestore: 161.670
-        {k:'leandro',    meta: 90000},   // Firestore: 90.000
-        {k:'stefany',    meta: 40000},   // Firestore: 40.000
-        {k:'daniele',    meta:112500},   // sem meta lançada este mês
-        {k:'juliana',    meta:112500},   // sem meta lançada este mês
-        {k:'lubia',      meta: 50000},   // sem meta lançada
+        {k:'ana',        meta: 108200},   // Ago/26: 108.200 (Ana Carolina Lisboa)
+        {k:'eliza',      meta:  57000},   // Ago/26: 57.000
+        {k:'randeclay',  meta:  57000},   // Ago/26: 57.000
+        {k:'leandro',    meta:  57000},   // Ago/26: 57.000
+        {k:'stefany',    meta:  57000},   // Ago/26: 57.000
+        {k:'alice',      meta:  57000},   // ref anterior
+        {k:'daniele',    meta:  57000},   // sem meta lançada
+        {k:'ramos',      meta:  57000},   // gerente São Mateus
+        {k:'lubia',      meta:  50000},   // sem meta lançada
     ],
     serra: [
-        {k:'felipe',     meta: 90000},   // Firestore: 90.000 (Felipe Rodrigues)
-        {k:'karen',      meta: 54333},   // Firestore: 54.333
-        {k:'lucas',      meta: 54333},   // Firestore: 54.333
-        {k:'marcela',    meta: 54333},   // Firestore: 54.333
-        {k:'luiz',       meta: 54333},   // sem meta lançada (usa mesmo nível)
-        {k:'guilherme',  meta: 50000},   // sem meta lançada
-        {k:'hismenia',   meta: 50000},   // sem meta lançada
+        {k:'felipe',     meta:  90000},   // ref anterior
+        {k:'karen',      meta:  54333},   // ref anterior
+        {k:'lucas',      meta:  54333},   // ref anterior
+        {k:'marcela',    meta:  54333},   // ref anterior
+        {k:'luiz',       meta:  54333},   // sem meta lançada
+        {k:'guilherme',  meta:  50000},   // sem meta lançada
+        {k:'hismenia',   meta:  50000},   // sem meta lançada
     ],
     teixeira: [
-        {k:'beatriz',    meta: 91000},   // Firestore: 91.000
-        {k:'carla',      meta: 65000},   // Firestore: 65.000
-        {k:'amanda',     meta: 65000},   // Firestore: 65.000
-        {k:'paloma',     meta: 65000},   // Firestore: 65.000
-        {k:'gustavo',    meta: 65000},   // Firestore: 65.000
-        {k:'carine',     meta: 15000},   // Firestore: 15.000
-        {k:'wilghyner',  meta: 91000},   // sem meta lançada (subgerente que vende)
+        {k:'beatriz',    meta:  91000},   // Jul/26: 91.000
+        {k:'carine',     meta:  52250},   // Jul/26: 52.250 (corrigido de 15.000)
+        {k:'carla',      meta:  52250},   // Jul/26: 52.250
+        {k:'amanda',     meta:  52250},   // Jul/26: 52.250
+        {k:'paloma',     meta:  52250},   // Jul/26: 52.250
+        {k:'gustavo',    meta:  52250},   // Jul/26: 52.250
+        {k:'wilghyner',  meta:  91000},   // subgerente que vende
     ],
 };
 
@@ -9296,6 +9709,26 @@ async function abrirDiagnostico(lojaKey) {
     modal.style.display = 'flex';
     document.body.style.overflow = 'hidden';
     const hoje = new Date().toISOString().slice(0,10);
+
+    // 1. Busca acumulado mensal (PRIMARY)
+    let dadosMes = null;
+    let mesMotivos = {};
+    try {
+        if (window._acadDB) {
+            const now2 = new Date();
+            const anoS = now2.getFullYear();
+            const mmS  = String(now2.getMonth() + 1).padStart(2, '0');
+            const mesDocId = `${lojaKey}_mensal_${anoS}_${mmS}`;
+            const mesSnap  = await window._acadDB.collection('ts_diagnostico').doc(mesDocId).get();
+            if (mesSnap.exists && (mesSnap.data().total_clientes || 0) > 0) {
+                const m = mesSnap.data();
+                dadosMes   = { total: m.total_clientes || 0, vendas: m.total_vendas || 0, dias: m.dias || 0 };
+                mesMotivos = m.motivos_nv || {};
+            }
+        }
+    } catch(e) {}
+
+    // 2. Busca último lançamento diário (referência para padrão/recomendações)
     let diagData = null;
     let dataUsada = hoje;
     try {
@@ -9308,19 +9741,30 @@ async function abrirDiagnostico(lojaKey) {
             }
         }
     } catch(e) {}
-    _renderDiagnostico(body, nomeL, lojaKey, diagData, dataUsada);
+
+    _renderDiagnostico(body, nomeL, lojaKey, diagData, dataUsada, dadosMes, mesMotivos);
 }
 
-function _renderDiagnostico(el, nomeL, lojaKey, data, hoje) {
-    const an   = data?.analise || {};
-    const ul   = data?.ultima_atualizacao || null;
-    const total  = an.total_clientes || 0;
-    const vendas = an.total_vendas   || 0;
-    const nv     = total - vendas;
-    const taxa   = total > 0 ? ((vendas/total)*100).toFixed(1) : null;
-    const motivos = Object.entries(an.motivos_nv || {}).sort((a,b)=>b[1]-a[1]);
-    const corTaxa = !taxa ? '#9ca3af' : parseFloat(taxa)>=40 ? '#34d399' : parseFloat(taxa)>=25 ? '#fbbf24' : '#f87171';
+function _renderDiagnostico(el, nomeL, lojaKey, data, hoje, dadosMes, mesMotivos = {}) {
+    const an     = data?.analise || {};
+    // Dados mensais (principal)
+    const mesTot  = dadosMes?.total  || 0;
+    const mesVend = dadosMes?.vendas  || 0;
+    const mesDias = dadosMes?.dias    || 0;
+    const mesNV   = mesTot - mesVend;
+    const mesTaxa = mesTot > 0 ? ((mesVend/mesTot)*100).toFixed(1) : null;
+    const mesCor  = !mesTaxa ? '#9ca3af' : parseFloat(mesTaxa)>=40 ? '#34d399' : parseFloat(mesTaxa)>=25 ? '#fbbf24' : '#f87171';
+    // Motivos: mensal acumulado (prioritário), fallback para diário
+    const motivosFonte = Object.keys(mesMotivos).length > 0 ? mesMotivos : (an.motivos_nv || {});
+    const motivos = Object.entries(motivosFonte).sort((a,b)=>b[1]-a[1]);
+    // Dados do último lançamento diário
+    const dTotal  = an.total_clientes || 0;
+    const dVendas = an.total_vendas   || 0;
+    const dTaxa   = dTotal > 0 ? ((dVendas/dTotal)*100).toFixed(1) : null;
+    const dCor    = !dTaxa ? '#9ca3af' : parseFloat(dTaxa)>=40 ? '#34d399' : parseFloat(dTaxa)>=25 ? '#fbbf24' : '#f87171';
     const dataFmt = hoje.split('-').reverse().join('/');
+    const mesLabel = new Date().toLocaleDateString('pt-BR',{month:'long',year:'numeric'});
+    const temDados = mesTot > 0 || dTotal > 0;
 
     const chipKpi = (lbl,val,cor) => `
         <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:.75rem;padding:.6rem .8rem;text-align:center;">
@@ -9335,41 +9779,55 @@ function _renderDiagnostico(el, nomeL, lojaKey, data, hoje) {
             </div>
             <div style="flex:1;min-width:0;">
                 <div style="font-size:1rem;font-weight:900;color:#fff;">Diagnóstico · ${nomeL}</div>
-                <div style="font-size:.58rem;color:#6b7280;">${dataFmt}${ul?' · Atualizado às '+ul:''}</div>
+                <div style="font-size:.58rem;color:#6b7280;">${mesLabel}${mesDias>0?` · ${mesDias} dias`:''}</div>
             </div>
             <button onclick="document.getElementById('_modal-diag').style.display='none';document.body.style.overflow=''"
                 style="width:42px;height:42px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:10px;color:#9ca3af;font-size:1rem;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;">✕</button>
         </div>
 
-        ${!data ? `
+        ${!temDados ? `
         <div style="text-align:center;padding:2.5rem 1rem;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:.9rem;margin-bottom:.75rem;">
             <div style="font-size:2rem;margin-bottom:.75rem;">📋</div>
-            <div style="color:#e2e8f0;font-weight:700;font-size:.85rem;margin-bottom:.45rem;">Nenhum diagnóstico hoje</div>
+            <div style="color:#e2e8f0;font-weight:700;font-size:.85rem;margin-bottom:.45rem;">Nenhum diagnóstico este mês</div>
             <div style="color:#6b7280;font-size:.65rem;line-height:1.7;">O diagnóstico é atualizado automaticamente<br>às <strong style="color:#fbbf24;">15h</strong> e às <strong style="color:#fbbf24;">22h</strong> com base nas<br>folhas de Controle de Atendimento<br>enviadas no grupo de gerentes.</div>
         </div>` : `
-        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.4rem;margin-bottom:.65rem;">
-            ${chipKpi('Clientes',total,'#a78bfa')}
-            ${chipKpi('Vendas',vendas,'#34d399')}
-            ${chipKpi('Conversão',(taxa||'—')+'%',corTaxa)}
+
+        <!-- Painel mensal (principal) -->
+        <div style="background:rgba(167,139,250,.06);border:1.5px solid rgba(167,139,250,.28);border-radius:.9rem;padding:.85rem 1rem;margin-bottom:.5rem;">
+            <div style="font-size:.44rem;color:#a78bfa;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:.5rem;">
+                <i class="fas fa-calendar-alt" style="margin-right:.3rem;"></i>Acumulado do Mês${mesDias>0?` · ${mesDias} dias`:''}
+            </div>
+            ${mesTot > 0 ? `
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.35rem;margin-bottom:.5rem;">
+                ${chipKpi('Atend.',mesTot,'#a78bfa')}
+                ${chipKpi('Vendas',mesVend,'#34d399')}
+                ${chipKpi('Conv.',(mesTaxa||'—')+'%',mesCor)}
+            </div>
+            <div style="font-size:.48rem;color:#6b7280;margin-bottom:.3rem;">${mesVend} vendas · ${mesNV} não-vendas</div>
+            <div style="height:6px;background:#1f2937;border-radius:3px;">
+                <div style="height:100%;width:${Math.min(parseFloat(mesTaxa)||0,100)}%;background:${mesCor};border-radius:3px;transition:width .5s;"></div>
+            </div>` : `<div style="font-size:.6rem;color:#6b7280;text-align:center;padding:.35rem 0;">Sem dados do mês ainda</div>`}
         </div>
 
-        <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:.75rem;padding:.7rem 1rem;margin-bottom:.65rem;">
-            <div style="display:flex;justify-content:space-between;font-size:.55rem;color:#9ca3af;margin-bottom:.4rem;">
-                <span>${vendas} vendas · ${nv} não-vendas</span>
-                <span style="color:${corTaxa};font-weight:700;">${taxa||'—'}% de conversão</span>
+        <!-- Último lançamento diário (referência) -->
+        ${data && dTotal > 0 ? `
+        <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:.75rem;padding:.55rem .85rem;margin-bottom:.5rem;display:flex;align-items:center;gap:.75rem;">
+            <div style="flex:1;">
+                <div style="font-size:.44rem;color:#6b7280;font-weight:700;text-transform:uppercase;letter-spacing:.06em;">Último lançamento · ${dataFmt}</div>
+                <div style="font-size:.65rem;color:#e2e8f0;margin-top:.15rem;">${dVendas}V / ${dTotal-dVendas}NV de ${dTotal} atend.</div>
             </div>
-            <div style="height:8px;background:#1f2937;border-radius:4px;">
-                <div style="height:100%;width:${Math.min(parseFloat(taxa)||0,100)}%;background:${corTaxa};border-radius:4px;transition:width .5s;"></div>
-            </div>
-        </div>
+            <div style="font-size:1.1rem;font-weight:900;color:${dCor};">${dTaxa||'—'}%</div>
+        </div>` : ''}
 
+        <!-- Motivos NV acumulados do mês -->
         ${motivos.length ? `
         <div style="background:rgba(239,68,68,.05);border:1px solid rgba(239,68,68,.15);border-radius:.9rem;padding:.8rem 1rem;margin-bottom:.65rem;">
             <div style="font-size:.5rem;color:#fca5a5;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:.6rem;">
-                <i class="fas fa-times-circle" style="margin-right:.3rem;"></i>Motivos de Não-Venda
+                <i class="fas fa-times-circle" style="margin-right:.3rem;"></i>Motivos de Não-Venda${Object.keys(mesMotivos).length>0?' (mês)':''}
             </div>
             ${motivos.map(([mot,qtd])=>{
-                const pct=total>0?Math.round(qtd/total*100):0;
+                const base = mesTot > 0 ? mesTot : dTotal;
+                const pct = base>0 ? Math.round(qtd/base*100) : 0;
                 return `<div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.35rem;">
                     <div style="flex:1;font-size:.65rem;color:#e2e8f0;">${mot}</div>
                     <div style="width:72px;height:5px;background:#1f2937;border-radius:3px;">
@@ -9522,7 +9980,48 @@ async function _diagSalvarLancar(lojaKey, nomeL) {
     if (btnSalvar) { btnSalvar.disabled = true; btnSalvar.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Salvando…'; }
 
     try {
+        // 1. Verifica se já existe dado anterior para esse dia (para ajuste do resumo mensal)
+        let oldClientes = 0, oldVendas = 0, jaContado = false;
+        try {
+            const existSnap = await window._acadDB.collection('ts_diagnostico').doc(docId).get();
+            if (existSnap.exists) {
+                const oldAn = existSnap.data()?.analise || {};
+                oldClientes = oldAn.total_clientes || 0;
+                oldVendas   = oldAn.total_vendas   || 0;
+                jaContado   = true;
+            }
+        } catch(e) {}
+
+        // 2. Salva o doc diário
         await window._acadDB.collection('ts_diagnostico').doc(docId).set(payload);
+
+        // 3. Atualiza resumo mensal (doc: {lojaKey}_mensal_{YYYY_MM})
+        try {
+            const [anoS, mmS] = data.split('-');
+            const mesDocId = `${lojaKey}_mensal_${anoS}_${mmS}`;
+            const mesSnap  = await window._acadDB.collection('ts_diagnostico').doc(mesDocId).get();
+            let mes = mesSnap.exists
+                ? mesSnap.data()
+                : { total_clientes: 0, total_vendas: 0, dias: 0, dias_com_dado: [], motivos_nv: {} };
+            if (!Array.isArray(mes.dias_com_dado)) mes.dias_com_dado = [];
+            if (!mes.motivos_nv) mes.motivos_nv = {};
+            if (jaContado) {
+                mes.total_clientes = Math.max(0, (mes.total_clientes || 0) - oldClientes + clientes);
+                mes.total_vendas   = Math.max(0, (mes.total_vendas   || 0) - oldVendas   + vendas);
+                // Para motivos: zera os do dia e re-soma (sem old, refaz com novos valores)
+                mes.motivos_nv = {};
+                Object.entries(motivos_nv).forEach(([k,v]) => { if (v>0) mes.motivos_nv[k] = (mes.motivos_nv[k]||0)+v; });
+            } else {
+                mes.total_clientes = (mes.total_clientes || 0) + clientes;
+                mes.total_vendas   = (mes.total_vendas   || 0) + vendas;
+                mes.dias           = (mes.dias           || 0) + 1;
+                if (!mes.dias_com_dado.includes(data)) mes.dias_com_dado.push(data);
+                Object.entries(motivos_nv).forEach(([k,v]) => { if (v>0) mes.motivos_nv[k] = (mes.motivos_nv[k]||0)+v; });
+            }
+            mes.ultima_atualizacao = new Date().toISOString();
+            await window._acadDB.collection('ts_diagnostico').doc(mesDocId).set(mes);
+        } catch(e) {}
+
         // Abre o diagnóstico recém-salvo
         abrirDiagnostico(lojaKey);
     } catch(e) {
@@ -9537,7 +10036,7 @@ async function _diagSalvarLancar(lojaKey, nomeL) {
 
 const _DIAG_REDE_SUBREDES = {
     t1: { nome:'Titãs 1', gestor:'Talysson', cor:'#f59e0b', ico:'🦁',
-          lojas:['cariacica','itabuna','moxuara','praiadacosta'] },
+          lojas:['cariacica','itabuna','moxuara'] },
     t2: { nome:'Titãs 2', gestor:'Adriel',   cor:'#38bdf8', ico:'⚡',
           lojas:['barreiras','teixeira','laranjeiras'] },
     t3: { nome:'Titãs 3', gestor:'Arthur',   cor:'#34d399', ico:'🌊',
@@ -9678,7 +10177,13 @@ function _renderDiagnosticoRede(el, dadosPorLoja) {
         const pct  = taxa ? parseFloat(taxa) : 0;
         const barW = Math.min(100, pct/50*100);
         const motPrincipal = l.motivos[0] ? `<span style="font-size:.52rem;color:#f87171;background:rgba(239,68,68,.1);border-radius:.3rem;padding:.1rem .35rem;">${l.motivos[0][0]} ${l.motivos[0][1]}x</span>` : '';
-        const semDado = !l.ds ? `<span style="font-size:.52rem;color:#6b7280;font-style:italic;">sem dado</span>` : '';
+        const hoje0 = new Date().toISOString().slice(0,10);
+        const diasAntigo = l.ds ? Math.round((new Date(hoje0) - new Date(l.ds)) / 86400000) : 999;
+        const semDado = !l.ds
+            ? `<span style="font-size:.52rem;color:#f87171;background:rgba(239,68,68,.1);border-radius:.3rem;padding:.1rem .35rem;font-weight:700;">⚠ sem dado</span>`
+            : diasAntigo > 2
+            ? `<span style="font-size:.52rem;color:#fbbf24;background:rgba(251,191,36,.1);border-radius:.3rem;padding:.1rem .35rem;">${diasAntigo}d atrás</span>`
+            : '';
         return `
         <div style="display:flex;align-items:center;gap:.5rem;padding:.45rem .6rem;border-radius:.5rem;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.05);margin-bottom:.28rem;">
             <div style="width:28px;height:28px;border-radius:6px;background:${cor}18;border:1px solid ${cor}33;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
@@ -9821,6 +10326,36 @@ function _renderDiagnosticoRede(el, dadosPorLoja) {
             </div>`).join('')}
         </div>` : ''}
 
+        <!-- Cobertura de Diagnóstico por Loja -->
+        ${(() => {
+            const hoje0 = new Date().toISOString().slice(0,10);
+            const todasLojasFlat = Object.values(_DIAG_REDE_SUBREDES).flatMap(s => s.lojas.map(lk => ({
+                key: lk, nome: _DIAG_REDE_NOMES[lk] || lk,
+                ds: dadosPorLoja[lk]?._ds || null
+            })));
+            const semDadoList = todasLojasFlat.filter(l => !l.ds);
+            const atrasadoList = todasLojasFlat.filter(l => l.ds && Math.round((new Date(hoje0)-new Date(l.ds))/86400000) > 2);
+            if (!semDadoList.length && !atrasadoList.length) return '';
+            const lojaBadge = (l) => {
+                const dias = l.ds ? Math.round((new Date(hoje0)-new Date(l.ds))/86400000) : 999;
+                const cor  = !l.ds ? '#f87171' : '#fbbf24';
+                const bg   = !l.ds ? 'rgba(239,68,68,.1)' : 'rgba(251,191,36,.1)';
+                const bdr  = !l.ds ? 'rgba(239,68,68,.25)' : 'rgba(251,191,36,.25)';
+                const txt  = !l.ds ? 'sem dado' : `${dias}d atrás`;
+                return `<div style="display:flex;align-items:center;justify-content:space-between;padding:.3rem .55rem;border-radius:.45rem;background:${bg};border:1px solid ${bdr};margin-bottom:.22rem;">
+                    <span style="font-size:.62rem;color:#e2e8f0;font-weight:600;">${l.nome}</span>
+                    <span style="font-size:.55rem;color:${cor};font-weight:700;">${txt}</span>
+                </div>`;
+            };
+            return `
+        <div style="background:rgba(239,68,68,.05);border:1px solid rgba(239,68,68,.2);border-radius:.85rem;padding:.75rem .9rem;margin-bottom:.6rem;">
+            <div style="font-size:.5rem;color:#fca5a5;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:.55rem;">
+                <i class="fas fa-triangle-exclamation" style="margin-right:.3rem;"></i>Lojas sem envio de diagnóstico
+            </div>
+            ${[...semDadoList, ...atrasadoList].map(lojaBadge).join('')}
+        </div>`;
+        })()}
+
         <!-- Divisor subredes -->
         <div style="font-size:.55rem;color:#6b7280;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.5rem;display:flex;align-items:center;gap:.5rem;">
             <span style="flex:1;height:1px;background:rgba(255,255,255,.07);"></span>
@@ -9873,7 +10408,7 @@ function _diasSemVender(ult, lojaKey) {
 
 /* Gestores/Subgerentes conhecidos — excluídos do alerta "sem venda" */
 const _GESTORES_D360 = new Set([
-    'ana carolina da silva','mirelly vieira portugal','juliana cristina dos santos',
+    'ana carolina da silva','mirelly vieira portugal',
     'reinan dos santos pacheco','sandy de araujo santos lima','daniela milena gomes mares',
     'maxwell cezar oliveira','wilghyner de padua soares de souza','gabriel barreto pereira',
     'gabriela mel dutra','jhennyfer eduarda rodrigues dos santos','jorge gustavo lima firmiano',
@@ -11199,9 +11734,55 @@ function render360(tipo, val) {
     })();
 
 
+    // Modelos por Financeira
+    const _modelosFinCard = (() => {
+        const _tm = (_d.top_modelos) || {};
+        const _pj = (_tm.payjoy || []).slice(0,5);
+        const _od = (_tm.odrescred || []).slice(0,5);
+        const _sl = (_tm.salao || []).slice(0,5);
+        const _hasData = _pj.length > 0 || _od.length > 0 || _sl.length > 0;
+        const _cleanNm = nm => nm.replace(/^SMARTPHONE\s+/i,'').replace(/\s+/g,' ').trim();
+        const _mes = (() => { const d=new Date(); return ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'][d.getMonth()]; })();
+        if (!_hasData) return '';
+        const _mkRow = (m, i, numClr, nmClr, valClr) => `<div style="display:flex;align-items:center;gap:.35rem;padding:.15rem 0;border-bottom:1px solid #1f293720;">
+            <span style="font-size:.44rem;font-weight:800;color:${numClr};width:10px;flex-shrink:0;">${i+1}</span>
+            <span style="font-size:.52rem;font-weight:700;color:${nmClr};flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${_cleanNm(m.nm)}</span>
+            <span style="font-size:.5rem;font-weight:800;color:${valClr};flex-shrink:0;">${m.qt}x</span>
+            <span style="font-size:.44rem;color:#6b7280;flex-shrink:0;min-width:52px;text-align:right;">${brl(m.val)}</span>
+        </div>`;
+        const _rowPJ = _pj.map((m,i) => _mkRow(m, i, '#059669', '#d1fae5', '#6ee7b7')).join('');
+        const _rowOD = _od.map((m,i) => _mkRow(m, i, '#3b82f6', '#bfdbfe', '#93c5fd')).join('');
+        const _rowSL = _sl.map((m,i) => _mkRow(m, i, '#a78bfa', '#ede9fe', '#c4b5fd')).join('');
+        return `<div class="glass-360 rounded-2xl p-4 card-lift" style="display:flex;flex-direction:column;gap:.4rem;cursor:pointer;grid-column:1/-1;" onclick="abrirModelosFin()">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:.5rem;margin-bottom:.1rem;">
+                <div style="display:flex;align-items:center;gap:.5rem;min-width:0;">
+                    <div style="width:28px;height:28px;border-radius:8px;background:#8b5cf618;border:1px solid #8b5cf635;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                        <i class="fas fa-mobile-alt" style="color:#8b5cf6;font-size:.7rem;"></i>
+                    </div>
+                    <span style="font-size:.68rem;font-weight:800;color:#f9fafb;letter-spacing:.02em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">📊 Curva ABC × Formas de Pagamento</span>
+                </div>
+                <span style="font-size:.6rem;font-weight:700;padding:.15rem .55rem;border-radius:999px;background:#8b5cf620;color:#a78bfa;white-space:nowrap;flex-shrink:0;">${_mes} 2026 ↗</span>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.4rem;">
+                <div>
+                    <div style="font-size:.42rem;font-weight:800;color:#059669;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.2rem;">PayJoy</div>
+                    ${_rowPJ}
+                </div>
+                <div>
+                    <div style="font-size:.42rem;font-weight:800;color:#3b82f6;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.2rem;">OdresCred</div>
+                    ${_rowOD}
+                </div>
+                <div>
+                    <div style="font-size:.42rem;font-weight:800;color:#a78bfa;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.2rem;">Salão</div>
+                    ${_rowSL}
+                </div>
+            </div>
+            <p style="font-size:.5rem;color:#6b7280;margin:0;">Top celulares por financeira — acumulado mensal · clique para ver completo</p>
+        </div>`;
+    })();
+
     // Central de Agendamentos
-    kpis = _fatCard + _fatDiaCard + _salaoFinCard +
-        (() => {
+    const _agendCard = (() => {
             const agFat   = scope.reduce((s,l)=>s+(l.agendFat||0),0);
             const agMeta  = scope.length * (_d.agendMetaPorLoja || 90000);
             const agProj  = _d.diasDecorridos > 0 ? Math.round(agFat / _d.diasDecorridos * _d.diasMes) : 0;
@@ -11236,6 +11817,7 @@ function render360(tipo, val) {
                 </div>
             </div>`;
         })();
+    kpis = _fatCard + _fatDiaCard + _salaoFinCard + _agendCard + _modelosFinCard;
 
     /* ── Rankings ── */
     if (tipo==='loja') {
@@ -11247,7 +11829,7 @@ function render360(tipo, val) {
 
         /* Inclui TODOS os colaboradores da loja, mesmo sem vendas ainda */
         const _EQUIPE = {
-            saomateus:    ['Alice Christino Monteiro','Eliza Queiroz de Souza','Randeclay Mariano Gomes','Daniele Hupp Lyra','Juliana Cristina dos Santos','Leandro da Cruz Silva','Stefany Sperotto Barcelos','Crislany Oliveira Olegario','Carla Santos Luiz'],
+            saomateus:    ['Alice Christino Monteiro','Eliza Queiroz de Souza','Randeclay Mariano Gomes','Daniele Hupp Lyra','Leandro da Cruz Silva','Stefany Sperotto Barcelos','Crislany Oliveira Olegario','Carla Santos Luiz','Ramos'],
             cariacica:    ['Roberta Felipe Malaquias','Liz Sophia Andrade Pereira','Nicolas Santos Borges','Wilghyner de Padua Soares de Souza','Glaupierre Oliveira da Silvaa','Mirelly Vieira Portugal'],
             itabuna:      ['Mikaelle Santos Virgens','Hericles Lisboa de Freitas','Andreza de Jesus Souza','Keifit Moreira dos Santos','Evelyn Batista Cruz do Espirito Santos','Arthur Cezar Pereira'],
             barreiras:    ['Victor Roberto de Oliveira Nascimento','Mateus da Silva Matos','Larisse Ribeiro Dos Santos','Isabela Chagas','Táine Oliveira dos Santos','Gustavo Viera Hansen'],
@@ -11615,17 +12197,17 @@ async function _360CarregarHistorico(anoNum, mesNum) {
         if (!data.lojas) data.lojas = {};
         // Mapeia chave D360 → total correto do PDF
         const _mapAcess26_04 = {
-            saomateus:   { total:18087.94, top:[{n:'Eliza Queiroz De Souza',i:'EQ',t:4244.96},{n:'Randeclay Mariano Gomes',i:'RM',t:3740.00},{n:'Juliana Cristina Dos Santos',i:'JC',t:3607.99},{n:'Alice Christino Monteiro',i:'AC',t:3409.99},{n:'Daniele Hupp Lyra',i:'DH',t:2335.00},{n:'Lubia Duarte Barbosa',i:'LB',t:650.00},{n:'Leandro Da Cruz Silva',i:'LC',t:100.00}] },
-            montserrat:  { total:14134.02, top:[{n:'Adriano Jeremias Cardoso Monteiro',i:'AJ',t:5269.00},{n:'Joaquin Emiliano Rodrigo',i:'JE',t:5145.00},{n:'Antônio Gabriel Montarroyos Almeida',i:'AG',t:1650.00},{n:'Arthur Renan Santana Lins',i:'AR',t:885.00},{n:'Jhenifer Gonçalves De Souza',i:'JG',t:775.00},{n:'Vitor Santos Barreto',i:'VS',t:410.02}] },
-            moxuara:     { total:10986.10, top:[{n:'Khayllane De Almeida Ferreira',i:'KA',t:3640.01},{n:'Iasmim Vitoria Medeiros Gaio',i:'IV',t:3440.00},{n:'Luccas Da Silva Medeiros Martins',i:'LS',t:1205.00},{n:'Mirelly Vieira Portugal',i:'MV',t:940.00},{n:'Ana Carolina Da Silva',i:'AC',t:930.10},{n:'Nicolas Santos Borges',i:'NS',t:830.99}] },
-            cariacica:   { total:8486.00,  top:[{n:'Roberta Felipe Malaquias',i:'RF',t:5067.00},{n:'Wilghyner De Padua Soares De Souza',i:'WP',t:1999.00},{n:'Gabriel Barreto Pereira',i:'GB',t:1120.00},{n:'Glaupierre Oliveira Da Silvaa',i:'GO',t:260.00},{n:'Liz Sophia Andrade Pereira',i:'LS',t:40.00}] },
-            serra:       { total:8153.97,  top:[{n:'Karen Scavelo Souza',i:'KS',t:2435.00},{n:'Lucas Loyola Araujo',i:'LL',t:1828.00},{n:'Luiz Henrique Viana Da Rocha',i:'LH',t:1740.99},{n:'Guilherme Souza Nascimento',i:'GS',t:1189.99},{n:'Marcela Da Silva Lopes',i:'ML',t:769.99},{n:'Joaquin Emiliano Rodrigo',i:'JE',t:190.00}] },
-            teixeira:    { total:7158.01,  top:[{n:'Carla Santos Luiz',i:'CS',t:1879.00},{n:'Beatriz Hellen Fagundes',i:'BH',t:1500.00},{n:'Paloma De Jesus Santos',i:'PJ',t:1294.01},{n:'Amanda Goulart Andrade',i:'AG',t:1099.00},{n:'Gustavo Santana Batista',i:'GS',t:861.00},{n:'Carine Ferreira Franco',i:'CF',t:525.00}] },
-            itabuna:     { total:6620.92,  top:[{n:'Arthur Cezar Pereira',i:'AP',t:2515.00},{n:'Hericles Lisboa De Freitas',i:'HL',t:1474.00},{n:'Andreza De Jesus Souza',i:'AJ',t:595.00},{n:'Mikaelle Santos Virgens',i:'MS',t:455.92},{n:'Evelyn Batista Cruz Do Espirito Santos',i:'EB',t:376.00},{n:'Keifit Moreira Dos Santos',i:'KM',t:390.00}] },
-            barreiras:   { total:4814.08,  top:[{n:'Larisse Ribeiro Dos Santos',i:'LR',t:1124.04},{n:'Victor Roberto De Oliveira Nascimento',i:'VR',t:850.00},{n:'Táine Oliveira Dos Santos',i:'TO',t:735.01},{n:'Mateus Da Silva Matos',i:'MM',t:685.02},{n:'Isabela Chagas',i:'IC',t:570.02},{n:'Gustavo Viera Hansen',i:'GV',t:420.00}] },
-            praiadacosta:{ total:3270.00,  top:[{n:'Renato Lembranci Metzke Junior',i:'RL',t:1650.00},{n:'Luccas Da Silva Medeiros Martins',i:'LS',t:670.00},{n:'Thaymmon Teodoro Freitas',i:'TT',t:510.00},{n:'Wilghyner De Padua Soares De Souza',i:'WP',t:440.00}] },
-            linhares:    { total:2649.99,  top:[{n:'Rayca Mendes Morais',i:'RM',t:859.99},{n:'Natalia Rocha Leonel',i:'NR',t:580.00},{n:'Thais Soares Vieira',i:'TS',t:540.00},{n:'Kauan Teixeira',i:'KT',t:380.00},{n:'Krystian Lincoln Dalfior Gonçalves',i:'KL',t:210.00},{n:'Juliana Pereira Do Nascimento',i:'JP',t:80.00}] },
-            laranjeiras: { total:2219.00,  top:[{n:'FILIPE MATTOS QUEIROZ',i:'FM',p:1,t:2000.0,ds:22,ult:'01/07'}] }
+            saomateus:   { total:0, top:[{n:'Eliza Queiroz De Souza',i:'EQ',t:4244.96},{n:'Randeclay Mariano Gomes',i:'RM',t:3740.00},{n:'Juliana Cristina Dos Santos',i:'JC',t:3607.99},{n:'Alice Christino Monteiro',i:'AC',t:3409.99},{n:'Daniele Hupp Lyra',i:'DH',t:2335.00},{n:'Lubia Duarte Barbosa',i:'LB',t:650.00},{n:'Leandro Da Cruz Silva',i:'LC',t:100.00}] },
+            montserrat:  { total:0, top:[{n:'Adriano Jeremias Cardoso Monteiro',i:'AJ',t:5269.00},{n:'Joaquin Emiliano Rodrigo',i:'JE',t:5145.00},{n:'Antônio Gabriel Montarroyos Almeida',i:'AG',t:1650.00},{n:'Arthur Renan Santana Lins',i:'AR',t:885.00},{n:'Jhenifer Gonçalves De Souza',i:'JG',t:775.00},{n:'Vitor Santos Barreto',i:'VS',t:410.02}] },
+            moxuara:     { total:0, top:[{n:'Khayllane De Almeida Ferreira',i:'KA',t:3640.01},{n:'Iasmim Vitoria Medeiros Gaio',i:'IV',t:3440.00},{n:'Luccas Da Silva Medeiros Martins',i:'LS',t:1205.00},{n:'Mirelly Vieira Portugal',i:'MV',t:940.00},{n:'Ana Carolina Da Silva',i:'AC',t:930.10},{n:'Nicolas Santos Borges',i:'NS',t:830.99}] },
+            cariacica:   { total:0,  top:[{n:'Roberta Felipe Malaquias',i:'RF',t:5067.00},{n:'Wilghyner De Padua Soares De Souza',i:'WP',t:1999.00},{n:'Gabriel Barreto Pereira',i:'GB',t:1120.00},{n:'Glaupierre Oliveira Da Silvaa',i:'GO',t:260.00},{n:'Liz Sophia Andrade Pereira',i:'LS',t:40.00}] },
+            serra:       { total:0,  top:[{n:'Karen Scavelo Souza',i:'KS',t:2435.00},{n:'Lucas Loyola Araujo',i:'LL',t:1828.00},{n:'Luiz Henrique Viana Da Rocha',i:'LH',t:1740.99},{n:'Guilherme Souza Nascimento',i:'GS',t:1189.99},{n:'Marcela Da Silva Lopes',i:'ML',t:769.99},{n:'Joaquin Emiliano Rodrigo',i:'JE',t:190.00}] },
+            teixeira:    { total:0,  top:[{n:'Carla Santos Luiz',i:'CS',t:1879.00},{n:'Beatriz Hellen Fagundes',i:'BH',t:1500.00},{n:'Paloma De Jesus Santos',i:'PJ',t:1294.01},{n:'Amanda Goulart Andrade',i:'AG',t:1099.00},{n:'Gustavo Santana Batista',i:'GS',t:861.00},{n:'Carine Ferreira Franco',i:'CF',t:525.00}] },
+            itabuna:     { total:0,  top:[{n:'Arthur Cezar Pereira',i:'AP',t:2515.00},{n:'Hericles Lisboa De Freitas',i:'HL',t:1474.00},{n:'Andreza De Jesus Souza',i:'AJ',t:595.00},{n:'Mikaelle Santos Virgens',i:'MS',t:455.92},{n:'Evelyn Batista Cruz Do Espirito Santos',i:'EB',t:376.00},{n:'Keifit Moreira Dos Santos',i:'KM',t:390.00}] },
+            barreiras:   { total:0,  top:[{n:'Larisse Ribeiro Dos Santos',i:'LR',t:1124.04},{n:'Victor Roberto De Oliveira Nascimento',i:'VR',t:850.00},{n:'Táine Oliveira Dos Santos',i:'TO',t:735.01},{n:'Mateus Da Silva Matos',i:'MM',t:685.02},{n:'Isabela Chagas',i:'IC',t:570.02},{n:'Gustavo Viera Hansen',i:'GV',t:420.00}] },
+            praiadacosta:{ total:0,  top:[{n:'Renato Lembranci Metzke Junior',i:'RL',t:1650.00},{n:'Luccas Da Silva Medeiros Martins',i:'LS',t:670.00},{n:'Thaymmon Teodoro Freitas',i:'TT',t:510.00},{n:'Wilghyner De Padua Soares De Souza',i:'WP',t:440.00}] },
+            linhares:    { total:0,  top:[{n:'Rayca Mendes Morais',i:'RM',t:859.99},{n:'Natalia Rocha Leonel',i:'NR',t:580.00},{n:'Thais Soares Vieira',i:'TS',t:540.00},{n:'Kauan Teixeira',i:'KT',t:380.00},{n:'Krystian Lincoln Dalfior Gonçalves',i:'KL',t:210.00},{n:'Juliana Pereira Do Nascimento',i:'JP',t:80.00}] },
+            laranjeiras: { total:0,  top:[{n:'FILIPE MATTOS QUEIROZ',i:'FM',p:1,t:2000.0,ds:22,ult:'01/07'}] }
         };
         Object.entries(_mapAcess26_04).forEach(([k, ac]) => {
             if (!data.lojas[k]) data.lojas[k] = {};
@@ -12157,7 +12739,7 @@ const MATINAIS = {
     /* ── Participantes ── */
     seniors: ['Talysson','Adriel','Arthur','Junior Dias'],
     operacionais: ['Daniela','Maxuel','Gabriel','Kristian','Luiz','Jhenifer Eduarda',
-                   'Juliana','Ana','Portugal','Reinan','Sandy','Lucas Loyola','Jhenyfer','Wilghyner','Wesley'],
+                   'Ramos','Ana','Portugal','Reinan','Sandy','Lucas Loyola','Jhenyfer','Wilghyner','Wesley'],
 
     /* ── Dias da semana ── */
     dias: [
@@ -13362,15 +13944,15 @@ const FL = {
     FERIADOS: ['2026-04-13','2026-04-21'],
 
     SUBREDES: {
-        t1:{ nome:'Titãs 1', gestor:'Talysson', cor:'#a855f7', lojas:['cariacica','itabuna','praiadacosta','moxuara'] },
-        t2:{ nome:'Titãs 2', gestor:'Adriel',   cor:'#06b6d4', lojas:['barreiras','teixeira','laranjeiras'] },
+        t1:{ nome:'Titãs 1', gestor:'Talysson', cor:'#a855f7', lojas:['cariacica','itabuna','moxuara'] },
+        t2:{ nome:'Titãs 2', gestor:'Adriel',   cor:'#06b6d4', lojas:['praiadacosta','barreiras','teixeira','laranjeiras'] },
         t3:{ nome:'Titãs 3', gestor:'Arthur',   cor:'#4ade80', lojas:['saomateus','linhares','serra','montserrat'] },
     },
 
     LOJAS: {
         cariacica:   {nome:'Cariacica',          sub:'t1', tipo:'rua',      meta:380000, total:294849},
         itabuna:     {nome:'Itabuna',            sub:'t1', tipo:'rua',      meta:260000, total:194085},
-        praiadacosta:{nome:'Praia da Costa',     sub:'t1', tipo:'shopping', meta:270000, total:68201},
+        praiadacosta:{nome:'Praia da Costa',     sub:'t2', tipo:'shopping', meta:270000, total:68201},
         moxuara:     {nome:'Moxuara',            sub:'t1', tipo:'shopping', meta:220000, total:225771},
         barreiras:   {nome:'Barreiras',          sub:'t2', tipo:'rua',      meta:200000, total:161692},
         teixeira:    {nome:'Teixeira de Freitas',sub:'t2', tipo:'rua',      meta:185000, total:157664},
@@ -20899,6 +21481,26 @@ cursosInit();
   </div>
 </div>
 
+<!-- ── Modal Modelos por Financeira ──────────────────────────────────── -->
+<div id="modal-modelos-fin" class="fixed inset-0 z-[999] hidden items-center justify-center bg-black/80 p-3"
+     onclick="if(event.target===this)fecharModelosFin()" style="display:none;">
+  <div style="background:#0d1117;border:1px solid rgba(139,92,246,.3);border-radius:1.25rem;width:100%;max-width:560px;max-height:92vh;display:flex;flex-direction:column;box-shadow:0 24px 60px rgba(0,0,0,.7);">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:1.1rem 1.25rem .9rem;border-bottom:1px solid rgba(139,92,246,.15);flex-shrink:0;">
+      <div style="display:flex;align-items:center;gap:.6rem;">
+        <div style="width:32px;height:32px;border-radius:10px;background:#8b5cf618;border:1px solid #8b5cf635;display:flex;align-items:center;justify-content:center;">
+          <i class="fas fa-mobile-alt" style="color:#8b5cf6;font-size:.8rem;"></i>
+        </div>
+        <div>
+          <div style="font-size:.85rem;font-weight:800;color:#f9fafb;">📱 Modelos por Financeira</div>
+          <div style="font-size:.6rem;color:#6b7280;">Top celulares (SBON) por forma de pagamento — acumulado mensal</div>
+        </div>
+      </div>
+      <button onclick="fecharModelosFin()" style="color:#6b7280;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:.5rem;padding:.3rem .65rem;cursor:pointer;font-size:1rem;">✕</button>
+    </div>
+    <div id="modal-modelos-fin-body" style="overflow-y:auto;flex:1;padding:1.25rem;"></div>
+  </div>
+</div>
+
 <!-- ── Modal Detalhes Faturamento Total ─────────────────────────────── -->
 <div id="modal-detalhes-fat" class="fixed inset-0 z-[999] hidden items-center justify-center bg-black/80 p-3"
      onclick="if(event.target===this)_fecharDetalhesFat()">
@@ -21574,7 +22176,7 @@ var _AG = {
         serra:        { nome: 'Serra',               subrede: 'Titãs 2', cidade: 'Serra — ES',              regiao: 'r1' },
         laranjeiras:  { nome: 'Laranjeiras',         subrede: 'Titãs 3', cidade: 'Serra — ES',              regiao: 'r1' },
         montserrat:   { nome: 'Montserrat',          subrede: 'Titãs 3', cidade: 'Vila Velha — ES',         regiao: 'r1' },
-        praiadacosta: { nome: 'Praia da Costa',      subrede: 'Titãs 3', cidade: 'Vila Velha — ES',         regiao: 'r1' },
+        praiadacosta: { nome: 'Praia da Costa',      subrede: 'Titãs 2', cidade: 'Vila Velha — ES',         regiao: 'r1' },
         saomateus:    { nome: 'São Mateus',          subrede: 'Titãs 1', cidade: 'São Mateus — ES',         regiao: 'r2' },
         linhares:     { nome: 'Linhares',            subrede: 'Titãs 1', cidade: 'Linhares — ES',           regiao: 'r2' },
         teixeira:     { nome: 'Teixeira de Freitas', subrede: 'Titãs 1', cidade: 'Teixeira de Freitas — BA',regiao: 'r2' },
@@ -23474,7 +24076,7 @@ const _CHKL_LOJAS = {
   serra:        { label:'Serra',               sigla:'SR', sub:'t3', liberada:true },
   linhares:     { label:'Linhares',            sigla:'LH', sub:'t3', liberada:true },
   montserrat:   { label:'Montserrat',          sigla:'MT', sub:'t3', liberada:true },
-  praiadacosta: { label:'Praia da Costa',      sigla:'PC', sub:'t1', liberada:true },
+  praiadacosta: { label:'Praia da Costa',      sigla:'PC', sub:'t2', liberada:true },
   teste:        { label:'🧪 Loja Teste',       sigla:'TS', oculta:true, liberada:true },
 };
 
@@ -25419,6 +26021,360 @@ window._mgrStopListeners    = _mgrStopListeners;
 window._mgrShowUpdateBanner = _mgrShowUpdateBanner;
 window._meloRegerarRotina   = _meloRegerarRotina;
 
+/* ══════════════════════════════════════════════════════════════════
+   RASTREIO CORREIOS
+   Coleção Firestore: ts_rastreios
+   Acesso: apenas diretoria
+══════════════════════════════════════════════════════════════════ */
+(function() {
+  const LOJA_LABEL = {
+    cariacica:'Cariacica', itabuna:'Itabuna', moxuara:'Moxuara',
+    praiadacosta:'Praia da Costa', barreiras:'Barreiras', teixeira:'Tx de Freitas',
+    laranjeiras:'Laranjeiras', saomateus:'São Mateus', serra:'Serra',
+    montserrat:'Montserrat', linhares:'Linhares'
+  };
+  const LOJA_COR = {
+    cariacica:'#60a5fa', itabuna:'#f97316', moxuara:'#a855f7',
+    praiadacosta:'#34d399', barreiras:'#f59e0b', teixeira:'#ec4899',
+    laranjeiras:'#22d3ee', saomateus:'#fb923c', serra:'#4ade80',
+    montserrat:'#c084fc', linhares:'#fbbf24'
+  };
+
+  let _filtroAtual = 'todos';
+  let _unsubRastreio = null;
+  let _rastreiosDados = [];
+
+  function _fdb() { return firebase.firestore(); }
+
+  window._rastreioInit = function() {
+    if (_unsubRastreio) _unsubRastreio();
+    _unsubRastreio = _fdb().collection('ts_rastreios')
+      .onSnapshot(snap => {
+        _rastreiosDados = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        _rastreiosDados.sort((a, b) => {
+          const ta = a.dataAdicionado?.toMillis ? a.dataAdicionado.toMillis() : 0;
+          const tb = b.dataAdicionado?.toMillis ? b.dataAdicionado.toMillis() : 0;
+          return tb - ta;
+        });
+        _rastreioRender();
+      }, e => console.warn('rastreio snap:', e));
+  };
+
+  function _rastreioRender() {
+    const grid = document.getElementById('rastreio-grid');
+    const empty = document.getElementById('rastreio-empty');
+    if (!grid) return;
+
+    let dados = _rastreiosDados;
+    if (_filtroAtual === 'em_transito') dados = dados.filter(d => !d.entregue);
+    if (_filtroAtual === 'entregue')    dados = dados.filter(d => d.entregue);
+
+    if (!dados.length) {
+      grid.innerHTML = '';
+      empty.classList.remove('hidden');
+      return;
+    }
+    empty.classList.add('hidden');
+
+    const porLoja = {};
+    dados.forEach(r => {
+      if (!porLoja[r.loja]) porLoja[r.loja] = [];
+      porLoja[r.loja].push(r);
+    });
+
+    // Grid passa a ser coluna única (acordeão)
+    grid.style.gridTemplateColumns = '1fr';
+
+    grid.innerHTML = Object.entries(porLoja).map(([loja, rastreios]) => {
+      const cor = LOJA_COR[loja] || '#f59e0b';
+      const label = LOJA_LABEL[loja] || loja;
+      const entregues = rastreios.filter(r => r.entregue).length;
+      const total = rastreios.length;
+      const rgb = _hexToRgb(cor);
+      const lojaId = `rastreio-loja-${loja}`;
+
+      // Badge de resumo
+      const temTransito = rastreios.some(r => !r.entregue && r.statusTexto);
+      const todosEntregues = entregues === total;
+      let resumoBadge = todosEntregues
+        ? `<span class="text-xs font-bold px-2 py-0.5 rounded-full" style="background:rgba(52,211,153,.15);color:#34d399;">✓ TODOS ENTREGUES</span>`
+        : temTransito
+        ? `<span class="text-xs font-bold px-2 py-0.5 rounded-full" style="background:rgba(251,146,60,.15);color:#fb923c;"><i class="fas fa-truck mr-1" style="font-size:.6rem;"></i>EM TRÂNSITO</span>`
+        : `<span class="text-xs font-bold px-2 py-0.5 rounded-full" style="background:rgba(107,114,128,.15);color:#9ca3af;">AGUARDANDO</span>`;
+
+      const itens = rastreios.map(r => {
+        const correiosUrl = `https://rastreamento.correios.com.br/app/index.php?objeto=${r.codigo}`;
+        const temStatus = r.statusTexto || r.entregue;
+
+        // Cabeçalho do código
+        let statusBadge = '';
+        if (r.entregue) {
+          statusBadge = `<span class="px-1.5 py-0.5 rounded text-white font-bold" style="background:#059669;font-size:.58rem;">✓ ENTREGUE</span>`;
+        } else if (r.statusTexto) {
+          statusBadge = `<span class="px-1.5 py-0.5 rounded font-bold" style="background:rgba(251,146,60,.18);color:#fb923c;font-size:.58rem;"><i class="fas fa-truck mr-1" style="font-size:.55rem;"></i>EM TRÂNSITO</span>`;
+        } else {
+          statusBadge = `<span class="px-1.5 py-0.5 rounded font-bold" style="background:rgba(107,114,128,.18);color:#9ca3af;font-size:.58rem;"><i class="fas fa-clock mr-1" style="font-size:.55rem;"></i>AGUARDANDO</span>`;
+        }
+
+        // Bloco de tipo + previsão
+        let tipoPrevisao = '';
+        if (r.tipo || r.previsao) {
+          tipoPrevisao = `<div class="flex items-center gap-3 mt-2 mb-1">
+            ${r.tipo ? `<span class="font-bold" style="font-size:.68rem;color:#fbbf24;"><i class="fas fa-shipping-fast mr-1" style="font-size:.6rem;"></i>${r.tipo}</span>` : ''}
+            ${r.previsao ? `<span style="font-size:.65rem;color:#6b7280;">Previsão: <span style="color:#34d399;font-weight:600;">${r.previsao}</span></span>` : ''}
+          </div>`;
+        }
+
+        // Último evento
+        let ultimoEvento = '';
+        if (r.statusTexto) {
+          ultimoEvento = `
+            <div class="mt-2 rounded-lg p-2.5" style="background:rgba(251,146,60,.07);border-left:2px solid rgba(251,146,60,.4);">
+              <div class="text-xs font-semibold mb-0.5" style="color:#fb923c;">${r.statusTexto}</div>
+              ${r.statusLocal ? `<div class="text-gray-400" style="font-size:.65rem;">${r.statusLocal}</div>` : ''}
+              ${r.statusData  ? `<div class="text-gray-500 mt-0.5" style="font-size:.6rem;"><i class="fas fa-calendar-alt mr-1" style="font-size:.55rem;"></i>${r.statusData}</div>` : ''}
+            </div>`;
+        } else if (!r.entregue) {
+          ultimoEvento = `<div class="mt-2 text-gray-600" style="font-size:.65rem;"><i class="fas fa-info-circle mr-1"></i>Nenhuma atualização ainda — clique em Correios para consultar</div>`;
+        }
+
+        // Histórico expandível
+        const historico = (r.historico || []);
+        let historicoHtml = '';
+        if (historico.length > 1) {
+          const hId = `hist-${r.id}`;
+          historicoHtml = `
+            <div class="mt-1.5">
+              <button onclick="document.getElementById('${hId}').classList.toggle('hidden');this.querySelector('i').classList.toggle('fa-chevron-down');this.querySelector('i').classList.toggle('fa-chevron-up');"
+                      class="text-gray-500 flex items-center gap-1 hover:text-gray-300 transition" style="font-size:.62rem;">
+                <i class="fas fa-chevron-down" style="font-size:.5rem;"></i> Ver histórico completo (${historico.length} eventos)
+              </button>
+              <div id="${hId}" class="hidden mt-2 space-y-1.5">
+                ${historico.map(ev => `
+                  <div class="rounded-lg p-2" style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);">
+                    <div class="text-xs font-semibold" style="color:#e5e7eb;">${ev.descricao || ''}</div>
+                    ${ev.local ? `<div class="text-gray-500" style="font-size:.62rem;">${ev.local}</div>` : ''}
+                    ${ev.data  ? `<div class="text-gray-600" style="font-size:.58rem;">${ev.data}</div>` : ''}
+                  </div>`).join('')}
+              </div>
+            </div>`;
+        }
+
+        const consultaStr = r.ultimaConsulta ? `<span class="text-gray-600" style="font-size:.58rem;">Atualizado: ${r.ultimaConsulta}</span>` : '';
+
+        return `
+          <div class="rounded-xl p-3 mb-2" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);">
+            <div class="flex items-start justify-between gap-2">
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-2 flex-wrap mb-0.5">
+                  <span class="font-mono text-xs font-bold tracking-wide" style="color:${cor};">${r.codigo}</span>
+                  ${statusBadge}
+                </div>
+                <div class="flex items-center gap-3" style="font-size:.65rem;">
+                  ${r.fornecedor ? `<span class="text-gray-500"><i class="fas fa-building mr-1" style="font-size:.55rem;"></i>${r.fornecedor}</span>` : ''}
+                  ${r.descricao  ? `<span class="text-gray-600">${r.descricao}</span>` : ''}
+                </div>
+                ${tipoPrevisao}
+                ${ultimoEvento}
+                ${historicoHtml}
+                <div class="mt-1.5">${consultaStr}</div>
+              </div>
+              <div class="flex flex-col gap-1.5 flex-shrink-0 ml-1">
+                <a href="${correiosUrl}" target="_blank"
+                   class="flex items-center justify-center w-7 h-7 rounded-lg transition"
+                   style="background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.3);color:#f59e0b;"
+                   title="Ver no site dos Correios">
+                  <i class="fas fa-arrow-up-right-from-square" style="font-size:.6rem;"></i>
+                </a>
+                <button onclick="_rastreioAbrirStatus('${r.id}')"
+                        class="flex items-center justify-center w-7 h-7 rounded-lg transition"
+                        style="background:rgba(96,165,250,.1);border:1px solid rgba(96,165,250,.3);color:#60a5fa;"
+                        title="Atualizar status">
+                  <i class="fas fa-pen" style="font-size:.55rem;"></i>
+                </button>
+                <button onclick="_rastreioToggleEntregue('${r.id}',${!!r.entregue})"
+                        class="flex items-center justify-center w-7 h-7 rounded-lg transition"
+                        style="background:rgba(52,211,153,.08);border:1px solid rgba(52,211,153,.25);color:#34d399;"
+                        title="${r.entregue ? 'Desfazer entrega' : 'Marcar como entregue'}">
+                  <i class="fas ${r.entregue ? 'fa-rotate-left' : 'fa-check'}" style="font-size:.6rem;"></i>
+                </button>
+                <button onclick="_rastreioExcluir('${r.id}')"
+                        class="flex items-center justify-center w-7 h-7 rounded-lg transition"
+                        style="background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);color:#f87171;"
+                        title="Excluir">
+                  <i class="fas fa-trash" style="font-size:.55rem;"></i>
+                </button>
+              </div>
+            </div>
+          </div>`;
+      }).join('');
+
+      return `
+        <div class="rounded-2xl overflow-hidden" style="border:1px solid rgba(${rgb},.25);background:rgba(255,255,255,.03);">
+          <!-- Header clicável -->
+          <button onclick="
+            const body = document.getElementById('${lojaId}');
+            const arrow = document.getElementById('${lojaId}-arrow');
+            const hint  = document.getElementById('${lojaId}-hint');
+            const open  = !body.classList.contains('hidden');
+            body.classList.toggle('hidden');
+            arrow.style.transform = open ? 'rotate(0deg)' : 'rotate(180deg)';
+            hint.textContent = open ? '(clique para expandir)' : '(clique para recolher)';
+          " class="w-full flex items-center justify-between px-5 py-4 text-left transition hover:brightness-110"
+             style="background:rgba(${rgb},.08);">
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
+                   style="background:rgba(${rgb},.2);border:1px solid rgba(${rgb},.35);">
+                <i class="fas fa-store" style="font-size:.7rem;color:${cor};"></i>
+              </div>
+              <div>
+                <span class="font-bold text-sm text-white">${label}</span>
+                <span id="${lojaId}-hint" class="ml-2 text-gray-500" style="font-size:.65rem;">(clique para expandir)</span>
+              </div>
+            </div>
+            <div class="flex items-center gap-3">
+              ${resumoBadge}
+              <span class="text-gray-500 text-xs">${total} vol.</span>
+              <i id="${lojaId}-arrow" class="fas fa-chevron-down transition-transform duration-200" style="color:${cor};font-size:.7rem;"></i>
+            </div>
+          </button>
+          <!-- Conteúdo colapsável -->
+          <div id="${lojaId}" class="hidden px-4 pb-4 pt-3">
+            ${itens}
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  function _hexToRgb(hex) {
+    return `${parseInt(hex.slice(1,3),16)},${parseInt(hex.slice(3,5),16)},${parseInt(hex.slice(5,7),16)}`;
+  }
+
+  window._rastreioFiltro = function(filtro, btn) {
+    _filtroAtual = filtro;
+    document.querySelectorAll('.rastreio-filtro-btn').forEach(b => {
+      b.style.background = 'rgba(255,255,255,.05)';
+      b.style.borderColor = 'rgba(255,255,255,.1)';
+      b.style.color = '#9ca3af';
+    });
+    btn.style.background = 'rgba(245,158,11,.15)';
+    btn.style.borderColor = 'rgba(245,158,11,.4)';
+    btn.style.color = '#f59e0b';
+    _rastreioRender();
+  };
+
+  /* ── Modal Adicionar ── */
+  window._rastreioOpenModal = function() {
+    ['rastreio-loja','rastreio-codigos','rastreio-fornecedor','rastreio-desc'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.value = '';
+    });
+    document.getElementById('modal-rastreio').classList.remove('hidden');
+  };
+
+  window._rastreioCloseModal = function() {
+    document.getElementById('modal-rastreio').classList.add('hidden');
+  };
+
+  window._rastreioSalvar = async function() {
+    const loja       = document.getElementById('rastreio-loja').value.trim();
+    const codigosRaw = document.getElementById('rastreio-codigos').value.trim();
+    const fornecedor = document.getElementById('rastreio-fornecedor').value.trim();
+    const descricao  = document.getElementById('rastreio-desc').value.trim();
+
+    if (!loja)       { toast('Selecione a loja.', 'error'); return; }
+    if (!codigosRaw) { toast('Informe ao menos um código.', 'error'); return; }
+
+    const codigos = codigosRaw.split('\n').map(c => c.trim().toUpperCase()).filter(Boolean);
+    if (!codigos.length) { toast('Nenhum código válido.', 'error'); return; }
+
+    try {
+      const batch = _fdb().batch();
+      codigos.forEach(codigo => {
+        const ref = _fdb().collection('ts_rastreios').doc();
+        batch.set(ref, {
+          loja, codigo, fornecedor, descricao,
+          entregue: false, statusTexto: '', statusLocal: '', statusData: '',
+          tipo: '', previsao: '', historico: [], ultimaConsulta: '',
+          dataAdicionado: firebase.firestore.FieldValue.serverTimestamp(),
+          addedBy: user?.name || 'diretoria'
+        });
+      });
+      await batch.commit();
+      toast(`${codigos.length} código${codigos.length > 1 ? 's' : ''} adicionado${codigos.length > 1 ? 's' : ''}!`, 'success');
+      _rastreioCloseModal();
+    } catch(e) {
+      console.error(e);
+      toast('Erro ao salvar.', 'error');
+    }
+  };
+
+  /* ── Modal Atualizar Status ── */
+  let _statusEditId = null;
+
+  window._rastreioAbrirStatus = function(id) {
+    _statusEditId = id;
+    const r = _rastreiosDados.find(x => x.id === id);
+    if (!r) return;
+    document.getElementById('rst-tipo').value     = r.tipo     || '';
+    document.getElementById('rst-previsao').value = r.previsao || '';
+    document.getElementById('rst-statusTexto').value = r.statusTexto || '';
+    document.getElementById('rst-statusLocal').value = r.statusLocal || '';
+    document.getElementById('rst-statusData').value  = r.statusData  || '';
+    // Historico: join eventos em texto
+    const hist = (r.historico || []).map(ev => `${ev.descricao}|${ev.local||''}|${ev.data||''}`).join('\n');
+    document.getElementById('rst-historico').value = hist;
+    document.getElementById('modal-rastreio-status').classList.remove('hidden');
+  };
+
+  window._rastreioFecharStatus = function() {
+    document.getElementById('modal-rastreio-status').classList.add('hidden');
+    _statusEditId = null;
+  };
+
+  window._rastreioSalvarStatus = async function() {
+    if (!_statusEditId) return;
+    const tipo        = document.getElementById('rst-tipo').value.trim();
+    const previsao    = document.getElementById('rst-previsao').value.trim();
+    const statusTexto = document.getElementById('rst-statusTexto').value.trim();
+    const statusLocal = document.getElementById('rst-statusLocal').value.trim();
+    const statusData  = document.getElementById('rst-statusData').value.trim();
+    const histRaw     = document.getElementById('rst-historico').value.trim();
+
+    const historico = histRaw ? histRaw.split('\n').filter(Boolean).map(linha => {
+      const [descricao, local, data] = linha.split('|');
+      return { descricao: descricao?.trim() || '', local: local?.trim() || '', data: data?.trim() || '' };
+    }) : [];
+
+    const now = new Date().toLocaleDateString('pt-BR', {day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+
+    try {
+      await _fdb().collection('ts_rastreios').doc(_statusEditId).update({
+        tipo, previsao, statusTexto, statusLocal, statusData,
+        historico, ultimaConsulta: now
+      });
+      toast('Status atualizado!', 'success');
+      _rastreioFecharStatus();
+    } catch(e) {
+      console.error(e);
+      toast('Erro ao salvar status.', 'error');
+    }
+  };
+
+  window._rastreioToggleEntregue = async function(id, atual) {
+    try {
+      await _fdb().collection('ts_rastreios').doc(id).update({ entregue: !atual });
+    } catch(e) { toast('Erro ao atualizar.', 'error'); }
+  };
+
+  window._rastreioExcluir = async function(id) {
+    if (!confirm('Excluir este rastreio?')) return;
+    try {
+      await _fdb().collection('ts_rastreios').doc(id).delete();
+    } catch(e) { toast('Erro ao excluir.', 'error'); }
+  };
+})();
+
 // ── Autosave com debounce ─────────────────────────────────────────────────────
 let _meloAutoSaveTimer = null;
 function _meloAgendarAutoSave() {
@@ -26484,7 +27440,7 @@ window._dirDirUpdateTimestamp = _dirDirUpdateTimestamp;
     <div style="text-align:center;margin:1.5rem 0 1.25rem;">
       <div style="font-size:2.8rem;filter:drop-shadow(0 0 14px rgba(201,162,39,.6));margin-bottom:.5rem;">🎓</div>
       <h2 style="font-size:1rem;font-weight:900;color:#C9A227;margin:0 0 .25rem;">Treinamento Presencial</h2>
-      <p style="font-size:.68rem;color:#6b7280;margin:0;">18 e 19 de junho de 2026 · 20 horas</p>
+      <p style="font-size:.68rem;color:#6b7280;margin:0;">06 e 07 de agosto de 2026 · 20 horas</p>
     </div>
     <div style="display:flex;flex-direction:column;gap:.85rem;">
       <div>
@@ -26500,6 +27456,25 @@ window._dirDirUpdateTimestamp = _dirDirUpdateTimestamp;
           onfocus="this.style.borderColor='rgba(201,162,39,.6)'" onblur="this.style.borderColor='rgba(255,255,255,.12)'"
           oninput="trmMascaraCpf(this)">
         <p style="font-size:.6rem;color:#6b7280;margin:.3rem 0 0 .3rem;">Usado exclusivamente para emissão do certificado.</p>
+      </div>
+      <div>
+        <label style="font-size:.65rem;font-weight:700;color:#9ca3af;letter-spacing:.08em;text-transform:uppercase;display:block;margin-bottom:.35rem;">Loja *</label>
+        <select id="trm-input-loja"
+          style="width:100%;background:rgba(255,255,255,.05);border:1.5px solid rgba(255,255,255,.12);border-radius:.75rem;padding:.7rem 1rem;color:#fff;font-size:.82rem;outline:none;box-sizing:border-box;appearance:none;-webkit-appearance:none;cursor:pointer;background-image:url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2212%22 height=%228%22 viewBox=%220 0 12 8%22><path d=%22M1 1l5 5 5-5%22 stroke=%22%236b7280%22 stroke-width=%221.8%22 fill=%22none%22 stroke-linecap=%22round%22/></svg>');background-repeat:no-repeat;background-position:right 1rem center;"
+          onfocus="this.style.borderColor='rgba(201,162,39,.6)'" onblur="this.style.borderColor='rgba(255,255,255,.12)'">
+          <option value="" style="background:#10091e;color:#9ca3af;">Selecione sua loja…</option>
+          <option value="Cariacica" style="background:#10091e;">Cariacica</option>
+          <option value="Itabuna" style="background:#10091e;">Itabuna</option>
+          <option value="Moxuara" style="background:#10091e;">Moxuara</option>
+          <option value="Praia da Costa" style="background:#10091e;">Praia da Costa</option>
+          <option value="Barreiras" style="background:#10091e;">Barreiras</option>
+          <option value="Teixeira de Freitas" style="background:#10091e;">Teixeira de Freitas</option>
+          <option value="Laranjeiras" style="background:#10091e;">Laranjeiras</option>
+          <option value="São Mateus" style="background:#10091e;">São Mateus</option>
+          <option value="Serra" style="background:#10091e;">Serra</option>
+          <option value="Montserrat" style="background:#10091e;">Montserrat</option>
+          <option value="Linhares" style="background:#10091e;">Linhares</option>
+        </select>
       </div>
       <button onclick="trmSalvarInscricao()" id="trm-btn-salvar" style="width:100%;background:linear-gradient(135deg,#C9A227,#a07c18);color:#0a0800;font-weight:900;font-size:.85rem;padding:.85rem;border-radius:.8rem;border:none;cursor:pointer;margin-top:.25rem;letter-spacing:.03em;">
         Confirmar Inscrição &nbsp;<i class="fas fa-check"></i>
@@ -26519,7 +27494,7 @@ window._dirDirUpdateTimestamp = _dirDirUpdateTimestamp;
     <div style="text-align:center;margin:1.5rem 0 1.25rem;">
       <div style="font-size:2.8rem;filter:drop-shadow(0 0 14px rgba(201,162,39,.6));margin-bottom:.5rem;">📜</div>
       <h2 style="font-size:1rem;font-weight:900;color:#C9A227;margin:0 0 .25rem;">Emissão de Certificado</h2>
-      <p style="font-size:.68rem;color:#6b7280;margin:0;">Treinamento Presencial · 18 e 19/06/2026</p>
+      <p style="font-size:.68rem;color:#6b7280;margin:0;">Treinamento Presencial · 06 e 07/07/2026</p>
     </div>
     <!-- busca por CPF -->
     <div id="trm-cert-busca" style="display:flex;flex-direction:column;gap:.85rem;">
@@ -26561,7 +27536,7 @@ window._dirDirUpdateTimestamp = _dirDirUpdateTimestamp;
       <div style="display:flex;align-items:center;justify-content:space-between;margin-top:.5rem;">
         <div>
           <h2 style="font-size:.95rem;font-weight:900;color:#c084fc;margin:0 0 .15rem;">Inscrições &amp; Certificados</h2>
-          <p style="font-size:.65rem;color:#6b7280;margin:0;">Treinamento 18–19/06/2026 · 20h</p>
+          <p style="font-size:.65rem;color:#6b7280;margin:0;">Treinamento 06–07/08/2026 · 20h</p>
         </div>
         <button onclick="trmFecharModal('modal-trm-diretor')" style="color:#6b7280;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:.5rem;width:2rem;height:2rem;cursor:pointer;font-size:.9rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;">✕</button>
       </div>
@@ -26577,7 +27552,7 @@ window._dirDirUpdateTimestamp = _dirDirUpdateTimestamp;
    TREINAMENTO PRESENCIAL — lógica completa
 ══════════════════════════════════════════════════════ */
 (function(){
-  const TRM_DOC = 'turma_2026_06';
+  const TRM_DOC = 'turma_2026_08';
   const TRM_COL = 'ts_treinamentos';
 
   function _db(){ return window._acadDB || (window._acadFBOk && firebase.firestore()); }
@@ -26588,6 +27563,9 @@ window._dirDirUpdateTimestamp = _dirDirUpdateTimestamp;
 
   function _isDiretor(){
     return user && user.cargo === 'diretoria' && (user.name||'').toLowerCase().includes('melo');
+  }
+  function _canViewArchive(){
+    return user && ['diretoria','franqueado','gerente-senior','gerente-senior-acess','gerente','subgerente'].includes(user.cargo);
   }
 
   /* ── Inicializa botão de certificado e botão diretor ── */
@@ -26608,6 +27586,11 @@ window._dirDirUpdateTimestamp = _dirDirUpdateTimestamp;
     if(_isDiretor()){
       const wrap = document.getElementById('trm-dir-btn-wrap');
       if(wrap) wrap.classList.remove('hidden');
+    }
+    if(_canViewArchive()){
+      ['trm-arquivo-jun-dir','trm-arquivo-jul-dir'].forEach(id=>{
+        const el = document.getElementById(id); if(el) el.classList.remove('hidden');
+      });
     }
   }
 
@@ -26630,6 +27613,7 @@ window._dirDirUpdateTimestamp = _dirDirUpdateTimestamp;
   window.trmAbrirInscricao = function(){
     document.getElementById('trm-input-nome').value = '';
     document.getElementById('trm-input-cpf').value = '';
+    document.getElementById('trm-input-loja').value = '';
     const msg = document.getElementById('trm-inscricao-msg');
     if(msg){ msg.style.display='none'; msg.textContent=''; }
     document.getElementById('modal-trm-inscricao').classList.remove('hidden');
@@ -26638,6 +27622,7 @@ window._dirDirUpdateTimestamp = _dirDirUpdateTimestamp;
   window.trmSalvarInscricao = async function(){
     const nome = document.getElementById('trm-input-nome').value.trim();
     const cpf  = document.getElementById('trm-input-cpf').value.trim();
+    const loja = document.getElementById('trm-input-loja').value;
     const msg  = document.getElementById('trm-inscricao-msg');
     const btn  = document.getElementById('trm-btn-salvar');
 
@@ -26647,6 +27632,9 @@ window._dirDirUpdateTimestamp = _dirDirUpdateTimestamp;
     const cpfRaw = cpf.replace(/\D/g,'');
     if(cpfRaw.length !== 11){
       _trmMsg(msg,'CPF inválido. Verifique e tente novamente.','#f87171'); return;
+    }
+    if(!loja){
+      _trmMsg(msg,'Selecione sua loja para continuar.','#f87171'); return;
     }
 
     const db = _db();
@@ -26662,7 +27650,7 @@ window._dirDirUpdateTimestamp = _dirDirUpdateTimestamp;
         _trmMsg(msg,'CPF já inscrito nesta turma. Você já está na lista!','#4ade80');
         btn.disabled=false; btn.innerHTML='Confirmar Inscrição &nbsp;<i class="fas fa-check"></i>'; return;
       }
-      inscricoes[cpfRaw] = { nome, cpf, inscritoEm: Date.now(), certificadoLiberado: false, liberadoEm: null };
+      inscricoes[cpfRaw] = { nome, cpf, loja, inscritoEm: Date.now(), certificadoLiberado: false, liberadoEm: null };
       await ref.set({ inscricoes }, { merge: true });
       _trmMsg(msg,'Inscrição confirmada! Nos vemos no treinamento.','#4ade80');
       btn.innerHTML='Inscrição Confirmada! <i class="fas fa-check"></i>';
@@ -26833,7 +27821,7 @@ window._dirDirUpdateTimestamp = _dirDirUpdateTimestamp;
     doc.setFont('helvetica','bold'); doc.setFontSize(11); doc.setTextColor(25,25,25);
     doc.text('Certificamos que '+nome+' participou e concluiu', cx, 78, {align:'center'});
     doc.text('o Treinamento Presencial "TITAS SINERGY",', cx, 90, {align:'center'});
-    doc.text('realizado nos dias 18 e 19 de junho de 2026,', cx, 102, {align:'center'});
+    doc.text('realizado nos dias 06 e 07 de agosto de 2026,', cx, 102, {align:'center'});
     doc.text('com carga horaria de 20 (vinte) horas.', cx, 114, {align:'center'});
 
     /* DATA */
@@ -26883,8 +27871,36 @@ window._dirDirUpdateTimestamp = _dirDirUpdateTimestamp;
   /* ── PAINEL DO DIRETOR ── */
   window.trmDiretorAbrir = async function(){
     if(!_isDiretor()){ return; }
-    document.getElementById('modal-trm-diretor').classList.remove('hidden');
+    const modal = document.getElementById('modal-trm-diretor');
+    const _trmLabel = {turma_2026_06:'18–19/06/2026', turma_2026_07:'06–07/07/2026', turma_2026_08:'06–07/08/2026'};
+    modal.querySelector('p[style*="65rem"]').textContent = 'Treinamento ' + (_trmLabel[TRM_DOC] || TRM_DOC) + ' · 20h';
+    modal.classList.remove('hidden');
     await trmDiretorCarregar();
+  };
+
+  window.trmDiretorAbrirTurma = async function(docId){
+    if(!_canViewArchive()){ return; }
+    const modal = document.getElementById('modal-trm-diretor');
+    const _trmLabel = {turma_2026_06:'18–19/06/2026', turma_2026_07:'06–07/07/2026', turma_2026_08:'06–07/08/2026'};
+    modal.querySelector('p[style*="65rem"]').textContent = 'Treinamento ' + (_trmLabel[docId] || docId) + ' · 20h';
+    modal.classList.remove('hidden');
+    const lista = document.getElementById('trm-dir-lista');
+    lista.innerHTML = '<p style="font-size:.75rem;color:#6b7280;font-style:italic;padding:.5rem 0;">Carregando…</p>';
+    const db = _db();
+    if(!db){ lista.innerHTML='<p style="color:#f87171;font-size:.75rem;">Sem conexão.</p>'; return; }
+    try {
+      const snap = await db.collection(TRM_COL).doc(docId).get();
+      const inscricoes = snap.exists ? (snap.data()?.inscricoes || {}) : {};
+      const entries = Object.entries(inscricoes);
+      if(entries.length === 0){ lista.innerHTML='<p style="font-size:.78rem;color:#6b7280;text-align:center;padding:1.5rem 0;">Nenhuma inscrição.</p>'; return; }
+      let html = `<div style="font-size:.68rem;padding:.25rem .7rem;border-radius:999px;background:rgba(201,162,39,.12);color:#C9A227;border:1px solid rgba(201,162,39,.3);display:inline-block;margin-bottom:.75rem;">${entries.length} inscritos</div>`;
+      html += '<div style="display:flex;flex-direction:column;gap:.5rem;">';
+      entries.sort((a,b)=>a[1].nome.localeCompare(b[1].nome)).forEach(([,insc])=>{
+        html += `<div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:.7rem;padding:.65rem .85rem;font-size:.75rem;color:#d1d5db;">${insc.nome} <span style="color:#6b7280;font-size:.65rem;">${insc.cpf||''}</span></div>`;
+      });
+      html += '</div>';
+      lista.innerHTML = html;
+    } catch(e){ lista.innerHTML='<p style="color:#f87171;font-size:.75rem;">Erro ao carregar.</p>'; }
   };
 
   window.trmDiretorCarregar = async function(){
@@ -26893,9 +27909,22 @@ window._dirDirUpdateTimestamp = _dirDirUpdateTimestamp;
     const db = _db();
     if(!db){ lista.innerHTML='<p style="color:#f87171;font-size:.75rem;">Sem conexão.</p>'; return; }
     try {
-      const snap = await db.collection(TRM_COL).doc(TRM_DOC).get();
-      const inscricoes = snap.exists ? (snap.data()?.inscricoes || {}) : {};
-      const entries = Object.entries(inscricoes);
+      const allDocs = ['turma_2026_06','turma_2026_07','turma_2026_08'];
+      const snaps = await Promise.all(allDocs.map(d => db.collection(TRM_COL).doc(d).get()));
+      const merged = {}, cpfDocMap = {};
+      snaps.forEach((snap, i) => {
+        if(!snap.exists) return;
+        Object.entries(snap.data()?.inscricoes || {}).forEach(([cpf, v]) => {
+          if(!merged[cpf] || (v.inscritoEm||0) > (merged[cpf].inscritoEm||0)){
+            merged[cpf] = v; cpfDocMap[cpf] = allDocs[i];
+          }
+        });
+      });
+      window._trmCpfDocMap = cpfDocMap;
+      // Filtra a partir do 1º dia do mês da turma ativa (ex: turma_2026_08 → 01/08/2026)
+      const _trmMatch = TRM_DOC.match(/(\d{4})_(\d{2})/);
+      const _filtroInicio = _trmMatch ? new Date(+_trmMatch[1], +_trmMatch[2]-1, 1).getTime() : 0;
+      const entries = Object.entries(merged).filter(([,v]) => (v.inscritoEm||0) >= _filtroInicio);
       if(entries.length === 0){
         lista.innerHTML = '<p style="font-size:.78rem;color:#6b7280;text-align:center;padding:1.5rem 0;">Nenhuma inscrição ainda.</p>';
         return;
@@ -26912,7 +27941,7 @@ window._dirDirUpdateTimestamp = _dirDirUpdateTimestamp;
         html += `<div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:.85rem;padding:.85rem 1rem;display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;">
           <div style="flex:1;min-width:160px;">
             <p style="font-size:.82rem;font-weight:700;color:#e5e7eb;margin:0 0 .15rem;">${insc.nome}</p>
-            <p style="font-size:.65rem;color:#6b7280;margin:0;">CPF: ${insc.cpf} · ${new Date(insc.inscritoEm).toLocaleDateString('pt-BR')}</p>
+            <p style="font-size:.65rem;color:#6b7280;margin:0;">CPF: ${insc.cpf}${insc.loja ? ' · '+insc.loja : ''} · ${new Date(insc.inscritoEm).toLocaleDateString('pt-BR')}</p>
           </div>
           <div style="display:flex;gap:.5rem;align-items:center;flex-shrink:0;">
             ${lib
@@ -26933,7 +27962,8 @@ window._dirDirUpdateTimestamp = _dirDirUpdateTimestamp;
   window.trmDiretorLiberar = async function(cpfRaw){
     const db = _db(); if(!db) return;
     try {
-      const ref = db.collection(TRM_COL).doc(TRM_DOC);
+      const docId = (window._trmCpfDocMap && window._trmCpfDocMap[cpfRaw]) || TRM_DOC;
+      const ref = db.collection(TRM_COL).doc(docId);
       const snap = await ref.get();
       const inscricoes = snap.data()?.inscricoes || {};
       if(!inscricoes[cpfRaw]) return;
@@ -26949,7 +27979,8 @@ window._dirDirUpdateTimestamp = _dirDirUpdateTimestamp;
     if(!confirm('Revogar certificado deste participante?')) return;
     const db = _db(); if(!db) return;
     try {
-      const ref = db.collection(TRM_COL).doc(TRM_DOC);
+      const docId = (window._trmCpfDocMap && window._trmCpfDocMap[cpfRaw]) || TRM_DOC;
+      const ref = db.collection(TRM_COL).doc(docId);
       const snap = await ref.get();
       const inscricoes = snap.data()?.inscricoes || {};
       if(!inscricoes[cpfRaw]) return;
@@ -27045,6 +28076,15 @@ window._dirDirUpdateTimestamp = _dirDirUpdateTimestamp;
           box.innerHTML = _tplFormulario(resp);
         } else if(resp.status === 'enviada'){
           box.innerHTML = _tplAguardando();
+          // Listener em tempo real: atualiza automaticamente quando correção for salva
+          if(window._avalCdcUnsub){ try{ window._avalCdcUnsub(); }catch(e){} }
+          window._avalCdcUnsub = db.collection(COL_RESP).doc(uid).onSnapshot(function(snap){
+            if(snap.exists && snap.data().status === 'corrigida'){
+              try{ window._avalCdcUnsub && window._avalCdcUnsub(); }catch(e){}
+              window._avalCdcUnsub = null;
+              avalCdcRender();
+            }
+          });
         } else if(resp.status === 'corrigida'){
           box.innerHTML = _tplResultado(resp);
         }
@@ -27214,28 +28254,12 @@ window._dirDirUpdateTimestamp = _dirDirUpdateTimestamp;
   function _tplResultado(resp){
     const nota = (resp.nota??0).toFixed(1);
     const cor  = resp.nota >= 7 ? '#4ade80' : resp.nota >= 5 ? '#fbbf24' : '#f87171';
-    const map  = resp.correctionMap || {};
-    let qs = '';
-    PERGUNTAS.forEach(function(p,i){
-      const ok = map[i] === true;
-      const ng = map[i] === false;
-      const ic = ok ? '✓' : (ng ? '✗' : '—');
-      const cl = ok ? '#4ade80' : (ng ? '#f87171' : '#6b7280');
-      qs += `<div style="padding:.75rem;border-bottom:1px solid rgba(255,255,255,.05);display:flex;gap:.75rem;align-items:flex-start;">
-        <span style="font-weight:900;color:${cl};font-size:1.1rem;flex-shrink:0;width:1.4rem;text-align:center;">${ic}</span>
-        <div>
-          <p style="font-size:.68rem;color:#6b7280;margin:0 0 .2rem;font-weight:700;">${i+1}. ${p}</p>
-          <p style="font-size:.75rem;color:#d1d5db;margin:0;line-height:1.5;">${resp.respostas[i]||'<em style="color:#4b5563">Não respondido</em>'}</p>
-        </div>
-      </div>`;
-    });
-    return `<div style="max-width:860px;margin:0 auto;">
-      <div style="border-radius:1.2rem;background:linear-gradient(135deg,#06050f,#0a0820);border:2px solid ${cor}55;padding:2rem;text-align:center;margin-bottom:1.5rem;">
-        <p style="font-size:.65rem;color:#6b7280;letter-spacing:.12em;text-transform:uppercase;margin:0 0 .5rem;">Resultado da Avaliação</p>
-        <div style="font-size:3.5rem;font-weight:900;color:${cor};line-height:1;">${nota}</div>
-        <div style="font-size:.75rem;color:#9ca3af;margin-top:.3rem;">/ 10 &nbsp;·&nbsp; ${Object.values(map).filter(v=>v===true).length} acerto(s) de ${N_QUESTOES} questões</div>
-      </div>
-      <div style="border-radius:1rem;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.07);overflow:hidden;">${qs}</div>
+    const msg  = resp.nota >= 7 ? 'Parabéns! Continue assim!' : resp.nota >= 5 ? 'Quase lá! Revise os pontos do treinamento e você chega lá.' : 'Dedique mais atenção aos conteúdos do treinamento. Você consegue!';
+    return `<div style="max-width:500px;margin:0 auto;border-radius:1.2rem;background:linear-gradient(135deg,#06050f,#0a0820);border:2px solid ${cor}55;padding:2.5rem 2rem;text-align:center;">
+      <p style="font-size:.65rem;color:#6b7280;letter-spacing:.12em;text-transform:uppercase;margin:0 0 .5rem;">Resultado da Avaliação</p>
+      <div style="font-size:4rem;font-weight:900;color:${cor};line-height:1;">${nota}</div>
+      <div style="font-size:.75rem;color:#9ca3af;margin-top:.3rem;">/ 10</div>
+      <p style="font-size:.82rem;color:${cor};font-weight:700;margin:1.25rem 0 0;">${msg}</p>
     </div>`;
   }
 

@@ -1018,8 +1018,11 @@ def fetch_top_produtos_por_financeira(token, start, end, top_n=7, retries=3, wai
         return [{'nm': nm, 'qt': v['qt'], 'val': round(v['val'])}
                 for nm, v in sorted(d.items(), key=lambda x: -x[1]['qt'])[:top_n]]
 
+    _ACES_EXCLUIR = {'PELICULA DE VIDRO 3D', 'CAPA DIVERSAS'}
+
     def _abc(d, n=15):
         """Curva ABC por quantidade vendida."""
+        d = {k: v for k, v in d.items() if k not in _ACES_EXCLUIR}
         items = sorted(d.items(), key=lambda x: -x[1]['qt'])[:n]
         total = sum(v['qt'] for _, v in items)
         if total == 0:

@@ -7,7 +7,7 @@
     <script>
     // Cache-buster: força reload se a versão mudou
     (function(){
-      var BUILD = '20260816213006';
+      var BUILD = '20260816215944';
       var stored = localStorage.getItem('d360_build');
       if (stored && stored !== BUILD) {
         localStorage.setItem('d360_build', BUILD);
@@ -6687,15 +6687,15 @@ const D360 = {
     ticket_cel: 1758,        // ticket médio celulares (SBON) — atualizado pelo bot
     ticket_acess: 87,      // ticket médio acessórios — atualizado pelo bot
     ped_cel: 645,           // pedidos celulares — atualizado pelo bot
-    ped_acess: 489,         // pedidos acessórios — atualizado pelo bot
+    ped_acess: 490,         // pedidos acessórios — atualizado pelo bot
 
     // ── Margem Bruta Mensal ──────────────────────────────────────────────────────
     // FONTE PRIMÁRIA: margem_lojas (por loja, do Relatório Gerencial ERP CDC)
     // O sistema deriva automaticamente: margem por loja → subrede → rede
     // COMO ATUALIZAR: edite apenas margem_lojas com os valores do ERP por loja
     // ─────────────────────────────────────────────────────────────────────────────
-    margem_dia: 46.21,              // rede hoje · zerado automaticamente à meia-noite
-    margem_dia_subredes: { t1: 39.63, t2: 44.12, t3: 53.16 },
+    margem_dia: 46.38,              // rede hoje · zerado automaticamente à meia-noite
+    margem_dia_subredes: { t1: 40.06, t2: 44.12, t3: 53.16 },
     margem_lojas: {
         // ── FONTE PRIMÁRIA — atualizar aqui com o Relatório Gerencial por Loja ──
         // T1 — Titãs 1 (Talysson)
@@ -6717,7 +6717,7 @@ const D360 = {
         t1: 47.87, t2: 47.95, t3: 50.71
     },
     // margem_mes: derivada automaticamente pelo _calcMargemPonderada (não editar)
-    margem_mes: 49.05,
+    margem_mes: 49.06,
 
     subredes: {
         t1: { nome:'Titãs 1', gestor:'Talysson', meta:0,
@@ -6790,9 +6790,9 @@ const D360 = {
                 {n:'VICTOR ROBERTO DE OLIVEIRA NASCIMENTO',i:'VR',p:17,t:12715.0,ds:50,ult:'13/08'},
                 {n:'TÁINE OLIVEIRA DOS SANTOS',i:'TO',p:4,t:8450.0,ds:41,ult:'24/07'},
                 {n:'DANIELA MILENA GOMES MARES',i:'DM',p:4,t:5690.0,ds:4,ult:'16/08'}]},
-        moxuara:     { label:'Moxuara',            sigla:'MX', sub:'t1', meta:270000,  total:106569.0,  ped:114, cancel:0, agend:0, agendCount:0, agendFat:38923.0,  fat_dia:4690.0, acess_dia:140.0, acess_dia_top:[{n:'KHAYLLANE DE ALMEIDA FERREIRA',i:'KD',t:100.0}, {n:'LUCCAS DA SILVA MEDEIROS MARTINS',i:'LD',t:40.0}], top_dia:[{n:'LUCCAS DA SILVA MEDEIROS MARTINS',i:'LD',t:2890.0}, {n:'KHAYLLANE DE ALMEIDA FERREIRA',i:'KD',t:1800.0}], fin_dia:0, fin_mes:57239.0, top_fin_mes:[{n:'LUCCAS DA SILVA MEDEIROS MARTINS',i:'LD',t:23249.0,bd:[{nm:'PayJoy',t:21549.0},{nm:'OdresCred',t:1700.0},{nm:'Outras',t:0}]},{n:'Iasmim vitoria medeiros gaio',i:'IV',t:20372.0,bd:[{nm:'PayJoy',t:10950.0},{nm:'OdresCred',t:9422.0},{nm:'Outras',t:0}]},{n:'KHAYLLANE DE ALMEIDA FERREIRA',i:'KD',t:13618.0,bd:[{nm:'PayJoy',t:7800.0},{nm:'OdresCred',t:5818.0},{nm:'Outras',t:0}]}], fin_bd:[{nm:'PayJoy',t:40299.0},{nm:'OdresCred',t:16940.0},{nm:'Outras',t:0}], top_fin:[], metaAcess:12000,
+        moxuara:     { label:'Moxuara',            sigla:'MX', sub:'t1', meta:270000,  total:106609.0,  ped:115, cancel:0, agend:0, agendCount:0, agendFat:38923.0,  fat_dia:4730.0, acess_dia:180.0, acess_dia_top:[{n:'KHAYLLANE DE ALMEIDA FERREIRA',i:'KD',t:100.0}, {n:'LUCCAS DA SILVA MEDEIROS MARTINS',i:'LD',t:80.0}], top_dia:[{n:'LUCCAS DA SILVA MEDEIROS MARTINS',i:'LD',t:2930.0}, {n:'KHAYLLANE DE ALMEIDA FERREIRA',i:'KD',t:1800.0}], fin_dia:0, fin_mes:57239.0, top_fin_mes:[{n:'LUCCAS DA SILVA MEDEIROS MARTINS',i:'LD',t:23249.0,bd:[{nm:'PayJoy',t:21549.0},{nm:'OdresCred',t:1700.0},{nm:'Outras',t:0}]},{n:'Iasmim vitoria medeiros gaio',i:'IV',t:20372.0,bd:[{nm:'PayJoy',t:10950.0},{nm:'OdresCred',t:9422.0},{nm:'Outras',t:0}]},{n:'KHAYLLANE DE ALMEIDA FERREIRA',i:'KD',t:13618.0,bd:[{nm:'PayJoy',t:7800.0},{nm:'OdresCred',t:5818.0},{nm:'Outras',t:0}]}], fin_bd:[{nm:'PayJoy',t:40299.0},{nm:'OdresCred',t:16940.0},{nm:'Outras',t:0}], top_fin:[], metaAcess:12000,
             agendamentos:{total:38923.0, fin:37023.0, fin_bd:[{nm:'PayJoy',t:31599.0},{nm:'OdresCred',t:5424.0},{nm:'Outras',t:0}], top:[{n:'LUCCAS DA SILVA MEDEIROS MARTINS',i:'LD',t:21549.0}, {n:'Iasmim vitoria medeiros gaio',i:'IV',t:13774.0}, {n:'KHAYLLANE DE ALMEIDA FERREIRA',i:'KD',t:3600.0}]},
-            acessorios:{total:4450.0, top:[
+            acessorios:{total:4490.0, top:[
                 {n:'Khayllane de Almeida Ferreira',i:'KF',t:3495,ds:12,ult:'12/06'},
                 {n:'Gabriel Barreto Pereira',i:'GB',t:1140,ds:12,ult:'12/06'},
                 {n:'Luccas da Silva Medeiros Martins',i:'LS',t:1280,ds:12,ult:'12/06'},
@@ -6800,7 +6800,7 @@ const D360 = {
             ], dias:[{d:'01/06',ac:380,cel:14400},{d:'06/06',ac:2860,cel:70428},{d:'07/06',ac:1520,cel:14100},{d:'08/06',ac:40,cel:6449}]},
             top:[{n:'KHAYLLANE DE ALMEIDA FERREIRA',i:'KD',p:48,t:38488.0,ds:53,ult:'16/08'},
                 {n:'Iasmim vitoria medeiros gaio',i:'IV',p:37,t:36522.0,ds:51,ult:'16/08'},
-                {n:'LUCCAS DA SILVA MEDEIROS MARTINS',i:'LD',p:23,t:29839.0,ds:26,ult:'16/08'},
+                {n:'LUCCAS DA SILVA MEDEIROS MARTINS',i:'LD',p:24,t:29879.0,ds:26,ult:'16/08'},
                 {n:'ANA CAROLINA DA SILVA',i:'AC',p:2,t:1550.0,ds:2,ult:'13/08'},
                 {n:'GABRIEL BARRETO PEREIRA',i:'GB',p:4,t:170.0,ds:16,ult:'24/07'}]},
         teixeira:    { label:'Teixeira de Freitas',sigla:'TF', sub:'t2', meta:190000,  total:86491.0,  ped:68,  cancel:0, agend:0, agendCount:0, agendFat:12784.0,  fat_dia:0, acess_dia:0, acess_dia_top:[], top_dia:[], fin_dia:0, fin_mes:58736.0, top_fin_mes:[{n:'CARLA SANTOS LUIZ',i:'CS',t:27498.0,bd:[{nm:'PayJoy',t:11658.0},{nm:'OdresCred',t:15840.0},{nm:'Outras',t:0}]},{n:'CARINE FERREIRA FRANCO',i:'CF',t:16113.0,bd:[{nm:'PayJoy',t:5250.0},{nm:'OdresCred',t:10863.0},{nm:'Outras',t:0}]},{n:'PALOMA DE JESUS SANTOS',i:'PD',t:6240.0,bd:[{nm:'PayJoy',t:4860.0},{nm:'OdresCred',t:1380.0},{nm:'Outras',t:0}]},{n:'AMANDA GOULART ANDRADE',i:'AG',t:5585.0,bd:[{nm:'PayJoy',t:5585.0},{nm:'OdresCred',t:0},{nm:'Outras',t:0}]},{n:'GUSTAVO SANTANA BATISTA',i:'GS',t:3300.0,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:3300.0},{nm:'Outras',t:0}]}], fin_bd:[{nm:'PayJoy',t:27353.0},{nm:'OdresCred',t:31383.0},{nm:'Outras',t:0}], top_fin:[], metaAcess:6500,

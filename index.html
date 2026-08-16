@@ -4951,6 +4951,9 @@ function proceedToDash() {
                 if (typeof _verificarDuplicadosUnificar === 'function') {
                     _verificarDuplicadosUnificar(user).catch(() => {});
                 }
+                if (typeof _checkFolhasAtendimento === 'function') {
+                    _checkFolhasAtendimento(user).catch(() => {});
+                }
             }, 3000);
         }
         const ov = document.getElementById('loading-overlay');
@@ -7045,7 +7048,31 @@ function _renderModelosFin() {
     var hasLojas = Object.keys(lojas).length > 0;
 
     function brlK(v) { return v >= 1000 ? 'R$' + Math.round(v/1000) + 'k' : brl(v); }
-    function _cleanNm(nm) { return nm.replace(/^SMARTPHONE\s+/i,'').replace(/\s+/g,' ').trim(); }
+    function _cleanNm(nm) {
+        var clean = nm.replace(/^SMARTPHONE\s+/i,'').replace(/\s+/g,' ').trim();
+        if (_mfProd !== 'celulares') return clean;
+        var specs = {
+            'REALME NOTE 70':'128GB · 6RAM','REALME NOTE 60X':'128GB · 4RAM',
+            'REALME NOTE 60':'128GB · 4RAM','REALME C71':'128GB · 4RAM',
+            'REALME C73':'128GB · 4RAM','REALME C75X':'256GB · 8RAM',
+            'REALME C75':'128GB · 4RAM','REALME C85':'256GB · 8RAM',
+            'REALME C63':'128GB · 6RAM','REALME C67':'256GB · 8RAM',
+            'TECNO SPARK 30 PRO':'256GB · 8RAM','TECNO SPARK 30C':'128GB · 4RAM',
+            'TECNO SPARK 30':'128GB · 4RAM','TECNO POVA 7':'256GB · 8RAM',
+            'TECNO POVA 3':'128GB · 4RAM','TECNO CAMON 30S PRO':'256GB · 8RAM',
+            'TECNO CAMON 30S':'128GB · 4RAM','INFINIX HOT 60I':'128GB · 4RAM',
+            'INFINIX HOT 40 PRO':'256GB · 8RAM','INFINIX SMART 10':'128GB · 4RAM',
+            'INFINIX SMART 9':'64GB · 4RAM','ITEL A90':'256GB · 4RAM',
+            'ITEL A100C':'128GB · 4RAM','ITEL A18S':'32GB · 2RAM',
+            'ITEL CITY 100':'128GB · 4RAM'
+        };
+        var upper = clean.toUpperCase();
+        var keys = Object.keys(specs).sort(function(a,b){return b.length-a.length;});
+        for (var i=0;i<keys.length;i++) {
+            if (upper.indexOf(keys[i])!==-1) return clean + ' · ' + specs[keys[i]];
+        }
+        return clean;
+    }
 
     // ── seletor de produto ────────────────────────────────────────────────────
     function prodBtn(id, label, active) {
@@ -7077,7 +7104,7 @@ function _renderModelosFin() {
                 + '<div style="display:flex;align-items:center;justify-content:space-between;gap:.3rem;margin-bottom:.18rem;">'
                 + '<div style="display:flex;align-items:center;gap:.3rem;min-width:0;">'
                 + '<span style="font-size:.58rem;font-weight:900;color:'+color+';width:13px;flex-shrink:0;">'+(i+1)+'</span>'
-                + '<span style="font-size:.6rem;font-weight:700;color:#f9fafb;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+_cleanNm(m.nm)+'</span>'
+                + '<span style="font-size:.6rem;font-weight:700;color:#f9fafb;line-height:1.25;">'+_cleanNm(m.nm)+'</span>'
                 + '</div>'
                 + '<span style="font-size:.6rem;font-weight:800;color:'+color+';flex-shrink:0;">'+m.qt+'x</span>'
                 + '</div>'
@@ -11749,12 +11776,13 @@ function render360(tipo, val) {
         const _od = (_tm.odrescred || []).slice(0,5);
         const _sl = (_tm.salao || []).slice(0,5);
         const _hasData = _pj.length > 0 || _od.length > 0 || _sl.length > 0;
-        const _cleanNm = nm => nm.replace(/^SMARTPHONE\s+/i,'').replace(/\s+/g,' ').trim();
+        const _SPECS = {'REALME NOTE 70':'128GB·6GB','REALME NOTE 60X':'128GB·4GB','REALME NOTE 60':'128GB·4GB','REALME C71':'128GB·4GB','REALME C73':'128GB·4GB','REALME C75X':'256GB·8GB','REALME C75':'128GB·4GB','REALME C85':'256GB·8GB','REALME C63':'128GB·6GB','REALME C67':'256GB·8GB','TECNO SPARK 30 PRO':'256GB·8GB','TECNO SPARK 30C':'128GB·4GB','TECNO SPARK 30':'128GB·4GB','TECNO POVA 7':'256GB·8GB','INFINIX HOT 60I':'128GB·4GB','INFINIX HOT 40 PRO':'256GB·8GB','INFINIX SMART 10':'128GB·4GB','INFINIX SMART 9':'64GB·4GB','ITEL A90':'256GB·4GB','ITEL A100C':'128GB·4GB','ITEL A18S':'32GB·2GB','ITEL CITY 100':'128GB·4GB'};
+        const _cleanNm = nm => { const c=nm.replace(/^SMARTPHONE\s+/i,'').replace(/\s+/g,' ').trim(); const u=c.toUpperCase(); const k=Object.keys(_SPECS).sort((a,b)=>b.length-a.length).find(k=>u.includes(k)); return k?c+' '+_SPECS[k]:c; };
         const _mes = (() => { const d=new Date(); return ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'][d.getMonth()]; })();
         if (!_hasData) return '';
         const _mkRow = (m, i, numClr, nmClr, valClr) => `<div style="display:flex;align-items:center;gap:.35rem;padding:.15rem 0;border-bottom:1px solid #1f293720;">
             <span style="font-size:.44rem;font-weight:800;color:${numClr};width:10px;flex-shrink:0;">${i+1}</span>
-            <span style="font-size:.52rem;font-weight:700;color:${nmClr};flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${_cleanNm(m.nm)}</span>
+            <span style="font-size:.48rem;font-weight:700;color:${nmClr};flex:1;line-height:1.3;">${_cleanNm(m.nm)}</span>
             <span style="font-size:.5rem;font-weight:800;color:${valClr};flex-shrink:0;">${m.qt}x</span>
             <span style="font-size:.44rem;color:#6b7280;flex-shrink:0;min-width:52px;text-align:right;">${brl(m.val)}</span>
         </div>`;
@@ -12757,9 +12785,10 @@ const MATINAIS = {
         {key:'sab', nome:'Sábado',        short:'Sáb', cor:'#4ade80', jsDay:6},
     ],
 
-    /* ── Temas por dia (pool de 8 — rotaciona a cada semana) ── */
+    /* ── Temas por dia (pool de 33 — rotaciona a cada ~8 meses) ── */
     temas: {
         qua: [
+            // originais
             'Execução com Excelência',
             'Consistência que Transforma',
             'O Poder dos Hábitos no Varejo',
@@ -12768,8 +12797,33 @@ const MATINAIS = {
             'Do Planejamento à Ação',
             'Eficiência Operacional',
             'Disciplina como Vantagem Competitiva',
+            // novos
+            'A Arte de Começar Bem',
+            'Sistemas que Sustentam Resultados',
+            'Precisão no Detalhe',
+            'Ritmo Campeão — Constância Supera Talento',
+            'O que Você Pratica, Você Melhora',
+            'Prioridade Absoluta',
+            'Energia Controlada, Resultado Multiplicado',
+            'Um Passo de Cada Vez, Sem Parar',
+            'Construindo Vantagem um Dia de Cada Vez',
+            'Perfeição no Processo, Naturalidade no Resultado',
+            'Gestão do Tempo como Ativo Estratégico',
+            'Zero Desperdício — Máximo Aproveitamento',
+            'Padrão de Excelência — Elevando o Nível',
+            'A Mentalidade dos 1% Melhores por Dia',
+            'Foco no que Move o Ponteiro',
+            'Automatize o Básico, Inove no Diferencial',
+            'Seja Imprevisível para a Concorrência, Previsível no Resultado',
+            'Cultura de Melhoria Contínua',
+            'Velocidade com Propósito',
+            'Entregue Mais do que Prometeu',
+            'Controle o Controlável',
+            'Simplicidade Operacional — Faça Fluir',
+            'Calibrando a Bússola — Ajuste de Rota',
         ],
         qui: [
+            // originais
             'Liderança que Inspira',
             'Comunicação que Move Equipes',
             'Cultura de Alta Performance',
@@ -12778,8 +12832,35 @@ const MATINAIS = {
             'Liderar pelo Exemplo',
             'Times que Vencem Juntos',
             'A Força da Inteligência Emocional',
+            // novos
+            'O Líder que o Time Merece',
+            'Propósito Maior que o Cargo',
+            'Energia de Quem Cuida da Equipe',
+            'Delegação Inteligente — Crescendo Junto',
+            'Confiança como Alicerce da Liderança',
+            'A Escuta que Transforma Resultados',
+            'Ambição Coletiva — Sonhar Grande em Equipe',
+            'Resiliência: A Arte de Levantar Mais Rápido',
+            'Autonomia Responsável — Empowerment Real',
+            'Criar Ambiente, Criar Resultado',
+            'O Gerente que Faz Perguntas Melhores',
+            'Reconhecimento que Motiva de Verdade',
+            'Liderança Situacional — A Pessoa Certa, No Momento Certo',
+            'Diversidade de Competências — A Força do Time',
+            'Eliminar o Ruído — Comunicação Direta e Clara',
+            'Presença Plena na Gestão',
+            'Construindo Sucessores, Não Dependentes',
+            'Urgência sem Ansiedade — Liderança Serena',
+            'Integridade como Vantagem Competitiva',
+            'O Preço da Indiferença na Liderança',
+            'Missão, Visão e Valores na Prática Diária',
+            'Celebrar o Caminho, Não Só o Destino',
+            'A Coragem de Tomar Decisões Difíceis',
+            'Clima de Equipe — Responsabilidade de Todos',
+            'Do Chefe ao Mentor — A Evolução do Líder',
         ],
         sex: [
+            // originais
             'Vendas com Propósito',
             'Cliente no Centro — Experiência que Fideliza',
             'Conexão que Converte',
@@ -12788,8 +12869,34 @@ const MATINAIS = {
             'Rapport e Confiança na Venda',
             'Superando Objeções com Empatia',
             'O Ciclo de Ouro da Venda Consultiva',
+            // novos
+            'A Pergunta Certa Abre a Venda',
+            'Emoção Guia Decisão — Venda para o Coração',
+            'Do Contato ao Contrato — Jornada do Cliente',
+            'Escuta Ativa: Seu Diferencial de Venda',
+            'Conhecimento do Produto como Arma de Vendas',
+            'Transformando Objeções em Oportunidades',
+            'Urgência Real — Não Crie, Descubra',
+            'Venda de Valor, Não de Preço',
+            'A Arte do Encantamento no Atendimento',
+            'Fidelização: A Próxima Venda Começa Hoje',
+            'Linguagem Corporal que Vende',
+            'Criatividade na Abordagem — Saia do Roteiro',
+            'O Poder do Silêncio Estratégico na Venda',
+            'Gestão do Funil — Quem Está Pronto para Fechar?',
+            'Cada "Não" te Aproxima do Próximo "Sim"',
+            'Pós-Venda que Gera Indicação',
+            'Produto Certo para a Pessoa Certa',
+            'Ancoragem e Comparação na Decisão de Compra',
+            'Técnica de Fechamento — Da Intenção à Assinatura',
+            'Marca Pessoal do Vendedor — Seja Inesquecível',
+            'Inteligência Emocional na Negociação',
+            'Storytelling que Convence e Conecta',
+            'Primeira Impressão: os Primeiros 30 Segundos Valem Tudo',
+            'O Follow-Up que Transforma Pipeline em Receita',
         ],
         sab: [
+            // originais
             'Sprint Final — Energia para o Fechamento',
             'Mentalidade Titã',
             'Superar Metas é uma Decisão',
@@ -12798,6 +12905,32 @@ const MATINAIS = {
             'Cada Venda Conta',
             'Sábado é o Dia do Líder',
             'Nada de Piloto Automático',
+            // novos
+            'Hoje é Pra Valer — Deixa Tudo no Campo',
+            'A Reta Final Revela o Campeão',
+            'Saturação Positiva — Atenda Mais, Venda Mais',
+            'Energia Coletiva — Um Alimenta o Outro',
+            'Transforme Cada "Quase" em "Fechou"',
+            'Sábado de Recordes — Quebre o Seu',
+            'A Meta Não Espera — Vamos Buscá-la',
+            'Competição Saudável — Supere o Seu "Eu" de Ontem',
+            'Propósito no Último Dia — Por que Você Está Aqui?',
+            'Volume + Qualidade = Resultado Extraordinário',
+            'Foco Total nas Próximas Horas',
+            'Quem Atende Mais, Bate Mais — Simples Assim',
+            'Não Existe Cansaço de Quem Quer Vencer',
+            'A Diferença Está no Detalhe do Fechamento',
+            'Aproveitamento: De 10 que Entram, Quantos Saem com Celular?',
+            'Criar Memória — O Cliente que Volta Foi Bem Atendido',
+            'Mentalidade de Campeão no Sábado',
+            'O Último Cliente do Dia Merece o Mesmo Cuidado que o Primeiro',
+            'Bater Meta é Hábito, Não Sorte',
+            'Sábado de Ouro — Cada Hora Vale',
+            'Fazer Acontecer — Não Espere a Venda Chegar',
+            'A Força do Time no Sprint Final',
+            'Invista nos Últimos Minutos — Vale a Pena',
+            'Feche o Sábado, Planeje a Próxima Semana',
+            'Alta Performance Exige Alta Energia — Cuide de Você',
         ],
     },
 
@@ -12947,9 +13080,9 @@ const MATINAIS = {
         return { valor: brl(meta360), periodo: 'Sprint final — feche o mes!', gancho, cor: '#4ade80' };
     },
 
-    /* ── Temáticas por dia (base 0=Qua) ── */
+    /* ── Temáticas por dia (índice absoluto — % pool.length aplicado no ponto de uso) ── */
     temaIdx(weekNum, dayIdx) {
-        return (weekNum + dayIdx * 3) % 8;
+        return weekNum * 4 + dayIdx;
     },
 };
 
@@ -13232,11 +13365,11 @@ function matGetSemanaRef() {
 }
 
 function matGetWeekNum(data) {
+    // Semanas absolutas desde 2025-01-06 — garante temas inéditos por ~8 meses antes de repetir
+    const epoch = new Date('2025-01-06T00:00:00');
     const d = new Date(data);
     d.setHours(0,0,0,0);
-    d.setDate(d.getDate() + 3 - (d.getDay() + 6) % 7);
-    const week1 = new Date(d.getFullYear(), 0, 4);
-    return 1 + Math.round(((d - week1) / 86400000 - 3 + (week1.getDay() + 6) % 7) / 7);
+    return Math.max(0, Math.floor((d - epoch) / (7 * 24 * 60 * 60 * 1000)));
 }
 
 function matBRL(v) { return 'R$ ' + Number(v).toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2}); }
@@ -13252,7 +13385,7 @@ function matGetOradores(weekNum, dayIdx) {
 function matGetConteudo(dia, weekNum, dayIdx, data) {
     const tIdx = MATINAIS.temaIdx(weekNum, dayIdx);
     const tema = MATINAIS.temas[dia][tIdx % MATINAIS.temas[dia].length];
-    const cIdx = tIdx % 4;
+    const cIdx = weekNum % 4;
     const sauda = MATINAIS.conteudo.saudacao[dia][cIdx % MATINAIS.conteudo.saudacao[dia].length];
     const debates = MATINAIS.conteudo.debate[dia][cIdx % MATINAIS.conteudo.debate[dia].length];
     const final = MATINAIS.conteudo.finalizacao[dia][cIdx % MATINAIS.conteudo.finalizacao[dia].length];
@@ -15505,23 +15638,50 @@ function _fecharReuniaoOverlay() {
     });
 }
 
+/* Busca dados de diagnóstico do Firestore para o escopo da reunião */
+async function _fetchDiagDataReuniao(tipo, val) {
+    if (!window._acadDB) return null;
+    const _d = _360D();
+    const hoje = new Date();
+    const mes = `${hoje.getFullYear()}_${String(hoje.getMonth()+1).padStart(2,'0')}`;
+    let lojaKeys = [];
+    if (tipo==='loja') lojaKeys=[val];
+    else if (tipo==='sub') lojaKeys=(_d.subredes[val]?.lojas||[]);
+    else lojaKeys=Object.keys(_d.lojas);
+    const results = {};
+    await Promise.all(lojaKeys.map(async lk=>{
+        try {
+            const doc = await window._acadDB.collection('ts_diagnostico').doc(`${lk}_mensal_${mes}`).get();
+            if (doc.exists) results[lk] = doc.data();
+        } catch(e) {}
+    }));
+    return Object.keys(results).length ? results : null;
+}
+
 /* Abre overlay in-page com a reunião (sem popup — compatível com bloqueadores) */
-function _visualizarReuniaoPopup() {
+async function _visualizarReuniaoPopup() {
     if (!_reuniaoAtual) return;
     const { tipo, val } = _reuniaoAtual;
-    const html = _gerarReuniaoHTML(tipo, val);
     const _d = _360D();
     const label = tipo==='rede'?'Rede Titãs':tipo==='sub'?(_d.subredes[val]?.nome||val):(_d.lojas[val]?.label||val);
 
-    // Remover overlay anterior se existir
+    // Abrir overlay com loading enquanto busca dados de diagnóstico
     const old = document.getElementById('_reuniao-overlay');
     if (old) old.remove();
-
-    // Criar overlay
     const overlay = document.createElement('div');
     overlay.id = '_reuniao-overlay';
     overlay.style.cssText = 'position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.55);display:flex;align-items:flex-start;justify-content:center;overflow-y:auto;padding:1.5rem 1rem;backdrop-filter:blur(3px);';
+    overlay.innerHTML = `<div style="width:100%;max-width:860px;border-radius:1rem;background:#f8f7f4;padding:2rem;text-align:center;margin-top:3rem;"><div style="font-size:1rem;color:#92400e;">⚡ Carregando reunião...</div></div>`;
+    document.body.appendChild(overlay);
+    document.body.style.overflow = 'hidden';
 
+    // Buscar dados de diagnóstico em paralelo
+    let diagData = null;
+    try { diagData = await _fetchDiagDataReuniao(tipo, val); } catch(e) {}
+
+    const html = _gerarReuniaoHTML(tipo, val, diagData);
+
+    // Substituir loading pelo conteúdo real (reusa o overlay já criado)
     overlay.innerHTML = `
     <div style="width:100%;max-width:860px;border-radius:1rem;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,.4);background:#f8f7f4;">
         <!-- Toolbar fixa dentro do overlay -->
@@ -15735,7 +15895,7 @@ var _META_MAIO26 = {
 };
 
 /* ── Gerador principal de HTML da reunião ── */
-function _gerarReuniaoHTML(tipo, val) {
+function _gerarReuniaoHTML(tipo, val, diagData) {
     const _d    = _360D();
     const dias   = _d.diasDecorridos || 1;
     const diasM  = _d.diasMes || 31;
@@ -16160,6 +16320,97 @@ function _gerarReuniaoHTML(tipo, val) {
             }).join('')}</tbody></table>
         </div>` : '';
 
+    // ── Durações ──
+    const durTotal=isLoja?'40':tipo==='sub'?'50':'60';
+    const durInicio=isLoja?'5':tipo==='sub'?'8':'10';
+    const durMeio=isLoja?'25':tipo==='sub'?'30':'35';
+    const durFim=isLoja?'10':tipo==='sub'?'12':'15';
+
+    // ── Hook questions (seg/terça) ──
+    const isTerca=hoje.getDay()===2, isSegunda=hoje.getDay()===1;
+    const _wNum=Math.floor((hoje.getTime()-new Date('2026-01-05').getTime())/(7*24*60*60*1000));
+    const _ganchoGen=()=>{
+        const pior=acPct<7?`taxa de acessórios em ${acPct}%`:alertasDiscrepancia.length?`discrepância de ${alertasDiscrepancia[0].disc}% entre vendedores`:`projeção em ${pctProj}% da meta`;
+        return {
+            q1:`Considerando ${pior}: qual é UMA mudança concreta no atendimento que você vai aplicar esta semana? Venha com o resultado esperado na próxima terça.`,
+            q2:`Com ${diasM-dias} dias restantes e meta diária de ${_brlR(metaDiaria)}, qual é seu maior obstáculo individual? Como vai removê-lo?`
+        };
+    };
+    let ganchoSemana=null,ganchoPrev=null;
+    if(isTerca||isSegunda){
+        try{
+            const _s=localStorage.getItem(`flow_gancho_${_wNum}`);
+            ganchoSemana=_s?JSON.parse(_s):null;
+            if(!ganchoSemana){ganchoSemana=_ganchoGen();localStorage.setItem(`flow_gancho_${_wNum}`,JSON.stringify({...ganchoSemana,ts:Date.now()}));}
+        }catch(e){ganchoSemana=_ganchoGen();}
+        if(isTerca){try{ganchoPrev=JSON.parse(localStorage.getItem(`flow_gancho_${_wNum-1}`)||'null');}catch(e){}}
+    }
+
+    // ── Bloco diagnóstico ──
+    let blocoReuniaDiag='';
+    if(diagData&&Object.keys(diagData).length){
+        const _dr=Object.entries(diagData).filter(([k,v])=>v&&v.total_clientes>0).map(([k,v])=>{
+            const ap=Math.round((v.total_vendas||0)/(v.total_clientes||1)*100);
+            const lb=(lojasList.find(l=>l.key===k))?.label||k;
+            const ac=ap>=60?'#059669':ap>=40?'#d97706':'#dc2626';
+            const dt=ap>=60?'🟢':ap>=40?'🟡':'🔴';
+            return `<tr><td style="font-weight:700;">${lb}</td><td style="font-weight:800;color:${ac};">${dt} ${ap}%</td><td style="color:#6b7280;">${v.total_vendas}V / ${v.total_clientes} atend.</td><td style="color:#9ca3af;font-size:.6rem;">${v.dias||'?'} dias</td></tr>`;
+        }).join('');
+        if(_dr)blocoReuniaDiag=`
+        <div class="reun-section" style="border-left-color:#0ea5e9;">
+            <div class="reun-section-header" style="background:#f0f9ff;">
+                <span class="reun-badge" style="background:#0ea5e9;color:#fff;">📋 DIAG.</span>
+                <span class="reun-icon">📊</span>
+                <strong style="color:#0369a1;">DIAGNÓSTICO — APROVEITAMENTO MENSAL</strong>
+                <span style="margin-left:auto;font-size:.55rem;color:#9ca3af;font-style:italic;">ts_diagnostico · mês atual</span>
+            </div>
+            <div class="reun-body">
+                <div style="overflow-x:auto;"><table class="reun-table">
+                    <thead><tr><th>Loja</th><th>AP%</th><th>Vendas / Atend.</th><th>Dias</th></tr></thead>
+                    <tbody>${_dr}</tbody>
+                </table></div>
+                <div style="margin-top:.45rem;padding:.4rem .65rem;background:#e0f2fe;border-radius:.4rem;font-size:.62rem;color:#0369a1;">
+                    AP% = aproveitamento de atendimentos. 🟢 ≥60% · 🟡 40–59% · 🔴 &lt;40%
+                </div>
+            </div>
+        </div>`;
+    }
+
+    // ── 3 gargalos visuais ──
+    const _g3=`
+    <div class="reun-section" style="border-left-color:#dc2626;">
+        <div class="reun-section-header" style="background:#fef2f2;">
+            <span class="reun-badge" style="background:#dc2626;color:#fff;">🧠 ANÁLISE</span>
+            <span class="reun-icon">📐</span>
+            <strong style="color:#991b1b;">ONDE ESTÁ O GARGALO?</strong>
+        </div>
+        <div class="reun-body">
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.55rem;margin-bottom:.6rem;">
+                <div style="background:#fff;border:2px solid ${pctProj<85?'#fca5a5':'#bbf7d0'};border-radius:.55rem;padding:.6rem;text-align:center;">
+                    <div style="font-size:1.2rem;">${pctProj<85?'🔴':'🟢'}</div>
+                    <div style="font-size:.62rem;font-weight:800;color:#1c1917;margin:.2rem 0;">VOLUME</div>
+                    <div style="font-size:.58rem;color:#6b7280;">Atendimentos</div>
+                    <div style="font-size:.65rem;font-weight:700;color:${pctProj<85?'#dc2626':'#059669'};margin-top:.2rem;">${pctProj<85?'Verificar fluxo':'No ritmo'}</div>
+                </div>
+                <div style="background:#fff;border:2px solid ${alertasDiscrepancia.length?'#fde68a':'#bbf7d0'};border-radius:.55rem;padding:.6rem;text-align:center;">
+                    <div style="font-size:1.2rem;">${alertasDiscrepancia.length?'🟡':'🟢'}</div>
+                    <div style="font-size:.62rem;font-weight:800;color:#1c1917;margin:.2rem 0;">CONVERSÃO</div>
+                    <div style="font-size:.58rem;color:#6b7280;">Fechamento</div>
+                    <div style="font-size:.65rem;font-weight:700;color:${alertasDiscrepancia.length?'#d97706':'#059669'};margin-top:.2rem;">${alertasDiscrepancia.length?alertasDiscrepancia.length+' alerta(s)':'Equilibrado'}</div>
+                </div>
+                <div style="background:#fff;border:2px solid ${acPct<7?'#fca5a5':'#bbf7d0'};border-radius:.55rem;padding:.6rem;text-align:center;">
+                    <div style="font-size:1.2rem;">${acPct<7?'🔴':'🟢'}</div>
+                    <div style="font-size:.62rem;font-weight:800;color:#1c1917;margin:.2rem 0;">TICKET</div>
+                    <div style="font-size:.58rem;color:#6b7280;">Acessórios</div>
+                    <div style="font-size:.65rem;font-weight:700;color:${acPct<7?'#dc2626':'#059669'};margin-top:.2rem;">${acPct}% ${acPct<7?'⚠️ abaixo':'✅ ok'}</div>
+                </div>
+            </div>
+            ${!isBom?`<div style="padding:.5rem .75rem;background:#fffbf0;border-left:3px solid #d97706;border-radius:0 .45rem .45rem 0;font-size:.67rem;color:#374151;">
+                ⚡ <strong>Identifique o gargalo:</strong> ${pctProj<85?'Volume baixo — verificar fluxo de clientes.':alertasDiscrepancia.length?`Conversão desnivelada — <strong>${alertasDiscrepancia[0].lider}</strong> está ${alertasDiscrepancia[0].disc}% acima de <strong>${alertasDiscrepancia[0].menor}</strong>. O que o primeiro faz diferente?`:acPct<7?'Ticket baixo — acessórios abaixo do mínimo. Oferta obrigatória em todos os atendimentos.':'Identifique o ponto de melhoria com o time.'}
+            </div>`:'<div style="padding:.5rem .75rem;background:#f0fdf4;border-left:3px solid #059669;border-radius:0 .45rem .45rem 0;font-size:.67rem;color:#374151;">✅ <strong>Sem gargalo crítico.</strong> O desafio é elevar o teto, não só o piso.</div>'}
+        </div>
+    </div>`;
+
     return `<div class="reuniao-doc" id="reuniao-print-area" data-tipo="${tipo}" data-val="${val}">
 
     <!-- ══ CABEÇALHO ══ -->
@@ -16167,7 +16418,7 @@ function _gerarReuniaoHTML(tipo, val) {
         <div style="display:flex;align-items:center;gap:.85rem;margin-bottom:.75rem;">
             <div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#D4AF37,#c9953a);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;">⚡</div>
             <div style="flex:1;">
-                <div style="font-size:.52rem;letter-spacing:.2em;color:#92400e;text-transform:uppercase;font-weight:700;">TITÃS SINERGY · REUNIÃO OPERACIONAL · FLOW MEETING</div>
+                <div style="font-size:.52rem;letter-spacing:.2em;color:#92400e;text-transform:uppercase;font-weight:700;">TITÃS SINERGY · FLOW MEETING · ${durTotal} MINUTOS</div>
                 <div style="font-size:1rem;font-weight:900;color:#1c1917;letter-spacing:.03em;margin-top:.1rem;">${label.toUpperCase()}</div>
             </div>
             <div style="text-align:right;flex-shrink:0;">
@@ -16175,337 +16426,154 @@ function _gerarReuniaoHTML(tipo, val) {
                 <div style="margin-top:.3rem;padding:.22rem .7rem;border-radius:999px;font-size:.6rem;font-weight:700;background:${statusColor}18;border:1px solid ${statusColor}44;color:${statusColor};">${statusTxt}</div>
             </div>
         </div>
-        <div style="background:#fffbeb;border-radius:.55rem;padding:.6rem .85rem;font-size:.72rem;color:#44403c;line-height:1.65;border:1px solid #fcd34d;">${aberturaFala}</div>
+        <div style="background:#fffbeb;border-radius:.55rem;padding:.6rem .85rem;font-size:.72rem;color:#44403c;line-height:1.65;border:1px solid #fcd34d;">
+            Dia <strong>${dias}</strong> de <strong>${diasM}</strong> — projeção em <strong>${pctProj}%</strong>. ${isBom?'Time no ritmo positivo.':'Precisamos de <strong>'+_brlR(metaDiaria)+'</strong>/dia para fechar a meta.'}
+        </div>
     </div>
 
-    <!-- ══ T1 · PANORAMA GERAL ══ -->
+    <!-- ══ AVISO PRÉ-REUNIÃO ══ -->
+    <div style="background:#fef3c7;border:2px dashed #f59e0b;border-radius:.75rem;padding:.85rem 1rem;margin-bottom:.85rem;">
+        <div style="font-size:.6rem;font-weight:800;color:#92400e;text-transform:uppercase;letter-spacing:.12em;margin-bottom:.6rem;">⚠️ ANTES DE COMEÇAR</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:.55rem;">
+            <div style="background:#fff;border-radius:.5rem;padding:.55rem .7rem;border:1px solid #fde68a;">
+                <div style="font-size:.6rem;font-weight:800;color:#92400e;margin-bottom:.3rem;">📋 GERENTE — ESCREVA NO QUADRO AGORA:</div>
+                <div style="font-size:.67rem;color:#374151;line-height:1.8;"><strong>1.</strong> Faturamento: <strong>${_brlR(fat)}</strong> (${pct}% meta)<br><strong>2.</strong> Projeção: <strong>${pctProj}%</strong> da meta<br><strong>3.</strong> Meta/dia: <strong>${_brlR(metaDiaria)}</strong></div>
+            </div>
+            <div style="background:#fff;border-radius:.5rem;padding:.55rem .7rem;border:1px solid #fde68a;">
+                <div style="font-size:.6rem;font-weight:800;color:#92400e;margin-bottom:.3rem;">📓 TODOS — CADERNO E CANETA EM MÃOS:</div>
+                <div style="font-size:.67rem;color:#374151;line-height:1.8;">Anotar obrigatoriamente:<br>• Seu número do dia<br>• 1 ação com prazo definido</div>
+            </div>
+        </div>
+    </div>
+
+    ${isTerca&&ganchoPrev?`<!-- ══ VERIFICAÇÃO DO GANCHO ══ -->
+    <div style="background:#f5f3ff;border:2px solid #c4b5fd;border-radius:.75rem;padding:.85rem 1rem;margin-bottom:.85rem;">
+        <div style="font-size:.6rem;font-weight:800;color:#5b21b6;text-transform:uppercase;letter-spacing:.12em;margin-bottom:.55rem;">🔍 VERIFICAÇÃO — PERGUNTAS DA SEMANA PASSADA (cada um responde agora)</div>
+        <div style="margin-bottom:.4rem;padding:.5rem .7rem;background:#fff;border-radius:.45rem;border-left:3px solid #7c3aed;">
+            <div style="font-size:.55rem;font-weight:700;color:#6d28d9;text-transform:uppercase;margin-bottom:.15rem;">Pergunta 1</div>
+            <div style="font-size:.67rem;color:#374151;">${ganchoPrev.q1}</div>
+        </div>
+        <div style="padding:.5rem .7rem;background:#fff;border-radius:.45rem;border-left:3px solid #7c3aed;">
+            <div style="font-size:.55rem;font-weight:700;color:#6d28d9;text-transform:uppercase;margin-bottom:.15rem;">Pergunta 2</div>
+            <div style="font-size:.67rem;color:#374151;">${ganchoPrev.q2}</div>
+        </div>
+        <div style="margin-top:.4rem;font-size:.62rem;color:#7c3aed;font-style:italic;">Cada participante: 1 minuto. Depois seguimos para os números.</div>
+    </div>`:''}
+
+    <!-- ══ DIVISOR: INÍCIO ══ -->
+    <div style="display:flex;align-items:center;gap:.6rem;margin:1rem 0 .85rem;">
+        <div style="flex:1;height:2px;background:linear-gradient(to right,#D4AF37,#fde68a);border-radius:1px;"></div>
+        <div style="padding:.3rem .9rem;background:#D4AF37;color:#000;border-radius:999px;font-size:.62rem;font-weight:900;letter-spacing:.1em;white-space:nowrap;">▶ INÍCIO · ${durInicio} MIN</div>
+        <div style="flex:1;height:2px;background:linear-gradient(to left,#D4AF37,#fde68a);border-radius:1px;"></div>
+    </div>
+
+    <!-- ══ ABERTURA ══ -->
+    <div class="reun-section" style="border-left-color:#b45309;">
+        <div class="reun-section-header" style="background:#fef3c7;">
+            <span class="reun-badge" style="background:#b45309;color:#fff;">🎤 FALA</span>
+            <span class="reun-icon">🏁</span>
+            <strong style="color:#92400e;">ABERTURA</strong>
+        </div>
+        <div class="reun-body">
+            <div style="font-size:.72rem;color:#374151;line-height:1.65;padding:.45rem .65rem;background:#fffbf0;border-radius:.45rem;margin-bottom:.55rem;">
+                ${isBom?`"Dia <strong>${dias}</strong> de <strong>${diasM}</strong>. Projeção em <strong>${pctProj}%</strong> — estamos no caminho certo. Hoje consolidamos o que funciona e vamos além."`:`"Dia <strong>${dias}</strong> de <strong>${diasM}</strong>. Projeção em <strong>${pctProj}%</strong>. Precisamos de <strong>${_brlR(metaDiaria)}</strong>/dia. Saímos daqui com nomes e ações definidos."`}
+            </div>
+            <div class="reun-subtopics">
+                ${_st('#b45309','Restam '+(diasM-dias)+' dias',`Meta diária: <strong>${_brlR(metaDiaria)}</strong>. Supermeta: <strong>${_brlR(superMeta)}</strong> — faltam <strong>${_brlR(faltaSuperMeta)}</strong>.`)}
+                ${_st('#b45309','Regra da reunião','"Todo problema precisa de um responsável e uma data. Sem isso, foi conversa — não decisão."')}
+            </div>
+        </div>
+    </div>
+
+    <!-- ══ DIVISOR: MEIO ══ -->
+    <div style="display:flex;align-items:center;gap:.6rem;margin:1rem 0 .85rem;">
+        <div style="flex:1;height:2px;background:linear-gradient(to right,#6d28d9,#c4b5fd);border-radius:1px;"></div>
+        <div style="padding:.3rem .9rem;background:#6d28d9;color:#fff;border-radius:999px;font-size:.62rem;font-weight:900;letter-spacing:.1em;white-space:nowrap;">⚡ MEIO · ${durMeio} MIN</div>
+        <div style="flex:1;height:2px;background:linear-gradient(to left,#6d28d9,#c4b5fd);border-radius:1px;"></div>
+    </div>
+
+    <!-- ══ PAINEL DE RESULTADOS ══ -->
     <div class="reun-section" style="border-left-color:#b45309;">
         <div class="reun-section-header" style="background:#fef3c7;">
             <span class="reun-badge" style="background:#b45309;color:#fff;">📊 NÚMEROS</span>
             <span class="reun-icon">💰</span>
-            <strong style="color:#92400e;">PANORAMA GERAL DE RESULTADOS</strong>
+            <strong style="color:#92400e;">PAINEL DE RESULTADOS</strong>
         </div>
         <div class="reun-body">
-            <div style="overflow-x:auto;">
-            <table class="reun-table">
-                <thead><tr><th>Indicador</th><th>Valor</th><th>Referência</th><th>Situação</th></tr></thead>
-                <tbody>
-                    <tr style="background:#fffbf0;">
-                        <td style="font-weight:700;">💰 Faturamento atual</td>
-                        <td style="font-weight:800;color:#b45309;font-size:.78rem;">${_brlR(fat)}</td>
-                        <td>Dia <strong>${dias}</strong> de <strong>${diasM}</strong></td>
-                        <td style="font-weight:700;color:${statusColor};">${pct}% da meta atingido</td>
-                    </tr>
-                    <tr>
-                        <td style="font-weight:700;">🎯 Meta do mês</td>
-                        <td style="font-weight:800;color:#6d28d9;font-size:.78rem;">${_brlR(meta)}</td>
-                        <td>Restam <strong>${diasM-dias} dias</strong></td>
-                        <td style="font-weight:700;color:${meta>fat?'#dc2626':'#059669'};">Falta ${_brlR(Math.max(0,meta-fat))}</td>
-                    </tr>
-                    <tr style="background:#f0f9ff;">
-                        <td style="font-weight:700;">📈 Projeção fim do mês</td>
-                        <td style="font-weight:800;color:${statusColor};font-size:.78rem;">${_brlR(proj)}</td>
-                        <td>Pelo ritmo atual</td>
-                        <td style="font-weight:800;color:${statusColor};">${pctProj}% da meta</td>
-                    </tr>
-                    <tr>
-                        <td style="font-weight:700;">⏱️ Meta diária necessária</td>
-                        <td style="font-weight:800;color:#b45309;font-size:.78rem;">${_brlR(metaDiaria)}</td>
-                        <td>Para fechar a meta</td>
-                        <td>Nos próximos <strong>${diasM-dias} dias</strong></td>
-                    </tr>
-                    <tr style="background:#fffbf0;">
-                        <td style="font-weight:700;">🏆 Supermeta (+20%)</td>
-                        <td style="font-weight:800;color:#b45309;font-size:.78rem;">${_brlR(superMeta)}</td>
-                        <td>${pctSuperMeta}% atingido</td>
-                        <td style="color:${projVsSuperMeta>=100?'#059669':projVsSuperMeta>=75?'#d97706':'#dc2626'};font-weight:700;">Falta ${_brlR(faltaSuperMeta)} · proj. ${projVsSuperMeta}%</td>
-                    </tr>
-                    <tr>
-                        <td style="font-weight:700;">🏷️ Acessórios</td>
-                        <td style="font-weight:800;color:#059669;font-size:.78rem;">${_brlR(acTotal)}</td>
-                        <td>${acPct}% do faturamento</td>
-                        <td>Projeção: <strong>${_brlR(acProj)}</strong></td>
-                    </tr>
-                </tbody>
-            </table></div>
-            <div style="margin-top:.6rem;padding:.5rem .75rem;background:${ganchoCor}10;border-left:3px solid ${ganchoCor};border-radius:0 .45rem .45rem 0;">
-                <div style="font-size:.56rem;font-weight:800;color:${ganchoCor};text-transform:uppercase;letter-spacing:.1em;margin-bottom:.18rem;">🎯 FOCO DE HOJE — ${ganchoTit}</div>
-                <div style="font-size:.67rem;color:#374151;line-height:1.55;">${ganchoMsg}</div>
+            <div class="reun-kpi-grid" style="margin-bottom:.65rem;">
+                <div class="reun-kpi"><div class="reun-kpi-label">💰 Faturamento</div><div class="reun-kpi-value" style="color:#b45309;">${_brlR(fat)}</div><div class="reun-kpi-sub">${pct}% da meta · dia ${dias}/${diasM}</div></div>
+                <div class="reun-kpi"><div class="reun-kpi-label">📈 Projeção</div><div class="reun-kpi-value" style="color:${statusColor};">${_brlR(proj)}</div><div class="reun-kpi-sub">${pctProj}% da meta</div></div>
+                <div class="reun-kpi"><div class="reun-kpi-label">⏱️ Meta do dia</div><div class="reun-kpi-value" style="color:#b45309;">${_brlR(metaDiaria)}</div><div class="reun-kpi-sub">${diasM-dias} dias restantes</div></div>
+                <div class="reun-kpi"><div class="reun-kpi-label">🏷️ Acessórios</div><div class="reun-kpi-value" style="color:#059669;">${_brlR(acTotal)}</div><div class="reun-kpi-sub">${acPct}% do faturamento</div></div>
             </div>
-            <div class="reun-quote" style="border-color:#b45309;background:#fffbeb;margin-top:.6rem;">
-                <p>${qA[0].q}</p><footer>— ${qA[0].a}</footer>
-            </div>
+            ${lojasList.length>1?`<div style="overflow-x:auto;"><table class="reun-table">
+                <thead><tr><th>Loja</th><th>Faturamento</th><th>% Meta</th><th>Projeção</th><th>Situação</th></tr></thead>
+                <tbody>${lojasList.map(l=>{const lp=Math.round((l.total||0)/(l.meta||1)*100),lpr=dias>0?Math.round((l.total||0)/dias*diasM):(l.total||0),lpP=Math.round(lpr/(l.meta||1)*100),dot=lpP>=100?'🟢':lpP>=85?'🟡':'🔴';return `<tr><td style="font-weight:700;">${l.label||l.key}</td><td style="font-weight:700;color:#059669;">${_brlR(l.total||0)}</td><td>${lp}%</td><td style="font-weight:700;color:${lpP>=100?'#059669':lpP>=85?'#d97706':'#dc2626'};">${_brlR(lpr)} (${lpP}%)</td><td>${dot} ${lpP>=100?'No alvo':lpP>=85?'Atenção':'Urgente'}</td></tr>`;}).join('')}</tbody>
+            </table></div>`:
+            `<div style="overflow-x:auto;"><table class="reun-table"><thead><tr><th>Indicador</th><th>Valor</th><th>Observação</th></tr></thead><tbody>
+                <tr><td>🎯 Meta</td><td style="font-weight:800;color:#6d28d9;">${_brlR(meta)}</td><td>Falta ${_brlR(Math.max(0,meta-fat))}</td></tr>
+                <tr><td>🏆 Supermeta</td><td style="font-weight:800;color:#b45309;">${_brlR(superMeta)}</td><td>${pctSuperMeta}% atingido · falta ${_brlR(faltaSuperMeta)}</td></tr>
+                <tr><td>📦 Pedidos</td><td>${lojasList[0]?.ped||'—'}</td><td>${lojasList[0]?.cancel||0} cancelamentos</td></tr>
+            </tbody></table></div>`}
         </div>
     </div>
 
-    <!-- ══ MISSÃO MAIO 2026 (quando ativo) ══ -->
-    ${blocoMissaoMaio}
-
-    <!-- ══ T2 · RANKINGS ══ -->
+    <!-- ══ RANKINGS ══ -->
     ${rankingSubredes}
     ${rankingLojas}
-
-    <!-- ══ T3 · DETALHAMENTO POR LOJA / ESCOPO ══ -->
-    <div class="reun-section" style="border-left-color:#0e7490;">
-        <div class="reun-section-header" style="background:#ecfeff;">
-            <span class="reun-badge" style="background:#0e7490;color:#fff;">📋 DETALHES</span>
-            <span class="reun-icon">📊</span>
-            <strong style="color:#155e75;">ANÁLISE DETALHADA — ${tipo==='loja'?'LOJA':'LOJAS DO ESCOPO'}</strong>
-        </div>
-        <div class="reun-body">
-            <div style="overflow-x:auto;">
-            ${lojasList.length>1
-              ? `<table class="reun-table"><thead><tr><th>Loja</th><th>Faturamento</th><th>Meta</th><th>% Meta</th><th>Projeção</th><th>% Proj.</th><th>Acessórios</th><th>Situação</th></tr></thead>
-                <tbody>${lojasList.map(l=>{
-                    const lp=Math.round((l.total||0)/(l.meta||1)*100);
-                    const lpr=dias>0?Math.round((l.total||0)/dias*diasM):(l.total||0);
-                    const lpP=Math.round(lpr/(l.meta||1)*100);
-                    const dot=lpP>=100?'🟢':lpP>=85?'🟡':'🔴';
-                    return `<tr>
-                        <td style="font-weight:700;">${l.label||l.key}</td>
-                        <td style="font-weight:700;color:#059669;">${_brlR(l.total||0)}</td>
-                        <td>${_brlR(l.meta||0)}</td>
-                        <td style="font-weight:700;">${lp}%</td>
-                        <td style="font-weight:700;color:${lpP>=100?'#059669':lpP>=85?'#d97706':'#dc2626'};">${_brlR(lpr)}</td>
-                        <td style="font-weight:800;color:${lpP>=100?'#059669':lpP>=85?'#d97706':'#dc2626'};">${lpP}%</td>
-                        <td style="color:#7c3aed;">${_brlR(l.acessorios?.total||0)}</td>
-                        <td>${dot} ${lpP>=100?'No alvo':lpP>=85?'Atenção':'Urgente'}</td>
-                    </tr>`;
-                }).join('')}</tbody></table>`
-              : `<table class="reun-table"><thead><tr><th>Indicador</th><th>Valor</th><th>Referência</th><th>Observação</th></tr></thead><tbody>
-                <tr><td>💰 Faturamento</td><td style="font-weight:800;color:#b45309;">${_brlR(fat)}</td><td>${dias} dias de ${diasM}</td><td>${pct}% da meta</td></tr>
-                <tr><td>🎯 Meta</td><td style="font-weight:800;color:#6d28d9;">${_brlR(meta)}</td><td>Restam ${diasM-dias} dias</td><td>Falta ${_brlR(Math.max(0,meta-fat))}</td></tr>
-                <tr><td>📈 Projeção</td><td style="font-weight:800;color:${statusColor};">${_brlR(proj)}</td><td>Pelo ritmo atual</td><td>${pctProj}% da meta</td></tr>
-                <tr><td>⏱️ Meta diária</td><td style="font-weight:800;">${_brlR(metaDiaria)}</td><td>Para fechar meta</td><td>Nos próximos ${diasM-dias} dias</td></tr>
-                <tr><td>🏆 Supermeta</td><td style="font-weight:800;color:#b45309;">${_brlR(superMeta)}</td><td>${pctSuperMeta}% atingido</td><td>Falta ${_brlR(faltaSuperMeta)}</td></tr>
-                <tr><td>🏷️ Acessórios</td><td style="font-weight:800;color:#059669;">${_brlR(acTotal)}</td><td>${acPct}% do fat.</td><td>Projeção ${_brlR(acProj)}</td></tr>
-                <tr><td>📦 Pedidos</td><td>${lojasList[0]?.ped||'—'}</td><td>${lojasList[0]?.cancel||0} cancelamentos</td><td></td></tr>
-                </tbody></table>`}
-            </div>
-            <div class="reun-quote" style="border-color:#0e7490;background:#ecfeff;margin-top:.6rem;">
-                <p>${qA[1].q}</p><footer>— ${qA[1].a}</footer>
-            </div>
-        </div>
-    </div>
-
-    <!-- ══ T4 · RANKING DE VENDEDORES ══ -->
     ${rankingVendedores}
 
-    <!-- ══ T5 · ACESSÓRIOS ══ -->
-    <div class="reun-section" style="border-left-color:#059669;">
-        <div class="reun-section-header" style="background:#f0fdf4;">
-            <span class="reun-badge" style="background:#059669;color:#fff;">🏷️ ACESSÓRIOS</span>
-            <span class="reun-icon">💡</span>
-            <strong style="color:#065f46;">ACESSÓRIOS — DESEMPENHO & OPORTUNIDADES</strong>
+    <!-- ══ ALERTAS ══ -->
+    ${(alertasDiscrepancia.length||alertasAcessorios.length)?`
+    <div class="reun-section" style="border-left-color:#dc2626;">
+        <div class="reun-section-header" style="background:#fef2f2;">
+            <span class="reun-badge" style="background:#dc2626;color:#fff;">⚠️ ALERTAS</span>
+            <span class="reun-icon">🚨</span>
+            <strong style="color:#991b1b;">PONTOS DE ATENÇÃO</strong>
         </div>
         <div class="reun-body">
-            <div style="overflow-x:auto;margin-bottom:.55rem;">
-            <table class="reun-table">
-                <thead><tr><th>Indicador</th><th>Valor</th><th>Meta mínima</th><th>Situação</th></tr></thead>
-                <tbody>
-                    <tr><td style="font-weight:700;">Total acessórios</td><td style="font-weight:800;color:#059669;">${_brlR(acTotal)}</td><td>7% do fat. = ${_brlR(fat*0.07)}</td><td style="font-weight:700;color:${acPct>=7?'#059669':'#dc2626'};">${acPct}% ${acPct>=7?'✅':'⚠️ abaixo'}</td></tr>
-                    <tr><td style="font-weight:700;">Projeção mês</td><td style="font-weight:800;color:#059669;">${_brlR(acProj)}</td><td>—</td><td>Pelo ritmo atual</td></tr>
-                    <tr><td style="font-weight:700;">Vendedores abaixo de 7%</td><td style="font-weight:800;color:${alertasAcessorios.length?'#dc2626':'#059669'};">${alertasAcessorios.length} vendedor${alertasAcessorios.length!==1?'es':''}</td><td>Meta: 0 abaixo</td><td>${alertasAcessorios.length?'⚠️ Requer atenção':'✅ Time no alvo'}</td></tr>
-                </tbody>
-            </table></div>
-            ${acTopHtml}
-            ${alertasAcessorios.length?`
-            <div style="margin-top:.55rem;overflow-x:auto;">
-            <table class="reun-table">
-                <thead><tr><th>Vendedor em alerta</th><th>Loja</th><th>Fat.</th><th>Acessórios</th><th>% Atual</th><th>Meta 7%</th><th>Ação</th></tr></thead>
-                <tbody>${alertasAcessorios.slice(0,8).map(v=>`<tr>
-                    <td style="font-weight:700;color:#dc2626;">⚠️ ${v.n}</td>
-                    <td style="font-size:.6rem;">${v.loja}</td>
-                    <td>${_brlR(v.t)}</td>
-                    <td style="color:#dc2626;">${_brlR(v.ac)}</td>
-                    <td style="font-weight:800;color:#dc2626;">${v.acPctV}%</td>
-                    <td style="color:#059669;">${_brlR(v.t*0.07)}</td>
-                    <td style="font-size:.58rem;color:#6b7280;">Oferta obrigatória em todo atendimento</td>
-                </tr>`).join('')}</tbody>
-            </table></div>` : ''}
-            <div class="reun-quote" style="border-color:#059669;background:#f0fdf4;margin-top:.6rem;">
-                <p>"Acessório se oferece <strong>durante</strong> a demonstração — não depois do fechamento."</p>
-                <footer>— Thiago Concer · Especialista em Vendas no Varejo</footer>
-            </div>
+            ${alertasDiscrepancia.length?`<div style="margin-bottom:.55rem;">
+                <div style="font-size:.58rem;font-weight:800;color:#dc2626;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.35rem;">📊 DISCREPÂNCIA ENTRE VENDEDORES (acima de 15%)</div>
+                ${alertasDiscrepancia.map(a=>`<div style="padding:.45rem .7rem;background:#fff;border:1px solid #fca5a5;border-radius:.45rem;margin-bottom:.3rem;">
+                    <div style="font-size:.67rem;font-weight:700;color:#374151;"><strong>${a.loja}</strong>: variação de <strong style="color:#dc2626;">${a.disc}%</strong> — ${a.lider} (${_brlR(a.maxT)}) vs ${a.menor} (${_brlR(a.minT)})</div>
+                    <div style="font-size:.62rem;color:#6b7280;margin-top:.15rem;">O que ${a.lider} faz diferente? Isso precisa virar protocolo para o time.</div>
+                </div>`).join('')}
+            </div>`:''}
+            ${alertasAcessorios.length?`<div>
+                <div style="font-size:.58rem;font-weight:800;color:#d97706;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.35rem;">🏷️ ACESSÓRIOS ABAIXO DE 7%</div>
+                <div style="padding:.45rem .7rem;background:#fffbeb;border:1px solid #fde68a;border-radius:.45rem;">
+                    <div style="font-size:.67rem;color:#374151;margin-bottom:.2rem;">${alertasAcessorios.slice(0,6).map(v=>`<strong>${v.n.split(' ')[0]}</strong>: ${v.acPctV}%`).join(' · ')}</div>
+                    <div style="font-size:.62rem;color:#92400e;font-style:italic;">"Acessório se oferece durante a demonstração — não depois do fechamento."</div>
+                </div>
+            </div>`:''}
         </div>
     </div>
+    `:''}
 
-    <!-- ══ T5b · ANÁLISE DO DIRETOR COMERCIAL ══ -->
-    <div class="reun-section" style="border-left-color:#dc2626;border-left-width:4px;">
-        <div class="reun-section-header" style="background:#fef2f2;border-bottom:1px solid #fca5a566;">
-            <span class="reun-badge" style="background:#dc2626;color:#fff;">🧠 ANÁLISE</span>
-            <span class="reun-icon">📐</span>
-            <strong style="color:#991b1b;">ANÁLISE DO DIRETOR COMERCIAL</strong>
-            <span style="margin-left:auto;font-size:.56rem;color:#9ca3af;font-style:italic;">baseado nos dados do período</span>
-        </div>
-        <div class="reun-body">
-            <div style="padding:.55rem .8rem;background:#fff5f5;border:1px solid #fecaca;border-radius:.6rem;margin-bottom:.65rem;">
-                <div style="font-size:.55rem;font-weight:800;color:#dc2626;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.35rem;">📊 DIAGNÓSTICO — OS 3 GARGALOS POSSÍVEIS</div>
-                <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem;">
-                    <div style="background:#fff;border:1px solid ${pctProj<85?'#fca5a5':'#d1fae5'};border-radius:.45rem;padding:.45rem .55rem;text-align:center;">
-                        <div style="font-size:1.1rem;">${pctProj<85?'🔴':'🟢'}</div>
-                        <div style="font-size:.58rem;font-weight:800;color:#1c1917;margin:.18rem 0;">VOLUME</div>
-                        <div style="font-size:.56rem;color:#6b7280;">Atendimentos suficientes?</div>
-                        <div style="font-size:.66rem;font-weight:700;color:${pctProj<85?'#dc2626':'#059669'};margin-top:.2rem;">${pctProj<85?'Verificar fluxo':'No ritmo'}</div>
-                    </div>
-                    <div style="background:#fff;border:1px solid ${alertasDiscrepancia.length>0?'#fca5a5':'#d1fae5'};border-radius:.45rem;padding:.45rem .55rem;text-align:center;">
-                        <div style="font-size:1.1rem;">${alertasDiscrepancia.length>0?'🟡':'🟢'}</div>
-                        <div style="font-size:.58rem;font-weight:800;color:#1c1917;margin:.18rem 0;">CONVERSÃO</div>
-                        <div style="font-size:.56rem;color:#6b7280;">Atendimentos virando vendas?</div>
-                        <div style="font-size:.66rem;font-weight:700;color:${alertasDiscrepancia.length>0?'#d97706':'#059669'};margin-top:.2rem;">${alertasDiscrepancia.length>0?alertasDiscrepancia.length+' loja(s) desnivelada(s)':'Time equilibrado'}</div>
-                    </div>
-                    <div style="background:#fff;border:1px solid ${acPct<7?'#fca5a5':'#d1fae5'};border-radius:.45rem;padding:.45rem .55rem;text-align:center;">
-                        <div style="font-size:1.1rem;">${acPct<7?'🔴':'🟢'}</div>
-                        <div style="font-size:.58rem;font-weight:800;color:#1c1917;margin:.18rem 0;">TICKET MÉDIO</div>
-                        <div style="font-size:.56rem;color:#6b7280;">Acessórios por venda?</div>
-                        <div style="font-size:.66rem;font-weight:700;color:${acPct<7?'#dc2626':'#059669'};margin-top:.2rem;">${acPct}% ${acPct<7?'⚠️ abaixo de 7%':'✅ acima do mín.'}</div>
-                    </div>
-                </div>
-            </div>
+    <!-- ══ DIAGNÓSTICO ══ -->
+    ${blocoReuniaDiag}
 
-            <div style="margin-bottom:.6rem;">
-                <div style="font-size:.55rem;font-weight:800;color:#991b1b;text-transform:uppercase;letter-spacing:.1em;margin-bottom:.4rem;">🔍 LEITURA DO DIRETOR — O QUE OS DADOS DIZEM</div>
-                <div class="reun-subtopics">
-                    ${_st('#dc2626','Situação atual',
-                        pctProj>=100
-                        ? `"Projeção em <strong>${pctProj}%</strong>. O time está entregando. O risco agora é a acomodação — resultado bom não significa resultado ótimo. Elevem o padrão enquanto estão no ritmo."`
-                        : pctProj>=85
-                        ? `"Projeção em <strong>${pctProj}%</strong> — atenção necessária. Faltam <strong>${_brlR(metaDiaria)}</strong>/dia para fechar a meta. A diferença entre meta e miss é a intensidade das próximas 24 horas."`
-                        : `"Projeção em <strong>${pctProj}%</strong> — isso não é aceitável. São <strong>${_brlR(metaDiaria)}</strong>/dia que precisamos recuperar. Não saímos daqui sem um plano por nome e um número por loja."`
-                    )}
-                    ${alertasDiscrepancia.length>0 ? _st('#dc2626','Desequilíbrio identificado',
-                        `"${alertasDiscrepancia.map(a=>`Na <strong>${a.loja}</strong>, variação de <strong>${a.disc}%</strong> entre <strong>${a.lider}</strong> e <strong>${a.menor}</strong>`).join('; ')}. Isso não é sorte nem azar — é método. O que o melhor vendedor faz diferente? Isso precisa virar protocolo."`
-                    ) : _st('#059669','Time equilibrado','"Sem discrepância crítica entre vendedores. Isso é sinal de cultura instalada — o padrão está nivelado. Agora o trabalho é elevar o teto, não apenas o piso."')}
-                    ${acPct<7 ? _st('#dc2626','Acessórios — ponto crítico',
-                        `"${_brlR(acTotal)} em acessórios = ${acPct}% do faturamento. O mínimo aceitável é 7%. Isso não é meta opcional — é parte do modelo de negócio. Cada venda sem acessório é uma oportunidade enterrada. Hoje, sem exceção: oferta em 100% dos atendimentos."`
-                    ) : _st('#059669','Acessórios — no alvo',
-                        `"${acPct}% do faturamento em acessórios — acima do mínimo. Mantenham o hábito. Acessório não é brinde, é margem."`
-                    )}
-                    ${!isBom ? _st('#b45309','Causa raiz provável',
-                        `"Projeção abaixo de meta em dia ${dias} de ${diasM} normalmente tem uma das três origens: <strong>(1) fluxo baixo</strong> — poucos clientes entrando; <strong>(2) conversão baixa</strong> — clientes saindo sem comprar; <strong>(3) ticket médio baixo</strong> — vendendo bem pouco por venda. Identifiquem qual é o seu gargalo agora — não dá para resolver o que não se nomeia."`
-                    ) : _st('#059669','Manter o padrão','"Time no ritmo positivo. Agora o desafio é consistência. Os melhores resultados do mês acontecem nas últimas semanas — para quem manteve a intensidade o mês todo."')}
-                </div>
-            </div>
+    <!-- ══ OS 3 GARGALOS ══ -->
+    ${_g3}
 
-            <div style="padding:.55rem .8rem;background:linear-gradient(135deg,#fffbeb,#fef9c3);border:1px solid #fde68a;border-radius:.6rem;">
-                <div style="font-size:.55rem;font-weight:800;color:#92400e;text-transform:uppercase;letter-spacing:.1em;margin-bottom:.35rem;">⚡ INTERVENÇÕES PRÁTICAS — PARA APLICAR AGORA</div>
-                <div style="overflow-x:auto;">
-                <table class="reun-table">
-                    <thead><tr><th>Gargalo</th><th>Diagnóstico rápido</th><th>Ação imediata</th><th>Responsável</th></tr></thead>
-                    <tbody>
-                        <tr><td style="font-weight:700;">📉 Ritmo abaixo</td><td>Projeção &lt; 85%</td><td>Retomada de contatos e resgate de propostas paradas</td><td>Gerente + todos os vendedores</td></tr>
-                        <tr><td style="font-weight:700;">🔄 Conversão baixa</td><td>Muitos atend., poucos fechamentos</td><td>Rever script de abordagem, praticar objeções mais comuns em dupla</td><td>Gerente lidera 10min de roleplay</td></tr>
-                        <tr><td style="font-weight:700;">🏷️ Ticket baixo</td><td>Ac% &lt; 7%</td><td>Apresentar sempre o produto um tier acima + oferta obrigatória de acessório</td><td>Todo o time — monitorar no fechamento</td></tr>
-                        <tr><td style="font-weight:700;">📊 Discrepância</td><td>Variação &gt; 15% entre vendedores</td><td>Melhor vendedor acompanha 1 atendimento do que está abaixo — compartilha o que faz diferente</td><td>Gerente agenda antes do meio-dia</td></tr>
-                    </tbody>
-                </table></div>
-            </div>
-        </div>
+    <!-- ══ DIVISOR: FIM ══ -->
+    <div style="display:flex;align-items:center;gap:.6rem;margin:1rem 0 .85rem;">
+        <div style="flex:1;height:2px;background:linear-gradient(to right,#059669,#bbf7d0);border-radius:1px;"></div>
+        <div style="padding:.3rem .9rem;background:#059669;color:#fff;border-radius:999px;font-size:.62rem;font-weight:900;letter-spacing:.1em;white-space:nowrap;">✅ FIM · ${durFim} MIN</div>
+        <div style="flex:1;height:2px;background:linear-gradient(to left,#059669,#bbf7d0);border-radius:1px;"></div>
     </div>
 
-    <!-- ══ T5c · GUIA DE LIDERANÇA COMERCIAL ══ -->
-    <div class="reun-section" style="border-left-color:#7c3aed;border-left-width:4px;">
-        <div class="reun-section-header" style="background:#f5f3ff;border-bottom:1px solid #c4b5fd66;">
-            <span class="reun-badge" style="background:#7c3aed;color:#fff;">🎯 LIDERANÇA</span>
-            <span class="reun-icon">🦁</span>
-            <strong style="color:#4c1d95;">GUIA DO EXECUTIVO COMERCIAL</strong>
-            <span style="margin-left:auto;font-size:.55rem;color:#9ca3af;font-style:italic;">comportamento, postura e práticas de alta performance</span>
-        </div>
-        <div class="reun-body">
-            <div style="font-size:.62rem;color:#6b7280;margin-bottom:.6rem;font-style:italic;line-height:1.6;">O líder comercial de alta performance não gerencia números — gerencia comportamentos que geram números. O que o time faz quando você não está olhando é o real termômetro da sua liderança.</div>
-
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:.55rem;margin-bottom:.65rem;">
-
-                <div style="background:#fffbeb;border:1px solid #fde68a;border-radius:.55rem;padding:.5rem .65rem;">
-                    <div style="font-size:.55rem;font-weight:800;color:#92400e;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.3rem;">💡 JOEL JOTA · Liderança com Propósito</div>
-                    <div style="font-size:.63rem;color:#374151;line-height:1.6;margin-bottom:.3rem;">"Vendedor sem propósito é uma máquina sem combustível — pode ser ligada, mas não vai longe." Descubra o <em>porquê</em> de cada membro do time. Metas que conectam com sonhos pessoais geram comprometimento real, não apenas obediência.</div>
-                    <div style="font-size:.58rem;font-weight:700;color:#b45309;">→ Aplique hoje: pergunte para 1 vendedor — qual é o sonho que essa meta vai ajudar a realizar?</div>
-                </div>
-
-                <div style="background:#f0fdf4;border:1px solid #86efac;border-radius:.55rem;padding:.5rem .65rem;">
-                    <div style="font-size:.55rem;font-weight:800;color:#065f46;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.3rem;">📞 CAIO CARNEIRO · Venda Consultiva</div>
-                    <div style="font-size:.63rem;color:#374151;line-height:1.6;margin-bottom:.3rem;">"Técnica não é engessamento — é liberdade com direção." O líder precisa conhecer cada etapa do funil melhor que seus vendedores. Quem não domina o processo não consegue identificar onde o atendimento quebrou.</div>
-                    <div style="font-size:.58rem;font-weight:700;color:#059669;">→ Aplique hoje: faça um roleplay de 5min com o vendedor que mais perdeu vendas ontem.</div>
-                </div>
-
-                <div style="background:#eff6ff;border:1px solid #93c5fd;border-radius:.55rem;padding:.5rem .65rem;">
-                    <div style="font-size:.55rem;font-weight:800;color:#1e3a8a;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.3rem;">🏛️ GUILHERME BENCHIMOL · Cultura de Performance</div>
-                    <div style="font-size:.63rem;color:#374151;line-height:1.6;margin-bottom:.3rem;">"Cultura vence estratégia. Quem contrata errado perde duas vezes: o tempo treinando e o resultado que não veio." Meritocracia visível e consistente é o que faz o time acreditar que esforço vale a pena.</div>
-                    <div style="font-size:.58rem;font-weight:700;color:#1d4ed8;">→ Aplique hoje: reconheça publicamente 1 comportamento certo — não só o resultado.</div>
-                </div>
-
-                <div style="background:#fff7ed;border:1px solid #fdba74;border-radius:.55rem;padding:.5rem .65rem;">
-                    <div style="font-size:.55rem;font-weight:800;color:#9a3412;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.3rem;">🎙️ SILVIO SANTOS · Energia & Leitura de Cliente</div>
-                    <div style="font-size:.63rem;color:#374151;line-height:1.6;margin-bottom:.3rem;">"O melhor gerente é o que consegue fazer qualquer pessoa querer comprar — não pelo produto, mas pela energia." Comunicação, ritmo e presença são treináveis. Energia positiva na abertura da loja define o tom do dia inteiro.</div>
-                    <div style="font-size:.58rem;font-weight:700;color:#ea580c;">→ Aplique hoje: faça a abertura da reunião em pé, com intensidade — o time espelha o líder.</div>
-                </div>
-
-                <div style="background:#fdf4ff;border:1px solid #e9d5ff;border-radius:.55rem;padding:.5rem .65rem;">
-                    <div style="font-size:.55rem;font-weight:800;color:#581c87;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.3rem;">📋 GUTO GALAMBA · Gestão Prática de Equipes</div>
-                    <div style="font-size:.63rem;color:#374151;line-height:1.6;margin-bottom:.3rem;">"Reunião que não termina com nome e prazo é reunião que nunca aconteceu." Gestão de vendas no varejo é gestão de rotinas. O gerente que domina o ritmo diário nunca é surpreendido pelo resultado mensal.</div>
-                    <div style="font-size:.58rem;font-weight:700;color:#7c3aed;">→ Aplique hoje: esta reunião termina com cada vendedor dizendo: o quê, até quando e como medir.</div>
-                </div>
-
-                <div style="background:#f0fdfa;border:1px solid #5eead4;border-radius:.55rem;padding:.5rem .65rem;">
-                    <div style="font-size:.55rem;font-weight:800;color:#065f46;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.3rem;">🔥 THIAGO CONCER · Intensidade no Varejo</div>
-                    <div style="font-size:.63rem;color:#374151;line-height:1.6;margin-bottom:.3rem;">"Venda é contato. Quanto mais contato, mais venda — mas contato qualificado, com proposta, com técnica." O gerente que só observa perde a chance de intervir. Presença ativa no salão muda o resultado do dia.</div>
-                    <div style="font-size:.58rem;font-weight:700;color:#0d9488;">→ Aplique hoje: passe 20 minutos no salão observando atendimentos — intervenha com precisão.</div>
-                </div>
-
-            </div>
-
-            <div style="padding:.55rem .8rem;background:linear-gradient(135deg,#1c1917,#292524);border-radius:.65rem;">
-                <div style="font-size:.55rem;font-weight:800;color:#fbbf24;text-transform:uppercase;letter-spacing:.12em;margin-bottom:.4rem;">📌 OS 6 COMPORTAMENTOS DO LÍDER COMERCIAL DE ALTO IMPACTO</div>
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:.35rem;">
-                    ${[
-                        ['1','Clareza antes da cobrança','Antes de cobrar resultado, garanta que o time sabe exatamente o que se espera — número, prazo e como será medido.'],
-                        ['2','Presença com propósito','Estar na loja não é supervisão — é mentoria. Cada observação vira aprendizado compartilhado.'],
-                        ['3','Feedback imediato','Feedback de ontem é tarde. Feedback de agora é coaching. Aja no momento, não no relatório.'],
-                        ['4','Reconhecimento público','O que é reconhecido, se repete. Chame pelo nome quem fez certo — antes de corrigir quem fez errado.'],
-                        ['5','Metas individuais acordadas','Time sem meta individual não tem responsabilidade individual. Cada vendedor sabe sua meta antes de começar o dia.'],
-                        ['6','Encerramento com compromisso','Nenhuma reunião termina sem: o quê · quem · até quando. Sem isso, foi conversa, não decisão.']
-                    ].map(([n,t,d])=>`
-                    <div style="background:#ffffff0d;border:1px solid #ffffff15;border-radius:.4rem;padding:.38rem .5rem;">
-                        <div style="display:flex;align-items:center;gap:.3rem;margin-bottom:.18rem;">
-                            <span style="background:#D4AF37;color:#000;font-size:.5rem;font-weight:900;border-radius:50%;width:13px;height:13px;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;">${n}</span>
-                            <span style="font-size:.58rem;font-weight:800;color:#fde68a;">${t}</span>
-                        </div>
-                        <div style="font-size:.58rem;color:#d1d5db;line-height:1.5;">${d}</div>
-                    </div>`).join('')}
-                </div>
-            </div>
-
-            <div style="margin-top:.6rem;padding:.5rem .75rem;background:#fef2f2;border:1px solid #fca5a5;border-radius:.5rem;">
-                <div style="font-size:.56rem;font-weight:800;color:#dc2626;text-transform:uppercase;letter-spacing:.1em;margin-bottom:.25rem;">⚠️ OS 3 ERROS MAIS COMUNS DO GERENTE DE VAREJO</div>
-                <div style="font-size:.63rem;color:#374151;line-height:1.7;">
-                    <strong>1. Gerenciar resultado sem gerenciar comportamento</strong> — Resultado é consequência. Foque nos hábitos diários que geram o número.<br>
-                    <strong>2. Cobrar sem treinar</strong> — Cobrança sem capacitação gera ansiedade, não performance. Identifique a lacuna antes de pressionar.<br>
-                    <strong>3. Reunião sem encerramento</strong> — "Vamos melhorar" não é plano. "Kaio vai fazer X até às 18h hoje" é plano.
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- ══ T6 · PRÓXIMOS PASSOS ══ -->
+    <!-- ══ COMPROMETIMENTOS ══ -->
     <div class="reun-section" style="border-left-color:#6d28d9;">
         <div class="reun-section-header" style="background:#f5f3ff;">
-            <span class="reun-badge" style="background:#6d28d9;color:#fff;">🚀 AÇÕES</span>
-            <span class="reun-icon">✅</span>
-            <strong style="color:#4c1d95;">PRÓXIMOS PASSOS & COMPROMETIMENTOS</strong>
+            <span class="reun-badge" style="background:#6d28d9;color:#fff;">✍️ COMPROMISSO</span>
+            <span class="reun-icon">🤝</span>
+            <strong style="color:#4c1d95;">COMPROMETIMENTOS INDIVIDUAIS</strong>
         </div>
         <div class="reun-body">
-            <div style="overflow-x:auto;margin-bottom:.55rem;">
-            <table class="reun-table">
-                <thead><tr><th>Prioridade</th><th>Ação</th><th>Como medir</th><th>Prazo</th></tr></thead>
-                <tbody>
-                    <tr><td style="font-weight:800;color:#dc2626;">🔴 Alta</td><td style="font-weight:700;">Cada vendedor declara sua meta do dia</td><td>Valor declarado em voz alta</td><td>Antes de abrir a loja</td></tr>
-                    <tr><td style="font-weight:800;color:#d97706;">🟡 Média</td><td style="font-weight:700;">Mapear retornos e atendimentos agendados</td><td>Lista em mãos</td><td>Até o meio-dia</td></tr>
-                    <tr><td style="font-weight:800;color:#059669;">🟢 Rotina</td><td style="font-weight:700;">Atualizar status WhatsApp com oferta do dia</td><td>Status publicado</td><td>Abertura da loja</td></tr>
-                    <tr><td style="font-weight:800;color:#059669;">🟢 Rotina</td><td style="font-weight:700;">Revisar proposta de acessório em cada venda</td><td>% acessórios no fechamento</td><td>Durante o dia</td></tr>
-                </tbody>
-            </table></div>
-            <div style="padding:.5rem .75rem;background:#f0f4ff;border:1px solid #c7d2fe;border-radius:.5rem;font-size:.67rem;color:#3730a3;font-weight:600;">
-                Meta diária: <strong>${_brlR(metaDiaria)}</strong> · Supermeta: <strong>${_brlR(superMeta)}</strong> · Faltam <strong>${diasM-dias} dias</strong>
+            <div class="reun-subtopics">
+                ${_st('#6d28d9','Cada pessoa fala agora','"O quê vou fazer. Até quando. Como vou medir." Ninguém sai sem ter dito isso em voz alta.')}
+                ${_st('#6d28d9','Foco até o fim do mês',`Faltam <strong>${diasM-dias} dias</strong>. Meta diária: <strong>${_brlR(metaDiaria)}</strong>. Supermeta: <strong>${_brlR(superMeta)}</strong>.`)}
             </div>
             <div class="reun-quote" style="border-color:#6d28d9;background:#f5f3ff;margin-top:.6rem;">
                 <p>${qA[2].q}</p><footer>— ${qA[2].a}</footer>
@@ -16515,10 +16583,26 @@ function _gerarReuniaoHTML(tipo, val) {
 
     ${blocoTreinamento}
 
+    ${isTerca&&ganchoSemana?`<!-- ══ GANCHO DA PRÓXIMA REUNIÃO ══ -->
+    <div style="background:#1c1917;border-radius:.75rem;padding:1rem 1.1rem;margin-bottom:.85rem;">
+        <div style="font-size:.6rem;font-weight:800;color:#D4AF37;text-transform:uppercase;letter-spacing:.15em;margin-bottom:.65rem;">🎯 GANCHO DA PRÓXIMA REUNIÃO — Anotem no caderno!</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:.55rem;">
+            <div style="background:#ffffff0d;border:1px solid #ffffff20;border-radius:.5rem;padding:.65rem .75rem;">
+                <div style="font-size:.56rem;font-weight:700;color:#fbbf24;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.3rem;">Pergunta 1</div>
+                <div style="font-size:.67rem;color:#e7e5e4;line-height:1.6;">${ganchoSemana.q1}</div>
+            </div>
+            <div style="background:#ffffff0d;border:1px solid #ffffff20;border-radius:.5rem;padding:.65rem .75rem;">
+                <div style="font-size:.56rem;font-weight:700;color:#fbbf24;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.3rem;">Pergunta 2</div>
+                <div style="font-size:.67rem;color:#e7e5e4;line-height:1.6;">${ganchoSemana.q2}</div>
+            </div>
+        </div>
+        <div style="margin-top:.55rem;font-size:.62rem;color:#a8a29e;font-style:italic;">Na próxima terça, começamos verificando essas respostas antes dos números.</div>
+    </div>`:''}
+
     <!-- ══ VÍDEO DO DIA ══ -->
     <div class="reun-video-card">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.55rem;">
-            <div style="font-size:.57rem;letter-spacing:.14em;color:#92400e;text-transform:uppercase;font-weight:700;"><i class="fab fa-youtube" style="color:#ef4444;margin-right:.35rem;"></i>VÍDEO DO DIA — ATUALIZADO DIARIAMENTE</div>
+            <div style="font-size:.57rem;letter-spacing:.14em;color:#92400e;text-transform:uppercase;font-weight:700;"><i class="fab fa-youtube" style="color:#ef4444;margin-right:.35rem;"></i>VÍDEO MOTIVACIONAL</div>
             <span style="font-size:.55rem;color:#9ca3af;background:#f3f4f6;padding:.15rem .5rem;border-radius:999px;">${new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'})}</span>
         </div>
         <a href="${vid.u}" target="_blank" rel="noopener" class="reun-video-link" style="text-decoration:none;">
@@ -16529,8 +16613,8 @@ function _gerarReuniaoHTML(tipo, val) {
             </div>
             <div style="background:#ef4444;color:#fff;border-radius:.4rem;padding:.3rem .6rem;font-size:.6rem;font-weight:700;flex-shrink:0;">▶ Abrir</div>
         </a>
-        <div style="margin-top:.55rem;padding:.5rem .7rem;background:#fffbf0;border:1px solid #fde68a;border-radius:.5rem;font-size:.63rem;color:#78350f;line-height:1.5;">
-            💡 <strong>Como usar:</strong> ${vid.resumo}
+        <div style="margin-top:.5rem;padding:.45rem .65rem;background:#fffbf0;border:1px solid #fde68a;border-radius:.45rem;font-size:.63rem;color:#78350f;line-height:1.5;">
+            💡 ${vid.resumo}
         </div>
     </div>
 
@@ -16540,12 +16624,7 @@ function _gerarReuniaoHTML(tipo, val) {
         <div style="overflow-x:auto;">
         <table class="reun-table" style="margin-bottom:.75rem;">
             <thead><tr><th style="width:30px;">#</th><th>Ação / Compromisso</th><th style="width:140px;">Responsável</th><th style="width:100px;">Prazo</th></tr></thead>
-            <tbody>${Array.from({length:8},(_,i)=>`<tr>
-                <td style="color:#d1d5db;font-weight:700;">${i+1}</td>
-                <td style="height:1.8rem;"></td>
-                <td></td>
-                <td></td>
-            </tr>`).join('')}</tbody>
+            <tbody>${Array.from({length:8},(_,i)=>`<tr><td style="color:#d1d5db;font-weight:700;">${i+1}</td><td style="height:1.8rem;"></td><td></td><td></td></tr>`).join('')}</tbody>
         </table></div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-top:.25rem;">
             <div style="font-size:.6rem;color:#9ca3af;padding:.4rem .65rem;border:1px solid #e5e7eb;border-radius:.4rem;">📅 Próxima reunião: ___________________________</div>
@@ -16556,7 +16635,6 @@ function _gerarReuniaoHTML(tipo, val) {
     <!-- ══ RODAPÉ ══ -->
     <div style="text-align:center;padding:.75rem 0 0;border-top:1px solid #e5e7eb;margin-top:.5rem;">
         <div style="font-size:.57rem;color:#9ca3af;letter-spacing:.08em;">TITÃS SINERGY · FLOW MEETING · Gerado automaticamente em ${new Date().toLocaleString('pt-BR')}</div>
-        <div style="font-size:.54rem;color:#d1d5db;margin-top:.15rem;">Documento Confidencial · Uso exclusivo de líderes autorizados</div>
     </div>
 </div>`;
 }
@@ -21492,7 +21570,7 @@ cursosInit();
 <!-- ── Modal Modelos por Financeira ──────────────────────────────────── -->
 <div id="modal-modelos-fin" class="fixed inset-0 z-[999] hidden items-center justify-center bg-black/80 p-3"
      onclick="if(event.target===this)fecharModelosFin()" style="display:none;">
-  <div style="background:#0d1117;border:1px solid rgba(139,92,246,.3);border-radius:1.25rem;width:100%;max-width:560px;max-height:92vh;display:flex;flex-direction:column;box-shadow:0 24px 60px rgba(0,0,0,.7);">
+  <div style="background:#0d1117;border:1px solid rgba(139,92,246,.3);border-radius:1.25rem;width:100%;max-width:860px;max-height:92vh;display:flex;flex-direction:column;box-shadow:0 24px 60px rgba(0,0,0,.7);">
     <div style="display:flex;align-items:center;justify-content:space-between;padding:1.1rem 1.25rem .9rem;border-bottom:1px solid rgba(139,92,246,.15);flex-shrink:0;">
       <div style="display:flex;align-items:center;gap:.6rem;">
         <div style="width:32px;height:32px;border-radius:10px;background:#8b5cf618;border:1px solid #8b5cf635;display:flex;align-items:center;justify-content:center;">
@@ -24819,6 +24897,440 @@ window._chklSetUserLoja     = _chklSetUserLoja;
 window._chklZerar           = _chklZerar;
 window._chklMarkStarted     = _chklMarkStarted;
 
+// ─── FOLGAS COMPENSATÓRIAS ────────────────────────────────────────────────────
+const _FOLGAS_LOJAS = {
+  cariacica:   {nome:'Cariacica',      cor:'#60a5fa'},
+  itabuna:     {nome:'Itabuna',        cor:'#f97316'},
+  laranjeiras: {nome:'Laranjeiras',    cor:'#34d399'},
+  saomateus:   {nome:'São Mateus',     cor:'#a78bfa'},
+  teixeira:    {nome:'Tx Freitas',     cor:'#f87171'},
+  barreiras:   {nome:'Barreiras',      cor:'#fbbf24'},
+  linhares:    {nome:'Linhares',       cor:'#2dd4bf'},
+  serra:       {nome:'Serra',          cor:'#f472b6'},
+  montserrat:  {nome:'Montserrat',     cor:'#818cf8'},
+  moxuara:     {nome:'Moxuara',        cor:'#22d3ee'},
+  praiadacosta:{nome:'Praia da Costa', cor:'#84cc16'},
+};
+
+let _FOLGAS_DATA = {
+  '2026-08-03': [
+    {nome:'Evellyn Batista Cruz', loja:'itabuna'},
+    {nome:'Mayara Küll', loja:'laranjeiras'},
+  ],
+  '2026-08-07': [
+    {nome:'Elisa', loja:'saomateus'},
+    {nome:'Crislaine Loureiro Almeida', loja:'itabuna'},
+  ],
+  '2026-08-08': [
+    {nome:'Elisa', loja:'saomateus'},
+  ],
+  '2026-08-10': [
+    {nome:'Eliza Queiroz', loja:'saomateus'},
+    {nome:'Antoniely', loja:'saomateus'},
+    {nome:'Carine Franco', loja:'teixeira'},
+    {nome:'Luana Lopes Nery', loja:'itabuna'},
+    {nome:'Juliana', loja:'linhares'},
+  ],
+  '2026-08-12': [
+    {nome:'Evellyn Batista Cruz', loja:'itabuna'},
+    {nome:'Gustavo (trainee)', loja:'barreiras'},
+  ],
+  '2026-08-13': [
+    {nome:'Tailaine', loja:'serra'},
+    {nome:'Stefane', loja:'saomateus'},
+  ],
+  '2026-08-17': [
+    {nome:'ADF Maria', loja:'cariacica'},
+    {nome:'Andreza de Jesus Souza', loja:'itabuna'},
+  ],
+  '2026-08-19': [
+    {nome:'Crislaine Loureiro Almeida', loja:'itabuna'},
+    {nome:'Stella', loja:'laranjeiras'},
+  ],
+  '2026-08-20': [
+    {nome:'Mikaelle Santos das Virgens', loja:'itabuna'},
+  ],
+  '2026-08-24': [
+    {nome:'Mikaelle Santos das Virgens', loja:'itabuna'},
+  ],
+  '2026-08-26': [
+    {nome:'Keifit Moreira dos Santos', loja:'itabuna'},
+    {nome:'Stella', loja:'laranjeiras'},
+  ],
+  '2026-08-27': [
+    {nome:'Crislaine Loureiro Almeida', loja:'itabuna'},
+  ],
+  '2026-09-05': [
+    {nome:'Roberta', loja:'cariacica'},
+  ],
+};
+
+let _folgasCurYear = 2026, _folgasCurMonth = 7; // 7 = agosto
+
+function _folgasOpenModal(year, month) {
+  year  = year  || 2026;
+  month = (month !== undefined) ? month : 7;
+  _folgasCurYear = year; _folgasCurMonth = month;
+  const existing = document.getElementById('modal-folgas');
+  if (existing) { existing.style.display = 'flex'; _folgasRenderCal(year, month); return; }
+  const div = document.createElement('div');
+  div.id = 'modal-folgas';
+  div.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.75);display:flex;align-items:center;justify-content:center;';
+  div.innerHTML = `
+    <div class="glass rounded-2xl p-6 w-full" style="max-width:700px;border:1px solid rgba(20,184,166,.35);max-height:90vh;overflow-y:auto;">
+      <div class="flex items-center justify-between mb-4">
+        <div class="flex items-center gap-3">
+          <button onclick="_folgasNavMonth(-1)" style="background:rgba(20,184,166,.12);border:1px solid rgba(20,184,166,.3);color:#14b8a6;border-radius:.75rem;padding:.3rem .8rem;font-size:1.1rem;cursor:pointer">‹</button>
+          <h3 id="folgas-month-title" class="text-white font-bold text-base" style="min-width:160px;text-align:center"></h3>
+          <button onclick="_folgasNavMonth(1)" style="background:rgba(20,184,166,.12);border:1px solid rgba(20,184,166,.3);color:#14b8a6;border-radius:.75rem;padding:.3rem .8rem;font-size:1.1rem;cursor:pointer">›</button>
+        </div>
+        <button onclick="_folgasCloseModal()" style="color:#9ca3af;background:none;border:none;font-size:1.4rem;cursor:pointer;line-height:1">✕</button>
+      </div>
+      <div id="folgas-cal-body"></div>
+      <div id="folgas-day-panel"></div>
+    </div>`;
+  document.body.appendChild(div);
+  div.addEventListener('click', e => { if (e.target === div) _folgasCloseModal(); });
+  _folgasRenderCal(year, month);
+}
+
+function _folgasNavMonth(delta) {
+  _folgasCurMonth += delta;
+  if (_folgasCurMonth < 0)  { _folgasCurMonth = 11; _folgasCurYear--; }
+  if (_folgasCurMonth > 11) { _folgasCurMonth = 0;  _folgasCurYear++; }
+  const p = document.getElementById('folgas-day-panel'); if (p) p.innerHTML = '';
+  _folgasRenderCal(_folgasCurYear, _folgasCurMonth);
+}
+
+function _folgasCloseModal() {
+  const m = document.getElementById('modal-folgas');
+  if (m) m.style.display = 'none';
+}
+
+function _folgasRenderCal(year, month) {
+  const MESES = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  const DIAS  = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+  const title = document.getElementById('folgas-month-title');
+  if (title) title.textContent = `${MESES[month]} ${year}`;
+  const body = document.getElementById('folgas-cal-body');
+  if (!body) return;
+  const firstDay = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const today = new Date();
+  let html = `<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:4px;">`;
+  DIAS.forEach(d => { html += `<div style="text-align:center;font-size:.65rem;color:#6b7280;font-weight:600;padding:.25rem 0">${d}</div>`; });
+  html += `</div><div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;">`;
+  for (let i = 0; i < firstDay; i++) html += `<div style="min-height:62px;"></div>`;
+  for (let d = 1; d <= daysInMonth; d++) {
+    const key = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const folgas = _FOLGAS_DATA[key] || [];
+    const isToday = today.getFullYear()===year && today.getMonth()===month && today.getDate()===d;
+    const hasFolgas = folgas.length > 0;
+    const isSun = (firstDay + d - 1) % 7 === 0;
+    const bg = hasFolgas ? 'rgba(20,184,166,.1)' : (isSun ? 'rgba(255,255,255,.02)' : 'rgba(255,255,255,.04)');
+    const bd = isToday ? '2px solid rgba(20,184,166,.8)' : (hasFolgas ? '1px solid rgba(20,184,166,.3)' : '1px solid rgba(255,255,255,.07)');
+    const dc = isToday ? '#14b8a6' : (isSun ? '#6b7280' : '#d1d5db');
+    const porLoja = {};
+    folgas.forEach(f => { if (!porLoja[f.loja]) porLoja[f.loja] = []; porLoja[f.loja].push(f.nome); });
+    const lojas = Object.keys(porLoja);
+    let dots = lojas.length ? `<div style="display:flex;flex-wrap:wrap;gap:2px;margin-top:3px;">` : '';
+    lojas.slice(0,4).forEach(l => {
+      const cor = (_FOLGAS_LOJAS[l]||{cor:'#9ca3af'}).cor;
+      dots += `<div style="width:6px;height:6px;border-radius:50%;background:${cor}"></div>`;
+    });
+    if (lojas.length > 4) dots += `<div style="font-size:.5rem;color:#9ca3af">+${lojas.length-4}</div>`;
+    if (lojas.length) dots += `</div>`;
+    const oc = hasFolgas ? `onclick="_folgasShowDay('${key}')"` : '';
+    html += `<div ${oc} style="min-height:62px;background:${bg};border:${bd};border-radius:.6rem;padding:.35rem;
+             cursor:${hasFolgas?'pointer':'default'};transition:.15s;${hasFolgas?'':''}">
+      <div style="font-size:.7rem;font-weight:${isToday?700:500};color:${dc};text-align:right">${d}</div>
+      ${hasFolgas?`<div style="font-size:.55rem;color:#14b8a6;font-weight:700;margin-top:1px">${folgas.length}✕</div>`:''}
+      ${dots}
+    </div>`;
+  }
+  html += `</div>`;
+  const totalMes = Object.entries(_FOLGAS_DATA)
+    .filter(([k]) => k.startsWith(`${year}-${String(month+1).padStart(2,'0')}`))
+    .reduce((s,[,v]) => s + v.length, 0);
+  const diasComFolga = Object.keys(_FOLGAS_DATA).filter(k => k.startsWith(`${year}-${String(month+1).padStart(2,'0')}`)).length;
+  html += `<div style="margin-top:.75rem;padding:.6rem .9rem;background:rgba(20,184,166,.06);border:1px solid rgba(20,184,166,.15);border-radius:.75rem;display:flex;justify-content:space-between;align-items:center;">
+    <span style="color:#9ca3af;font-size:.72rem">Total no mês · ${diasComFolga} dias com folga</span>
+    <span style="color:#14b8a6;font-size:.82rem;font-weight:700">${totalMes} folgas</span>
+  </div>`;
+  body.innerHTML = html;
+}
+
+function _folgasShowDay(key) {
+  const folgas = _FOLGAS_DATA[key] || []; if (!folgas.length) return;
+  const [y,m,d] = key.split('-');
+  const MESES = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  const titulo = `${parseInt(d)} de ${MESES[parseInt(m)-1]} de ${y}`;
+  const porLoja = {};
+  folgas.forEach(f => { if (!porLoja[f.loja]) porLoja[f.loja] = []; porLoja[f.loja].push(f.nome); });
+  let html = `<div style="margin-top:.75rem;padding:.9rem;background:rgba(255,255,255,.04);border:1px solid rgba(20,184,166,.25);border-radius:.75rem;">
+    <div style="font-size:.78rem;font-weight:700;color:#14b8a6;margin-bottom:.6rem">📅 ${titulo}</div>`;
+  Object.entries(porLoja).forEach(([loja,nomes]) => {
+    const l = _FOLGAS_LOJAS[loja] || {nome:loja,cor:'#9ca3af'};
+    html += `<div style="margin-bottom:.45rem;padding:.4rem .6rem;background:${l.cor}11;border-left:3px solid ${l.cor};border-radius:.4rem;">
+      <div style="font-size:.68rem;font-weight:700;color:${l.cor};margin-bottom:.2rem">${l.nome}</div>`;
+    nomes.forEach(n => { html += `<div style="font-size:.68rem;color:#d1d5db">• ${n}</div>`; });
+    html += `</div>`;
+  });
+  html += `</div>`;
+  const panel = document.getElementById('folgas-day-panel');
+  if (panel) panel.innerHTML = html;
+}
+
+window._folgasOpenModal     = _folgasOpenModal;
+window._folgasCloseModal    = _folgasCloseModal;
+window._folgasNavMonth      = _folgasNavMonth;
+window._folgasShowDay       = _folgasShowDay;
+
+// ─── OCORRÊNCIAS (Faltas / Atestados / Declarações) ───────────────────────────
+const _OC_LOJAS = _FOLGAS_LOJAS; // reutiliza mapa de lojas/cores
+
+const _OCORRENCIAS_DATA = {
+  atestados: [
+    { nome:'Paloma de Jesus',       loja:'teixeira',  data:'2026-08-04', dias:2,
+      local:'SUS — PA Teixeira de Freitas',
+      medico:'ilegível no documento',
+      cid:'ilegível (poss. A09)',
+      obs:'Atestado de 2 dias a partir de 04/08' },
+    { nome:'Kysdiane Monteiro Silva', loja:'saomateus', data:'2026-08-10', dias:2,
+      local:'SUS — Pronto Atendimento, Prefeitura de São Mateus',
+      medico:'Matheus Santos Guedes CRM/MG 21-22',
+      cid:'—',
+      obs:'⚠️ Emitido às 23h27! Gerente reportou como "Hyslan" mas doc diz "KYSDIANE"',
+      alerta:true },
+    { nome:'Antoniely',             loja:'saomateus', data:'2026-08-13', dias:1,
+      local:'não informado',
+      medico:'não informado',
+      cid:'—',
+      obs:'Atestado enviado ao gerente; DP solicitou envio físico' },
+    { nome:'Krystian (Subgerente)', loja:'linhares',  data:'2026-08-10', dias:1,
+      local:'hospital (a confirmar)',
+      medico:'—', cid:'—',
+      obs:'Atestado prometido — aguardando confirmação do documento físico' },
+  ],
+  faltas: [
+    { nome:'Beatriz', loja:'serra',     data:'2026-08-07', motivo:'Sem justificativa',                          alerta:true },
+    { nome:'Beatriz', loja:'serra',     data:'2026-08-08', motivo:'Sem justificativa',                          alerta:true },
+    { nome:'Beatriz', loja:'serra',     data:'2026-08-10', motivo:'Mandada para casa — atrasos constantes (disciplinar)', alerta:true },
+    { nome:'Ramirys', loja:'saomateus', data:'2026-08-13', motivo:'Levou filhos ao médico ("novamente")',       alerta:true },
+    { nome:'Antoniely',loja:'saomateus',data:'2026-08-13', motivo:'Não compareceu — enviou atestado' },
+    { nome:'Hiully',   loja:'serra',    data:'2026-08-14', motivo:'Problemas pessoais — sem atestado' },
+    { nome:'Brainer Rodrigues', loja:'teixeira', data:'2026-08-08', motivo:'Avisou atraso → não compareceu' },
+    { nome:'Stefany Santiago',  loja:'laranjeiras', data:'2026-08-08', motivo:'Passando mal — sem atestado' },
+    { nome:'Tainá',    loja:'montserrat', date:'2026-08-07', motivo:'Passando mal — sem atestado', data:'2026-08-07' },
+    { nome:'Carlos',   loja:'serra',    data:'2026-08-07', motivo:'Pai doente — sem quem cuidar' },
+    { nome:'Kysiane',  loja:'saomateus',data:'2026-08-10', motivo:'Urgência → atestado 2 dias SUS (enviado)' },
+    { nome:'Arthur (trainee)',  loja:'linhares',  data:'2026-08-10', motivo:'Mandado para casa — desrespeitou hierarquia (disciplinar)' },
+    { nome:'Adriano Jeremias',  loja:'montserrat',data:'2026-08-12', motivo:'Liberado antecipado — passando mal "novamente"' },
+    { nome:'Wenderson (trainee)',loja:'linhares', data:'2026-08-12', motivo:'Saiu mais cedo — hospital (passou mal)' },
+  ],
+  declaracoes: [
+    { nome:'Andreza',             loja:'itabuna',   data:'2026-08-13', tipo:'Saída antecipada',   motivo:'Solicitou liberação às 10h30 — hospital' },
+    { nome:'Taine',               loja:'barreiras', data:'2026-08-10', tipo:'Saída almoço',        motivo:'Levou filha na UPA' },
+    { nome:'Wenderson (trainee)', loja:'linhares',  data:'2026-08-12', tipo:'Saída antecipada',    motivo:'Passou mal → hospital' },
+    { nome:'Adriano Jeremias',    loja:'montserrat',data:'2026-08-12', tipo:'Liberação',           motivo:'Mal passando — liberado pelo gerente (2ª vez)' },
+    { nome:'Keifit',              loja:'itabuna',   data:'2026-08-08', tipo:'Atraso',              motivo:'Imprevisto com chave do portão' },
+    { nome:'Keifit',              loja:'itabuna',   data:'2026-08-10', tipo:'Atraso',              motivo:'Ônibus atrasou' },
+    { nome:'Izabhela Sene (ADF)', loja:'barreiras', data:'2026-08-10', tipo:'Ausência parcial',    motivo:'Irmã acidentada — ficou cuidando pela manhã' },
+    { nome:'Luana (trainee)',     loja:'itabuna',   data:'2026-08-08', tipo:'Chegada tardia',      motivo:'Problema com celular — chegou depois' },
+  ],
+};
+
+// null = sem filtro (diretoria); array de keys = apenas lojas da subrede (gerSenior)
+let _ocFilterLojas = null;
+
+const _OC_SUBREDE = {
+  talysson: ['cariacica','itabuna','moxuara','praiadacosta'],
+  adriel:   ['barreiras','teixeira','laranjeiras'],
+  arthur:   ['saomateus','serra','montserrat','linhares'],
+  dias:     null,
+};
+
+function _ocFilteredData(fl) {
+  fl = fl !== undefined ? fl : _ocFilterLojas;
+  return {
+    faltas:      _OCORRENCIAS_DATA.faltas.filter(f      => !fl || fl.includes(f.loja)),
+    atestados:   _OCORRENCIAS_DATA.atestados.filter(a   => !fl || fl.includes(a.loja)),
+    declaracoes: _OCORRENCIAS_DATA.declaracoes.filter(d => !fl || fl.includes(d.loja)),
+  };
+}
+
+function _ocRankingFaltas(fl) {
+  const data = _ocFilteredData(fl !== undefined ? fl : _ocFilterLojas);
+  const contagem = {};
+  data.faltas.forEach(f    => { contagem[f.nome] = (contagem[f.nome] || 0) + 1; });
+  data.atestados.forEach(a => { contagem[a.nome] = (contagem[a.nome] || 0) + a.dias; });
+  return Object.entries(contagem).sort((a,b) => b[1]-a[1]);
+}
+
+function _ocOpenModal(tab, filterLojas) {
+  tab = tab || 'faltas';
+  if (filterLojas !== undefined) _ocFilterLojas = filterLojas;
+  const el = document.getElementById('modal-ocorrencias');
+  if (el) { el.style.display = 'flex'; _ocRenderTab(tab); return; }
+  const div = document.createElement('div');
+  div.id = 'modal-ocorrencias';
+  div.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.8);display:flex;align-items:center;justify-content:center;';
+  div.innerHTML = `
+    <div class="glass rounded-2xl p-6 w-full" style="max-width:780px;border:1px solid rgba(239,68,68,.3);max-height:92vh;overflow-y:auto;">
+      <div class="flex items-center justify-between mb-5">
+        <div class="flex items-center gap-2">
+          <span style="font-size:1.6rem">🚨</span>
+          <div>
+            <div style="color:#ef4444;font-size:1.1rem;font-weight:700">Ocorrências RH — Agosto/2026</div>
+            <div style="color:#6b7280;font-size:.75rem">Faltas · Atestados · Declarações · Folgas</div>
+          </div>
+        </div>
+        <button onclick="_ocCloseModal()" style="color:#9ca3af;background:none;border:none;font-size:1.4rem;cursor:pointer">✕</button>
+      </div>
+      <div class="flex gap-2 mb-5 flex-wrap" id="oc-tabs">
+        ${[['faltas','🔴','Faltas'],['atestados','📋','Atestados'],['declaracoes','🏥','Declarações'],['folgas','🏖️','Folgas']].map(([k,ic,lb])=>`
+          <button id="oc-tab-${k}" onclick="_ocRenderTab('${k}')"
+            style="flex:1;min-width:120px;padding:.5rem 1rem;border-radius:.75rem;font-size:.82rem;font-weight:600;cursor:pointer;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:#9ca3af;transition:.2s">
+            ${ic} ${lb}
+          </button>`).join('')}
+      </div>
+      <div id="oc-body"></div>
+    </div>`;
+  document.body.appendChild(div);
+  div.addEventListener('click', e => { if (e.target === div) _ocCloseModal(); });
+  _ocRenderTab(tab);
+}
+
+function _ocCloseModal() {
+  const el = document.getElementById('modal-ocorrencias');
+  if (el) el.style.display = 'none';
+}
+
+function _ocRenderTab(tab) {
+  const tabs = document.querySelectorAll('[id^="oc-tab-"]');
+  tabs.forEach(b => {
+    b.style.background = b.id === `oc-tab-${tab}` ? 'rgba(239,68,68,.18)' : 'rgba(255,255,255,.05)';
+    b.style.color      = b.id === `oc-tab-${tab}` ? '#ef4444'              : '#9ca3af';
+    b.style.borderColor= b.id === `oc-tab-${tab}` ? 'rgba(239,68,68,.5)'  : 'rgba(255,255,255,.1)';
+  });
+  const body = document.getElementById('oc-body');
+  if (!body) return;
+
+  if (tab === 'folgas') { _ocCloseModal(); _folgasOpenModal(2026,7); return; }
+
+  if (tab === 'faltas') {
+    const data    = _ocFilteredData();
+    const ranking = _ocRankingFaltas();
+    const medalha = ['🥇','🥈','🥉'];
+    body.innerHTML = `
+      <div style="margin-bottom:1.2rem">
+        <div style="color:#ef4444;font-weight:700;font-size:.85rem;margin-bottom:.6rem">🏆 RANKING DE AUSÊNCIAS (faltas + dias atestado)</div>
+        ${ranking.map(([nome,qtd],i) => {
+          const f = data.faltas.filter(x=>x.nome===nome);
+          const a = data.atestados.filter(x=>x.nome===nome);
+          const lojaKey = (f[0]||a[0]||{}).loja||'';
+          const cor = (_OC_LOJAS[lojaKey]||{cor:'#6b7280'}).cor;
+          const flag = f.some(x=>x.alerta)||a.some(x=>x.alerta) ? ' ⚠️' : '';
+          const lojaLabel = (_OC_LOJAS[lojaKey]||{nome:lojaKey}).nome;
+          return `<div style="display:flex;align-items:center;gap:.7rem;padding:.45rem .7rem;border-radius:.6rem;margin-bottom:.3rem;background:rgba(255,255,255,.03);border-left:3px solid ${cor}">
+            <span style="font-size:1.1rem;width:1.5rem">${medalha[i]||`${i+1}º`}</span>
+            <div style="flex:1">
+              <span style="color:#f1f5f9;font-weight:600;font-size:.85rem">${nome}${flag}</span>
+              <span style="color:#6b7280;font-size:.72rem;margin-left:.5rem">${lojaLabel}</span>
+            </div>
+            <span style="color:#ef4444;font-weight:700;font-size:.9rem">${qtd} dia${qtd>1?'s':''}</span>
+          </div>`;
+        }).join('')}
+      </div>
+      <div style="color:#f1f5f9;font-weight:700;font-size:.85rem;margin-bottom:.6rem">📅 REGISTRO CRONOLÓGICO</div>
+      ${[...data.faltas].sort((a,b)=>a.data.localeCompare(b.data)).map(f => {
+        const [,mm,dd] = f.data.split('-');
+        const cor = (_OC_LOJAS[f.loja]||{cor:'#6b7280'}).cor;
+        const lojaLabel = (_OC_LOJAS[f.loja]||{nome:f.loja}).nome;
+        return `<div style="display:flex;gap:.7rem;padding:.4rem .7rem;border-radius:.6rem;margin-bottom:.25rem;background:rgba(255,255,255,.03);border-left:3px solid ${f.alerta?'#ef4444':cor}">
+          <span style="color:#14b8a6;font-weight:600;font-size:.78rem;min-width:2.5rem">${dd}/${mm}</span>
+          <div style="flex:1">
+            <span style="color:#f1f5f9;font-size:.82rem;font-weight:600">${f.nome}</span>
+            <span style="color:#6b7280;font-size:.72rem;margin-left:.4rem">${lojaLabel}</span>
+            <div style="color:#9ca3af;font-size:.75rem">${f.motivo}</div>
+          </div>
+          ${f.alerta ? '<span style="color:#ef4444;font-size:.8rem">⚠️</span>' : ''}
+        </div>`;
+      }).join('')}`;
+    return;
+  }
+
+  if (tab === 'atestados') {
+    const data = _ocFilteredData();
+    const alertaSM = data.atestados.some(a=>a.alerta&&a.loja==='saomateus');
+    body.innerHTML = `
+      <div style="color:#f1f5f9;font-weight:700;font-size:.85rem;margin-bottom:.8rem">📋 ATESTADOS REGISTRADOS</div>
+      ${data.atestados.map(a => {
+        const [,mm,dd] = a.data.split('-');
+        const cor = (_OC_LOJAS[a.loja]||{cor:'#6b7280'}).cor;
+        const lojaLabel = (_OC_LOJAS[a.loja]||{nome:a.loja}).nome;
+        return `<div style="border:1px solid ${a.alerta?'rgba(239,68,68,.5)':'rgba(255,255,255,.07)'};border-radius:.9rem;padding:.9rem 1rem;margin-bottom:.7rem;background:rgba(255,255,255,.02)">
+          <div class="flex items-center justify-between mb-2">
+            <div>
+              <span style="color:#f1f5f9;font-weight:700;font-size:.88rem">${a.nome}</span>
+              <span style="color:#6b7280;font-size:.72rem;margin-left:.5rem">${lojaLabel}</span>
+            </div>
+            <div style="text-align:right">
+              <span style="color:#14b8a6;font-weight:600;font-size:.8rem">${dd}/${mm}/2026</span>
+              <span style="color:#9ca3af;font-size:.72rem;margin-left:.4rem">${a.dias} dia${a.dias>1?'s':''}</span>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:.3rem .8rem;font-size:.75rem">
+            <div><span style="color:#6b7280">Local:</span> <span style="color:#d1d5db">${a.local}</span></div>
+            <div><span style="color:#6b7280">Médico:</span> <span style="color:#d1d5db">${a.medico}</span></div>
+            <div><span style="color:#6b7280">CID:</span> <span style="color:#fbbf24;font-weight:600">${a.cid}</span></div>
+          </div>
+          ${a.obs ? `<div style="margin-top:.5rem;font-size:.75rem;color:${a.alerta?'#fca5a5':'#9ca3af'};padding:.35rem .5rem;background:${a.alerta?'rgba(239,68,68,.08)':'rgba(255,255,255,.03)'};border-radius:.4rem">${a.obs}</div>` : ''}
+        </div>`;
+      }).join('')}
+      ${alertaSM ? `<div style="margin-top:1rem;padding:.7rem;background:rgba(239,68,68,.07);border:1px solid rgba(239,68,68,.2);border-radius:.75rem;font-size:.75rem;color:#fca5a5">
+        ⚠️ <strong>Atenção:</strong> Atestado de Kysdiane/São Mateus emitido às <strong>23h27</strong> pelo médico Matheus Santos Guedes (CRM/MG 21-22).
+        Gerente reportou nome diferente ("Hyslan"). Verificar autenticidade.
+      </div>` : ''}`;
+    return;
+  }
+
+  if (tab === 'declaracoes') {
+    const data = _ocFilteredData();
+    body.innerHTML = `
+      <div style="color:#f1f5f9;font-weight:700;font-size:.85rem;margin-bottom:.8rem">🏥 DECLARAÇÕES DE COMPARECIMENTO / SAÍDAS</div>
+      ${[...data.declaracoes].sort((a,b)=>a.data.localeCompare(b.data)).map(d => {
+        const [,mm,dd] = d.data.split('-');
+        const cor = (_OC_LOJAS[d.loja]||{cor:'#6b7280'}).cor;
+        const lojaLabel = (_OC_LOJAS[d.loja]||{nome:d.loja}).nome;
+        const tipoCor = {
+          'Saída antecipada':'#f97316', 'Saída almoço':'#fbbf24',
+          'Liberação':'#a78bfa', 'Atraso':'#60a5fa',
+          'Ausência parcial':'#f472b6', 'Chegada tardia':'#22d3ee'
+        }[d.tipo] || '#6b7280';
+        return `<div style="display:flex;gap:.7rem;padding:.5rem .7rem;border-radius:.6rem;margin-bottom:.3rem;background:rgba(255,255,255,.03);border-left:3px solid ${cor}">
+          <span style="color:#14b8a6;font-weight:600;font-size:.78rem;min-width:2.5rem">${dd}/${mm}</span>
+          <div style="flex:1">
+            <div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap">
+              <span style="color:#f1f5f9;font-size:.82rem;font-weight:600">${d.nome}</span>
+              <span style="color:#6b7280;font-size:.72rem">${lojaLabel}</span>
+              <span style="font-size:.68rem;font-weight:700;padding:.1rem .45rem;border-radius:.35rem;background:rgba(255,255,255,.06);color:${tipoCor}">${d.tipo}</span>
+            </div>
+            <div style="color:#9ca3af;font-size:.75rem;margin-top:.15rem">${d.motivo}</div>
+          </div>
+        </div>`;
+      }).join('')}
+      <div style="margin-top:.8rem;color:#6b7280;font-size:.72rem">
+        <strong>Nota:</strong> Dados de 01/08 a 15/08/2026 — grupo Departamento Pessoal TITÃS.
+      </div>`;
+    return;
+  }
+}
+
+window._ocOpenModal  = _ocOpenModal;
+window._ocCloseModal = _ocCloseModal;
+window._ocRenderTab  = _ocRenderTab;
+
 // ─── Landing ──────────────────────────────────────────────────────────────────
 function _diarioRenderLanding() {
   const isSuperAdmin = user && ['diretoria','admin','franqueado'].includes(user.cargo);
@@ -24921,18 +25433,103 @@ function _diarioRenderLanding() {
   const m = _DIARIO_MGR;
   const isMeloOuNeto = ['diretoria','admin'].includes((user && user.cargo) ? user.cargo.toLowerCase() : '');
 
-  // ── Gerente Sênior: apenas seu card + Checklists ──────────────────────────
+  // Card de Folgas — preview das próximas folgas
+  const _folgasProximas = () => {
+    const hoje = new Date();
+    const itens = Object.entries(_FOLGAS_DATA)
+      .filter(([k]) => new Date(k + 'T00:00:00') >= new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate()))
+      .sort(([a],[b]) => a.localeCompare(b))
+      .slice(0, 3);
+    if (!itens.length) return '<div style="color:#6b7280;font-size:.7rem">Nenhuma folga agendada</div>';
+    return itens.map(([k, fs]) => {
+      const [,mm,dd] = k.split('-');
+      const lojas = [...new Set(fs.map(f => (_FOLGAS_LOJAS[f.loja]||{nome:f.loja}).nome))];
+      return `<div style="font-size:.68rem;color:#d1d5db"><span style="color:#14b8a6;font-weight:600">${dd}/${mm}</span> · ${fs.length} folga${fs.length>1?'s':''} (${lojas.slice(0,2).join(', ')}${lojas.length>2?'…':''})</div>`;
+    }).join('');
+  };
+
+  const cardFolgas = `
+    <div onclick="_folgasOpenModal()"
+         style="background:linear-gradient(145deg,#041a18 0%,#0d0d0d 100%);
+                border:1px solid rgba(20,184,166,.4);cursor:pointer;transition:.2s;"
+         class="rounded-2xl p-6 flex flex-col gap-3 hover:scale-[1.02]">
+      <div class="flex items-center gap-3">
+        <span style="font-size:2rem">🏖️</span>
+        <div>
+          <div style="color:#14b8a6;font-size:1.1rem;font-weight:700">Folgas</div>
+          <div style="color:#9ca3af;font-size:.8rem">Folgas compensatórias</div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:.3rem">${_folgasProximas()}</div>
+      <div style="color:#14b8a6;font-size:.72rem;font-weight:600">📅 Calendário mensal · Todas as lojas</div>
+    </div>`;
+
+  // Constrói o card de Ocorrências com filtro de lojas (null = todas)
+  function _buildCardOcorrencias(fl) {
+    const fd    = _ocFilteredData(fl);
+    const top3  = _ocRankingFaltas(fl).slice(0,3);
+    const flArg = fl ? JSON.stringify(fl) : 'null';
+    return `
+    <div onclick="_ocOpenModal('faltas',${flArg})"
+         style="background:linear-gradient(145deg,#1a0404 0%,#0d0d0d 100%);
+                border:1px solid rgba(239,68,68,.45);cursor:pointer;transition:.2s;"
+         class="rounded-2xl p-6 flex flex-col gap-3 hover:scale-[1.02]">
+      <div class="flex items-center gap-3">
+        <span style="font-size:2rem">🚨</span>
+        <div style="flex:1">
+          <div style="color:#ef4444;font-size:1.1rem;font-weight:700">Ocorrências RH</div>
+          <div style="color:#9ca3af;font-size:.8rem">Faltas · Atestados · Declarações</div>
+        </div>
+        <div style="text-align:right">
+          <div style="color:#ef4444;font-size:1.3rem;font-weight:700">${fd.faltas.length}</div>
+          <div style="color:#6b7280;font-size:.65rem">faltas/mês</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.2rem">
+        <div onclick="event.stopPropagation();_ocOpenModal('faltas',${flArg})"
+             style="flex:1;min-width:70px;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);border-radius:.6rem;padding:.35rem .5rem;text-align:center;cursor:pointer">
+          <div style="color:#ef4444;font-weight:700;font-size:1rem">${fd.faltas.length}</div>
+          <div style="color:#9ca3af;font-size:.62rem">🔴 Faltas</div>
+        </div>
+        <div onclick="event.stopPropagation();_ocOpenModal('atestados',${flArg})"
+             style="flex:1;min-width:70px;background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.3);border-radius:.6rem;padding:.35rem .5rem;text-align:center;cursor:pointer">
+          <div style="color:#fbbf24;font-weight:700;font-size:1rem">${fd.atestados.length}</div>
+          <div style="color:#9ca3af;font-size:.62rem">📋 Atestados</div>
+        </div>
+        <div onclick="event.stopPropagation();_ocOpenModal('declaracoes',${flArg})"
+             style="flex:1;min-width:70px;background:rgba(96,165,250,.08);border:1px solid rgba(96,165,250,.3);border-radius:.6rem;padding:.35rem .5rem;text-align:center;cursor:pointer">
+          <div style="color:#60a5fa;font-weight:700;font-size:1rem">${fd.declaracoes.length}</div>
+          <div style="color:#9ca3af;font-size:.62rem">🏥 Declarações</div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:.2rem">
+        <div style="color:#6b7280;font-size:.65rem;font-weight:600">TOP FALTANTES:</div>
+        ${top3.map(([nome,qtd],i)=>{
+          const medal=['🥇','🥈','🥉'][i];
+          const hasAlert=fd.faltas.some(f=>f.nome===nome&&f.alerta)||fd.atestados.some(a=>a.nome===nome&&a.alerta);
+          return `<div style="display:flex;align-items:center;gap:.4rem;font-size:.72rem">
+            <span>${medal}</span>
+            <span style="color:#f1f5f9;flex:1">${nome}${hasAlert?' ⚠️':''}</span>
+            <span style="color:#ef4444;font-weight:700">${qtd}d</span>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>`;
+  }
+
+  // ── Gerente Sênior: seu card + Checklists + Folgas + Ocorrências (só sua subrede) ──
   if (isGerSenior) {
     grid.style.gridTemplateColumns = 'repeat(2,1fr)';
-    let myCard = '';
+    let myCard = '', mgrId = '';
     for (const id of ['talysson','adriel','arthur','dias']) {
-      if (_diarioIsOwner(id)) { myCard = _cardMgr(id, m[id]); break; }
+      if (_diarioIsOwner(id)) { myCard = _cardMgr(id, m[id]); mgrId = id; break; }
     }
-    grid.innerHTML = myCard + cardChecklists;
+    const flGerSenior = _OC_SUBREDE[mgrId] || null;
+    grid.innerHTML = myCard + cardChecklists + cardFolgas + _buildCardOcorrencias(flGerSenior);
     return;
   }
 
-  // ── Diretoria / Franqueado: grid completo 3 colunas ──────────────────────
+  // ── Diretoria / Franqueado: grid completo 3 colunas — acesso total ──────────
   grid.style.gridTemplateColumns = 'repeat(3,1fr)';
   grid.innerHTML =
     (isMeloOuNeto ? _cardDir('melo') : '')   +
@@ -24942,7 +25539,9 @@ function _diarioRenderLanding() {
     cardDiretoria                          +
     _cardMgr('arthur',   m.arthur)        +
     _cardMgr('dias',     m.dias)          +
-    cardChecklists;
+    cardChecklists                         +
+    cardFolgas                             +
+    _buildCardOcorrencias(null);
 }
 
 // ════════════════════════════════════════════════════════════════════════════════
@@ -28571,6 +29170,102 @@ window._dirDirUpdateTimestamp = _dirDirUpdateTimestamp;
       return 'Último acesso: ' + d.toLocaleDateString('pt-BR') + ' ' + d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
     } catch(e){ return ''; }
   }
+
+  /* ══ NOTIFICAÇÃO DE FOLHAS DE ATENDIMENTO ══ */
+  window._checkFolhasAtendimento = async function(usuarioLogado) {
+    try {
+      if (!window._acadDB) return;
+      const cargo = usuarioLogado.cargo || '';
+      const CARGOS_NOTIF = ['diretoria','franqueado','gerente-senior','gerente-senior-acess','gerente','subgerente'];
+      if (!CARGOS_NOTIF.includes(cargo)) return;
+
+      // Não mostrar mais de uma vez por dia
+      const hoje = new Date().toISOString().slice(0, 10);
+      const notifKey = `folha_notif_${hoje}_${cargo}_${(usuarioLogado.name||'').split(' ')[0]}`;
+      if (localStorage.getItem(notifKey)) return;
+
+      const doc = await window._acadDB.collection('ts_notificacoes').doc(`status_${hoje}`).get();
+      if (!doc.exists) return;
+      const data = doc.data() || {};
+
+      const _d = _360D();
+      const LOJA_LABELS = {
+        barreiras:'Barreiras', cariacica:'Cariacica', itabuna:'Itabuna', laranjeiras:'Laranjeiras',
+        linhares:'Linhares', montserrat:'Montserrat', moxuara:'Moxuara', praiadacosta:'Praia da Costa',
+        saomateus:'São Mateus', serra:'Serra', teixeira:'Teixeira'
+      };
+
+      let lojasFaltando = [];
+
+      if (cargo === 'gerente' || cargo === 'subgerente') {
+        // Apenas a loja do próprio gerente
+        const lojaKey = usuarioLogado.loja || '';
+        if (lojaKey && data[lojaKey] === false) {
+          lojasFaltando = [lojaKey];
+        } else if (!lojaKey) {
+          // Sem loja definida: mostrar aviso genérico
+          lojasFaltando = ['_propria'];
+        }
+      } else if (cargo === 'gerente-senior' || cargo === 'gerente-senior-acess') {
+        // Lojas da subrede do gerente sênior
+        const sub = usuarioLogado.subrede || '';
+        const lojasSub = (_d.subredes && _d.subredes[sub] && _d.subredes[sub].lojas) || [];
+        lojasFaltando = lojasSub.filter(l => data[l] === false);
+      } else {
+        // Diretoria / Franqueado: todas
+        lojasFaltando = Object.keys(LOJA_LABELS).filter(l => data[l] === false);
+      }
+
+      if (!lojasFaltando.length) return;
+
+      // Marcar como visto
+      localStorage.setItem(notifKey, '1');
+
+      // Montar mensagem
+      const isShoppingWindow = data.janela_shopping === true;
+      const prioMsg = isShoppingWindow
+        ? '⚠️ Janela de shopping aberta (22h+) — folhas noturnas esperadas.'
+        : '⚠️ Janela de fechamento aberta (18h+) — folhas do dia esperadas.';
+
+      let corpoHtml = '';
+      if (lojasFaltando[0] === '_propria') {
+        corpoHtml = `<p style="font-size:.85rem;line-height:1.6;color:#374151;">
+          Sua loja ainda <strong>não enviou a folha de atendimento</strong> no grupo de WhatsApp hoje.<br>
+          Envie assim que o fechamento for concluído.
+        </p>`;
+      } else {
+        const nomes = lojasFaltando.map(l => LOJA_LABELS[l] || l);
+        corpoHtml = `<p style="font-size:.82rem;color:#374151;margin-bottom:.5rem;">${prioMsg}</p>
+        <div style="display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:.5rem;">
+          ${nomes.map(n => `<span style="background:#fee2e2;color:#991b1b;padding:.25rem .65rem;border-radius:999px;font-size:.75rem;font-weight:700;">${n}</span>`).join('')}
+        </div>
+        <p style="font-size:.78rem;color:#6b7280;">Verifique com os gerentes dessas lojas.</p>`;
+      }
+
+      // Mostrar modal
+      const modal = document.createElement('div');
+      modal.id = '_modal-folha-notif';
+      modal.style.cssText = 'position:fixed;inset:0;z-index:88888;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;padding:1rem;';
+      modal.innerHTML = `
+        <div style="background:#fff;border-radius:1rem;padding:1.5rem;max-width:420px;width:100%;box-shadow:0 20px 50px rgba(0,0,0,.3);">
+          <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:1rem;">
+            <div style="width:40px;height:40px;border-radius:50%;background:#fee2e2;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;">📋</div>
+            <div>
+              <div style="font-size:.6rem;font-weight:800;text-transform:uppercase;letter-spacing:.12em;color:#991b1b;">Folhas de Atendimento</div>
+              <div style="font-size:.9rem;font-weight:800;color:#1c1917;">${hoje}</div>
+            </div>
+          </div>
+          ${corpoHtml}
+          <div style="display:flex;gap:.5rem;margin-top:1rem;">
+            <button onclick="document.getElementById('_modal-folha-notif').remove()"
+              style="flex:1;padding:.55rem;border-radius:.6rem;background:#1c1917;color:#fff;font-size:.78rem;font-weight:700;border:none;cursor:pointer;">
+              Entendido
+            </button>
+          </div>
+        </div>`;
+      document.body.appendChild(modal);
+    } catch(e) {}
+  };
 
   /* Ponto de entrada: chamado logo após login bem-sucedido */
   window._verificarDuplicadosUnificar = async function(usuarioLogado) {

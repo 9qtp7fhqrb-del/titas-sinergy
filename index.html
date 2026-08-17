@@ -7012,6 +7012,10 @@ window._agendSubFilter = 'geral';
 var _mfTab = 'rede';
 var _mfLoja = null;
 var _mfProd = 'celulares';
+var _rankModeLojas = 'fat';
+var _rankModeVend  = 'fat';
+var _rankModeSubs  = 'fat';
+var _rankModeAcess = 'fat';
 var _SUBREDES_MF = {
     'T1 · Talysson': ['cariacica','itabuna','moxuara'],
     'T2 · Adriel':   ['praiadacosta','barreiras','teixeira','laranjeiras'],
@@ -7034,6 +7038,267 @@ function abrirModelosFin(prod) {
 function fecharModelosFin() {
     document.getElementById('modal-modelos-fin').style.display = 'none';
 }
+
+function _imprimirCurvaABC() {
+    try {
+        if (!window.jspdf) { alert('jsPDF não carregado.'); return; }
+        var jsPDF = window.jspdf.jsPDF;
+        var doc = new jsPDF({ orientation:'portrait', unit:'mm', format:'a4' });
+        var d = _360D();
+        var isAces = (_mfProd === 'acessorios');
+        var tm = isAces ? (d.top_acessorios || {}) : (d.top_modelos || {});
+        var lojasTM = tm.lojas || {};
+
+        // helpers de agregação (replicam as funções locais de _renderModelosFin)
+        function _agregaSub(keys) {
+            var acc = {payjoy:{}, odrescred:{}, salao:{}};
+            keys.forEach(function(k) {
+                var lj = lojasTM[k] || {};
+                ['payjoy','odrescred','salao'].forEach(function(cat) {
+                    (lj[cat]||[]).forEach(function(m) {
+                        acc[cat][m.nm] = acc[cat][m.nm] || {qt:0,val:0};
+                        acc[cat][m.nm].qt  += m.qt;
+                        acc[cat][m.nm].val += m.val;
+                    });
+                });
+            });
+            function top(d2) {
+                return Object.entries(d2).sort(function(a,b){return b[1].qt-a[1].qt;})
+                    .slice(0,7).map(function(e){return {nm:e[0],qt:e[1].qt,val:Math.round(e[1].val)};});
+            }
+            return {payjoy:top(acc.payjoy), odrescred:top(acc.odrescred), salao:top(acc.salao)};
+        }
+        function _agregaSubAbc(keys) {
+            var acc = {};
+            keys.forEach(function(k) {
+                var lj = lojasTM[k];
+                if (!Array.isArray(lj)) return;
+                lj.forEach(function(m) {
+                    acc[m.nm] = acc[m.nm] || {qt:0,val:0};
+                    acc[m.nm].qt  += m.qt;
+                    acc[m.nm].val += m.val;
+                });
+            });
+            var sorted = Object.entries(acc).sort(function(a,b){return b[1].qt-a[1].qt;}).slice(0,15);
+            var total = sorted.reduce(function(s,e){return s+e[1].qt;},0);
+            if (!total) return [];
+            var cum = 0;
+            return sorted.map(function(e) {
+                cum += e[1].qt;
+                var pct = Math.round(cum/total*100*10)/10;
+                return {nm:e[0], qt:e[1].qt, val:Math.round(e[1].val), pct:pct, abc:pct<=80?'A':pct<=95?'B':'C'};
+            });
+        }
+        var meses = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+        var mesAtual = meses[new Date().getMonth()] + ' ' + new Date().getFullYear();
+        var agora = new Date().toLocaleString('pt-BR');
+        var pageW = 210, marginL = 14, marginR = 14, usableW = pageW - marginL - marginR;
+        var y = 14;
+
+        // ── Cabeçalho ──────────────────────────────────────────────────────────
+        doc.setFillColor(13, 17, 23);
+        doc.rect(0, 0, pageW, 28, 'F');
+        doc.setFillColor(139, 92, 246);
+        doc.rect(0, 0, 4, 28, 'F');
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(13);
+        doc.setTextColor(249, 250, 251);
+        doc.text('CURVA ABC × FORMAS DE PAGAMENTO', marginL + 3, 10);
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(7.5);
+        doc.setTextColor(156, 163, 175);
+        var prodLabel = isAces ? 'Acessórios' : 'Celulares';
+        var tabLabel = _mfTab === 'rede' ? 'Rede Geral' : _mfTab === 'subredes' ? 'Subredes' : (_mfLoja ? (_LOJAS_MF[_mfLoja]||_mfLoja) : 'Lojas');
+        doc.text('Titãs Sinergy  ·  ' + prodLabel + '  ·  ' + tabLabel + '  ·  ' + mesAtual, marginL + 3, 17);
+        doc.text('Gerado em: ' + agora, marginL + 3, 23);
+        y = 34;
+
+        // ── helpers ────────────────────────────────────────────────────────────
+        function brlFmt(v) { return 'R$ ' + Number(v).toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2}); }
+        function cleanNm(nm) {
+            var c = nm.replace(/^SMARTPHONE\s+/i,'').replace(/\s+/g,' ').trim();
+            var specs = {'REALME NOTE 70':'128GB·6GB','REALME NOTE 60X':'128GB·4GB','REALME C71':'128GB·4GB','REALME C75':'128GB·4GB','REALME C85':'256GB·8GB','INFINIX HOT 60I':'128GB·4GB','INFINIX SMART 10':'128GB·4GB','TECNO SPARK 30C':'128GB·4GB','TECNO SPARK 30 PRO':'256GB·8GB','ITEL A90':'256GB·4GB','ITEL A100C':'128GB·4GB'};
+            var u = c.toUpperCase();
+            var k = Object.keys(specs).sort(function(a,b){return b.length-a.length;}).find(function(k){return u.indexOf(k)!==-1;});
+            return k ? c + ' ' + specs[k] : c;
+        }
+
+        // ── renderiza bloco de 3 colunas (celulares) ──────────────────────────
+        function renderTresCols(pj, od, sl, startY) {
+            var colW = usableW / 3 - 2;
+            var cols = [
+                {label:'PAYJOY', color:[5,150,105], bg:[5,150,105], items:pj},
+                {label:'ODRESCRED', color:[59,130,246], bg:[59,130,246], items:od},
+                {label:'SALÃO', color:[167,139,250], bg:[167,139,250], items:sl}
+            ];
+            var curY = startY;
+            cols.forEach(function(col, ci) {
+                var x = marginL + ci * (colW + 3);
+                // Header coluna
+                doc.setFillColor(col.bg[0], col.bg[1], col.bg[2]);
+                doc.setGState(new doc.GState({opacity:0.15}));
+                doc.rect(x, curY, colW, 6, 'F');
+                doc.setGState(new doc.GState({opacity:1}));
+                doc.setFont('helvetica', 'bold');
+                doc.setFontSize(7);
+                doc.setTextColor(col.color[0], col.color[1], col.color[2]);
+                doc.text(col.label, x + colW/2, curY + 4, {align:'center'});
+                var rowY = curY + 8;
+                (col.items || []).forEach(function(m, i) {
+                    doc.setFont('helvetica', 'bold');
+                    doc.setFontSize(5.5);
+                    doc.setTextColor(col.color[0], col.color[1], col.color[2]);
+                    doc.text(String(i+1), x + 1, rowY);
+                    doc.setFont('helvetica', 'normal');
+                    doc.setTextColor(30, 30, 30);
+                    var nm = cleanNm(m.nm);
+                    doc.text(nm, x + 5, rowY, {maxWidth: colW - 22});
+                    doc.setFont('helvetica', 'bold');
+                    doc.setTextColor(col.color[0], col.color[1], col.color[2]);
+                    doc.text(m.qt + 'x', x + colW - 14, rowY, {align:'right'});
+                    doc.setFont('helvetica', 'normal');
+                    doc.setTextColor(107, 114, 128);
+                    doc.setFontSize(5);
+                    doc.text(brlFmt(m.val), x + colW - 1, rowY, {align:'right'});
+                    // barra
+                    var bar = col.items[0].qt > 0 ? (m.qt / col.items[0].qt) : 0;
+                    var barW = (colW - 2) * bar;
+                    doc.setFillColor(220, 220, 220);
+                    doc.rect(x, rowY + 1, colW - 2, 1, 'F');
+                    doc.setFillColor(col.color[0], col.color[1], col.color[2]);
+                    doc.rect(x, rowY + 1, barW, 1, 'F');
+                    rowY += 9;
+                });
+            });
+            return curY + 8 + (Math.max(pj.length, od.length, sl.length) || 0) * 9 + 4;
+        }
+
+        // ── renderiza bloco ABC (acessórios) ──────────────────────────────────
+        function renderAbc(items, startY, titulo) {
+            var curY = startY;
+            if (titulo) {
+                doc.setFont('helvetica', 'bold');
+                doc.setFontSize(8);
+                doc.setTextColor(251, 191, 36);
+                doc.text(titulo, marginL, curY);
+                curY += 6;
+            }
+            var abcClr = {A:[74,222,128], B:[251,191,36], C:[156,163,175]};
+            (items || []).forEach(function(m, i) {
+                var c = m.abc || 'C';
+                var clr = abcClr[c];
+                doc.setFont('helvetica', 'bold');
+                doc.setFontSize(5.5);
+                doc.setTextColor(107, 114, 128);
+                doc.text(String(i+1), marginL + 1, curY);
+                doc.setFillColor(clr[0], clr[1], clr[2]);
+                doc.setGState(new doc.GState({opacity:0.2}));
+                doc.rect(marginL + 5, curY - 3, 6, 4, 'F');
+                doc.setGState(new doc.GState({opacity:1}));
+                doc.setTextColor(clr[0], clr[1], clr[2]);
+                doc.text(c, marginL + 8, curY, {align:'center'});
+                doc.setFont('helvetica', 'normal');
+                doc.setTextColor(30, 30, 30);
+                doc.text(m.nm.replace(/^(PELICULA|PELÍCULA|CAPA|CARREGADOR|FONE|CABO|FONTE)\s+/i,'').replace(/\s+/g,' ').trim(), marginL + 14, curY, {maxWidth: usableW - 40});
+                doc.setFont('helvetica', 'bold');
+                doc.setTextColor(clr[0], clr[1], clr[2]);
+                doc.text(m.qt + 'x', marginL + usableW - 20, curY, {align:'right'});
+                doc.setTextColor(107, 114, 128);
+                doc.setFont('helvetica', 'normal');
+                doc.setFontSize(5);
+                doc.text(brlFmt(m.val), marginL + usableW, curY, {align:'right'});
+                curY += 6;
+            });
+            return curY + 3;
+        }
+
+        // ── conteúdo por aba ──────────────────────────────────────────────────
+        function sectionTitle(txt, cy) {
+            doc.setFillColor(255,255,255);
+            doc.setGState(new doc.GState({opacity:0.04}));
+            doc.rect(marginL - 2, cy - 4, usableW + 4, 7, 'F');
+            doc.setGState(new doc.GState({opacity:1}));
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(8.5);
+            doc.setTextColor(167, 139, 250);
+            doc.text(txt, marginL, cy);
+            return cy + 6;
+        }
+
+        if (_mfTab === 'rede') {
+            y = sectionTitle('REDE GERAL', y);
+            if (isAces) {
+                y = renderAbc(tm.rede || [], y, null);
+            } else {
+                y = renderTresCols(tm.payjoy || [], tm.odrescred || [], tm.salao || [], y);
+            }
+        } else if (_mfTab === 'subredes') {
+            var _SUBS = typeof _SUBREDES_MF !== 'undefined' ? _SUBREDES_MF : {};
+            Object.entries(_SUBS).forEach(function(entry) {
+                var nome = entry[0], keys = entry[1];
+                if (y > 230) { doc.addPage(); y = 14; }
+                y = sectionTitle(nome.toUpperCase(), y);
+                if (isAces) {
+                    y = renderAbc(_agregaSubAbc(keys), y, null);
+                } else {
+                    var agg2 = _agregaSub(keys);
+                    y = renderTresCols(agg2.payjoy, agg2.odrescred, agg2.salao, y);
+                }
+                y += 4;
+            });
+        } else if (_mfTab === 'lojas') {
+            var _LMAP = typeof _LOJAS_MF !== 'undefined' ? _LOJAS_MF : {};
+            var lojaKey = _mfLoja;
+            var ljDataAll = lojasTM;
+            if (lojaKey) {
+                var lj = ljDataAll[lojaKey];
+                y = sectionTitle((_LMAP[lojaKey] || lojaKey).toUpperCase(), y);
+                if (lj) {
+                    if (isAces && Array.isArray(lj)) {
+                        y = renderAbc(lj, y, null);
+                    } else if (!isAces && lj.payjoy) {
+                        y = renderTresCols(lj.payjoy || [], lj.odrescred || [], lj.salao || [], y);
+                    }
+                }
+            } else {
+                Object.entries(_LMAP).forEach(function(e) {
+                    var key = e[0], nomeLj = e[1];
+                    var lj = ljDataAll[key];
+                    if (!lj) return;
+                    if (y > 230) { doc.addPage(); y = 14; }
+                    y = sectionTitle(nomeLj.toUpperCase(), y);
+                    if (isAces && Array.isArray(lj)) {
+                        y = renderAbc(lj, y, null);
+                    } else if (!isAces && lj.payjoy) {
+                        y = renderTresCols(lj.payjoy || [], lj.odrescred || [], lj.salao || [], y);
+                    }
+                    y += 4;
+                });
+            }
+        }
+
+        // ── Rodapé ──────────────────────────────────────────────────────────
+        var totalPages = doc.internal.getNumberOfPages();
+        for (var p = 1; p <= totalPages; p++) {
+            doc.setPage(p);
+            doc.setFillColor(13, 17, 23);
+            doc.rect(0, 285, pageW, 12, 'F');
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(6);
+            doc.setTextColor(107, 114, 128);
+            doc.text('Titãs Sinergy · Curva ABC × Formas de Pagamento · ' + mesAtual, marginL, 291);
+            doc.text('Pág. ' + p + ' / ' + totalPages, pageW - marginR, 291, {align:'right'});
+        }
+
+        var filename = 'CurvaABC_' + prodLabel + '_' + tabLabel.replace(/\s+/g,'') + '_' + new Date().toISOString().slice(0,10) + '.pdf';
+        doc.save(filename);
+        try { _registrarAcao('Imprimiu Curva ABC PDF'); } catch(e) {}
+    } catch(err) {
+        console.error('Erro ao gerar PDF:', err);
+        alert('Erro ao gerar PDF. Verifique o console para detalhes.');
+    }
+}
+
 function _setMfTab(tab) { _mfTab = tab; _mfLoja = null; _renderModelosFin(); }
 function _setMfLoja(key) { _mfLoja = key; _renderModelosFin(); }
 function _setMfProd(p) { _mfProd = p; _mfTab = 'rede'; _mfLoja = null; _renderModelosFin(); }
@@ -8093,7 +8358,7 @@ function _buildAcessRankingAtual() {
             };
         })
         .filter(function(l){ return l.total > 0; })
-        .sort(function(a,b){ return b.total - a.total; });
+        .sort(function(a,b){ return _rankModeAcess === 'meta' ? (b.total/(b.meta||1))-(a.total/(a.meta||1)) : b.total-a.total; });
 
     var totalGeral      = lojas.reduce(function(s,l){ return s+l.total; }, 0);
     var projGeral       = lojas.reduce(function(s,l){ return s+l.proj;  }, 0);
@@ -8222,6 +8487,8 @@ function _renderHistAcessAbr26() {
             return matchKey ? permitidas.indexOf(matchKey) >= 0 : false;
         });
     }
+    /* re-sort após filtro (modo pode ter mudado) */
+    lojasExibir = lojasExibir.slice().sort(function(a,b){ return _rankModeAcess === 'meta' ? (b.total/(b.meta||1))-(a.total/(a.meta||1)) : b.total-a.total; });
     /* recalcula totais para o escopo filtrado */
     var totalGeralFiltrado = lojasExibir.reduce(function(s,l){ return s+l.total; }, 0);
     var totalVendedoresFiltrado = lojasExibir.reduce(function(s,l){ return s+l.vendedores.length; }, 0);
@@ -8325,13 +8592,20 @@ function _renderHistAcessAbr26() {
             ? 'background:rgba(245,158,11,.18);border-color:rgba(245,158,11,.45);color:#f59e0b;'
             : 'background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.1);color:#9ca3af;';
     }
+    var _btnAcessStyle = function(ativo, cor) {
+        return 'display:inline-flex;align-items:center;gap:.25rem;padding:.18rem .5rem;border-radius:999px;font-size:.58rem;font-weight:700;cursor:pointer;border:1px solid ' + (ativo ? cor : 'rgba(255,255,255,.12)') + ';background:' + (ativo ? cor+'22' : 'transparent') + ';color:' + (ativo ? cor : '#6b7280') + ';transition:all .15s;';
+    };
     var filterButtons = _vendLojaAcess ? '' :
         '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,.06);">' +
             '<button class="acess-filter-pill" onclick="_filtrarRankingAcess(\'geral\',this)" style="' + pillS('geral') + 'cursor:pointer;font-size:11px;font-weight:700;padding:5px 14px;border-radius:999px;border:1px solid;transition:background .15s,color .15s;">🌐 Geral</button>' +
             '<button class="acess-filter-pill" onclick="_filtrarRankingAcess(\'t1\',this)" style="' + pillS('t1') + 'cursor:pointer;font-size:11px;font-weight:700;padding:5px 14px;border-radius:999px;border:1px solid;transition:background .15s,color .15s;">⚡ Titãs 1</button>' +
             '<button class="acess-filter-pill" onclick="_filtrarRankingAcess(\'t2\',this)" style="' + pillS('t2') + 'cursor:pointer;font-size:11px;font-weight:700;padding:5px 14px;border-radius:999px;border:1px solid;transition:background .15s,color .15s;">⚡ Titãs 2</button>' +
             '<button class="acess-filter-pill" onclick="_filtrarRankingAcess(\'t3\',this)" style="' + pillS('t3') + 'cursor:pointer;font-size:11px;font-weight:700;padding:5px 14px;border-radius:999px;border:1px solid;transition:background .15s,color .15s;">⚡ Titãs 3</button>' +
-            '<button onclick="_abrirRankingVendedoresAcess()" style="cursor:pointer;font-size:11px;font-weight:700;padding:5px 14px;border-radius:999px;border:1px solid rgba(99,102,241,.4);background:rgba(99,102,241,.12);color:#a5b4fc;transition:background .15s,color .15s;margin-left:auto;">👤 Ranking de Vendedores</button>' +
+            '<div style="display:flex;gap:5px;margin-left:auto;align-items:center;">' +
+                '<button onclick="_rankModeAcess=\'fat\';_renderHistAcessAbr26()" style="' + _btnAcessStyle(_rankModeAcess==='fat','#f59e0b') + '">💲 Faturamento</button>' +
+                '<button onclick="_rankModeAcess=\'meta\';_renderHistAcessAbr26()" style="' + _btnAcessStyle(_rankModeAcess==='meta','#a855f7') + '">🎯 % Meta</button>' +
+                '<button onclick="_abrirRankingVendedoresAcess()" style="cursor:pointer;font-size:11px;font-weight:700;padding:5px 14px;border-radius:999px;border:1px solid rgba(99,102,241,.4);background:rgba(99,102,241,.12);color:#a5b4fc;transition:background .15s,color .15s;">👤 Ranking de Vendedores</button>' +
+            '</div>' +
         '</div>';
 
     var projBadgeRede = projFiltPct !== null
@@ -9879,15 +10153,28 @@ function _renderDiagnostico(el, nomeL, lojaKey, data, hoje, dadosMes, mesMotivos
             <div style="font-size:.5rem;color:#fbbf24;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:.4rem;">
                 <i class="fas fa-lightbulb" style="margin-right:.3rem;"></i>Padrão Identificado
             </div>
-            <div style="font-size:.68rem;color:#fef3c7;line-height:1.65;">${an.padrao}</div>
+            <div style="font-size:.68rem;color:#fef3c7;line-height:1.7;white-space:pre-line;">${an.padrao}</div>
         </div>` : ''}
 
         ${an.recomendacoes ? `
         <div style="background:rgba(52,211,153,.06);border:1px solid rgba(52,211,153,.2);border-radius:.9rem;padding:.8rem 1rem;margin-bottom:.65rem;">
-            <div style="font-size:.5rem;color:#34d399;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:.4rem;">
+            <div style="font-size:.5rem;color:#34d399;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:.6rem;">
                 <i class="fas fa-arrow-trend-up" style="margin-right:.3rem;"></i>Recomendações
             </div>
-            <div style="font-size:.68rem;color:#d1fae5;line-height:1.65;">${an.recomendacoes}</div>
+            <div style="display:flex;flex-direction:column;gap:.45rem;">
+            ${an.recomendacoes.split(/\n\n+/).map(item => {
+                const m = item.match(/^(\d+)\.\s*([^:]+):([\s\S]*)$/);
+                if (m) {
+                    return `<div style="display:flex;gap:.55rem;align-items:flex-start;background:rgba(52,211,153,.07);border:1px solid rgba(52,211,153,.15);border-radius:.65rem;padding:.55rem .7rem;">
+                        <div style="flex-shrink:0;width:1.3rem;height:1.3rem;background:rgba(52,211,153,.25);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.55rem;font-weight:800;color:#34d399;margin-top:.05rem;">${m[1]}</div>
+                        <div style="font-size:.64rem;color:#d1fae5;line-height:1.6;">
+                            <span style="color:#6ee7b7;font-weight:700;">${m[2].trim()}</span><span style="color:#a7f3d0;">:${m[3]}</span>
+                        </div>
+                    </div>`;
+                }
+                return `<div style="font-size:.64rem;color:#d1fae5;line-height:1.6;padding:.3rem .2rem;">${item}</div>`;
+            }).join('')}
+            </div>
         </div>` : ''}
         `}
 
@@ -11798,7 +12085,12 @@ function render360(tipo, val) {
                     </div>
                     <span style="font-size:.68rem;font-weight:800;color:#f9fafb;letter-spacing:.02em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">📊 Curva ABC × Formas de Pagamento</span>
                 </div>
-                <span style="font-size:.6rem;font-weight:700;padding:.15rem .55rem;border-radius:999px;background:#8b5cf620;color:#a78bfa;white-space:nowrap;flex-shrink:0;">${_mes} 2026 ↗</span>
+                <div style="display:flex;align-items:center;gap:.4rem;flex-shrink:0;">
+                    <button onclick="event.stopPropagation();_imprimirCurvaABC()" title="Imprimir relatório PDF" style="display:flex;align-items:center;gap:.3rem;padding:.25rem .6rem;border-radius:999px;border:1px solid #f97316;background:linear-gradient(135deg,#f97316,#ea580c);color:#fff;font-size:.58rem;font-weight:800;cursor:pointer;box-shadow:0 2px 8px #f9731640;transition:all .15s;" onmouseover="this.style.boxShadow='0 4px 16px #f9731670'" onmouseout="this.style.boxShadow='0 2px 8px #f9731640'">
+                        <i class="fas fa-print" style="font-size:.6rem;"></i> PDF
+                    </button>
+                    <span style="font-size:.6rem;font-weight:700;padding:.15rem .55rem;border-radius:999px;background:#8b5cf620;color:#a78bfa;white-space:nowrap;">${_mes} 2026 ↗</span>
+                </div>
             </div>
             <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.4rem;">
                 <div>
@@ -11977,7 +12269,9 @@ function render360(tipo, val) {
 
     } else {
         /* Geral: ranking todas as lojas + top vendedores rede */
-        const allLojas = Object.entries(lojas).map(([k,v])=>({k,...v})).sort((a,b)=>b.total-a.total);
+        const _lojaMeta = (lj) => { const m = lj.meta || (subs[lj.sub]?.meta / subs[lj.sub]?.lojas.length) || 1; return lj.total / m; };
+        const allLojas = Object.entries(lojas).map(([k,v])=>({k,...v}))
+            .sort((a,b) => _rankModeLojas === 'meta' ? _lojaMeta(b)-_lojaMeta(a) : b.total-a.total);
         const maxT = allLojas[0].total;
         const allVend = [];
         allLojas.forEach(l => l.top.forEach(v => {
@@ -11988,7 +12282,14 @@ function render360(tipo, val) {
                 if (v.ult) ex.ult = (!ex.ult || v.ult > ex.ult) ? v.ult : ex.ult;
             } else allVend.push({...v, loja:l.label, lojaKey:l.k});
         }));
-        allVend.sort((a,b)=>b.t-a.t);
+        allVend.sort((a,b) => {
+            if (_rankModeVend === 'meta') {
+                const mA = getVendMeta(a.n, a.lojaKey) || 1;
+                const mB = getVendMeta(b.n, b.lojaKey) || 1;
+                return (b.t/mB) - (a.t/mA);
+            }
+            return b.t - a.t;
+        });
 
         const _prevLojas = _d360LoadRankMap('_d360rk_lojas');
         const _prevVendG = _d360LoadRankMap('_d360rk_vend_geral');
@@ -12028,34 +12329,70 @@ function render360(tipo, val) {
 
         const _cntAlertaGeral = allVend.filter(v => _diasSemVender(v.ult, v.lojaKey) >= 1).length;
 
+        const _btnRankStyle = (ativo, cor) => `display:inline-flex;align-items:center;gap:.25rem;padding:.18rem .5rem;border-radius:999px;font-size:.58rem;font-weight:700;cursor:pointer;border:1px solid ${ativo ? cor : 'rgba(255,255,255,.12)'};background:${ativo ? cor+'22' : 'transparent'};color:${ativo ? cor : '#6b7280'};transition:all .15s;`;
         rankings = `
             <div class="glass-360 rounded-2xl p-5">
-                <h3 class="text-xs font-bold text-white tracking-widest uppercase mb-4">
-                    <i class="fas fa-trophy mr-2" style="color:#a855f7;"></i>Ranking Geral — Todas as Lojas
+                <h3 class="text-xs font-bold text-white tracking-widest uppercase mb-4" style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;">
+                    <span style="display:flex;align-items:center;gap:.4rem;flex:1;min-width:0;">
+                        <i class="fas fa-trophy" style="color:#a855f7;"></i>Ranking Geral — Todas as Lojas
+                    </span>
+                    <span style="display:flex;gap:.3rem;flex-shrink:0;">
+                        <button onclick="_rankModeLojas='fat';render360('geral','')" style="${_btnRankStyle(_rankModeLojas==='fat','#a855f7')}" title="Ordenar por faturamento">
+                            <i class="fas fa-dollar-sign"></i> Faturamento
+                        </button>
+                        <button onclick="_rankModeLojas='meta';render360('geral','')" style="${_btnRankStyle(_rankModeLojas==='meta','#f59e0b')}" title="Ordenar por % da meta">
+                            <i class="fas fa-bullseye"></i> % Meta
+                        </button>
+                    </span>
                 </h3>
                 <div class="space-y-2">${rankHtml}</div>
             </div>
             <div class="glass-360 rounded-2xl p-5">
-                <h3 class="text-xs font-bold text-white tracking-widest uppercase mb-4" style="display:flex;align-items:center;gap:.5rem;">
-                    <i class="fas fa-medal mr-2" style="color:#06b6d4;"></i>Vendedores da Rede
-                    <span style="font-weight:400;font-size:.65rem;color:#6b7280;text-transform:none;letter-spacing:0;">top ${Math.min(_VEND_VISIBLE, allVend.length)} de ${allVend.length}</span>
-                    ${_cntAlertaGeral > 0 ? `<button id="_btn-vf-geral" data-ativo="0" data-cnt="${_cntAlertaGeral}" onclick="_filtrarVendSemVenda('_vlist-geral', this)" style="${_btnVendStyle(false)}" title="Mostrar só quem está sem vender"><span style="font-size:.75rem;">👁️</span> ${_cntAlertaGeral}</button>` : ''}
+                <h3 class="text-xs font-bold text-white tracking-widest uppercase mb-4" style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;">
+                    <span style="display:flex;align-items:center;gap:.4rem;flex:1;min-width:0;">
+                        <i class="fas fa-medal" style="color:#06b6d4;"></i>Vendedores da Rede
+                        <span style="font-weight:400;font-size:.65rem;color:#6b7280;text-transform:none;letter-spacing:0;">top ${Math.min(_VEND_VISIBLE, allVend.length)} de ${allVend.length}</span>
+                        ${_cntAlertaGeral > 0 ? `<button id="_btn-vf-geral" data-ativo="0" data-cnt="${_cntAlertaGeral}" onclick="_filtrarVendSemVenda('_vlist-geral', this)" style="${_btnVendStyle(false)}" title="Mostrar só quem está sem vender"><span style="font-size:.75rem;">👁️</span> ${_cntAlertaGeral}</button>` : ''}
+                    </span>
+                    <span style="display:flex;gap:.3rem;flex-shrink:0;">
+                        <button onclick="_rankModeVend='fat';render360('geral','')" style="${_btnRankStyle(_rankModeVend==='fat','#06b6d4')}" title="Ordenar por faturamento">
+                            <i class="fas fa-dollar-sign"></i> Faturamento
+                        </button>
+                        <button onclick="_rankModeVend='meta';render360('geral','')" style="${_btnRankStyle(_rankModeVend==='meta','#f59e0b')}" title="Ordenar por % da meta">
+                            <i class="fas fa-bullseye"></i> % Meta
+                        </button>
+                    </span>
                 </h3>
                 <div id="_vlist-geral" class="space-y-1">${vendTop10}${btnVerMais}</div>
             </div>`;
 
-        const metasHtml = Object.entries(subs).map(([k,s]) => {
+        const _subsArr = Object.entries(subs).map(([k,s]) => {
             const subT    = s.lojas.reduce((a,lk)=>a+lojas[lk].total,0);
             const subPed  = s.lojas.reduce((a,lk)=>a+(lojas[lk].ped||0),0);
             const subAcess= s.lojas.reduce((a,lk)=>a+(lojas[lk].acessorios?.total||0),0);
             const subAcessPct = subT > 0 ? Math.round(subAcess/subT*100) : 0;
+            const subMeta = s.meta || s.lojas.reduce((a,lk)=>a+(lojas[lk].meta||0),0);
+            return {k, s, subT, subPed, subAcessPct, subMeta};
+        });
+        _subsArr.sort((a,b) => _rankModeSubs === 'meta' ? (b.subT/(b.subMeta||1))-(a.subT/(a.subMeta||1)) : b.subT-a.subT);
+        const metasHtml = _subsArr.map(({s, subT, subPed, subAcessPct, subMeta}) => {
             const acessCor = subAcessPct>=5?'#4ade80':subAcessPct>=3?'#f59e0b':'#f87171';
             const pedInfo  = `<span style="font-size:.6rem;color:#94a3b8;margin-left:.5rem;">📦 ${subPed} ped. · <span style="color:${acessCor};">🎧 ${subAcessPct}% acess.</span></span>`;
-            const subMeta = s.meta || s.lojas.reduce((a,lk)=>a+(lojas[lk].meta||0),0);
             return metaBar(s.nome, s.gestor, s.lojas.length+' lojas' + ` · ${pedInfo}`, subT, subMeta);
         }).join('');
-        metas = `<h3 class="text-xs font-bold text-white tracking-widest uppercase mb-4">
-                    <i class="fas fa-network-wired mr-2" style="color:#a855f7;"></i>Metas por Sub-rede
+        const _btnSubStyle = (ativo, cor) => `display:inline-flex;align-items:center;gap:.25rem;padding:.18rem .5rem;border-radius:999px;font-size:.58rem;font-weight:700;cursor:pointer;border:1px solid ${ativo ? cor : 'rgba(255,255,255,.12)'};background:${ativo ? cor+'22' : 'transparent'};color:${ativo ? cor : '#6b7280'};transition:all .15s;`;
+        metas = `<h3 class="text-xs font-bold text-white tracking-widest uppercase mb-4" style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;">
+                    <span style="display:flex;align-items:center;gap:.4rem;flex:1;min-width:0;">
+                        <i class="fas fa-network-wired" style="color:#a855f7;"></i>Metas por Sub-rede
+                    </span>
+                    <span style="display:flex;gap:.3rem;flex-shrink:0;">
+                        <button onclick="_rankModeSubs='fat';render360('geral','')" style="${_btnSubStyle(_rankModeSubs==='fat','#a855f7')}" title="Ordenar por faturamento">
+                            <i class="fas fa-dollar-sign"></i> Faturamento
+                        </button>
+                        <button onclick="_rankModeSubs='meta';render360('geral','')" style="${_btnSubStyle(_rankModeSubs==='meta','#f59e0b')}" title="Ordenar por % da meta">
+                            <i class="fas fa-bullseye"></i> % Meta
+                        </button>
+                    </span>
                  </h3>
                  <div class="space-y-4">${metasHtml}</div>`;
         subtitulo = 'Consolidado da rede · vendas · rankings · metas';
@@ -21582,7 +21919,12 @@ cursosInit();
           <div style="font-size:.6rem;color:#6b7280;">Top celulares (SBON) por forma de pagamento — acumulado mensal</div>
         </div>
       </div>
-      <button onclick="fecharModelosFin()" style="color:#6b7280;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:.5rem;padding:.3rem .65rem;cursor:pointer;font-size:1rem;">✕</button>
+      <div style="display:flex;align-items:center;gap:.5rem;">
+        <button onclick="_imprimirCurvaABC()" title="Baixar relatório em PDF" style="display:flex;align-items:center;gap:.4rem;padding:.4rem .9rem;border-radius:.6rem;border:1px solid #f97316;background:linear-gradient(135deg,#f97316,#ea580c);color:#fff;font-size:.72rem;font-weight:800;cursor:pointer;box-shadow:0 2px 12px #f9731650;transition:all .2s;" onmouseover="this.style.transform='translateY(-1px)';this.style.boxShadow='0 6px 20px #f9731670'" onmouseout="this.style.transform='';this.style.boxShadow='0 2px 12px #f9731650'">
+          <i class="fas fa-print" style="font-size:.8rem;"></i> Imprimir PDF
+        </button>
+        <button onclick="fecharModelosFin()" style="color:#6b7280;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:.5rem;padding:.3rem .65rem;cursor:pointer;font-size:1rem;">✕</button>
+      </div>
     </div>
     <div id="modal-modelos-fin-body" style="overflow-y:auto;flex:1;padding:1.25rem;"></div>
   </div>
@@ -25054,9 +25396,14 @@ function _folgasRenderCal(year, month) {
     .filter(([k]) => k.startsWith(`${year}-${String(month+1).padStart(2,'0')}`))
     .reduce((s,[,v]) => s + v.length, 0);
   const diasComFolga = Object.keys(_FOLGAS_DATA).filter(k => k.startsWith(`${year}-${String(month+1).padStart(2,'0')}`)).length;
-  html += `<div style="margin-top:.75rem;padding:.6rem .9rem;background:rgba(20,184,166,.06);border:1px solid rgba(20,184,166,.15);border-radius:.75rem;display:flex;justify-content:space-between;align-items:center;">
+  html += `<div style="margin-top:.75rem;padding:.6rem .9rem;background:rgba(20,184,166,.06);border:1px solid rgba(20,184,166,.15);border-radius:.75rem;display:flex;justify-content:space-between;align-items:center;gap:.75rem;">
     <span style="color:#9ca3af;font-size:.72rem">Total no mês · ${diasComFolga} dias com folga</span>
-    <span style="color:#14b8a6;font-size:.82rem;font-weight:700">${totalMes} folgas</span>
+    <div style="display:flex;align-items:center;gap:.5rem;">
+      <button onclick="_folgasShowRanking(${year},${month})" style="display:inline-flex;align-items:center;gap:.3rem;padding:.25rem .7rem;border-radius:999px;border:1px solid rgba(20,184,166,.4);background:rgba(20,184,166,.12);color:#14b8a6;font-size:.65rem;font-weight:700;cursor:pointer;">
+        <i class="fas fa-trophy" style="font-size:.6rem;"></i> Ranking
+      </button>
+      <span style="color:#14b8a6;font-size:.82rem;font-weight:700">${totalMes} folgas</span>
+    </div>
   </div>`;
   body.innerHTML = html;
 }
@@ -25082,10 +25429,53 @@ function _folgasShowDay(key) {
   if (panel) panel.innerHTML = html;
 }
 
+function _folgasShowRanking(year, month) {
+  const prefix = `${year}-${String(month+1).padStart(2,'0')}`;
+  const MESES = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  // agrega folgas por colaborador no mês
+  const contagem = {};
+  Object.entries(_FOLGAS_DATA).forEach(([k,arr]) => {
+    if (!k.startsWith(prefix)) return;
+    arr.forEach(f => {
+      const key = f.nome + '||' + f.loja;
+      if (!contagem[key]) contagem[key] = { nome: f.nome, loja: f.loja, total: 0, dias: [] };
+      contagem[key].total++;
+      if (!contagem[key].dias.includes(k)) contagem[key].dias.push(k);
+    });
+  });
+  const ranking = Object.values(contagem).sort((a,b) => b.total - a.total);
+  if (!ranking.length) {
+    const panel = document.getElementById('folgas-day-panel');
+    if (panel) panel.innerHTML = `<div style="margin-top:.75rem;padding:.9rem;text-align:center;color:#9ca3af;font-size:.75rem;">Nenhuma folga registrada em ${MESES[month]} ${year}.</div>`;
+    return;
+  }
+  const medalhas = ['🥇','🥈','🥉'];
+  let html = `<div style="margin-top:.75rem;padding:.9rem;background:rgba(20,184,166,.06);border:1px solid rgba(20,184,166,.25);border-radius:.75rem;">
+    <div style="font-size:.78rem;font-weight:700;color:#14b8a6;margin-bottom:.75rem;">🏆 Ranking de Folgas — ${MESES[month]} ${year}</div>`;
+  ranking.forEach((r, i) => {
+    const l = _FOLGAS_LOJAS[r.loja] || { nome: r.loja, cor: '#9ca3af' };
+    const medal = medalhas[i] || `<span style="font-size:.68rem;color:#6b7280;font-weight:700;">${i+1}°</span>`;
+    const isTop = i < 3;
+    const diasStr = r.dias.sort().map(d => parseInt(d.split('-')[2])).join(', ');
+    html += `<div style="display:flex;align-items:center;gap:.65rem;padding:.45rem .55rem;border-radius:.6rem;margin-bottom:.3rem;background:${isTop ? l.cor+'0f' : 'transparent'};border:${isTop ? '1px solid '+l.cor+'30' : '1px solid transparent'};">
+      <div style="font-size:${isTop?'.95':'0.7'}rem;min-width:1.4rem;text-align:center;">${medal}</div>
+      <div style="flex:1;min-width:0;">
+        <div style="font-size:.72rem;font-weight:700;color:#f9fafb;text-transform:uppercase;">${r.nome}</div>
+        <div style="font-size:.6rem;color:${l.cor};margin-top:.1rem;">${l.nome} · dias ${diasStr}</div>
+      </div>
+      <div style="font-size:.85rem;font-weight:800;color:${l.cor};min-width:2rem;text-align:right;">${r.total}✕</div>
+    </div>`;
+  });
+  html += `</div>`;
+  const panel = document.getElementById('folgas-day-panel');
+  if (panel) panel.innerHTML = html;
+}
+
 window._folgasOpenModal     = _folgasOpenModal;
 window._folgasCloseModal    = _folgasCloseModal;
 window._folgasNavMonth      = _folgasNavMonth;
 window._folgasShowDay       = _folgasShowDay;
+window._folgasShowRanking   = _folgasShowRanking;
 
 // ─── OCORRÊNCIAS (Faltas / Atestados / Declarações) ───────────────────────────
 const _OC_LOJAS = _FOLGAS_LOJAS; // reutiliza mapa de lojas/cores

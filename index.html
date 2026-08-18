@@ -7524,7 +7524,32 @@ function _fecharSugestaoPedido() {
 }
 
 // ── Ver Estoque ──────────────────────────────────────────────────────────────
-var _estTab = 'rede';
+var _estTab    = 'rede';
+var _estFiltro = 'celulares';  // 'celulares' | 'acessorios' | 'todos'
+
+function _setEstFiltro(f) {
+    _estFiltro = f;
+    ['celulares','acessorios','todos'].forEach(function(k) {
+        var btn = document.getElementById('est-fil-'+k);
+        if (!btn) return;
+        var active = (k === f);
+        btn.style.background = active ? '#0891b2' : 'transparent';
+        btn.style.color      = active ? '#fff'    : '#6b7280';
+        btn.style.borderColor= active ? '#0891b2' : '#374151';
+    });
+    _renderVerEstoque();
+}
+
+function _isPhoneModelKey(nm) {
+    var BRANDS = ['REALME','INFINIX','TECNO','ITEL','SAMSUNG','APPLE','IPHONE','MOTOROLA',
+        'CAT','OUKITEL','DOOGEE','NOTHING','XIAOMI','POCO','REDMI','LG','NOKIA',
+        'HUAWEI','HONOR','OPPO','VIVO','ONEPLUS','TCL','BLACKVIEW','ULEFONE','CUBOT',
+        'UMIDIGI','PHILIPS','ALCATEL','BLU','ASUS','MULTILASER','POSITIVO'];
+    var up = nm.toUpperCase();
+    if (up.indexOf('SMARTPHONE') === 0 || up.indexOf('CELULAR') === 0) return true;
+    var first = up.split(' ')[0];
+    return BRANDS.indexOf(first) !== -1;
+}
 
 var _EST_SUBREDES = {
     t1: { label:'T1 · Talysson', cor:'#3b82f6', lojas:['cariacica','itabuna','moxuara'] },
@@ -7580,7 +7605,11 @@ function _renderVerEstoque() {
 
     var temPrecos = Object.keys(pre).length > 0;
 
-    var models = Object.keys(est).sort(function(a, b) {
+    var models = Object.keys(est).filter(function(nm) {
+        if (_estFiltro === 'todos') return true;
+        var isPhone = _isPhoneModelKey(nm);
+        return _estFiltro === 'celulares' ? isPhone : !isPhone;
+    }).sort(function(a, b) {
         var tA = _EST_ALL_LOJAS.reduce(function(s,k){ return s+(est[a][k]||0); },0);
         var tB = _EST_ALL_LOJAS.reduce(function(s,k){ return s+(est[b][k]||0); },0);
         return tB - tA;
@@ -23096,8 +23125,25 @@ cursosInit();
       <span style="font-size:.55rem;color:#4ade80;font-weight:700;">● 5+ — estoque ok</span>
     </div>
 
+    <!-- Filtro: Celulares / Acessórios / Todos -->
+    <div style="display:flex;gap:.3rem;padding:.5rem 1.25rem .35rem;flex-shrink:0;align-items:center;">
+      <span style="font-size:.52rem;color:#4b5563;font-weight:700;margin-right:.2rem;">VER:</span>
+      <button onclick="_setEstFiltro('celulares')" id="est-fil-celulares"
+        style="padding:.22rem .7rem;border-radius:.4rem;border:1px solid #0891b2;background:#0891b2;color:#fff;font-size:.58rem;font-weight:800;cursor:pointer;transition:all .2s;">
+        📱 Celulares
+      </button>
+      <button onclick="_setEstFiltro('acessorios')" id="est-fil-acessorios"
+        style="padding:.22rem .7rem;border-radius:.4rem;border:1px solid #374151;background:transparent;color:#6b7280;font-size:.58rem;font-weight:700;cursor:pointer;transition:all .2s;">
+        🛍️ Acessórios
+      </button>
+      <button onclick="_setEstFiltro('todos')" id="est-fil-todos"
+        style="padding:.22rem .7rem;border-radius:.4rem;border:1px solid #374151;background:transparent;color:#6b7280;font-size:.58rem;font-weight:700;cursor:pointer;transition:all .2s;">
+        Todos
+      </button>
+    </div>
+
     <!-- Tabs: Rede / T1 / T2 / T3 / Por Loja -->
-    <div style="display:flex;gap:.35rem;padding:.7rem 1.25rem .5rem;flex-shrink:0;border-bottom:1px solid rgba(255,255,255,.06);flex-wrap:wrap;">
+    <div style="display:flex;gap:.35rem;padding:.4rem 1.25rem .5rem;flex-shrink:0;border-bottom:1px solid rgba(255,255,255,.06);flex-wrap:wrap;">
       <button onclick="_setEstTab('rede')" id="est-tab-rede"
         style="padding:.3rem .85rem;border-radius:.45rem;border:1px solid #3b82f6;background:#3b82f6;color:#fff;font-size:.62rem;font-weight:800;cursor:pointer;transition:all .2s;">
         🌐 Rede

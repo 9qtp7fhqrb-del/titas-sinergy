@@ -1091,105 +1091,92 @@ def _normalize_model_key(nm):
     c = re.sub(r'\s*-\s*(Cor\s+)?Padrão.*$', '', c, flags=re.IGNORECASE)
     return c.upper().strip()
 
-def fetch_estoque(token, retries=3, wait=10):
-    """
-    Busca estoque por produto por loja via API ERP.
-    Retorna dict {model_key: {store_key: qty}} ou {} em caso de falha.
-    """
-    import time
+_PHONE_BRANDS = {
+    'REALME','INFINIX','TECNO','ITEL','SAMSUNG','APPLE','IPHONE','MOTOROLA',
+    'CAT','OUKITEL','DOOGEE','NOTHING','XIAOMI','POCO','REDMI','LG','NOKIA',
+    'HUAWEI','HONOR','OPPO','VIVO','ONEPLUS','TCL','BLACKVIEW','ULEFONE',
+}
 
-    # Endpoints candidatos (testados em ordem)
-    endpoints = [
-        '/stock',
-        '/stocks',
-        '/product_stocks',
-        '/inventory',
-        '/products/stock',
-        '/store_products',
-    ]
+def _is_phone(nm_raw):
+    """True se o nome de produto ERP indica um celular/smartphone."""
+    up = nm_raw.upper()
+    if up.startswith('SMARTPHONE') or up.startswith('CELULAR'):
+        return True
+    first = up.split()[0] if up.split() else ''
+    return first in _PHONE_BRANDS
 
-    raw_data = None
-    found_ep = None
-    for ep in endpoints:
+def _fetch_all_stock_pages(token, retries=3, wait=10):
+    """Busca TODAS as páginas de /stocks e retorna lista completa de itens."""
+    hdrs = {'Authorization': f'Bearer {token}', 'Accept': 'application/json'}
+    all_items = []
+    for page in range(1, 30):   # máximo 30 páginas por segurança
+        url = f'{ERP_BASE}/stocks?page={page}'
         for attempt in range(1, retries + 1):
             try:
-                r = requests.get(f'{ERP_BASE}{ep}',
-                    headers={'Authorization': f'Bearer {token}', 'Accept': 'application/json'},
-                    timeout=30)
+                r = requests.get(url, headers=hdrs, timeout=30)
                 if r.status_code == 404:
-                    break  # endpoint não existe
+                    return all_items   # endpoint não existe
                 r.raise_for_status()
-                raw_data = r.json()
-                found_ep = ep
-                print(f'  Endpoint de estoque: {ep} (status {r.status_code})')
+                raw = r.json()
+                items = raw if isinstance(raw, list) else next(
+                    (raw[k] for k in ('stocks','data','items','stock') if isinstance(raw.get(k), list)), [])
+                if not items:
+                    print(f'  /stocks: {len(all_items)} itens em {page-1} páginas')
+                    return all_items
+                all_items.extend(items)
                 break
             except requests.exceptions.HTTPError as e:
-                if e.response is not None and e.response.status_code == 404:
-                    break
+                if e.response is not None and e.response.status_code in (404, 400):
+                    print(f'  /stocks: {len(all_items)} itens em {page-1} páginas')
+                    return all_items
                 if attempt < retries:
                     time.sleep(wait)
             except Exception as e:
                 if attempt < retries:
                     time.sleep(wait)
-        if found_ep:
-            break
+    return all_items
 
-    if not raw_data:
-        print('  AVISO: nenhum endpoint de estoque acessível — _ERP_ESTOQUE não será atualizado')
+def fetch_estoque(token, retries=3, wait=10):
+    """
+    Busca estoque de celulares por produto/loja via /stocks (paginado).
+    Retorna dict {model_key: {store_key: qty}} ou {} em caso de falha.
+    """
+    import time
+
+    all_items = _fetch_all_stock_pages(token, retries, wait)
+    if not all_items:
+        print('  AVISO: /stocks não retornou itens — _ERP_ESTOQUE não será atualizado')
         return {}
 
-    # Normaliza resposta: pode ser list ou dict com key de lista
-    items = []
-    if isinstance(raw_data, list):
-        items = raw_data
-    else:
-        for k in ('stock', 'stocks', 'data', 'products', 'items', 'inventory'):
-            if isinstance(raw_data.get(k), list):
-                items = raw_data[k]
-                break
-
-    if not items:
-        print(f'  AVISO: resposta de {found_ep} não tem lista reconhecível')
-        return {}
-
-    # Monta {model_key: {store_key: qty}}
     estoque = {}
     skipped = 0
-    for item in items:
-        # Nome do produto — pode ser string direta ou aninhado em product_variation/product_info
+    for item in all_items:
         store_obj = item.get('store') or {}
-        pv = item.get('product_variation') or {}
-        nm = (item.get('product_info') or
-              (pv.get('name') if isinstance(pv, dict) else None) or
-              item.get('product_name') or item.get('name') or
-              item.get('model') or item.get('description') or '').strip()
-        if not nm:
+        pv        = item.get('product_variation') or {}
+        nm_raw    = (item.get('product_info') or
+                     (pv.get('name') if isinstance(pv, dict) else None) or
+                     item.get('product_name') or item.get('name') or '').strip()
+        if not nm_raw or not _is_phone(nm_raw):
             skipped += 1
             continue
-        model_key = _normalize_model_key(nm)
+        model_key = _normalize_model_key(nm_raw)
         if not model_key:
             skipped += 1
             continue
 
-        # Nome da loja — pode ser string direta ou objeto {id, name}
-        if isinstance(store_obj, dict):
-            store_raw = store_obj.get('name', '').strip().upper()
-        else:
-            store_raw = (item.get('store_name') or item.get('branch_name')
-                         or item.get('location') or str(store_obj)).strip().upper()
+        store_raw = (store_obj.get('name','') if isinstance(store_obj, dict) else
+                     str(store_obj)).strip().upper()
         store_key = STORE_NAME_TO_KEY.get(store_raw)
         if not store_key:
             skipped += 1
             continue
 
-        # Quantidade
-        qty = int(item.get('quantity') or item.get('qty') or item.get('stock') or item.get('amount') or 0)
-
+        qty = int(item.get('quantity') or 0)
         if model_key not in estoque:
             estoque[model_key] = {k: 0 for k in STORE_KEYS_ORDER}
         estoque[model_key][store_key] = estoque[model_key].get(store_key, 0) + qty
 
-    print(f'  Estoque parseado: {len(estoque)} modelos ({skipped} itens ignorados)')
+    print(f'  Estoque parseado: {len(estoque)} modelos de celular ({skipped} itens ignorados/acessórios)')
     return estoque
 
 def update_erp_estoque(content, estoque_data):
@@ -1247,59 +1234,32 @@ def fetch_precos(token, retries=3, wait=10):
     import time as _time
     from collections import defaultdict
 
-    # ── Tentativa 1: endpoints de estoque (mesmos do fetch_estoque) ──────────
-    stock_eps = ['/stock', '/stocks', '/product_stocks', '/inventory',
-                 '/products/stock', '/store_products']
-    headers = {'Authorization': f'Bearer {token}', 'Accept': 'application/json'}
-
-    for ep in stock_eps:
-        for attempt in range(1, retries + 1):
-            try:
-                r = requests.get(f'{ERP_BASE}{ep}', headers=headers, timeout=30)
-                if r.status_code == 404:
-                    break
-                r.raise_for_status()
-                raw = r.json()
-                items = raw if isinstance(raw, list) else next(
-                    (raw[k] for k in ('stock','stocks','data','products','items','inventory')
-                     if isinstance(raw.get(k), list)), [])
-                if not items:
-                    break
-                precos = {}
-                for it in items:
-                    pv = it.get('product_variation') or {}
-                    nm = (it.get('product_info') or
-                          (pv.get('name') if isinstance(pv, dict) else None) or
-                          it.get('product_name') or it.get('name') or
-                          it.get('model') or it.get('description') or '').strip()
-                    key = _normalize_model_key(nm)
-                    if not key:
-                        continue
-                    custo = float(it.get('average_cost') or it.get('custo_medio') or
-                                  it.get('cost_price') or it.get('cost') or 0)
-                    venda = float(it.get('sale_price') or it.get('preco_venda') or
-                                  it.get('selling_price') or it.get('unit_price') or
-                                  it.get('price') or 0)
-                    if custo > 0 or venda > 0:
-                        if key not in precos:
-                            precos[key] = {'custo': custo, 'venda': venda}
-                        else:
-                            if custo > 0 and precos[key]['custo'] == 0:
-                                precos[key]['custo'] = custo
-                            if venda > 0 and precos[key]['venda'] == 0:
-                                precos[key]['venda'] = venda
-                if precos:
-                    print(f'  _ERP_PRECOS via {ep}: {len(precos)} produtos com custo/venda')
-                    return precos
-                break  # endpoint ok mas sem campos de preço, tenta próximo
-            except requests.exceptions.HTTPError as e:
-                if e.response is not None and e.response.status_code == 404:
-                    break
-                if attempt < retries:
-                    _time.sleep(wait)
-            except Exception as e:
-                if attempt < retries:
-                    _time.sleep(wait)
+    # ── Tentativa 1: /stocks paginado (tem average_cost + sale_price) ────────
+    all_items = _fetch_all_stock_pages(token, retries, wait)
+    if all_items:
+        precos = {}
+        for it in all_items:
+            pv     = it.get('product_variation') or {}
+            nm_raw = (it.get('product_info') or
+                      (pv.get('name') if isinstance(pv, dict) else None) or
+                      it.get('product_name') or it.get('name') or '').strip()
+            if not nm_raw or not _is_phone(nm_raw):
+                continue
+            key   = _normalize_model_key(nm_raw)
+            if not key:
+                continue
+            custo = float(it.get('average_cost') or it.get('custo_medio') or 0)
+            venda = float(it.get('sale_price')   or it.get('preco_venda') or 0)
+            if key not in precos:
+                precos[key] = {'custo': custo, 'venda': venda}
+            else:
+                if custo > 0 and precos[key]['custo'] == 0:
+                    precos[key]['custo'] = custo
+                if venda > 0 and precos[key]['venda'] == 0:
+                    precos[key]['venda'] = venda
+        if precos:
+            print(f'  _ERP_PRECOS via /stocks: {len(precos)} celulares com custo/venda')
+            return precos
 
     # ── Tentativa 2: product_sales (só preço de venda, sem custo) ────────────
     import subprocess, json as _json

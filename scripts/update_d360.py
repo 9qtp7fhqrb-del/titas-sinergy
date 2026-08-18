@@ -1231,22 +1231,83 @@ def update_erp_estoque(content, estoque_data):
     return content[:idx] + new_block + content[end_block:]
 
 
-def fetch_precos(token, retries=3, wait=15):
+def fetch_precos(token, retries=3, wait=10):
     """
-    Extrai preço médio de venda e custo (se disponível) por produto.
-    Usa /reports/sales/product_sales do mês corrente — mesmo endpoint do top_modelos.
+    Busca custo médio e preço de venda por produto no ERP.
+    Tenta primeiro os endpoints de estoque (que têm custo_medio/preco_venda),
+    depois cai no product_sales como fallback (só preço de venda).
     """
-    import subprocess, json as _json
+    import time as _time
     from collections import defaultdict
+
+    # ── Tentativa 1: endpoints de estoque (mesmos do fetch_estoque) ──────────
+    stock_eps = ['/stock', '/stocks', '/product_stocks', '/inventory',
+                 '/products/stock', '/store_products']
+    headers = {'Authorization': f'Bearer {token}', 'Accept': 'application/json'}
+
+    for ep in stock_eps:
+        for attempt in range(1, retries + 1):
+            try:
+                r = requests.get(f'{ERP_BASE}{ep}', headers=headers, timeout=30)
+                if r.status_code == 404:
+                    break
+                r.raise_for_status()
+                raw = r.json()
+                items = raw if isinstance(raw, list) else next(
+                    (raw[k] for k in ('stock','stocks','data','products','items','inventory')
+                     if isinstance(raw.get(k), list)), [])
+                if not items:
+                    break
+                precos = {}
+                for it in items:
+                    nm = (it.get('product_name') or it.get('name') or
+                          it.get('model') or it.get('description') or '').strip()
+                    key = _normalize_model_key(nm)
+                    if not key:
+                        continue
+                    # Custo médio: varios nomes possíveis em PT e EN
+                    custo = float(
+                        it.get('custo_medio') or it.get('custo') or
+                        it.get('average_cost') or it.get('cost_average') or
+                        it.get('cost_price') or it.get('cost') or 0)
+                    # Preço de venda unitário
+                    venda = float(
+                        it.get('preco_venda') or it.get('venda_unitaria') or
+                        it.get('preco') or it.get('sale_price') or
+                        it.get('selling_price') or it.get('unit_price') or
+                        it.get('price') or 0)
+                    if custo > 0 or venda > 0:
+                        if key not in precos:
+                            precos[key] = {'custo': custo, 'venda': venda}
+                        else:
+                            # Mantém o maior custo (várias lojas podem ter o mesmo produto)
+                            if custo > 0 and precos[key]['custo'] == 0:
+                                precos[key]['custo'] = custo
+                            if venda > 0 and precos[key]['venda'] == 0:
+                                precos[key]['venda'] = venda
+                if precos:
+                    print(f'  _ERP_PRECOS via {ep}: {len(precos)} produtos com custo/venda')
+                    return precos
+                break  # endpoint ok mas sem campos de preço, tenta próximo
+            except requests.exceptions.HTTPError as e:
+                if e.response is not None and e.response.status_code == 404:
+                    break
+                if attempt < retries:
+                    _time.sleep(wait)
+            except Exception as e:
+                if attempt < retries:
+                    _time.sleep(wait)
+
+    # ── Tentativa 2: product_sales (só preço de venda, sem custo) ────────────
+    import subprocess, json as _json
     from datetime import datetime as _dt, timedelta as _td
 
-    today    = _dt.now(BRT).strftime('%Y-%m-%d')
-    start    = _dt.now(BRT).replace(day=1).strftime('%Y-%m-%d')
-
-    # Coleta itens do mês em chunks de 7 dias
-    all_items = []
-    start_dt  = _dt.strptime(start, '%Y-%m-%d')
-    end_dt    = _dt.strptime(today,  '%Y-%m-%d')
+    print('  _ERP_PRECOS: tentando product_sales como fallback (só preço de venda)...')
+    today   = _dt.now(BRT).strftime('%Y-%m-%d')
+    start   = _dt.now(BRT).replace(day=1).strftime('%Y-%m-%d')
+    agg     = defaultdict(lambda: {'val': 0.0, 'qt': 0})
+    start_dt = _dt.strptime(start, '%Y-%m-%d')
+    end_dt   = _dt.strptime(today, '%Y-%m-%d')
     cur = start_dt
     while cur <= end_dt:
         chunk_end = min(cur + _td(days=6), end_dt)
@@ -1254,57 +1315,35 @@ def fetch_precos(token, retries=3, wait=15):
                f'?min={cur.strftime("%Y-%m-%d")}&max={chunk_end.strftime("%Y-%m-%d")}')
         for attempt in range(1, retries + 1):
             try:
-                result = subprocess.run(
+                res = subprocess.run(
                     ['curl', '-s', '--http1.1', url,
                      '-H', f'Authorization: Bearer {token}',
-                     '-H', 'Accept: application/json',
-                     '--max-time', '90'],
-                    capture_output=True, timeout=95
-                )
-                if result.returncode != 0 or not result.stdout:
-                    raise RuntimeError(f'curl exit {result.returncode}')
-                chunk = _json.loads(result.stdout).get('data', {}).get('detailed_items', [])
-                all_items.extend(chunk)
+                     '-H', 'Accept: application/json', '--max-time', '90'],
+                    capture_output=True, timeout=95)
+                if res.returncode != 0 or not res.stdout:
+                    raise RuntimeError(f'curl {res.returncode}')
+                chunk = _json.loads(res.stdout).get('data', {}).get('detailed_items', [])
+                for it in chunk:
+                    if it.get('item_status') == 'returned': continue
+                    if it.get('group_name') != 'SBON': continue
+                    key = _normalize_model_key(it.get('product_name', '').strip())
+                    if not key: continue
+                    agg[key]['val'] += float(it.get('net_value') or 0)
+                    agg[key]['qt']  += 1
                 break
             except Exception as e:
                 if attempt < retries:
-                    time.sleep(wait)
-                else:
-                    print(f'  AVISO fetch_precos chunk {cur.date()}: {e}')
+                    _time.sleep(wait)
         cur = chunk_end + _td(days=1)
-
-    if not all_items:
-        print('  _ERP_PRECOS: product_sales não retornou itens')
-        return {}
-
-    # Agrega: soma net_value e custo (se houver), conta vendas por produto
-    agg = defaultdict(lambda: {'val': 0.0, 'custo': 0.0, 'qt': 0})
-    for it in all_items:
-        if it.get('item_status') == 'returned':
-            continue
-        if it.get('group_name') != 'SBON':  # só celulares
-            continue
-        nm  = it.get('product_name', '').strip()
-        key = _normalize_model_key(nm)
-        if not key:
-            continue
-        val   = float(it.get('net_value') or 0)
-        custo = float(it.get('cost_price') or it.get('cost') or
-                      it.get('cost_value') or it.get('purchase_price') or 0)
-        agg[key]['val']   += val
-        agg[key]['custo'] += custo
-        agg[key]['qt']    += 1
 
     precos = {}
     for key, d in agg.items():
-        if d['qt'] == 0:
-            continue
-        venda = round(d['val']   / d['qt'], 2)
-        custo = round(d['custo'] / d['qt'], 2) if d['custo'] > 0 else 0
-        if venda > 0 or custo > 0:
-            precos[key] = {'custo': custo, 'venda': venda}
-
-    print(f'  _ERP_PRECOS: {len(precos)} produtos com preço de venda extraído de {len(all_items)} transações')
+        if d['qt'] > 0 and d['val'] > 0:
+            precos[key] = {'custo': 0, 'venda': round(d['val'] / d['qt'], 2)}
+    if precos:
+        print(f'  _ERP_PRECOS via product_sales: {len(precos)} produtos (só venda, custo=0)')
+    else:
+        print('  _ERP_PRECOS: nenhum dado disponível')
     return precos
 
 

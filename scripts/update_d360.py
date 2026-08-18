@@ -1156,9 +1156,13 @@ def fetch_estoque(token, retries=3, wait=10):
     estoque = {}
     skipped = 0
     for item in items:
-        # Nome do produto
-        nm = (item.get('product_name') or item.get('name') or item.get('model')
-              or item.get('product') or item.get('description') or '').strip()
+        # Nome do produto — pode ser string direta ou aninhado em product_variation/product_info
+        store_obj = item.get('store') or {}
+        pv = item.get('product_variation') or {}
+        nm = (item.get('product_info') or
+              (pv.get('name') if isinstance(pv, dict) else None) or
+              item.get('product_name') or item.get('name') or
+              item.get('model') or item.get('description') or '').strip()
         if not nm:
             skipped += 1
             continue
@@ -1167,9 +1171,12 @@ def fetch_estoque(token, retries=3, wait=10):
             skipped += 1
             continue
 
-        # Nome da loja
-        store_raw = (item.get('store_name') or item.get('store') or item.get('branch_name')
-                     or item.get('location') or item.get('unit_name') or '').strip().upper()
+        # Nome da loja — pode ser string direta ou objeto {id, name}
+        if isinstance(store_obj, dict):
+            store_raw = store_obj.get('name', '').strip().upper()
+        else:
+            store_raw = (item.get('store_name') or item.get('branch_name')
+                         or item.get('location') or str(store_obj)).strip().upper()
         store_key = STORE_NAME_TO_KEY.get(store_raw)
         if not store_key:
             skipped += 1
@@ -1260,27 +1267,23 @@ def fetch_precos(token, retries=3, wait=10):
                     break
                 precos = {}
                 for it in items:
-                    nm = (it.get('product_name') or it.get('name') or
+                    pv = it.get('product_variation') or {}
+                    nm = (it.get('product_info') or
+                          (pv.get('name') if isinstance(pv, dict) else None) or
+                          it.get('product_name') or it.get('name') or
                           it.get('model') or it.get('description') or '').strip()
                     key = _normalize_model_key(nm)
                     if not key:
                         continue
-                    # Custo médio: varios nomes possíveis em PT e EN
-                    custo = float(
-                        it.get('custo_medio') or it.get('custo') or
-                        it.get('average_cost') or it.get('cost_average') or
-                        it.get('cost_price') or it.get('cost') or 0)
-                    # Preço de venda unitário
-                    venda = float(
-                        it.get('preco_venda') or it.get('venda_unitaria') or
-                        it.get('preco') or it.get('sale_price') or
-                        it.get('selling_price') or it.get('unit_price') or
-                        it.get('price') or 0)
+                    custo = float(it.get('average_cost') or it.get('custo_medio') or
+                                  it.get('cost_price') or it.get('cost') or 0)
+                    venda = float(it.get('sale_price') or it.get('preco_venda') or
+                                  it.get('selling_price') or it.get('unit_price') or
+                                  it.get('price') or 0)
                     if custo > 0 or venda > 0:
                         if key not in precos:
                             precos[key] = {'custo': custo, 'venda': venda}
                         else:
-                            # Mantém o maior custo (várias lojas podem ter o mesmo produto)
                             if custo > 0 and precos[key]['custo'] == 0:
                                 precos[key]['custo'] = custo
                             if venda > 0 and precos[key]['venda'] == 0:

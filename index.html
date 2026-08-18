@@ -7,7 +7,7 @@
     <script>
     // Cache-buster: força reload se a versão mudou
     (function(){
-      var BUILD = '20260818214837';
+      var BUILD = '20260818221601';
       var stored = localStorage.getItem('d360_build');
       if (stored && stored !== BUILD) {
         localStorage.setItem('d360_build', BUILD);
@@ -6879,17 +6879,17 @@ const D360 = {
     diasDecorridos: 18, // atualizado pelo script de automação — não alterar manualmente
     diasMes: 31,          // agosto tem 31 dias
     ticket_cel: 1767,        // ticket médio celulares (SBON) — atualizado pelo bot
-    ticket_acess: 88,      // ticket médio acessórios — atualizado pelo bot
+    ticket_acess: 87,      // ticket médio acessórios — atualizado pelo bot
     ped_cel: 724,           // pedidos celulares — atualizado pelo bot
-    ped_acess: 564,         // pedidos acessórios — atualizado pelo bot
+    ped_acess: 565,         // pedidos acessórios — atualizado pelo bot
 
     // ── Margem Bruta Mensal ──────────────────────────────────────────────────────
     // FONTE PRIMÁRIA: margem_lojas (por loja, do Relatório Gerencial ERP CDC)
     // O sistema deriva automaticamente: margem por loja → subrede → rede
     // COMO ATUALIZAR: edite apenas margem_lojas com os valores do ERP por loja
     // ─────────────────────────────────────────────────────────────────────────────
-    margem_dia: 49.25,              // rede hoje · zerado automaticamente à meia-noite
-    margem_dia_subredes: { t1: 47.32, t2: 49.13, t3: 55.40 },
+    margem_dia: 49.40,              // rede hoje · zerado automaticamente à meia-noite
+    margem_dia_subredes: { t1: 47.32, t2: 49.13, t3: 55.00 },
     margem_lojas: {
         // ── FONTE PRIMÁRIA — atualizar aqui com o Relatório Gerencial por Loja ──
         // T1 — Titãs 1 (Talysson)
@@ -6902,13 +6902,13 @@ const D360 = {
         teixeira:    47.99,
         laranjeiras: 47.99,
         // T3 — Titãs 3 (Arthur)
-        saomateus:   50.51,
-        serra:        50.51,
-        montserrat:  50.51,
-        linhares:    50.51,
+        saomateus:   50.52,
+        serra:        50.52,
+        montserrat:  50.52,
+        linhares:    50.52,
     },
     margem_subredes: {  // fallback quando margem_lojas estiver incompleta
-        t1: 47.83, t2: 47.99, t3: 50.51
+        t1: 47.83, t2: 47.99, t3: 50.52
     },
     // margem_mes: derivada automaticamente pelo _calcMargemPonderada (não editar)
     margem_mes: 48.95,
@@ -7045,14 +7045,14 @@ const D360 = {
             top:[{n:'Juliana Pereira do Nascimento',i:'JP',p:49,t:58318.99,ds:30,ult:'18/08'},
                 {n:'RAYCA MENDES MORAIS',i:'RM',p:37,t:40470.0,ds:49,ult:'18/08'},
                 {n:'KRYSTIAN LINCOLN DALFIOR GONÇALVES',i:'KL',p:3,t:2140.0}]},
-        montserrat:  { label:'Montserrat',         sigla:'MT', sub:'t3', meta:200000,  total:119594.0,  ped:137,  cancel:0, agend:0, agendCount:0, agendFat:21849.0,  fat_dia:520.0, acess_dia:520.0, acess_dia_top:[{n:'vinicius de almeida medeiros vargas',i:'VD',t:370.0}, {n:'ADRIANO JEREMIAS CARDOSO MONTEIRO',i:'AJ',t:150.0}], top_dia:[{n:'vinicius de almeida medeiros vargas',i:'VD',t:370.0}, {n:'ADRIANO JEREMIAS CARDOSO MONTEIRO',i:'AJ',t:150.0}], fin_dia:0, fin_mes:61166.0, top_fin_mes:[{n:'JOAQUIN EMILIANO RODRIGO',i:'JE',t:29292.0,bd:[{nm:'PayJoy',t:7550.0},{nm:'OdresCred',t:21742.0},{nm:'Outras',t:0}]},{n:'ADRIANO JEREMIAS CARDOSO MONTEIRO',i:'AJ',t:21374.0,bd:[{nm:'PayJoy',t:15275.0},{nm:'OdresCred',t:6099.0},{nm:'Outras',t:0}]},{n:'vinicius de almeida medeiros vargas',i:'VD',t:10500.0,bd:[{nm:'PayJoy',t:3900.0},{nm:'OdresCred',t:6600.0},{nm:'Outras',t:0}]}], fin_bd:[{nm:'PayJoy',t:26725.0},{nm:'OdresCred',t:34441.0},{nm:'Outras',t:0}], top_fin:[], metaAcess:20000,
-            agendamentos:{total:21849.0, fin:19949.0, fin_bd:[{nm:'PayJoy',t:7250.0},{nm:'OdresCred',t:12699.0},{nm:'Outras',t:0}], top:[{n:'vinicius de almeida medeiros vargas',i:'VD',t:11100.0}, {n:'ADRIANO JEREMIAS CARDOSO MONTEIRO',i:'AJ',t:6199.0}, {n:'JOAQUIN EMILIANO RODRIGO',i:'JE',t:4550.0}]},
-            acessorios:{total:8731.02, top:[
+        montserrat:  { label:'Montserrat',         sigla:'MT', sub:'t3', meta:200000,  total:121633.0,  ped:139,  cancel:0, agend:0, agendCount:0, agendFat:23848.0,  fat_dia:2559.0, acess_dia:560.0, acess_dia_top:[{n:'vinicius de almeida medeiros vargas',i:'VD',t:370.0}, {n:'ADRIANO JEREMIAS CARDOSO MONTEIRO',i:'AJ',t:150.0}, {n:'JOAQUIN EMILIANO RODRIGO',i:'JE',t:40.0}], top_dia:[{n:'JOAQUIN EMILIANO RODRIGO',i:'JE',t:2039.0}, {n:'vinicius de almeida medeiros vargas',i:'VD',t:370.0}, {n:'ADRIANO JEREMIAS CARDOSO MONTEIRO',i:'AJ',t:150.0}], fin_dia:1999.0, fin_mes:63165.0, top_fin_mes:[{n:'JOAQUIN EMILIANO RODRIGO',i:'JE',t:31291.0,bd:[{nm:'PayJoy',t:7550.0},{nm:'OdresCred',t:23741.0},{nm:'Outras',t:0}]},{n:'ADRIANO JEREMIAS CARDOSO MONTEIRO',i:'AJ',t:21374.0,bd:[{nm:'PayJoy',t:15275.0},{nm:'OdresCred',t:6099.0},{nm:'Outras',t:0}]},{n:'vinicius de almeida medeiros vargas',i:'VD',t:10500.0,bd:[{nm:'PayJoy',t:3900.0},{nm:'OdresCred',t:6600.0},{nm:'Outras',t:0}]}], fin_bd:[{nm:'PayJoy',t:26725.0},{nm:'OdresCred',t:36440.0},{nm:'Outras',t:0}], top_fin:[{n:'JOAQUIN EMILIANO RODRIGO',i:'JE',t:1999.0}], metaAcess:20000,
+            agendamentos:{total:23848.0, fin:21948.0, fin_bd:[{nm:'PayJoy',t:7250.0},{nm:'OdresCred',t:14698.0},{nm:'Outras',t:0}], top:[{n:'vinicius de almeida medeiros vargas',i:'VD',t:11100.0}, {n:'JOAQUIN EMILIANO RODRIGO',i:'JE',t:6549.0}, {n:'ADRIANO JEREMIAS CARDOSO MONTEIRO',i:'AJ',t:6199.0}]},
+            acessorios:{total:8771.02, top:[
                 {n:'Joaquin Emiliano Rodrigo',i:'JE',t:3820,ds:12,ult:'12/06'},
                 {n:'Adriano Jeremias Cardoso Monteiro',i:'AJ',t:2050,ds:12,ult:'12/06'},
                 {n:'Vinicius de Almeida Medeiros Vargas',i:'VA',t:2030,ds:12,ult:'12/06'}
             ], dias:[{d:'01/06',ac:590,cel:3198},{d:'06/06',ac:3670,cel:20308},{d:'07/06',ac:490,cel:7100},{d:'08/06',ac:150,cel:1699}]},
-            top:[{n:'JOAQUIN EMILIANO RODRIGO',i:'JE',p:76,t:62575.0,ds:15,ult:'18/08'},
+            top:[{n:'JOAQUIN EMILIANO RODRIGO',i:'JE',p:78,t:64614.0,ds:15,ult:'18/08'},
                 {n:'ADRIANO JEREMIAS CARDOSO MONTEIRO',i:'AJ',p:33,t:37194.0,ds:27,ult:'18/08'},
                 {n:'vinicius de almeida medeiros vargas',i:'VD',p:28,t:19825.0,ds:41,ult:'18/08'}]},
         praiadacosta:{ label:'Praia da Costa',     sigla:'PC', sub:'t2', meta:100000,  total:34099.0,  ped:36,  cancel:0, agend:0, agendCount:0, agendFat:22197.0,  fat_dia:0, acess_dia:0, acess_dia_top:[], top_dia:[], fin_dia:0, fin_mes:19544.0, top_fin_mes:[{n:'Nycolly Calazans Paulo',i:'NC',t:18079.0,bd:[{nm:'PayJoy',t:4560.0},{nm:'OdresCred',t:13519.0},{nm:'Outras',t:0}]},{n:'LÍDIA DA PENHA DIOGO',i:'LD',t:1465.0,bd:[{nm:'PayJoy',t:1465.0},{nm:'OdresCred',t:0},{nm:'Outras',t:0}]}], fin_bd:[{nm:'PayJoy',t:6025.0},{nm:'OdresCred',t:13519.0},{nm:'Outras',t:0}], top_fin:[], metaAcess:2500,
@@ -8220,7 +8220,7 @@ var _ERP_ESTOQUE = {
       'ZENFONE MAX PLUS':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:0},
       'ZENFONE MAX SHOT':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:0},
     };
-    var _ERP_ESTOQUE_TS = '18/08/2026 18:48';
+    var _ERP_ESTOQUE_TS = '18/08/2026 19:15';
 // Preços por produto — populado pelo update_d360.py a cada 30 min
 var _ERP_PRECOS = {
       'ALCATEL A2 XL': {custo:0.00,venda:0.00},
@@ -8577,7 +8577,7 @@ var _ERP_PRECOS = {
       'ZENFONE MAX PLUS': {custo:0.00,venda:0.00},
       'ZENFONE MAX SHOT': {custo:0.00,venda:0.00},
     };
-    var _ERP_PRECOS_TS = '18/08/2026 18:48';
+    var _ERP_PRECOS_TS = '18/08/2026 19:16';
 // Flag de sessão: true = fetch já tentado (sucesso ou falha), não tentar de novo
 var _erpPrecosCarregados = false;
 var _SUG_SPECS = {

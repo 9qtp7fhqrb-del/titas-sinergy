@@ -105,6 +105,12 @@ jobs:
         if: steps.threshold.outputs.should_update == 'true' && steps.diff.outputs.changed == 'true'
         run: npm install -g firebase-tools --silent
 
+      - name: Sincronizar com commits recentes antes do deploy
+        if: steps.threshold.outputs.should_update == 'true' && steps.diff.outputs.changed == 'true'
+        run: |
+          git pull --rebase origin main
+          git push
+
       - name: Limpar versões antigas do Firebase Hosting
         if: steps.threshold.outputs.should_update == 'true' && steps.diff.outputs.changed == 'true'
         env:
@@ -134,9 +140,3 @@ jobs:
           GH_PAT: ${{ secrets.GH_PAT }}
           UPDATE_TOTAL_OUTPUT: /tmp/update_total.txt
         run: python scripts/save_update_total.py
-
-      - name: Push para GitHub
-        if: steps.threshold.outputs.should_update == 'true' && steps.diff.outputs.changed == 'true'
-        run: |
-          git pull --rebase origin main
-          git push

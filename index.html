@@ -7606,6 +7606,8 @@ function _renderVerEstoque() {
     var temPrecos = Object.keys(pre).length > 0;
 
     var models = Object.keys(est).filter(function(nm) {
+        var total = _EST_ALL_LOJAS.reduce(function(s,k){ return s+(est[nm][k]||0); },0);
+        if (total === 0) return false;
         if (_estFiltro === 'todos') return true;
         var isPhone = _isPhoneModelKey(nm);
         return _estFiltro === 'celulares' ? isPhone : !isPhone;

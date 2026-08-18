@@ -1063,6 +1063,288 @@ def fetch_top_modelos_por_financeira(token, start, end, top_n=7, retries=3, wait
     return tm
 
 
+STORE_KEYS_ORDER = [
+    'cariacica','itabuna','moxuara','praiadacosta','barreiras',
+    'laranjeiras','teixeira','saomateus','serra','montserrat','linhares',
+]
+
+# Mapeamento ERP loja-name → store_key (complementar ao STORE_MAP)
+STORE_NAME_TO_KEY = {
+    'CDC BARREIRAS':                'barreiras',
+    'CDC CARIACICA':                'cariacica',
+    'CDC ITABUNA':                  'itabuna',
+    'CDC LINHARES':                 'linhares',
+    'CDC LARANJEIRAS':              'laranjeiras',
+    'CDC MONTSERRAT':               'montserrat',
+    'SHOPPING MOXUARA':             'moxuara',
+    'CDC PRAIA DA COSTA':           'praiadacosta',
+    'CDC SAO MATEUS':               'saomateus',
+    'CDC SERRA':                    'serra',
+    'CDC TEIXEIRA DE FREITAS NOVO': 'teixeira',
+}
+
+def _normalize_model_key(nm):
+    """Normaliza nome de produto ERP para chave de _ERP_ESTOQUE (espelha _getErpStockKey do JS)."""
+    c = re.sub(r'^(SMARTPHONE|CELULAR|TELEFONE\s+CELULAR|TELEFONE)\s+', '', nm, flags=re.IGNORECASE).strip()
+    c = re.sub(r'\s*[-–]\s*\d+\s*GB.*$', '', c, flags=re.IGNORECASE)
+    c = re.sub(r'\s*·.*$', '', c)
+    c = re.sub(r'\s*-\s*(Cor\s+)?Padrão.*$', '', c, flags=re.IGNORECASE)
+    return c.upper().strip()
+
+def fetch_estoque(token, retries=3, wait=10):
+    """
+    Busca estoque por produto por loja via API ERP.
+    Retorna dict {model_key: {store_key: qty}} ou {} em caso de falha.
+    """
+    import time
+
+    # Endpoints candidatos (testados em ordem)
+    endpoints = [
+        '/stock',
+        '/stocks',
+        '/product_stocks',
+        '/inventory',
+        '/products/stock',
+        '/store_products',
+    ]
+
+    raw_data = None
+    found_ep = None
+    for ep in endpoints:
+        for attempt in range(1, retries + 1):
+            try:
+                r = requests.get(f'{ERP_BASE}{ep}',
+                    headers={'Authorization': f'Bearer {token}', 'Accept': 'application/json'},
+                    timeout=30)
+                if r.status_code == 404:
+                    break  # endpoint não existe
+                r.raise_for_status()
+                raw_data = r.json()
+                found_ep = ep
+                print(f'  Endpoint de estoque: {ep} (status {r.status_code})')
+                break
+            except requests.exceptions.HTTPError as e:
+                if e.response is not None and e.response.status_code == 404:
+                    break
+                if attempt < retries:
+                    time.sleep(wait)
+            except Exception as e:
+                if attempt < retries:
+                    time.sleep(wait)
+        if found_ep:
+            break
+
+    if not raw_data:
+        print('  AVISO: nenhum endpoint de estoque acessível — _ERP_ESTOQUE não será atualizado')
+        return {}
+
+    # Normaliza resposta: pode ser list ou dict com key de lista
+    items = []
+    if isinstance(raw_data, list):
+        items = raw_data
+    else:
+        for k in ('stock', 'stocks', 'data', 'products', 'items', 'inventory'):
+            if isinstance(raw_data.get(k), list):
+                items = raw_data[k]
+                break
+
+    if not items:
+        print(f'  AVISO: resposta de {found_ep} não tem lista reconhecível')
+        return {}
+
+    # Monta {model_key: {store_key: qty}}
+    estoque = {}
+    skipped = 0
+    for item in items:
+        # Nome do produto
+        nm = (item.get('product_name') or item.get('name') or item.get('model')
+              or item.get('product') or item.get('description') or '').strip()
+        if not nm:
+            skipped += 1
+            continue
+        model_key = _normalize_model_key(nm)
+        if not model_key:
+            skipped += 1
+            continue
+
+        # Nome da loja
+        store_raw = (item.get('store_name') or item.get('store') or item.get('branch_name')
+                     or item.get('location') or item.get('unit_name') or '').strip().upper()
+        store_key = STORE_NAME_TO_KEY.get(store_raw)
+        if not store_key:
+            skipped += 1
+            continue
+
+        # Quantidade
+        qty = int(item.get('quantity') or item.get('qty') or item.get('stock') or item.get('amount') or 0)
+
+        if model_key not in estoque:
+            estoque[model_key] = {k: 0 for k in STORE_KEYS_ORDER}
+        estoque[model_key][store_key] = estoque[model_key].get(store_key, 0) + qty
+
+    print(f'  Estoque parseado: {len(estoque)} modelos ({skipped} itens ignorados)')
+    return estoque
+
+def update_erp_estoque(content, estoque_data):
+    """Substitui _ERP_ESTOQUE e _ERP_ESTOQUE_TS no index.html."""
+    from datetime import datetime as _dt
+    ts = _dt.now(BRT).strftime('%d/%m/%Y %H:%M')
+
+    # Monta JS object literal
+    lines = ['{\n']
+    for model in sorted(estoque_data):
+        stores = estoque_data[model]
+        vals = ','.join(f'{k}:{stores.get(k,0)}' for k in STORE_KEYS_ORDER)
+        lines.append(f"      '{model}':  {{{vals}}},\n")
+    lines.append('    }')
+    js_estoque = ''.join(lines)
+
+    # Encontra e substitui _ERP_ESTOQUE = {...}
+    start_marker = 'var _ERP_ESTOQUE = {'
+    idx = content.find(start_marker)
+    if idx == -1:
+        print('  AVISO: _ERP_ESTOQUE não encontrado no HTML')
+        return content
+
+    # Localiza a chave de abertura e encontra o fechamento
+    brace_start = content.index('{', idx + len('var _ERP_ESTOQUE') - 1)
+    depth = 0
+    i = brace_start
+    while i < len(content):
+        if content[i] == '{':   depth += 1
+        elif content[i] == '}':
+            depth -= 1
+            if depth == 0: break
+        i += 1
+    end_obj = i + 1  # logo após o '}'
+
+    # Agora localiza o _ERP_ESTOQUE_TS na mesma região
+    ts_marker = 'var _ERP_ESTOQUE_TS'
+    ts_idx = content.find(ts_marker, end_obj)
+    if ts_idx == -1:
+        end_block = end_obj + 1
+    else:
+        end_block = content.index(';', ts_idx) + 1
+
+    new_block = (f'var _ERP_ESTOQUE = {js_estoque};\n'
+                 f"    var _ERP_ESTOQUE_TS = '{ts}';")
+    return content[:idx] + new_block + content[end_block:]
+
+
+def fetch_precos(token, retries=3, wait=15):
+    """
+    Extrai preço médio de venda e custo (se disponível) por produto.
+    Usa /reports/sales/product_sales do mês corrente — mesmo endpoint do top_modelos.
+    """
+    import subprocess, json as _json
+    from collections import defaultdict
+    from datetime import datetime as _dt, timedelta as _td
+
+    today    = _dt.now(BRT).strftime('%Y-%m-%d')
+    start    = _dt.now(BRT).replace(day=1).strftime('%Y-%m-%d')
+
+    # Coleta itens do mês em chunks de 7 dias
+    all_items = []
+    start_dt  = _dt.strptime(start, '%Y-%m-%d')
+    end_dt    = _dt.strptime(today,  '%Y-%m-%d')
+    cur = start_dt
+    while cur <= end_dt:
+        chunk_end = min(cur + _td(days=6), end_dt)
+        url = (f'{ERP_BASE}/reports/sales/product_sales'
+               f'?min={cur.strftime("%Y-%m-%d")}&max={chunk_end.strftime("%Y-%m-%d")}')
+        for attempt in range(1, retries + 1):
+            try:
+                result = subprocess.run(
+                    ['curl', '-s', '--http1.1', url,
+                     '-H', f'Authorization: Bearer {token}',
+                     '-H', 'Accept: application/json',
+                     '--max-time', '90'],
+                    capture_output=True, timeout=95
+                )
+                if result.returncode != 0 or not result.stdout:
+                    raise RuntimeError(f'curl exit {result.returncode}')
+                chunk = _json.loads(result.stdout).get('data', {}).get('detailed_items', [])
+                all_items.extend(chunk)
+                break
+            except Exception as e:
+                if attempt < retries:
+                    time.sleep(wait)
+                else:
+                    print(f'  AVISO fetch_precos chunk {cur.date()}: {e}')
+        cur = chunk_end + _td(days=1)
+
+    if not all_items:
+        print('  _ERP_PRECOS: product_sales não retornou itens')
+        return {}
+
+    # Agrega: soma net_value e custo (se houver), conta vendas por produto
+    agg = defaultdict(lambda: {'val': 0.0, 'custo': 0.0, 'qt': 0})
+    for it in all_items:
+        if it.get('item_status') == 'returned':
+            continue
+        if it.get('group_name') != 'SBON':  # só celulares
+            continue
+        nm  = it.get('product_name', '').strip()
+        key = _normalize_model_key(nm)
+        if not key:
+            continue
+        val   = float(it.get('net_value') or 0)
+        custo = float(it.get('cost_price') or it.get('cost') or
+                      it.get('cost_value') or it.get('purchase_price') or 0)
+        agg[key]['val']   += val
+        agg[key]['custo'] += custo
+        agg[key]['qt']    += 1
+
+    precos = {}
+    for key, d in agg.items():
+        if d['qt'] == 0:
+            continue
+        venda = round(d['val']   / d['qt'], 2)
+        custo = round(d['custo'] / d['qt'], 2) if d['custo'] > 0 else 0
+        if venda > 0 or custo > 0:
+            precos[key] = {'custo': custo, 'venda': venda}
+
+    print(f'  _ERP_PRECOS: {len(precos)} produtos com preço de venda extraído de {len(all_items)} transações')
+    return precos
+
+
+def update_erp_precos(content, precos_data):
+    """Substitui _ERP_PRECOS e _ERP_PRECOS_TS no index.html."""
+    from datetime import datetime as _dt
+    ts = _dt.now(BRT).strftime('%d/%m/%Y %H:%M')
+
+    lines = ['{\n']
+    for model in sorted(precos_data):
+        p = precos_data[model]
+        lines.append(f"      '{model}': {{custo:{p['custo']:.2f},venda:{p['venda']:.2f}}},\n")
+    lines.append('    }')
+    js_precos = ''.join(lines)
+
+    start_marker = 'var _ERP_PRECOS = '
+    idx = content.find(start_marker)
+    if idx == -1:
+        print('  AVISO: _ERP_PRECOS não encontrado no HTML')
+        return content
+
+    brace_start = content.index('{', idx + len(start_marker) - 1)
+    depth = 0; i = brace_start
+    while i < len(content):
+        if content[i] == '{':   depth += 1
+        elif content[i] == '}':
+            depth -= 1
+            if depth == 0: break
+        i += 1
+    end_obj = i + 1
+
+    ts_marker = 'var _ERP_PRECOS_TS'
+    ts_idx = content.find(ts_marker, end_obj)
+    end_block = content.index(';', ts_idx) + 1 if ts_idx != -1 else end_obj + 1
+
+    new_block = (f'var _ERP_PRECOS = {js_precos};\n'
+                 f"    var _ERP_PRECOS_TS = '{ts}';")
+    return content[:idx] + new_block + content[end_block:]
+
+
 def update_top_modelos(content, top_modelos):
     """Substitui o campo top_modelos:{...} no D360 do index.html."""
     import json as _json
@@ -1381,6 +1663,23 @@ def main():
             content = updated
         else:
             print(f"  AVISO: campo {field} não encontrado no HTML")
+
+    # Atualiza estoque ERP (_ERP_ESTOQUE) — base para Sugestão de Pedido
+    print("Buscando estoque por loja/produto no ERP...")
+    estoque_erp = fetch_estoque(token)
+    if estoque_erp:
+        content = update_erp_estoque(content, estoque_erp)
+        print(f"  _ERP_ESTOQUE atualizado: {len(estoque_erp)} modelos")
+    else:
+        print("  _ERP_ESTOQUE mantido sem alteração (endpoint não disponível)")
+
+    print("Buscando preços (custo/venda) dos produtos no ERP...")
+    precos_erp = fetch_precos(token)
+    if precos_erp:
+        content = update_erp_precos(content, precos_erp)
+        print(f"  _ERP_PRECOS atualizado: {len(precos_erp)} produtos")
+    else:
+        print("  _ERP_PRECOS mantido sem alteração (endpoint não disponível)")
 
     # Atualiza top_modelos e top_acessorios no D360
     if top_modelos:

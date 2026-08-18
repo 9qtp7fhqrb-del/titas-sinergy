@@ -801,6 +801,29 @@
         .acad-pos-2 { background:#C0C0C0;color:#000; }
         .acad-pos-3 { background:#CD7F32;color:#fff; }
         .acad-pos-n { background:rgba(255,255,255,.08);color:#6b7280; }
+
+        /* ── Olha Isso ── */
+        .oii-card { border-radius:1rem; overflow:hidden; border:1.5px solid var(--oii-c-border); background:var(--oii-c-bg); }
+        .oii-card-head { padding:.7rem 1rem; background:var(--oii-c-head); border-bottom:1.5px solid var(--oii-c-border); font-size:.72rem; font-weight:900; color:var(--oii-c-label); display:flex; align-items:center; gap:.5rem; letter-spacing:.04em; text-transform:uppercase; }
+        .oii-card-body { padding:.85rem 1rem; background:var(--oii-c-body); }
+        .oii-news-item { padding:.55rem 0; border-bottom:1px solid rgba(255,255,255,.05); }
+        .oii-news-item:last-child { border-bottom:none; padding-bottom:0; }
+        .oii-news-item a { font-size:.78rem; color:#d1d5db; line-height:1.45; text-decoration:none; display:block; transition:color .2s; }
+        .oii-news-item a:hover { color:var(--oii-c-label); }
+        .oii-news-date { font-size:.62rem; color:#6b7280; margin-top:.18rem; }
+        .oii-card-varejo  { --oii-c-bg:#06040f; --oii-c-body:#080514; --oii-c-head:rgba(168,85,247,.15); --oii-c-border:rgba(168,85,247,.4); --oii-c-label:#c084fc; }
+        .oii-card-global  { --oii-c-bg:#040a14; --oii-c-body:#060c18; --oii-c-head:rgba(34,211,238,.12); --oii-c-border:rgba(34,211,238,.35); --oii-c-label:#22d3ee; }
+        .oii-card-bahia   { --oii-c-bg:#04100a; --oii-c-body:#061410; --oii-c-head:rgba(34,197,94,.12); --oii-c-border:rgba(34,197,94,.35); --oii-c-label:#4ade80; }
+        .oii-card-es      { --oii-c-bg:#100804; --oii-c-body:#150a04; --oii-c-head:rgba(249,115,22,.12); --oii-c-border:rgba(249,115,22,.35); --oii-c-label:#fb923c; }
+        .oii-dolar-box { background:linear-gradient(135deg,rgba(34,211,238,.1),rgba(4,10,28,.9)); border:1.5px solid rgba(34,211,238,.3); border-radius:1rem; padding:1.25rem 1.75rem; display:flex; align-items:center; gap:2rem; flex-wrap:wrap; margin-bottom:1.25rem; }
+        .oii-dolar-val { font-size:2rem; font-weight:800; color:#22d3ee; letter-spacing:-.02em; }
+        .oii-dolar-label { font-size:.62rem; color:#6b7280; text-transform:uppercase; letter-spacing:.08em; }
+        .oii-dolar-badge { font-size:.72rem; font-weight:700; padding:.18rem .5rem; border-radius:7px; }
+        .oii-badge-up { background:rgba(34,197,94,.15); color:#4ade80; }
+        .oii-badge-dn { background:rgba(239,68,68,.15); color:#f87171; }
+        .oii-loading { display:flex; align-items:center; gap:.5rem; color:#6b7280; font-size:.75rem; padding:.25rem 0; }
+        .oii-spin { width:13px;height:13px;border:2px solid rgba(255,255,255,.12);border-top-color:#22d3ee;border-radius:50%;animation:spin-ring .7s linear infinite;flex-shrink:0; }
+        .oii-atualizado { font-size:.62rem; color:#6b7280; margin-top:.25rem; }
     </style>
 </head>
 <body>
@@ -1103,6 +1126,11 @@
             <button id="btn-academy" class="tab-btn px-4 sm:px-6 py-4 text-sm font-semibold text-gray-400 tracking-wider flex items-center gap-2 whitespace-nowrap" onclick="switchTab('academy')">
                 <i class="fas fa-graduation-cap" style="color:#A08020;"></i>
                 <span>Titãs Academy</span>
+            </button>
+            <!-- Olha Isso — inteligência de mercado -->
+            <button id="btn-olhaisso" class="tab-btn hidden px-4 sm:px-6 py-4 text-sm font-semibold text-gray-400 tracking-wider flex items-center gap-2 whitespace-nowrap" onclick="switchTab('olhaisso')">
+                <i class="fas fa-globe" style="color:#22d3ee;"></i>
+                <span>Olha Isso</span>
             </button>
             <!-- 4ª aba — 360° (exclusiva Diretoria) -->
             <button id="btn-360" class="tab-btn hidden px-4 sm:px-6 py-4 text-sm font-semibold text-gray-400 tracking-wider flex items-center gap-2 whitespace-nowrap" onclick="switchTab('360')">
@@ -2452,6 +2480,169 @@
 
         </div>
         <!-- ══════════ fim 360° TAB ══════════ -->
+
+        <!-- ══════════ OLHA ISSO TAB ══════════ -->
+        <div id="tab-olhaisso" class="hidden">
+
+            <!-- Header -->
+            <div class="glass rounded-2xl p-5 mb-5 flex flex-wrap items-center gap-4"
+                 style="background:linear-gradient(130deg,rgba(34,211,238,.06),rgba(4,10,28,.85));">
+                <div class="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
+                     style="background:rgba(34,211,238,.12);border:1px solid rgba(34,211,238,.25);">
+                    <i class="fas fa-globe" style="color:#22d3ee;font-size:1.2rem;"></i>
+                </div>
+                <div class="flex-1">
+                    <h2 class="text-lg font-bold text-white">Olha Isso</h2>
+                    <p class="text-xs text-gray-400 mt-.5">Cenário econômico · Varejo nacional · Bahia & Espírito Santo</p>
+                </div>
+                <button onclick="_olhaIssoInit()" class="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold"
+                        style="background:rgba(34,211,238,.12);border:1px solid rgba(34,211,238,.3);color:#22d3ee;transition:.2s;"
+                        onmouseover="this.style.background='rgba(34,211,238,.2)'" onmouseout="this.style.background='rgba(34,211,238,.12)'">
+                    <i class="fas fa-rotate-right"></i> Atualizar
+                </button>
+            </div>
+
+            <!-- Dólar -->
+            <div class="oii-dolar-box" id="oii-dolar-box">
+                <div>
+                    <div class="oii-dolar-label">Dólar Americano · USD/BRL</div>
+                    <div class="flex items-center gap-3 mt-1">
+                        <div class="oii-dolar-val" id="oii-dolar-val"><span class="oii-spin"></span></div>
+                        <span class="oii-dolar-badge" id="oii-dolar-badge"></span>
+                    </div>
+                    <div class="oii-atualizado" id="oii-dolar-hora"></div>
+                </div>
+                <div style="border-left:1px solid rgba(34,211,238,.15);padding-left:2rem;">
+                    <div class="oii-dolar-label">Compra</div>
+                    <div id="oii-dolar-compra" class="text-white font-bold text-lg mt-.5">—</div>
+                </div>
+                <div>
+                    <div class="oii-dolar-label">Venda</div>
+                    <div id="oii-dolar-venda" class="text-white font-bold text-lg mt-.5">—</div>
+                </div>
+                <div>
+                    <div class="oii-dolar-label">Variação dia</div>
+                    <div id="oii-dolar-var" class="font-bold text-lg mt-.5">—</div>
+                </div>
+            </div>
+
+            <!-- Grid de notícias -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                <!-- Varejo Nacional -->
+                <div class="oii-card oii-card-varejo">
+                    <div class="oii-card-head" style="cursor:pointer;justify-content:space-between;" onclick="oiiToggle('oii-varejo','oii-ic-varejo')">
+                        <span><i class="fas fa-store"></i> Varejo Nacional &nbsp;<span id="oii-hint-varejo" style="font-weight:400;font-size:.62rem;color:#9ca3af;">(clique para recolher)</span></span>
+                        <i id="oii-ic-varejo" class="fas fa-chevron-down" style="font-size:.62rem;color:#9ca3af;transition:transform .25s;transform:rotate(180deg);"></i>
+                    </div>
+                    <div class="oii-card-body" id="oii-varejo">
+                        <div class="oii-loading"><div class="oii-spin"></div> Carregando notícias...</div>
+                    </div>
+                </div>
+
+                <!-- Economia Global -->
+                <div class="oii-card oii-card-global">
+                    <div class="oii-card-head" style="cursor:pointer;justify-content:space-between;" onclick="oiiToggle('oii-global','oii-ic-global')">
+                        <span><i class="fas fa-earth-americas"></i> Economia Global &nbsp;<span id="oii-hint-global" style="font-weight:400;font-size:.62rem;color:#9ca3af;">(clique para recolher)</span></span>
+                        <i id="oii-ic-global" class="fas fa-chevron-down" style="font-size:.62rem;color:#9ca3af;transition:transform .25s;transform:rotate(180deg);"></i>
+                    </div>
+                    <div class="oii-card-body" id="oii-global">
+                        <div class="oii-loading"><div class="oii-spin"></div> Carregando notícias...</div>
+                    </div>
+                </div>
+
+                <!-- Bahia -->
+                <div class="oii-card oii-card-bahia">
+                    <div class="oii-card-head" style="cursor:pointer;justify-content:space-between;" onclick="oiiToggle('oii-bahia','oii-ic-bahia')">
+                        <span><i class="fas fa-map-marker-alt"></i> Bahia &nbsp;<span id="oii-hint-bahia" style="font-weight:400;font-size:.62rem;color:#9ca3af;">(clique para recolher)</span></span>
+                        <i id="oii-ic-bahia" class="fas fa-chevron-down" style="font-size:.62rem;color:#9ca3af;transition:transform .25s;transform:rotate(180deg);"></i>
+                    </div>
+                    <div class="oii-card-body" id="oii-bahia">
+                        <div class="oii-loading"><div class="oii-spin"></div> Carregando notícias...</div>
+                    </div>
+                </div>
+
+                <!-- Espírito Santo -->
+                <div class="oii-card oii-card-es">
+                    <div class="oii-card-head" style="cursor:pointer;justify-content:space-between;" onclick="oiiToggle('oii-es','oii-ic-es')">
+                        <span><i class="fas fa-map-marker-alt"></i> Espírito Santo &nbsp;<span id="oii-hint-es" style="font-weight:400;font-size:.62rem;color:#9ca3af;">(clique para recolher)</span></span>
+                        <i id="oii-ic-es" class="fas fa-chevron-down" style="font-size:.62rem;color:#9ca3af;transition:transform .25s;transform:rotate(180deg);"></i>
+                    </div>
+                    <div class="oii-card-body" id="oii-es">
+                        <div class="oii-loading"><div class="oii-spin"></div> Carregando notícias...</div>
+                    </div>
+                </div>
+
+            </div>
+            <!-- /grid -->
+
+        </div>
+        <!-- Modal matéria Olha Isso -->
+        <div id="oii-modal" class="hidden fixed inset-0 z-[99990] flex items-center justify-center p-4"
+             style="background:rgba(0,0,0,.92);backdrop-filter:blur(16px);"
+             onclick="if(event.target===this){oiiFecharModal()}">
+          <div style="background:#09071e;border:1.5px solid rgba(168,85,247,.35);border-radius:1.5rem;width:100%;max-width:620px;max-height:90vh;display:flex;flex-direction:column;position:relative;overflow:hidden;">
+
+            <!-- Header fixo -->
+            <div style="padding:1.1rem 1.4rem 1rem;background:rgba(168,85,247,.1);border-bottom:1px solid rgba(168,85,247,.18);flex-shrink:0;">
+              <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;">
+                <div style="flex:1;">
+                  <div style="font-size:.58rem;font-weight:700;color:#9ca3af;letter-spacing:.12em;text-transform:uppercase;margin-bottom:.5rem;">
+                    <i class="fas fa-newspaper" style="margin-right:.35rem;color:#c084fc;"></i>Resumo da Matéria
+                  </div>
+                  <div id="oii-modal-title" style="font-size:1rem;font-weight:700;color:#f1f5f9;line-height:1.45;"></div>
+                  <div id="oii-modal-date" style="font-size:.62rem;color:#6b7280;margin-top:.4rem;display:flex;align-items:center;gap:.3rem;">
+                    <i class="fas fa-clock" style="font-size:.55rem;"></i><span></span>
+                  </div>
+                </div>
+                <button onclick="oiiFecharModal()" style="flex-shrink:0;width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:#6b7280;font-size:.8rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.2s;"
+                        onmouseover="this.style.background='rgba(255,255,255,.12)';this.style.color='#fff'" onmouseout="this.style.background='rgba(255,255,255,.06)';this.style.color='#6b7280'">
+                  <i class="fas fa-xmark"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- Corpo com scroll -->
+            <div style="overflow-y:auto;flex:1;padding:1.4rem;display:flex;flex-direction:column;gap:1.2rem;">
+
+              <!-- Resumo com parágrafos -->
+              <div>
+                <div style="font-size:.58rem;font-weight:800;color:#c084fc;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.8rem;display:flex;align-items:center;gap:.4rem;">
+                  <i class="fas fa-align-left"></i> Resumo
+                </div>
+                <div id="oii-modal-resumo" style="font-size:.85rem;color:#cbd5e1;line-height:1.8;display:flex;flex-direction:column;gap:.75rem;"></div>
+              </div>
+
+              <!-- Divisor -->
+              <div style="height:1px;background:rgba(168,85,247,.15);"></div>
+
+              <!-- Impacto -->
+              <div style="background:rgba(168,85,247,.06);border:1px solid rgba(168,85,247,.18);border-radius:1rem;padding:1.1rem;">
+                <div style="font-size:.58rem;font-weight:800;color:#c084fc;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.85rem;display:flex;align-items:center;gap:.4rem;">
+                  <i class="fas fa-chart-line"></i> Como agrega ao varejo e à economia
+                </div>
+                <div id="oii-modal-impacto" style="font-size:.82rem;color:#d1d5db;line-height:1.7;display:flex;flex-direction:column;gap:.5rem;"></div>
+              </div>
+              <!-- Botões -->
+              <div style="display:flex;gap:.75rem;flex-wrap:wrap;">
+                <!-- Ouvir resumo -->
+                <button id="oii-btn-ouvir" onclick="oiiOuvirResumo()"
+                   style="flex:1;min-width:160px;display:flex;align-items:center;justify-content:center;gap:.5rem;padding:.75rem;border-radius:.75rem;background:rgba(34,197,94,.14);border:1.5px solid rgba(34,197,94,.38);color:#4ade80;font-size:.8rem;font-weight:700;cursor:pointer;transition:background .2s;"
+                   onmouseover="this.style.background='rgba(34,197,94,.26)'" onmouseout="this.style.background='rgba(34,197,94,.14)'">
+                  <i class="fas fa-volume-high"></i> Ouvir resumo
+                </button>
+                <!-- Abrir no site -->
+                <a id="oii-modal-link" href="#" target="_blank" rel="noopener"
+                   style="flex:1;min-width:160px;display:flex;align-items:center;justify-content:center;gap:.5rem;padding:.75rem;border-radius:.75rem;background:rgba(168,85,247,.18);border:1.5px solid rgba(168,85,247,.4);color:#c084fc;font-size:.8rem;font-weight:700;text-decoration:none;transition:background .2s;"
+                   onmouseover="this.style.background='rgba(168,85,247,.3)'" onmouseout="this.style.background='rgba(168,85,247,.18)'">
+                  <i class="fas fa-arrow-up-right-from-square"></i> Abrir no site
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ══════════ fim OLHA ISSO TAB ══════════ -->
 
         <!-- ══════════ DICTA TAB ══════════ -->
         <div id="tab-dicta" class="hidden">
@@ -5129,6 +5320,8 @@ function openDash() {
     if (planAllowed)       _showBtn('btn-planning');
     if (flowAllowed)       _showBtn('btn-matinais');
     _showBtn('btn-academy');
+    const _nomeBase = (user.name||'').toLowerCase().split(' ')[0];
+    if (user.cargo === 'diretoria' && ['melo','neto'].includes(_nomeBase)) _showBtn('btn-olhaisso');
     if (allowed360)        _showBtn('btn-360');
     _showBtn('btn-dicta');
     if (allowedUsuarios)   _showBtn('btn-usuarios');
@@ -6152,7 +6345,7 @@ function _jurClose() {
 
 /* ─── Tab switcher ─── */
 function switchTab(tab) {
-    const ALL = ['planning', 'matinais', 'academy', '360', 'dicta', 'usuarios', 'diario', 'juridico', 'rastreio'];
+    const ALL = ['planning', 'matinais', 'academy', 'olhaisso', '360', 'dicta', 'usuarios', 'diario', 'juridico', 'rastreio'];
     ALL.forEach(t => {
         const tabEl = document.getElementById('tab-' + t);
         const btnEl = document.getElementById('btn-' + t);
@@ -6206,8 +6399,9 @@ function switchTab(tab) {
     try { if (tab === 'dicta')     _dictaInit();               } catch(e) { console.warn('dictaInit:', e); }
     try { if (tab === 'diario')    _diarioInit();              } catch(e) { console.warn('diarioInit:', e); }
     try { if (tab === 'rastreio')  _rastreioInit();            } catch(e) { console.warn('rastreioInit:', e); }
+    try { if (tab === 'olhaisso') _olhaIssoInit();             } catch(e) { console.warn('olhaIssoInit:', e); }
     // Registra ação de troca de aba
-    const _tabNames = {planning:'Planejamento',matinais:'Matinais',academy:'Academy','360':'360°',dicta:'Dicta','usuarios':'Usuários',diario:'Diário',rastreio:'Rastreio'};
+    const _tabNames = {planning:'Planejamento',matinais:'Matinais',academy:'Academy',olhaisso:'Olha Isso','360':'360°',dicta:'Dicta','usuarios':'Usuários',diario:'Diário',rastreio:'Rastreio'};
     try { _registrarAcao('Acessou ' + (_tabNames[tab] || tab)); } catch(e) {}
 }
 
@@ -7029,11 +7223,23 @@ var _LOJAS_MF = {
     montserrat:'Montserrat', linhares:'Linhares'
 };
 
+function _podeVerEstoque() {
+    var nb = ((user && user.name) || '').toLowerCase().trim().split(/\s+/)[0];
+    var dir = user && (user.cargo === 'diretoria' || user.cargo === 'admin')
+              && (nb === 'melo' || nb === 'neto' || nb === 'marcelo');
+    return dir || (user && (user.cargo === 'franqueado' || user.cargo === 'escritorio'));
+}
+
 function abrirModelosFin(prod) {
     var modal = document.getElementById('modal-modelos-fin');
     modal.style.display = 'flex';
     _mfTab = 'rede'; _mfLoja = null; _mfProd = prod || 'celulares';
     _renderModelosFin();
+    var ok = _podeVerEstoque();
+    var btnSug = document.getElementById('btn-sug-pedido-mf');
+    if (btnSug) btnSug.style.display = ok ? 'flex' : 'none';
+    var btnEst = document.getElementById('btn-ver-estoque-mf');
+    if (btnEst) btnEst.style.display = ok ? 'flex' : 'none';
     try { _registrarAcao('Abriu Modelos por Financeira'); } catch(e) {}
 }
 function fecharModelosFin() {
@@ -7303,6 +7509,891 @@ function _imprimirCurvaABC() {
 function _setMfTab(tab) { _mfTab = tab; _mfLoja = null; _renderModelosFin(); }
 function _setMfLoja(key) { _mfLoja = key; _renderModelosFin(); }
 function _setMfProd(p) { _mfProd = p; _mfTab = 'rede'; _mfLoja = null; _renderModelosFin(); }
+
+// ═══════════════════════════════════════════════════════════════
+// Sugestão de Pedido — Próximos 15 Dias
+// ═══════════════════════════════════════════════════════════════
+function _abrirSugestaoPedido() {
+    document.getElementById('modal-sugestao-pedido').style.display = 'flex';
+    _renderSugestaoPedido();
+    _carregarFornecedores();
+}
+function _fecharSugestaoPedido() {
+    document.getElementById('modal-sugestao-pedido').style.display = 'none';
+    _closeFornDropdown();
+}
+
+// ── Ver Estoque ──────────────────────────────────────────────────────────────
+var _estTab = 'rede';
+
+var _EST_SUBREDES = {
+    t1: { label:'T1 · Talysson', cor:'#3b82f6', lojas:['cariacica','itabuna','moxuara'] },
+    t2: { label:'T2 · Adriel',   cor:'#a855f7', lojas:['praiadacosta','barreiras','teixeira','laranjeiras'] },
+    t3: { label:'T3 · Arthur',   cor:'#f59e0b', lojas:['saomateus','serra','montserrat','linhares'] },
+};
+var _EST_ALL_LOJAS = ['cariacica','itabuna','moxuara','praiadacosta','barreiras','laranjeiras','teixeira','saomateus','serra','montserrat','linhares'];
+var _EST_SHORT     = {cariacica:'CAR',itabuna:'ITA',moxuara:'MOX',praiadacosta:'PDC',barreiras:'BAR',laranjeiras:'LAR',teixeira:'TEI',saomateus:'SM',serra:'SER',montserrat:'MON',linhares:'LIN'};
+
+function _abrirVerEstoque() {
+    if (!_podeVerEstoque()) return;
+    var m = document.getElementById('modal-ver-estoque');
+    if (!m) return;
+    m.style.display = 'flex';
+    _renderVerEstoque(); // render imediato com o que já tem
+    _carregarPrecosERP(function() { _renderVerEstoque(); }); // re-render com preços
+}
+function _fecharVerEstoque() {
+    var m = document.getElementById('modal-ver-estoque');
+    if (m) m.style.display = 'none';
+}
+function _setEstTab(tab) {
+    _estTab = tab;
+    var tabs = {rede:'#3b82f6', t1:'#3b82f6', t2:'#a855f7', t3:'#f59e0b', lojas:'#10b981'};
+    ['rede','t1','t2','t3','lojas'].forEach(function(t) {
+        var btn = document.getElementById('est-tab-'+t);
+        if (!btn) return;
+        var active = (t === tab);
+        var cor = tabs[t];
+        btn.style.background = active ? cor : 'transparent';
+        btn.style.color = active ? '#fff' : '#6b7280';
+        btn.style.borderColor = active ? cor : '#374151';
+    });
+    _renderVerEstoque();
+}
+
+function _estQtyHtml(q, sz) {
+    var c = q === 0 ? '#ef4444' : q < 5 ? '#f59e0b' : '#4ade80';
+    var w = q === 0 ? '600' : q < 5 ? '700' : '700';
+    return '<span style="color:'+c+';font-weight:'+w+';font-size:'+(sz||'.7rem')+';">'+q+'</span>';
+}
+
+function _renderVerEstoque() {
+    var body = document.getElementById('ver-estoque-body');
+    if (!body) return;
+    var est = (typeof _ERP_ESTOQUE !== 'undefined' ? _ERP_ESTOQUE : {});
+    var pre = (typeof _ERP_PRECOS   !== 'undefined' ? _ERP_PRECOS  : {});
+    var ts  = _ERP_PRECOS_TS || (typeof _ERP_ESTOQUE_TS !== 'undefined' ? _ERP_ESTOQUE_TS : '—');
+
+    var tsEl = document.getElementById('ver-estoque-ts');
+    if (tsEl) tsEl.textContent = 'Atualizado: ' + ts
+        + (Object.keys(pre).length === 0 ? '  ·  preços serão carregados no próximo ciclo (30min)' : '');
+
+    var temPrecos = Object.keys(pre).length > 0;
+
+    var models = Object.keys(est).sort(function(a, b) {
+        var tA = _EST_ALL_LOJAS.reduce(function(s,k){ return s+(est[a][k]||0); },0);
+        var tB = _EST_ALL_LOJAS.reduce(function(s,k){ return s+(est[b][k]||0); },0);
+        return tB - tA;
+    });
+
+    var rowBg  = function(i){ return i%2===0?'transparent':'rgba(255,255,255,.03)'; };
+    var td     = 'padding:.32rem .4rem;font-size:.6rem;border-bottom:1px solid rgba(255,255,255,.04);';
+    var tdR    = td+'text-align:right;';
+    var tdRnw  = tdR+'white-space:nowrap;';
+
+    // Colunas de preço (compartilhadas por todas as tabs)
+    var thPrecos = !temPrecos ? '' :
+        '<th style="padding:.4rem .35rem;text-align:right;font-size:.48rem;color:#a78bfa;font-weight:800;white-space:nowrap;">CUSTO</th>'
+       +'<th style="padding:.4rem .35rem;text-align:right;font-size:.48rem;color:#34d399;font-weight:800;white-space:nowrap;">VENDA</th>'
+       +'<th style="padding:.4rem .35rem;text-align:right;font-size:.48rem;color:#fbbf24;font-weight:800;white-space:nowrap;">MARGEM</th>';
+
+    function precoCells(nm) {
+        if (!temPrecos) return '';
+        var p = pre[nm] || {};
+        return '<td style="'+tdRnw+'">'+_fmtBrl(p.custo)+'</td>'
+              +'<td style="'+tdRnw+'">'+_fmtBrl(p.venda)+'</td>'
+              +'<td style="'+tdRnw+'">'+_fmtMargem(p.custo, p.venda)+'</td>';
+    }
+    function valorEstoque(nm, qty) {
+        if (!temPrecos) return '';
+        var custo = (pre[nm]||{}).custo || 0;
+        if (!custo) return '<td style="'+tdRnw+'"><span style="color:#4b5563;">—</span></td>';
+        var val = qty * custo;
+        return '<td style="'+tdRnw+'"><span style="color:#a78bfa;font-weight:600;">R$ '
+            + val.toLocaleString('pt-BR',{minimumFractionDigits:0,maximumFractionDigits:0})
+            +'</span></td>';
+    }
+    var thValor = temPrecos
+        ? '<th style="padding:.4rem .35rem;text-align:right;font-size:.48rem;color:#a78bfa;font-weight:800;white-space:nowrap;">CAPITAL</th>'
+        : '';
+
+    if (_estTab === 'rede') {
+        var grandTotal = 0; var grandCapital = 0;
+        var rows = models.map(function(nm, i) {
+            var total = _EST_ALL_LOJAS.reduce(function(s,k){ return s+(est[nm][k]||0); },0);
+            grandTotal += total;
+            var p = pre[nm]||{};
+            if (temPrecos && p.custo) grandCapital += total * p.custo;
+            return '<tr style="background:'+rowBg(i)+'">'
+                +'<td style="'+td+'color:#64748b;width:22px;">'+(i+1)+'</td>'
+                +'<td style="'+td+'color:#e2e8f0;font-weight:600;">'+_sugEnrichNm(nm,false)+'</td>'
+                +precoCells(nm)
+                +'<td style="'+tdR+'">'+_estQtyHtml(total,'.8rem')+'</td>'
+                +valorEstoque(nm, total)
+                +'</tr>';
+        }).join('');
+        var colSpanFoot = 2 + (temPrecos ? 3 : 0);
+        var footCapital = temPrecos && grandCapital
+            ? '<td style="padding:.45rem .4rem;text-align:right;font-size:.75rem;font-weight:800;color:#a78bfa;">R$ '
+              +grandCapital.toLocaleString('pt-BR',{minimumFractionDigits:0,maximumFractionDigits:0})+'</td>'
+            : (temPrecos ? '<td></td>' : '');
+        body.innerHTML = '<table style="width:100%;border-collapse:collapse;">'
+            +'<thead><tr style="background:#1e293b;">'
+            +'<th style="padding:.4rem .4rem;text-align:left;font-size:.5rem;color:#64748b;width:22px;">#</th>'
+            +'<th style="padding:.4rem .4rem;text-align:left;font-size:.5rem;color:#64748b;">PRODUTO</th>'
+            +thPrecos
+            +'<th style="padding:.4rem .4rem;text-align:right;font-size:.5rem;color:#10b981;font-weight:800;">TOTAL REDE</th>'
+            +thValor+'</tr></thead><tbody>'+rows+'</tbody>'
+            +'<tfoot><tr style="background:#0f2027;border-top:2px solid rgba(16,185,129,.3);">'
+            +'<td colspan="'+colSpanFoot+'" style="padding:.45rem .4rem;font-size:.65rem;font-weight:800;color:#f9fafb;">TOTAL GERAL</td>'
+            +'<td style="padding:.45rem .4rem;text-align:right;font-size:.85rem;font-weight:900;color:#10b981;">'+grandTotal+'</td>'
+            +footCapital+'</tr></tfoot></table>';
+
+    } else if (_EST_SUBREDES[_estTab]) {
+        var sub = _EST_SUBREDES[_estTab]; var lojas = sub.lojas;
+        var thLojas = lojas.map(function(lk){
+            return '<th style="padding:.4rem .22rem;text-align:right;font-size:.46rem;color:'+sub.cor+';font-weight:800;">'+(_EST_SHORT[lk]||lk.toUpperCase())+'</th>';
+        }).join('');
+        var rows = models.map(function(nm,i){
+            var total = lojas.reduce(function(s,k){ return s+(est[nm][k]||0); },0);
+            var cells = lojas.map(function(lk){
+                return '<td style="'+tdR+'">'+_estQtyHtml(est[nm][lk]||0,'.62rem')+'</td>';
+            }).join('');
+            return '<tr style="background:'+rowBg(i)+'">'
+                +'<td style="'+td+'color:#64748b;width:22px;">'+(i+1)+'</td>'
+                +'<td style="'+td+'color:#e2e8f0;font-weight:600;">'+_sugEnrichNm(nm,false)+'</td>'
+                +precoCells(nm)+cells
+                +'<td style="'+tdR+'">'+_estQtyHtml(total,'.72rem')+'</td>'
+                +valorEstoque(nm,total)+'</tr>';
+        }).join('');
+        body.innerHTML = '<div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;">'
+            +'<thead><tr style="background:#1e293b;">'
+            +'<th style="padding:.4rem .4rem;text-align:left;font-size:.5rem;color:#64748b;width:22px;">#</th>'
+            +'<th style="padding:.4rem .4rem;text-align:left;font-size:.5rem;color:#64748b;white-space:nowrap;">PRODUTO</th>'
+            +thPrecos+thLojas
+            +'<th style="padding:.4rem .4rem;text-align:right;font-size:.5rem;color:'+sub.cor+';font-weight:800;">TOTAL</th>'
+            +thValor+'</tr></thead><tbody>'+rows+'</tbody></table></div>';
+
+    } else if (_estTab === 'lojas') {
+        var thAll = _EST_ALL_LOJAS.map(function(lk){
+            return '<th style="padding:.4rem .2rem;text-align:right;font-size:.44rem;color:#94a3b8;font-weight:800;white-space:nowrap;">'+(_EST_SHORT[lk]||lk.toUpperCase())+'</th>';
+        }).join('');
+        var rows = models.map(function(nm,i){
+            var total = _EST_ALL_LOJAS.reduce(function(s,k){ return s+(est[nm][k]||0); },0);
+            var cells = _EST_ALL_LOJAS.map(function(lk){
+                return '<td style="'+tdRnw+'">'+_estQtyHtml(est[nm][lk]||0,'.58rem')+'</td>';
+            }).join('');
+            return '<tr style="background:'+rowBg(i)+'">'
+                +'<td style="'+td+'color:#64748b;width:18px;">'+(i+1)+'</td>'
+                +'<td style="'+td+'color:#e2e8f0;font-weight:600;white-space:nowrap;">'+_sugEnrichNm(nm,false)+'</td>'
+                +precoCells(nm)+cells
+                +'<td style="'+tdRnw+'">'+_estQtyHtml(total,'.68rem')+'</td>'
+                +valorEstoque(nm,total)+'</tr>';
+        }).join('');
+        body.innerHTML = '<div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;min-width:860px;">'
+            +'<thead><tr style="background:#1e293b;">'
+            +'<th style="padding:.4rem .4rem;text-align:left;font-size:.5rem;color:#64748b;width:18px;">#</th>'
+            +'<th style="padding:.4rem .4rem;text-align:left;font-size:.5rem;color:#64748b;white-space:nowrap;">PRODUTO</th>'
+            +thPrecos+thAll
+            +'<th style="padding:.4rem .4rem;text-align:right;font-size:.5rem;color:#10b981;font-weight:800;white-space:nowrap;">TOTAL</th>'
+            +thValor+'</tr></thead><tbody>'+rows+'</tbody></table></div>';
+    }
+}
+
+// ── Fornecedores — Firestore: ts_fornecedores ────────────────────────────────
+var _fornecedoresCache = [];
+var _FORN_SEED = ['ALI','BRUNA','CHINA','COMPANY','MOHAMAD'];
+
+function _carregarFornecedores() {
+    fetch(_USR_BASE + '/ts_fornecedores?key=' + _USR_KEY + '&pageSize=200')
+        .then(function(r){ return r.json(); })
+        .then(function(data) {
+            var docs = data.documents || [];
+            var nomes = docs.map(function(d){
+                return (d.fields && d.fields.nome && d.fields.nome.stringValue) || '';
+            }).filter(Boolean).sort();
+
+            if (nomes.length === 0) {
+                // Semente inicial
+                _FORN_SEED.forEach(function(nm){ _seedFornecedor(nm); });
+                _fornecedoresCache = _FORN_SEED.slice();
+            } else {
+                _fornecedoresCache = nomes;
+            }
+            _renderFornecedoresDropdownIfOpen();
+        })
+        .catch(function(){ if (!_fornecedoresCache.length) _fornecedoresCache = _FORN_SEED.slice(); });
+}
+
+function _seedFornecedor(nome) {
+    var docId = nome.replace(/\s+/g,'_').replace(/[^A-Z0-9_]/gi,'');
+    fetch(_USR_BASE + '/ts_fornecedores?key=' + _USR_KEY + '&documentId=' + encodeURIComponent(docId), {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({fields:{
+            nome:{stringValue: nome.toUpperCase()},
+            criadoEm:{integerValue: String(Date.now())},
+            seed:{booleanValue: true}
+        }})
+    }).catch(function(){});
+}
+
+function _toggleFornecedorDropdown(e) {
+    if (e) { e.preventDefault(); e.stopPropagation(); }
+    var dd = document.getElementById('sug-forn-dropdown');
+    if (!dd) return;
+    var isOpen = dd.style.display === 'block';
+    if (isOpen) {
+        dd.style.display = 'none';
+        document.removeEventListener('click', _closeFornDropdown);
+    } else {
+        _renderFornecedoresDropdown();
+        dd.style.display = 'block';
+        setTimeout(function(){ document.addEventListener('click', _closeFornDropdown); }, 30);
+    }
+}
+
+function _closeFornDropdown() {
+    var dd = document.getElementById('sug-forn-dropdown');
+    if (dd) dd.style.display = 'none';
+    document.removeEventListener('click', _closeFornDropdown);
+}
+
+function _renderFornecedoresDropdown() {
+    var dd = document.getElementById('sug-forn-dropdown');
+    if (!dd) return;
+    var html = _fornecedoresCache.map(function(nm){
+        var safe = nm.replace(/'/g,"\\'");
+        return '<button onclick="_selecionarFornecedor(\''+safe+'\');event.stopPropagation()" '
+            + 'style="display:block;width:100%;text-align:left;padding:.42rem .75rem;background:transparent;border:none;'
+            + 'border-bottom:1px solid rgba(255,255,255,.05);color:#f9fafb;font-size:.72rem;cursor:pointer;transition:background .15s;"'
+            + ' onmouseover="this.style.background=\'rgba(16,185,129,.14)\'" onmouseout="this.style.background=\'transparent\'">'
+            + nm + '</button>';
+    }).join('');
+    dd.innerHTML = html || '<div style="padding:.5rem .75rem;color:#6b7280;font-size:.65rem;">Nenhum fornecedor cadastrado</div>';
+}
+
+function _renderFornecedoresDropdownIfOpen() {
+    var dd = document.getElementById('sug-forn-dropdown');
+    if (dd && dd.style.display === 'block') _renderFornecedoresDropdown();
+}
+
+function _selecionarFornecedor(nome) {
+    var inp = document.getElementById('sug-fornecedor');
+    if (inp) inp.value = nome;
+    _closeFornDropdown();
+}
+
+function _abrirCadastrarFornecedor() {
+    _closeFornDropdown();
+    var m = document.getElementById('modal-cadastrar-forn');
+    if (m) {
+        m.style.display = 'flex';
+        var inp = document.getElementById('novo-forn-input');
+        if (inp) { inp.value = ''; setTimeout(function(){ inp.focus(); }, 80); }
+    }
+}
+
+function _fecharCadastrarFornecedor() {
+    var m = document.getElementById('modal-cadastrar-forn');
+    if (m) m.style.display = 'none';
+}
+
+function _salvarNovoFornecedor() {
+    var inp = document.getElementById('novo-forn-input');
+    var nome = (inp ? inp.value : '').trim().toUpperCase();
+    if (!nome) return;
+    if (_fornecedoresCache.indexOf(nome) !== -1) { alert('Fornecedor "'+nome+'" já cadastrado.'); return; }
+
+    var docId = nome.replace(/\s+/g,'_').replace(/[^A-Z0-9_]/g,'');
+    var criadoPor = '';
+    try { criadoPor = (user && user.name) || ''; } catch(e){}
+
+    fetch(_USR_BASE + '/ts_fornecedores?key=' + _USR_KEY + '&documentId=' + encodeURIComponent(docId), {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({fields:{
+            nome:{stringValue: nome},
+            criadoPor:{stringValue: criadoPor},
+            criadoEm:{integerValue: String(Date.now())}
+        }})
+    }).then(function(r){
+        if (r.ok) {
+            _fornecedoresCache.push(nome); _fornecedoresCache.sort();
+            _selecionarFornecedor(nome);
+            _fecharCadastrarFornecedor();
+            try { _registrarAcao('Cadastrou fornecedor: '+nome); } catch(e){}
+        } else if (r.status === 409) {
+            // doc já existe com mesmo ID — apenas seleciona
+            if (_fornecedoresCache.indexOf(nome) === -1) { _fornecedoresCache.push(nome); _fornecedoresCache.sort(); }
+            _selecionarFornecedor(nome);
+            _fecharCadastrarFornecedor();
+        } else {
+            r.text().then(function(t){ alert('Erro ao salvar fornecedor: ' + t.slice(0,120)); });
+        }
+    }).catch(function(e){ alert('Erro: '+e); });
+}
+
+// ── Estoque ERP por produto×loja (extraído em 17/08/2026 20:28) ───────────────
+var _ERP_ESTOQUE = {
+  'INFINIX HOT 60I':  {cariacica:1,itabuna:22,montserrat:12,moxuara:16,praiadacosta:0,barreiras:19,laranjeiras:0,teixeira:7,saomateus:5,serra:1,linhares:6},
+  'REALME NOTE 60X':  {cariacica:0,itabuna:1,montserrat:12,moxuara:1,praiadacosta:3,barreiras:0,laranjeiras:5,teixeira:8,saomateus:0,serra:13,linhares:5},
+  'REALME C71':       {cariacica:6,itabuna:10,montserrat:1,moxuara:1,praiadacosta:0,barreiras:18,laranjeiras:3,teixeira:0,saomateus:28,serra:0,linhares:0},
+  'REALME C75':       {cariacica:3,itabuna:1,montserrat:3,moxuara:14,praiadacosta:0,barreiras:2,laranjeiras:0,teixeira:0,saomateus:0,serra:0,linhares:0},
+  'REALME NOTE 70':   {cariacica:0,itabuna:1,montserrat:4,moxuara:0,praiadacosta:4,barreiras:1,laranjeiras:14,teixeira:0,saomateus:5,serra:3,linhares:2},
+  'REALME C85':       {cariacica:0,itabuna:0,montserrat:1,moxuara:0,praiadacosta:1,barreiras:0,laranjeiras:1,teixeira:0,saomateus:4,serra:1,linhares:0},
+  'ITEL A100C':       {cariacica:0,itabuna:0,montserrat:2,moxuara:1,praiadacosta:2,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:2,linhares:0},
+  'TECNO SPARK 30C':  {cariacica:0,itabuna:0,montserrat:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,linhares:0},
+  'INFINIX SMART 10': {cariacica:0,itabuna:0,montserrat:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,linhares:0}
+};
+var _ERP_ESTOQUE_TS = '17/08/2026 20:28';
+// Preços por produto — populado pelo update_d360.py a cada 30 min
+var _ERP_PRECOS = {};
+var _ERP_PRECOS_TS = '';
+// Flag de sessão: true = fetch já tentado (sucesso ou falha), não tentar de novo
+var _erpPrecosCarregados = false;
+var _SUG_SPECS = {
+    'REALME NOTE 70':'128GB · 6RAM','REALME NOTE 60X':'128GB · 4RAM','REALME NOTE 60':'128GB · 4RAM',
+    'REALME C71':'128GB · 4RAM','REALME C73':'128GB · 4RAM','REALME C75X':'256GB · 8RAM',
+    'REALME C75':'128GB · 4RAM','REALME C85':'256GB · 8RAM','REALME C63':'128GB · 6RAM','REALME C67':'256GB · 8RAM',
+    'TECNO SPARK 30 PRO':'256GB · 8RAM','TECNO SPARK 30C':'128GB · 4RAM','TECNO SPARK 30':'128GB · 4RAM',
+    'TECNO POVA 7':'256GB · 8RAM','TECNO POVA 3':'128GB · 4RAM',
+    'TECNO CAMON 30S PRO':'256GB · 8RAM','TECNO CAMON 30S':'128GB · 4RAM',
+    'INFINIX HOT 60I':'128GB · 4RAM','INFINIX HOT 40 PRO':'256GB · 8RAM',
+    'INFINIX SMART 10':'128GB · 4RAM','INFINIX SMART 9':'64GB · 4RAM',
+    'ITEL A90':'256GB · 4RAM','ITEL A100C':'128GB · 4RAM','ITEL A18S':'32GB · 2RAM','ITEL CITY 100':'128GB · 4RAM'
+};
+function _sugEnrichNm(nm, isAces) {
+    var c = nm.replace(/^SMARTPHONE\s+/i,'').replace(/\s+/g,' ').trim();
+    if (isAces) return c.replace(/^(PELICULA|PÉLICULA|CAPA|CARREGADOR|FONE|CABO|FONTE|PELÍLA)\s+/i,'').trim();
+    var u = c.toUpperCase();
+    var keys = Object.keys(_SUG_SPECS).sort(function(a,b){return b.length-a.length;});
+    for (var i=0;i<keys.length;i++) { if (u.indexOf(keys[i])!==-1) return c + ' · ' + _SUG_SPECS[keys[i]]; }
+    return c;
+}
+function _getErpStockKey(nm) {
+    var c = nm.replace(/^(SMARTPHONE|CELULAR|TELEFONE\s+CELULAR|TELEFONE)\s+/i,'').replace(/\s+/g,' ').trim();
+    c = c.replace(/\s*[-–]\s*\d+GB.*$/i,'').replace(/\s*·.*$/,'').replace(/\s*-\s*(Cor\s+)?Padrão.*$/i,'').trim();
+    return c.toUpperCase();
+}
+// ── Preços ERP (custo + venda) — fetch via token do Firestore ────────────────
+var _ERP_BASE_API = 'https://apicdc.casadocelular.com.br/api/v1';
+
+function _carregarPrecosERP(callback) {
+    // Preços vêm do Python (atualizado a cada 30min via GitHub Actions).
+    // Nenhum fetch em runtime — só marca como carregado e re-renderiza.
+    _erpPrecosCarregados = true;
+    if (callback) callback();
+}
+
+function _fmtBrl(v) {
+    if (!v || v <= 0) return '<span style="color:#4b5563;">—</span>';
+    return '<span style="color:#f1f5f9;font-weight:600;">R$ '
+        + v.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})+'</span>';
+}
+function _fmtMargem(custo, venda) {
+    if (!custo || !venda || venda <= 0) return '<span style="color:#4b5563;">—</span>';
+    var m = ((venda - custo) / venda * 100);
+    var c = m < 20 ? '#ef4444' : m < 30 ? '#f59e0b' : '#4ade80';
+    return '<span style="color:'+c+';font-weight:700;">'+m.toFixed(1)+'%</span>';
+}
+
+function _sugUpdateTotal() {
+    var total = (window._sugestaoFlat||[]).reduce(function(s,it){return s+(+it.pedido||0);},0);
+    var badge = document.getElementById('sug-total-badge');
+    if (badge) badge.textContent = total + ' un.';
+}
+
+function _sugRowHtml(item, fi, color, rowNum, isAces) {
+    var bg = rowNum % 2 === 1 ? 'background:rgba(255,255,255,.025);' : '';
+    var abcBadge = '';
+    if (isAces && item.abc) {
+        var ac = item.abc === 'A' ? '#4ade80' : item.abc === 'B' ? '#fbbf24' : '#9ca3af';
+        abcBadge = '<span style="display:inline-block;font-size:.46rem;font-weight:900;padding:.05rem .22rem;border-radius:.2rem;background:' + ac + '22;color:' + ac + ';border:1px solid ' + ac + '55;margin-right:.3rem;">' + item.abc + '</span>';
+    }
+    var nm = _sugEnrichNm(item.nm, isAces);
+    var diasDec = (window._sugestaoMeta && window._sugestaoMeta.diasDec) || 1;
+    var vel = (item.qt / diasDec).toFixed(1);
+    // Estoque visual
+    var est = item.estoque || 0;
+    var cob = est > 0 && item.qt > 0 ? Math.round(est / (item.qt / diasDec)) : 0;
+    var estColor = est === 0 ? '#ef4444' : cob < 7 ? '#f59e0b' : '#4ade80';
+    var estHtml = '<span style="font-size:.6rem;font-weight:900;color:' + estColor + ';">' + est + '</span>'
+        + (est > 0 ? '<br><span style="font-size:.46rem;color:#6b7280;">' + cob + 'd cob.</span>' : '');
+    var projBruta = item.projBruta || item.sug;
+    var pedInit = item.pedido || 0;
+    var btnStyle = 'width:18px;height:18px;border-radius:50%;border:1px solid #374151;background:#1f2937;color:#d1d5db;font-size:.75rem;line-height:1;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;font-weight:900;flex-shrink:0;';
+    return '<tr style="' + bg + '">'
+        + '<td style="padding:.2rem .3rem;font-size:.54rem;color:#6b7280;text-align:center;width:18px;">' + (rowNum + 1) + '</td>'
+        + '<td style="padding:.2rem .4rem;font-size:.58rem;color:#f3f4f6;max-width:180px;line-height:1.3;">' + abcBadge + nm + '</td>'
+        + '<td style="padding:.2rem .3rem;font-size:.6rem;font-weight:800;color:' + (color || '#a78bfa') + ';text-align:center;white-space:nowrap;">' + item.qt + 'x</td>'
+        + '<td style="padding:.2rem .3rem;font-size:.52rem;color:#9ca3af;text-align:center;white-space:nowrap;">~' + vel + '/d</td>'
+        + '<td style="padding:.2rem .3rem;text-align:center;">' + estHtml + '</td>'
+        + '<td style="padding:.2rem .3rem;font-size:.6rem;font-weight:800;color:#4ade80;text-align:center;">' + projBruta + '</td>'
+        + '<td style="padding:.15rem .25rem;text-align:center;width:82px;">'
+          + '<div style="display:flex;align-items:center;gap:.28rem;justify-content:center;">'
+          + '<button onclick="var e=document.getElementById(\'sq' + fi + '\');var v=Math.max(0,+e.textContent-1);e.textContent=v;if(window._sugestaoFlat)window._sugestaoFlat[' + fi + '].pedido=v;_sugUpdateTotal();" style="' + btnStyle + '">−</button>'
+          + '<span id="sq' + fi + '" style="min-width:24px;text-align:center;font-size:.65rem;font-weight:900;color:#f9fafb;">' + pedInit + '</span>'
+          + '<button onclick="var e=document.getElementById(\'sq' + fi + '\');var v=+e.textContent+1;e.textContent=v;if(window._sugestaoFlat)window._sugestaoFlat[' + fi + '].pedido=v;_sugUpdateTotal();" style="' + btnStyle + '">+</button>'
+          + '</div>'
+        + '</td>'
+        + '<td style="padding:.15rem .2rem;"><input type="text" placeholder="obs..." oninput="if(window._sugestaoFlat)window._sugestaoFlat[' + fi + '].obs=this.value" style="width:100%;min-width:70px;background:#111827;border:1px solid #374151;border-radius:.3rem;color:#d1d5db;font-size:.52rem;padding:.12rem .25rem;outline:none;" onfocus="this.style.borderColor=\'#10b981\'" onblur="this.style.borderColor=\'#374151\'"></td>'
+        + '</tr>';
+}
+
+function _sugTableHtml(items, tbodyId, color, isAces) {
+    if (!items || !items.length) {
+        return '<p style="color:#4b5563;font-size:.58rem;padding:.4rem;">sem dados suficientes</p>';
+    }
+    var rows = '';
+    items.forEach(function(item, li) { rows += _sugRowHtml(item, item._fi, color, li, isAces); });
+    return '<div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;min-width:560px;">'
+        + '<thead><tr style="border-bottom:1px solid #1f2937;">'
+        + '<th style="padding:.22rem .3rem;font-size:.48rem;color:#6b7280;font-weight:600;text-align:center;">#</th>'
+        + '<th style="padding:.22rem .4rem;font-size:.48rem;color:#6b7280;font-weight:600;">MODELO</th>'
+        + '<th style="padding:.22rem .3rem;font-size:.48rem;color:#6b7280;font-weight:600;text-align:center;">VEND.</th>'
+        + '<th style="padding:.22rem .3rem;font-size:.48rem;color:#6b7280;font-weight:600;text-align:center;">VEL./DIA</th>'
+        + '<th style="padding:.22rem .3rem;font-size:.48rem;color:#ef4444;font-weight:700;text-align:center;">ESTOQUE<br><span style="font-size:.42rem;color:#6b7280;font-weight:400;">ERP</span></th>'
+        + '<th style="padding:.22rem .3rem;font-size:.48rem;color:#10b981;font-weight:700;text-align:center;">PROJEÇÃO<br><span style="font-size:.42rem;color:#6b7280;font-weight:400;">15d bruta</span></th>'
+        + '<th style="padding:.22rem .3rem;font-size:.48rem;color:#8b5cf6;font-weight:700;text-align:center;">QTD. PEDIDO<br><span style="font-size:.42rem;color:#6b7280;font-weight:400;">proj−estoque</span></th>'
+        + '<th style="padding:.22rem .4rem;font-size:.48rem;color:#6b7280;font-weight:600;">OBS.</th>'
+        + '</tr></thead>'
+        + '<tbody id="' + tbodyId + '">' + rows + '</tbody>'
+        + '</table></div>'
+        + '<button onclick="_addSugestaoItem(\'' + tbodyId + '\',\'' + (color||'#8b5cf6') + '\')" style="margin-top:.35rem;font-size:.54rem;color:#8b5cf6;background:rgba(139,92,246,.08);border:1px dashed #8b5cf655;border-radius:.35rem;padding:.2rem .55rem;cursor:pointer;">+ adicionar item</button>';
+}
+
+function _addSugestaoItem(tbodyId, color) {
+    var nm = prompt('Nome do modelo / acessório:');
+    if (!nm || !nm.trim()) return;
+    var qtStr = prompt('Qtd vendida no mês (estimativa):', '0');
+    if (qtStr === null) return;
+    var qt = Math.max(0, parseInt(qtStr) || 0);
+    var meta = window._sugestaoMeta || {diasDec:1, isAces:false};
+    var diasDec = meta.diasDec || 1;
+    var isAces = !!meta.isAces;
+    var projBruta = Math.max(1, Math.ceil((qt / diasDec) * 15 * 1.1));
+    var erpKey = _getErpStockKey(nm.trim());
+    var erpData = _ERP_ESTOQUE[erpKey] || {};
+    var estoque = Object.keys(erpData).reduce(function(s,k){return s+(erpData[k]||0);},0);
+    var sug = Math.max(0, projBruta - estoque);
+    var item = {nm:nm.trim(), qt:qt, abc:'B', sug:sug, projBruta:projBruta, estoque:estoque, pedido:sug, obs:''};
+    var fi = window._sugestaoFlat ? window._sugestaoFlat.length : 0;
+    item._fi = fi;
+    if (window._sugestaoFlat) window._sugestaoFlat.push(item);
+    var tbody = document.getElementById(tbodyId);
+    if (!tbody) return;
+    var rowNum = tbody.querySelectorAll('tr').length;
+    var tmp = document.createElement('tbody');
+    tmp.innerHTML = _sugRowHtml(item, fi, color, rowNum, isAces);
+    if (tmp.firstChild) tbody.appendChild(tmp.firstChild);
+    _sugUpdateTotal();
+}
+
+function _renderSugestaoPedido() {
+    var body = document.getElementById('sugestao-pedido-body');
+    if (!body) return;
+    var d = _360D();
+    var diasDec = Math.max((d && d.diasDecorridos) || 1, 1);
+    var isAces = (_mfProd === 'acessorios');
+    var tm = isAces ? (d.top_acessorios || {}) : (d.top_modelos || {});
+    var lojas = tm.lojas || {};
+
+    function aggCel(keys) {
+        var acc = {payjoy:{}, odrescred:{}, salao:{}};
+        keys.forEach(function(k) {
+            var lj = lojas[k] || {};
+            ['payjoy','odrescred','salao'].forEach(function(cat) {
+                (lj[cat]||[]).forEach(function(m) {
+                    acc[cat][m.nm] = acc[cat][m.nm] || {qt:0,val:0};
+                    acc[cat][m.nm].qt += m.qt; acc[cat][m.nm].val += m.val;
+                });
+            });
+        });
+        function top(o) {
+            return Object.entries(o).sort(function(a,b){return b[1].qt-a[1].qt;})
+                .slice(0,7).map(function(e){return {nm:e[0],qt:e[1].qt,val:Math.round(e[1].val)};});
+        }
+        return {payjoy:top(acc.payjoy), odrescred:top(acc.odrescred), salao:top(acc.salao)};
+    }
+    function aggAces(keys) {
+        var acc = {};
+        keys.forEach(function(k) {
+            var lj = lojas[k];
+            if (!Array.isArray(lj)) return;
+            lj.forEach(function(m) { acc[m.nm]=acc[m.nm]||{qt:0,val:0}; acc[m.nm].qt+=m.qt; acc[m.nm].val+=m.val; });
+        });
+        return Object.entries(acc).sort(function(a,b){return b[1].qt-a[1].qt;})
+            .slice(0,15).map(function(e){return {nm:e[0],qt:e[1].qt,val:Math.round(e[1].val)};});
+    }
+
+    var _ALL_LOJAS_KEYS = ['cariacica','itabuna','moxuara','praiadacosta','barreiras','teixeira','laranjeiras','saomateus','serra','montserrat','linhares'];
+    var globalFlat = [];
+    function mkItem(m, rankIdx, abcVal, lojaKeys) {
+        var abc = abcVal || (rankIdx < 3 ? 'A' : rankIdx < 5 ? 'B' : 'C');
+        var fator = abc === 'A' ? 1.3 : abc === 'B' ? 1.1 : 0.9;
+        var projBruta = Math.max(1, Math.ceil((m.qt / diasDec) * 15 * fator));
+        var erpKey = _getErpStockKey(m.nm);
+        var erpData = _ERP_ESTOQUE[erpKey] || {};
+        var lKeys = lojaKeys || _ALL_LOJAS_KEYS;
+        var estoque = lKeys.reduce(function(s,k){return s+(erpData[k]||0);},0);
+        var sug = Math.max(0, projBruta - estoque);
+        var item = {nm:m.nm, qt:m.qt, abc:abc, projBruta:projBruta, estoque:estoque, sug:sug, pedido:sug, obs:''};
+        item._fi = globalFlat.length;
+        globalFlat.push(item);
+        return item;
+    }
+    function mapItens(arr, lKeys) { return (arr||[]).map(function(m,i){return mkItem(m,i,null,lKeys);}); }
+    function mapAbcItens(arr, lKeys) {
+        var total = (arr||[]).reduce(function(s,m){return s+m.qt;},0), cum=0;
+        return (arr||[]).map(function(m,i) {
+            cum += m.qt;
+            var pct = total ? (cum/total*100) : 100;
+            return mkItem(m, i, pct<=80?'A':pct<=95?'B':'C', lKeys);
+        });
+    }
+
+    function finSec(pj, od, sl, lKeys) {
+        return [
+            {title:'PAYJOY',    color:'#10b981', items:mapItens(pj, lKeys)},
+            {title:'ODRESCRED', color:'#3b82f6', items:mapItens(od, lKeys)},
+            {title:'SALÃO',     color:'#a78bfa', items:mapItens(sl, lKeys)}
+        ];
+    }
+
+    var sections = [], ctxLabel = '';
+    if (_mfTab === 'rede') {
+        ctxLabel = 'Rede Geral';
+        if (isAces) { sections = [{title:null,isAces:true,items:mapAbcItens(tm.rede||[], _ALL_LOJAS_KEYS)}]; }
+        else { sections = finSec(tm.payjoy||[], tm.odrescred||[], tm.salao||[], _ALL_LOJAS_KEYS); }
+    } else if (_mfTab === 'subredes') {
+        ctxLabel = 'Subredes';
+        Object.entries(_SUBREDES_MF).forEach(function(e) {
+            var nS=e[0], kS=e[1];
+            if (isAces) { sections.push({title:nS,isSub:true,isAces:true,items:mapAbcItens(aggAces(kS), kS)}); }
+            else { var agg=aggCel(kS); sections.push({title:nS,isSub:true,subFins:finSec(agg.payjoy,agg.odrescred,agg.salao,kS)}); }
+        });
+    } else if (_mfTab === 'lojas') {
+        if (_mfLoja) {
+            ctxLabel = _LOJAS_MF[_mfLoja] || _mfLoja;
+            var lj = lojas[_mfLoja];
+            var lKeys1 = [_mfLoja];
+            if (isAces && Array.isArray(lj)) { sections = [{title:null,isAces:true,items:mapAbcItens(lj, lKeys1)}]; }
+            else if (!isAces && lj && lj.payjoy) { sections = finSec(lj.payjoy||[], lj.odrescred||[], lj.salao||[], lKeys1); }
+        } else {
+            ctxLabel = 'Todas as Lojas';
+            Object.entries(_LOJAS_MF).forEach(function(e) {
+                var key=e[0], nome=e[1], ljd=lojas[key];
+                if (!ljd) return;
+                var lKeys2 = [key];
+                if (isAces && Array.isArray(ljd)) { sections.push({title:nome,isSub:true,isAces:true,items:mapAbcItens(ljd, lKeys2)}); }
+                else if (!isAces && ljd && ljd.payjoy) { sections.push({title:nome,isSub:true,subFins:finSec(ljd.payjoy||[],ljd.odrescred||[],ljd.salao||[], lKeys2)}); }
+            });
+        }
+    }
+
+    window._sugestaoFlat = globalFlat;
+    window._sugestaoMeta = {prod:isAces?'Acessórios':'Celulares', ctx:ctxLabel, diasDec:diasDec, isAces:isAces, sections:sections};
+
+    var ctxEl = document.getElementById('sugestao-pedido-ctx');
+    if (ctxEl) ctxEl.textContent = (isAces?'Acessórios':'Celulares') + ' · ' + ctxLabel + ' · próximos 15 dias · base: ' + diasDec + ' dias  |  Estoque ERP: ' + (_ERP_ESTOQUE_TS||'');
+
+    var tbIdx = 0;
+    var html = '';
+    sections.forEach(function(sec) {
+        if (sec.isSub && sec.title) {
+            html += '<div style="margin:1.1rem 0 .45rem;padding:.3rem .65rem;background:rgba(139,92,246,.1);border-left:3px solid #8b5cf6;border-radius:0 .4rem .4rem 0;">'
+                + '<span style="font-size:.65rem;font-weight:900;color:#c4b5fd;letter-spacing:.04em;">' + sec.title + '</span></div>';
+        }
+        if (sec.subFins) {
+            sec.subFins.forEach(function(sf) {
+                var tid = 'sug-tb-' + (tbIdx++);
+                html += '<div style="margin-bottom:.9rem;">'
+                    + '<div style="display:flex;align-items:center;gap:.35rem;margin-bottom:.3rem;">'
+                    + '<div style="width:7px;height:7px;border-radius:50%;background:' + sf.color + ';flex-shrink:0;"></div>'
+                    + '<span style="font-size:.6rem;font-weight:900;color:' + sf.color + ';letter-spacing:.04em;">' + sf.title + '</span></div>'
+                    + _sugTableHtml(sf.items, tid, sf.color, isAces) + '</div>';
+            });
+        } else if (sec.items) {
+            var tid2 = 'sug-tb-' + (tbIdx++);
+            if (sec.title && !sec.isSub) {
+                html += '<div style="margin-bottom:.9rem;">'
+                    + '<div style="display:flex;align-items:center;gap:.35rem;margin-bottom:.3rem;">'
+                    + '<div style="width:7px;height:7px;border-radius:50%;background:' + (sec.color||'#8b5cf6') + ';flex-shrink:0;"></div>'
+                    + '<span style="font-size:.6rem;font-weight:900;color:' + (sec.color||'#8b5cf6') + ';letter-spacing:.04em;">' + sec.title + '</span></div>'
+                    + _sugTableHtml(sec.items, tid2, sec.color||'#8b5cf6', isAces) + '</div>';
+            } else {
+                html += '<div style="margin-bottom:.9rem;">' + _sugTableHtml(sec.items, tid2, '#8b5cf6', isAces) + '</div>';
+            }
+        }
+    });
+
+    if (!html) {
+        html = '<div style="color:#6b7280;font-size:.65rem;padding:2.5rem;text-align:center;">Nenhum dado disponível para este filtro.</div>';
+    }
+
+    var totalSug = globalFlat.reduce(function(s,it){return s+(+it.pedido||0);},0);
+    html += '<div style="margin-top:1.25rem;padding:.75rem 1rem;background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.2);border-radius:.65rem;display:flex;align-items:center;justify-content:space-between;">'
+        + '<span style="font-size:.62rem;color:#6b7280;">Total de unidades no pedido:</span>'
+        + '<span id="sug-total-badge" style="font-size:1rem;font-weight:900;color:#4ade80;">' + totalSug + ' un.</span></div>';
+
+    body.innerHTML = html;
+}
+
+function _gerarPdfPedido() {
+    if (!window.jspdf) { alert('jsPDF não carregado.'); return; }
+    var flat = window._sugestaoFlat || [];
+    var meta = window._sugestaoMeta || {prod:'Celulares', ctx:'Rede', diasDec:1, isAces:false, sections:[]};
+    if (!flat.length) { alert('Sem itens para gerar pedido.'); return; }
+
+    var fornecedor   = ((document.getElementById('sug-fornecedor')   ||{}).value||'').trim();
+    var endereco     = ((document.getElementById('sug-endereco')     ||{}).value||'').trim();
+    var responsavel  = ((document.getElementById('sug-responsavel')  ||{}).value||'').trim();
+
+    var meses = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+    var mesAtual = meses[new Date().getMonth()] + ' ' + new Date().getFullYear();
+    var agora = new Date().toLocaleString('pt-BR');
+    var pageW=210, ml=14, mr=14, uw=pageW-ml-mr;
+
+    // ── Consolidado (precisa existir antes do dry-run) ───────────────────────
+    var totByModel = {};
+    flat.forEach(function(it) {
+        var ped = +it.pedido||0; if (ped <= 0) return;
+        var key = _sugEnrichNm(it.nm, meta.isAces);
+        totByModel[key] = (totByModel[key]||0) + ped;
+    });
+    var totEntries = Object.keys(totByModel).map(function(k){return [k,totByModel[k]];}).sort(function(a,b){return b[1]-a[1];});
+    var grandTotal = flat.reduce(function(s,it){return s+(+it.pedido||0);},0);
+
+    // ── Dry-run: calcula altura total do conteúdo ────────────────────────────
+    var sections = meta.sections||[];
+    function computePageH() {
+        var h = 70; // header(36) + campos(30) + gap(4)
+        sections.forEach(function(sec) {
+            if (sec.isSub && sec.title) h += 11;
+            if (sec.subFins) {
+                sec.subFins.forEach(function(sf) {
+                    h += 9; // secTitle
+                    if (sf.items && sf.items.length) { h += 5; sf.items.forEach(function(it){ h += it.obs ? 10 : 6; }); }
+                    h += 4;
+                });
+            } else if (sec.items) {
+                if (sec.title && !sec.isSub) h += 9;
+                if (sec.items && sec.items.length) { h += 5; sec.items.forEach(function(it){ h += it.obs ? 10 : 6; }); }
+                h += 4;
+            }
+        });
+        if (totEntries.length > 0) { h += 8 + 14 + 5 + totEntries.length * 6 + 16; }
+        h += 22; // rodapé + margem inferior
+        return Math.max(297, h);
+    }
+    var pageH = computePageH();
+
+    var jsPDF = window.jspdf.jsPDF;
+    var doc = new jsPDF({orientation:'portrait', unit:'mm', format:[pageW, pageH]});
+    var y = 14;
+
+    // Fundo branco na página inteira
+    doc.setFillColor(255,255,255); doc.rect(0,0,pageW,pageH,'F');
+
+    // ── Header banner ────────────────────────────────────────────────────────
+    doc.setFillColor(13,17,23); doc.rect(0,0,pageW,36,'F');
+    doc.setFillColor(16,185,129); doc.rect(0,0,5,36,'F');
+    doc.setFont('helvetica','bold'); doc.setFontSize(12); doc.setTextColor(249,250,251);
+    doc.text('SUGESTÃO DE PEDIDO — PRÓXIMOS 15 DIAS', ml+3, 12);
+    doc.setFont('helvetica','normal'); doc.setFontSize(7); doc.setTextColor(156,163,175);
+    doc.text('Titãs Sinergy  ·  '+meta.prod+'  ·  '+meta.ctx+'  ·  '+mesAtual, ml+3, 20);
+    doc.text('Baseado em '+meta.diasDec+' dias de vendas  ·  Gerado em: '+agora, ml+3, 28);
+    y = 40;
+
+    // ── Campos do pedido ─────────────────────────────────────────────────────
+    doc.setFillColor(248,250,252); doc.rect(ml-2,y-3,uw+4,26,'F');
+    doc.setDrawColor(220,225,235); doc.setLineWidth(0.3); doc.rect(ml-2,y-3,uw+4,26,'S');
+    var col1=ml, col2=ml+64, col3=ml+132;
+    function drawField(label, value, x, maxW) {
+        doc.setFont('helvetica','bold'); doc.setFontSize(5.5); doc.setTextColor(100,116,139);
+        doc.text(label, x, y+3);
+        doc.setFont('helvetica','normal'); doc.setFontSize(8); doc.setTextColor(value?15:160, value?23:170, value?42:175);
+        doc.text(value||'—', x, y+11, {maxWidth:maxW||55});
+        doc.setDrawColor(200,210,225); doc.line(x, y+15, x+(maxW||55), y+15);
+    }
+    drawField('FORNECEDOR', fornecedor, col1, 58);
+    drawField('ENDEREÇO DE ENTREGA', endereco, col2, 62);
+    drawField('RESPONSÁVEL PELO RECEBIMENTO', responsavel, col3, 60);
+    y = y + 30;
+
+    // ── Helpers ──────────────────────────────────────────────────────────────
+    function hexToRgb(h) {
+        var m=/^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(h);
+        return m?[parseInt(m[1],16),parseInt(m[2],16),parseInt(m[3],16)]:[109,40,217];
+    }
+    // Versão escura de uma cor para texto legível em fundo claro
+    function darkRgb(rgb) {
+        return [Math.round(rgb[0]*0.65), Math.round(rgb[1]*0.65), Math.round(rgb[2]*0.65)];
+    }
+    // Fundo suave de uma cor
+    function lightBg(rgb) {
+        return [Math.round(rgb[0]*0.12+234), Math.round(rgb[1]*0.12+234), Math.round(rgb[2]*0.12+234)];
+    }
+
+    function drawTH(cy) {
+        doc.setFillColor(30,41,59); doc.rect(ml-2,cy-4.5,uw+4,7,'F');
+        doc.setFont('helvetica','bold'); doc.setFontSize(5.5); doc.setTextColor(148,163,184);
+        doc.text('#', ml, cy); doc.text('MODELO', ml+8, cy);
+        doc.text('VEND.',    ml+uw-56, cy, {align:'right'});
+        doc.text('VEL./DIA', ml+uw-44, cy, {align:'right'});
+        doc.setTextColor(220,50,50);   doc.text('ESTOQUE',  ml+uw-30, cy, {align:'right'});
+        doc.setTextColor(5,150,105);   doc.text('PROJEÇÃO', ml+uw-16, cy, {align:'right'});
+        doc.setTextColor(109,40,217);  doc.text('PEDIDO',   ml+uw-2,  cy, {align:'right'});
+        return cy+5;
+    }
+
+    function drawSecTitle(txt, color, cy) {
+        var rgb = hexToRgb(color||'#6d28d9');
+        var bg  = lightBg(rgb);
+        doc.setFillColor(bg[0],bg[1],bg[2]); doc.rect(ml-2,cy-5,uw+4,9,'F');
+        doc.setFillColor(rgb[0],rgb[1],rgb[2]); doc.rect(ml-2,cy-5,4,9,'F');
+        var dr = darkRgb(rgb);
+        doc.setFont('helvetica','bold'); doc.setFontSize(7.5); doc.setTextColor(dr[0],dr[1],dr[2]);
+        doc.text(txt, ml+4, cy+0.5); return cy+9;
+    }
+
+    function drawSubTitle(txt, cy) {
+        doc.setFillColor(241,245,249); doc.rect(ml-2,cy-5,uw+4,10,'F');
+        doc.setDrawColor(203,213,225); doc.setLineWidth(0.3); doc.line(ml-2,cy-5,ml-2,cy+5);
+        doc.setFont('helvetica','bold'); doc.setFontSize(9); doc.setTextColor(15,23,42);
+        doc.text(txt, ml+3, cy+0.5); return cy+11;
+    }
+
+    function drawRow(item, rowIdx, color, cy) {
+        var rgb = hexToRgb(color||'#6d28d9');
+        var dr  = darkRgb(rgb);
+        if (rowIdx%2===0) { doc.setFillColor(255,255,255); } else { doc.setFillColor(248,250,252); }
+        doc.rect(ml-2,cy-3.5,uw+4,6,'F');
+
+        doc.setFont('helvetica','bold'); doc.setFontSize(5.5); doc.setTextColor(148,163,184);
+        doc.text(String(rowIdx+1), ml, cy);
+
+        var nmStart = ml+8;
+        if (meta.isAces && item.abc) {
+            var abcClr = item.abc==='A'?[5,150,105]:item.abc==='B'?[180,100,0]:[100,110,120];
+            doc.setFillColor(abcClr[0],abcClr[1],abcClr[2]); doc.setGState(new doc.GState({opacity:0.18}));
+            doc.rect(ml+5,cy-3,5,4,'F'); doc.setGState(new doc.GState({opacity:1}));
+            doc.setFont('helvetica','bold'); doc.setFontSize(4.5); doc.setTextColor(abcClr[0],abcClr[1],abcClr[2]);
+            doc.text(item.abc, ml+7.5, cy, {align:'center'});
+            nmStart = ml+12;
+        }
+
+        var nm = _sugEnrichNm(item.nm, meta.isAces);
+        doc.setFont('helvetica','normal'); doc.setFontSize(5.5); doc.setTextColor(30,41,59);
+        doc.text(nm, nmStart, cy, {maxWidth: uw-65});
+
+        var vel = (item.qt / meta.diasDec).toFixed(1);
+        doc.setFont('helvetica','bold'); doc.setFontSize(5.5); doc.setTextColor(dr[0],dr[1],dr[2]);
+        doc.text(item.qt+'x', ml+uw-56, cy, {align:'right'});
+        doc.setFont('helvetica','normal'); doc.setFontSize(5); doc.setTextColor(100,116,139);
+        doc.text('~'+vel+'/d', ml+uw-44, cy, {align:'right'});
+
+        var est = item.estoque||0;
+        doc.setFont('helvetica','bold'); doc.setFontSize(5.5);
+        if (est===0)      { doc.setTextColor(220,38,38); }
+        else if (est<5)   { doc.setTextColor(180,100,0); }
+        else              { doc.setTextColor(5,150,105); }
+        doc.text(String(est), ml+uw-30, cy, {align:'right'});
+
+        doc.setTextColor(5,150,105);
+        doc.text(String(item.projBruta||item.sug), ml+uw-16, cy, {align:'right'});
+
+        var ped = +item.pedido || 0;
+        if (ped > 0) {
+            doc.setFillColor(109,40,217); doc.setGState(new doc.GState({opacity:0.1}));
+            doc.rect(ml+uw-19, cy-3.5, 19, 5.5, 'F'); doc.setGState(new doc.GState({opacity:1}));
+        }
+        doc.setFont('helvetica','bold'); doc.setFontSize(7);
+        doc.setTextColor(ped>0 ? 109 : 180, ped>0 ? 40 : 190, ped>0 ? 217 : 200);
+        doc.text(String(ped), ml+uw-2, cy, {align:'right'});
+
+        var nextY = cy+6;
+        if (item.obs) {
+            doc.setFont('helvetica','italic'); doc.setFontSize(4.5); doc.setTextColor(100,116,139);
+            doc.text('↳ '+item.obs, nmStart, cy+4, {maxWidth:uw-20});
+            nextY = cy+10;
+        }
+        return nextY;
+    }
+
+    // ── Render sections (sem quebras de página — altura calculada dinamicamente) ─
+    sections.forEach(function(sec) {
+        if (sec.isSub && sec.title) { y=drawSubTitle(sec.title,y); }
+        if (sec.subFins) {
+            sec.subFins.forEach(function(sf) {
+                y=drawSecTitle(sf.title,sf.color,y);
+                if (sf.items&&sf.items.length) {
+                    y=drawTH(y);
+                    sf.items.forEach(function(item,li){ y=drawRow(item,li,sf.color,y); });
+                }
+                y+=4;
+            });
+        } else if (sec.items) {
+            if (sec.title&&!sec.isSub) { y=drawSecTitle(sec.title,sec.color,y); }
+            if (sec.items&&sec.items.length) {
+                y=drawTH(y);
+                sec.items.forEach(function(item,li){ y=drawRow(item,li,sec.color||'#6d28d9',y); });
+            }
+            y+=4;
+        }
+    });
+
+    // ── Consolidado final ────────────────────────────────────────────────────
+    if (totEntries.length > 0) {
+        y += 8;
+        doc.setFillColor(13,17,23); doc.rect(ml-2,y-6,uw+4,12,'F');
+        doc.setFillColor(16,185,129); doc.rect(ml-2,y-6,5,12,'F');
+        doc.setFont('helvetica','bold'); doc.setFontSize(8.5); doc.setTextColor(249,250,251);
+        doc.text('CONSOLIDADO DO PEDIDO', ml+6, y+1);
+        doc.setFont('helvetica','bold'); doc.setFontSize(7.5); doc.setTextColor(16,185,129);
+        doc.text(grandTotal+' unidades no total', ml+uw, y+1, {align:'right'});
+        y += 14;
+
+        doc.setFillColor(30,41,59); doc.rect(ml-2,y-4.5,uw+4,7,'F');
+        doc.setFont('helvetica','bold'); doc.setFontSize(5.5); doc.setTextColor(148,163,184);
+        doc.text('MODELO', ml, y);
+        doc.setTextColor(167,139,250); doc.text('QTD. PEDIDA', ml+uw, y, {align:'right'});
+        y += 5;
+
+        totEntries.forEach(function(entry, i) {
+            if (i%2===0){doc.setFillColor(255,255,255);}else{doc.setFillColor(248,250,252);}
+            doc.rect(ml-2,y-3.5,uw+4,6,'F');
+            doc.setFont('helvetica','normal'); doc.setFontSize(6.5); doc.setTextColor(30,41,59);
+            doc.text(entry[0], ml+2, y);
+            doc.setFillColor(109,40,217); doc.setGState(new doc.GState({opacity:0.1}));
+            doc.rect(ml+uw-24,y-3.5,24,5.5,'F'); doc.setGState(new doc.GState({opacity:1}));
+            doc.setFont('helvetica','bold'); doc.setFontSize(7); doc.setTextColor(109,40,217);
+            doc.text(String(entry[1]), ml+uw, y, {align:'right'});
+            y += 6;
+        });
+
+        y += 3;
+        doc.setFillColor(16,185,129); doc.setGState(new doc.GState({opacity:0.15}));
+        doc.rect(ml-2,y-4,uw+4,10,'F'); doc.setGState(new doc.GState({opacity:1}));
+        doc.setDrawColor(16,185,129); doc.setLineWidth(0.5); doc.rect(ml-2,y-4,uw+4,10,'S');
+        doc.setFont('helvetica','bold'); doc.setFontSize(9.5); doc.setTextColor(5,120,85);
+        doc.text('TOTAL GERAL DO PEDIDO', ml+2, y+2.5);
+        doc.text(grandTotal+' un.', ml+uw, y+2.5, {align:'right'});
+        y += 10;
+    }
+
+    // ── Rodapé (única página, posição absoluta no final) ─────────────────────
+    var footerY = pageH - 8;
+    doc.setFillColor(248,250,252); doc.rect(0,footerY-5,pageW,13,'F');
+    doc.setDrawColor(220,225,235); doc.setLineWidth(0.3); doc.line(0,footerY-5,pageW,footerY-5);
+    doc.setFont('helvetica','normal'); doc.setFontSize(5.5); doc.setTextColor(100,116,139);
+    doc.text('Titãs Sinergy · Sugestão de Pedido · '+mesAtual, ml, footerY);
+    if (fornecedor) doc.text('Fornecedor: '+fornecedor, pageW/2, footerY, {align:'center'});
+    doc.text('Gerado em: '+agora, pageW-mr, footerY, {align:'right'});
+
+    var fname='PedidoSugerido_'+meta.prod+'_'+meta.ctx.replace(/\s+/g,'')+'_'+new Date().toISOString().slice(0,10)+'.pdf';
+    doc.save(fname);
+    try{_registrarAcao('Gerou PDF Pedido Sugerido');}catch(e){}
+}
 
 function _renderModelosFin() {
     var wrap = document.getElementById('modal-modelos-fin-body');
@@ -21921,6 +23012,12 @@ cursosInit();
         </div>
       </div>
       <div style="display:flex;align-items:center;gap:.5rem;">
+        <button id="btn-ver-estoque-mf" onclick="_abrirVerEstoque()" title="Ver estoque atual por loja" style="display:none;align-items:center;gap:.4rem;padding:.4rem .9rem;border-radius:.6rem;border:1px solid #3b82f6;background:linear-gradient(135deg,#3b82f6,#1d4ed8);color:#fff;font-size:.72rem;font-weight:800;cursor:pointer;box-shadow:0 2px 12px #3b82f650;transition:all .2s;" onmouseover="this.style.transform='translateY(-1px)';this.style.boxShadow='0 6px 20px #3b82f670'" onmouseout="this.style.transform='';this.style.boxShadow='0 2px 12px #3b82f650'">
+          <i class="fas fa-boxes" style="font-size:.8rem;"></i> Ver Estoque
+        </button>
+        <button id="btn-sug-pedido-mf" onclick="_abrirSugestaoPedido()" title="Sugestão de pedido para 15 dias" style="display:none;align-items:center;gap:.4rem;padding:.4rem .9rem;border-radius:.6rem;border:1px solid #10b981;background:linear-gradient(135deg,#10b981,#059669);color:#fff;font-size:.72rem;font-weight:800;cursor:pointer;box-shadow:0 2px 12px #10b98150;transition:all .2s;" onmouseover="this.style.transform='translateY(-1px)';this.style.boxShadow='0 6px 20px #10b98170'" onmouseout="this.style.transform='';this.style.boxShadow='0 2px 12px #10b98150'">
+          <i class="fas fa-clipboard-list" style="font-size:.8rem;"></i> Sugestão Pedido
+        </button>
         <button onclick="_imprimirCurvaABC()" title="Baixar relatório em PDF" style="display:flex;align-items:center;gap:.4rem;padding:.4rem .9rem;border-radius:.6rem;border:1px solid #f97316;background:linear-gradient(135deg,#f97316,#ea580c);color:#fff;font-size:.72rem;font-weight:800;cursor:pointer;box-shadow:0 2px 12px #f9731650;transition:all .2s;" onmouseover="this.style.transform='translateY(-1px)';this.style.boxShadow='0 6px 20px #f9731670'" onmouseout="this.style.transform='';this.style.boxShadow='0 2px 12px #f9731650'">
           <i class="fas fa-print" style="font-size:.8rem;"></i> Imprimir PDF
         </button>
@@ -21928,6 +23025,146 @@ cursosInit();
       </div>
     </div>
     <div id="modal-modelos-fin-body" style="overflow-y:auto;flex:1;padding:1.25rem;"></div>
+  </div>
+</div>
+
+<!-- ── Modal Ver Estoque ──────────────────────────────────────────────── -->
+<div id="modal-ver-estoque" class="fixed inset-0 z-[1001] items-center justify-center bg-black/80 p-3"
+     style="display:none;" onclick="if(event.target===this)_fecharVerEstoque()">
+  <div style="background:#0d1117;border:1px solid rgba(59,130,246,.3);border-radius:1.25rem;width:100%;max-width:960px;max-height:92vh;display:flex;flex-direction:column;box-shadow:0 24px 60px rgba(0,0,0,.85);">
+
+    <!-- Header -->
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:1rem 1.25rem .9rem;border-bottom:1px solid rgba(59,130,246,.15);flex-shrink:0;">
+      <div style="display:flex;align-items:center;gap:.6rem;">
+        <div style="width:32px;height:32px;border-radius:10px;background:#3b82f618;border:1px solid #3b82f635;display:flex;align-items:center;justify-content:center;">
+          <i class="fas fa-boxes" style="color:#3b82f6;font-size:.85rem;"></i>
+        </div>
+        <div>
+          <div style="font-size:.85rem;font-weight:800;color:#f9fafb;">📦 Estoque por Produto</div>
+          <div id="ver-estoque-ts" style="font-size:.58rem;color:#6b7280;">—</div>
+        </div>
+      </div>
+      <button onclick="_fecharVerEstoque()" style="color:#6b7280;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:.5rem;padding:.3rem .65rem;cursor:pointer;font-size:1rem;">✕</button>
+    </div>
+
+    <!-- Legenda de cores -->
+    <div style="padding:.4rem 1.25rem;background:rgba(59,130,246,.04);border-bottom:1px solid rgba(59,130,246,.1);flex-shrink:0;display:flex;align-items:center;gap:1rem;">
+      <span style="font-size:.55rem;color:#ef4444;font-weight:700;">● 0 — sem estoque</span>
+      <span style="font-size:.55rem;color:#f59e0b;font-weight:700;">● 1–4 — estoque baixo</span>
+      <span style="font-size:.55rem;color:#4ade80;font-weight:700;">● 5+ — estoque ok</span>
+    </div>
+
+    <!-- Tabs: Rede / T1 / T2 / T3 / Por Loja -->
+    <div style="display:flex;gap:.35rem;padding:.7rem 1.25rem .5rem;flex-shrink:0;border-bottom:1px solid rgba(255,255,255,.06);flex-wrap:wrap;">
+      <button onclick="_setEstTab('rede')" id="est-tab-rede"
+        style="padding:.3rem .85rem;border-radius:.45rem;border:1px solid #3b82f6;background:#3b82f6;color:#fff;font-size:.62rem;font-weight:800;cursor:pointer;transition:all .2s;">
+        🌐 Rede
+      </button>
+      <button onclick="_setEstTab('t1')" id="est-tab-t1"
+        style="padding:.3rem .85rem;border-radius:.45rem;border:1px solid #374151;background:transparent;color:#6b7280;font-size:.62rem;font-weight:700;cursor:pointer;transition:all .2s;">
+        ⚡ T1 · Talysson
+      </button>
+      <button onclick="_setEstTab('t2')" id="est-tab-t2"
+        style="padding:.3rem .85rem;border-radius:.45rem;border:1px solid #374151;background:transparent;color:#6b7280;font-size:.62rem;font-weight:700;cursor:pointer;transition:all .2s;">
+        ⚡ T2 · Adriel
+      </button>
+      <button onclick="_setEstTab('t3')" id="est-tab-t3"
+        style="padding:.3rem .85rem;border-radius:.45rem;border:1px solid #374151;background:transparent;color:#6b7280;font-size:.62rem;font-weight:700;cursor:pointer;transition:all .2s;">
+        ⚡ T3 · Arthur
+      </button>
+      <button onclick="_setEstTab('lojas')" id="est-tab-lojas"
+        style="padding:.3rem .85rem;border-radius:.45rem;border:1px solid #374151;background:transparent;color:#6b7280;font-size:.62rem;font-weight:700;cursor:pointer;transition:all .2s;">
+        🏪 Por Loja
+      </button>
+    </div>
+
+    <div id="ver-estoque-body" style="overflow-y:auto;flex:1;padding:.9rem 1.25rem;"></div>
+  </div>
+</div>
+
+<!-- ── Modal Sugestão de Pedido ──────────────────────────────────────── -->
+<div id="modal-sugestao-pedido" class="fixed inset-0 z-[1001] items-center justify-center bg-black/80 p-3"
+     onclick="if(event.target===this)_fecharSugestaoPedido()" style="display:none;">
+  <div style="background:#0d1117;border:1px solid rgba(16,185,129,.3);border-radius:1.25rem;width:100%;max-width:920px;max-height:92vh;display:flex;flex-direction:column;box-shadow:0 24px 60px rgba(0,0,0,.85);">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:1rem 1.25rem .9rem;border-bottom:1px solid rgba(16,185,129,.15);flex-shrink:0;">
+      <div style="display:flex;align-items:center;gap:.6rem;">
+        <div style="width:32px;height:32px;border-radius:10px;background:#10b98118;border:1px solid #10b98135;display:flex;align-items:center;justify-content:center;">
+          <i class="fas fa-clipboard-list" style="color:#10b981;font-size:.85rem;"></i>
+        </div>
+        <div>
+          <div style="font-size:.85rem;font-weight:800;color:#f9fafb;">📋 Sugestão de Pedido</div>
+          <div id="sugestao-pedido-ctx" style="font-size:.6rem;color:#6b7280;">Próximos 15 dias</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:.5rem;">
+        <button onclick="_gerarPdfPedido()" title="Baixar PDF do pedido" style="display:flex;align-items:center;gap:.4rem;padding:.4rem .95rem;border-radius:.6rem;border:1px solid #10b981;background:linear-gradient(135deg,#10b981,#059669);color:#fff;font-size:.72rem;font-weight:800;cursor:pointer;box-shadow:0 2px 12px #10b98150;transition:all .2s;" onmouseover="this.style.transform='translateY(-1px)';this.style.boxShadow='0 6px 20px #10b98170'" onmouseout="this.style.transform='';this.style.boxShadow='0 2px 12px #10b98150'">
+          <i class="fas fa-file-download" style="font-size:.8rem;"></i> Baixar PDF do Pedido
+        </button>
+        <button onclick="_fecharSugestaoPedido()" style="color:#6b7280;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:.5rem;padding:.3rem .65rem;cursor:pointer;font-size:1rem;">✕</button>
+      </div>
+    </div>
+    <div style="padding:.6rem 1.25rem;border-bottom:1px solid rgba(255,255,255,.07);flex-shrink:0;display:flex;gap:.7rem;flex-wrap:wrap;align-items:flex-end;">
+      <div style="flex:1;min-width:160px;">
+        <label style="font-size:.52rem;font-weight:800;color:#6b7280;text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:.3rem;">Fornecedor</label>
+        <div style="display:flex;gap:.3rem;align-items:center;">
+          <div style="position:relative;flex:1;" onclick="event.stopPropagation()">
+            <input id="sug-fornecedor" type="text" readonly placeholder="Selecionar fornecedor..."
+              onclick="_toggleFornecedorDropdown(event)"
+              style="width:100%;box-sizing:border-box;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:.45rem;padding:.35rem 1.6rem .35rem .6rem;color:#f9fafb;font-size:.68rem;outline:none;cursor:pointer;transition:border-color .2s;"
+              onfocus="this.style.borderColor='#10b981'" onblur="this.style.borderColor='rgba(255,255,255,.12)'">
+            <i class="fas fa-chevron-down" style="position:absolute;right:.5rem;top:50%;transform:translateY(-50%);color:#6b7280;font-size:.55rem;pointer-events:none;"></i>
+            <div id="sug-forn-dropdown"
+              style="display:none;position:absolute;top:calc(100% + 4px);left:0;right:0;z-index:9999;background:#111827;border:1px solid rgba(16,185,129,.35);border-radius:.5rem;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,.7);max-height:200px;overflow-y:auto;">
+            </div>
+          </div>
+          <button onclick="_abrirCadastrarFornecedor()" title="Cadastrar novo fornecedor"
+            style="flex-shrink:0;width:26px;height:26px;border-radius:.4rem;border:1px solid rgba(16,185,129,.4);background:rgba(16,185,129,.12);color:#10b981;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.7rem;transition:all .2s;"
+            onmouseover="this.style.background='rgba(16,185,129,.25)'" onmouseout="this.style.background='rgba(16,185,129,.12)'">
+            <i class="fas fa-plus"></i>
+          </button>
+        </div>
+      </div>
+      <div style="flex:2;min-width:180px;">
+        <label style="font-size:.52rem;font-weight:800;color:#6b7280;text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:.3rem;">Endereço de Entrega</label>
+        <input id="sug-endereco" type="text" placeholder="Endereço completo de entrega" style="width:100%;box-sizing:border-box;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:.45rem;padding:.35rem .6rem;color:#f9fafb;font-size:.68rem;outline:none;transition:border-color .2s;" onfocus="this.style.borderColor='#10b981'" onblur="this.style.borderColor='rgba(255,255,255,.12)'">
+      </div>
+      <div style="flex:1;min-width:140px;">
+        <label style="font-size:.52rem;font-weight:800;color:#6b7280;text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:.3rem;">Responsável pelo Recebimento</label>
+        <input id="sug-responsavel" type="text" placeholder="Nome do responsável" style="width:100%;box-sizing:border-box;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:.45rem;padding:.35rem .6rem;color:#f9fafb;font-size:.68rem;outline:none;transition:border-color .2s;" onfocus="this.style.borderColor='#10b981'" onblur="this.style.borderColor='rgba(255,255,255,.12)'">
+      </div>
+    </div>
+    <div style="padding:.4rem 1.25rem;background:rgba(16,185,129,.04);border-bottom:1px solid rgba(16,185,129,.1);flex-shrink:0;">
+      <span style="font-size:.55rem;color:#6b7280;">💡 Sugestão calculada com base na velocidade de vendas do mês. Ajuste quantidades e preencha os campos acima antes de baixar o PDF.</span>
+    </div>
+    <div id="sugestao-pedido-body" style="overflow-y:auto;flex:1;padding:1rem 1.25rem;"></div>
+  </div>
+</div>
+
+<!-- ── Modal Cadastrar Fornecedor ────────────────────────────────────── -->
+<div id="modal-cadastrar-forn" class="fixed inset-0 z-[1100] items-center justify-center bg-black/70"
+     style="display:none;" onclick="if(event.target===this)_fecharCadastrarFornecedor()">
+  <div style="background:#0d1117;border:1px solid rgba(16,185,129,.35);border-radius:1rem;padding:1.5rem 1.75rem;width:100%;max-width:340px;box-shadow:0 24px 60px rgba(0,0,0,.85);">
+    <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:1.1rem;">
+      <div style="width:28px;height:28px;border-radius:8px;background:#10b98118;border:1px solid #10b98135;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <i class="fas fa-truck" style="color:#10b981;font-size:.75rem;"></i>
+      </div>
+      <span style="font-size:.85rem;font-weight:800;color:#f9fafb;">Cadastrar Fornecedor</span>
+    </div>
+    <label style="font-size:.52rem;font-weight:800;color:#6b7280;text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:.35rem;">Nome do Fornecedor</label>
+    <input id="novo-forn-input" type="text" placeholder="Ex: MOHAMAD, COMPANY…"
+      onkeydown="if(event.key==='Enter')_salvarNovoFornecedor();if(event.key==='Escape')_fecharCadastrarFornecedor()"
+      style="width:100%;box-sizing:border-box;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);border-radius:.5rem;padding:.5rem .75rem;color:#f9fafb;font-size:.8rem;outline:none;margin-bottom:1rem;transition:border-color .2s;"
+      onfocus="this.style.borderColor='#10b981'" onblur="this.style.borderColor='rgba(255,255,255,.14)'">
+    <div style="display:flex;gap:.5rem;">
+      <button onclick="_fecharCadastrarFornecedor()"
+        style="flex:1;padding:.45rem;border-radius:.45rem;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.06);color:#9ca3af;font-size:.72rem;font-weight:700;cursor:pointer;">
+        Cancelar
+      </button>
+      <button onclick="_salvarNovoFornecedor()"
+        style="flex:2;padding:.45rem;border-radius:.45rem;border:1px solid #10b981;background:linear-gradient(135deg,#10b981,#059669);color:#fff;font-size:.72rem;font-weight:800;cursor:pointer;box-shadow:0 2px 12px #10b98140;">
+        <i class="fas fa-save" style="margin-right:.3rem;font-size:.7rem;"></i> Salvar Fornecedor
+      </button>
+    </div>
   </div>
 </div>
 
@@ -24477,6 +25714,386 @@ function _mgrShowUpdateBanner(msg) {
 }
 
 // ─── Init ─────────────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════
+//  OLHA ISSO — inteligência de mercado
+// ═══════════════════════════════════════════════
+var _oiiLoaded = false;
+
+// Palavras POSITIVAS — economia e varejo (pelo menos uma deve aparecer)
+var _OII_KW_VAREJO = [
+  'varejo','comércio','loja','shopping','supermercado','hipermercado','atacado','atacarejo',
+  'consumo','consumidor','compras','vendas','faturamento','ticket','estoque',
+  'cdl','fecomércio','sebrae','senac','abrasce','abras',
+  'e-commerce','marketplace','logística','delivery',
+  'magazine luiza','casas bahia','americanas','renner','riachuelo','havan',
+  'inflação','ipca','preço','selic','juros','crédito','inadimplência',
+  'pib','crescimento econôm','renda','salário','desemprego',
+  'dólar','câmbio','importação','exportação','tarifa',
+  'black friday','liquidação','promoção','temporada',
+  'economia','mercado','bolsa','empreendedor','negócio','empresa'
+];
+var _OII_KW_GLOBAL = [
+  'economia','dólar','câmbio','mercado','bolsa','trump','china','fed','juro',
+  'inflação','petróleo','commodities','tarifa','guerra comercial','recessão',
+  'pib','crescimento','banco central','fmi','exportação','importação'
+];
+
+// Palavras NEGATIVAS — crime e polícia (notícia excluída se contiver qualquer uma)
+var _OII_KW_CRIME = [
+  'polícia','policia','crime','homicíd','assassin','morreu','baleado','traficante',
+  'tráfico','trafico','roubo','assalto','furto','latrocíni','sequestro',
+  'droga','cocaín','maconha','crack','entorpecente',
+  'preso','detento','cadeia','penitenci','presídio','presidio','delegacia',
+  'suspeito','indiciado','mandado de prisão','tiroteio','chacina',
+  'feminicíd','estupro','violência policial','operação policial'
+];
+
+function _oiiContemCrime(texto) {
+  const t = texto.toLowerCase();
+  return _OII_KW_CRIME.some(k => t.includes(k));
+}
+
+function _olhaIssoInit() {
+  _oiiLoaded = false;
+  _oiiDolar();
+  _oiiFeed('oii-varejo', 'https://g1.globo.com/dynamo/economia/rss2.xml', _OII_KW_VAREJO);
+  _oiiFeed('oii-global', 'https://g1.globo.com/dynamo/mundo/rss2.xml',    _OII_KW_GLOBAL);
+  _oiiFeed('oii-bahia',  'https://g1.globo.com/dynamo/bahia/rss2.xml',    _OII_KW_VAREJO);
+  _oiiFeed('oii-es',     'https://g1.globo.com/dynamo/espirito-santo/rss2.xml', _OII_KW_VAREJO);
+}
+
+async function _oiiDolar() {
+  const elVal  = document.getElementById('oii-dolar-val');
+  const elBadge= document.getElementById('oii-dolar-badge');
+  const elHora = document.getElementById('oii-dolar-hora');
+  const elComp = document.getElementById('oii-dolar-compra');
+  const elVend = document.getElementById('oii-dolar-venda');
+  const elVar  = document.getElementById('oii-dolar-var');
+  if (!elVal) return;
+  elVal.innerHTML = '<span class="oii-spin"></span>';
+  try {
+    const r = await fetch('https://economia.awesomeapi.com.br/json/last/USD-BRL');
+    const d = await r.json();
+    const u = d.USDBRL;
+    const bid   = parseFloat(u.bid).toFixed(2);
+    const ask   = parseFloat(u.ask).toFixed(2);
+    const pct   = parseFloat(u.pctChange);
+    const sobe  = pct >= 0;
+    elVal.textContent = 'R$ ' + bid;
+    elBadge.textContent = (sobe ? '▲ +' : '▼ ') + pct.toFixed(2) + '%';
+    elBadge.className = 'oii-dolar-badge ' + (sobe ? 'oii-badge-up' : 'oii-badge-dn');
+    elComp.textContent = 'R$ ' + bid;
+    elVend.textContent = 'R$ ' + ask;
+    elVar.textContent  = (sobe ? '▲ +' : '▼ ') + pct.toFixed(2) + '%';
+    elVar.style.color  = sobe ? '#4ade80' : '#f87171';
+    const dt = new Date(parseInt(u.timestamp) * 1000);
+    elHora.textContent = 'Atualizado às ' + dt.toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit'});
+  } catch(e) {
+    elVal.textContent = '— erro —';
+    elHora.textContent = 'Não foi possível carregar. Verifique a conexão.';
+  }
+}
+
+var _oiiStore = {};
+
+async function _oiiFeed(elId, rssUrl, keywords) {
+  const el = document.getElementById(elId);
+  if (!el) return;
+  el.innerHTML = '<div class="oii-loading"><div class="oii-spin"></div> Carregando...</div>';
+  try {
+    const api = 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(rssUrl);
+    const r = await fetch(api);
+    const j = await r.json();
+    if (j.status !== 'ok') throw new Error(j.message || 'rss2json error');
+    let items = j.items || [];
+    // 1. Elimina notícias policiais/crime obrigatoriamente
+    items = items.filter(it => !_oiiContemCrime((it.title||'') + ' ' + (it.description||'')));
+    // 2. Filtra por palavras-chave positivas de economia/varejo
+    if (keywords && keywords.length > 0) {
+      const kw = keywords.map(k => k.toLowerCase());
+      const filtered = items.filter(it => {
+        const txt = ((it.title || '') + ' ' + (it.description || '')).toLowerCase();
+        return kw.some(k => txt.includes(k));
+      });
+      items = filtered.length > 0 ? filtered : items;
+    }
+    items = items.slice(0, 6);
+    if (items.length === 0) { el.innerHTML = '<p class="text-xs text-gray-500">Nenhuma notícia encontrada.</p>'; return; }
+    _oiiStore[elId] = items;
+    el.innerHTML = items.map((it, idx) => {
+      const title = (it.title || '(sem título)').trim();
+      const pub   = it.pubDate || '';
+      let dateStr = '';
+      if (pub) {
+        try {
+          const dt = new Date(pub);
+          dateStr = dt.toLocaleDateString('pt-BR', {day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});
+        } catch(e) { dateStr = pub.substring(0,16); }
+      }
+      return `<div class="oii-news-item" style="cursor:pointer;" onclick="oiiAbrirMateria('${elId}',${idx})">
+        <div style="font-size:.78rem;color:#d1d5db;line-height:1.45;transition:color .2s;" onmouseover="this.style.color='var(--oii-c-label,#22d3ee)'" onmouseout="this.style.color='#d1d5db'">${title}</div>
+        ${dateStr ? `<div class="oii-news-date"><i class="fas fa-clock" style="font-size:.6rem;margin-right:.25rem;"></i>${dateStr}</div>` : ''}
+      </div>`;
+    }).join('');
+  } catch(e) {
+    el.innerHTML = '<p class="text-xs text-red-400"><i class="fas fa-triangle-exclamation"></i> Erro ao carregar feed. Tente atualizar.</p>';
+  }
+}
+
+function oiiAbrirMateria(feedId, idx) {
+  const item = (_oiiStore[feedId] || [])[idx];
+  if (!item) return;
+  const modal = document.getElementById('oii-modal');
+  if (!modal) return;
+
+  const title = (item.title || '').trim();
+  const link  = item.link  || '#';
+  const pub   = item.pubDate || '';
+  let dateStr = '';
+  if (pub) { try { dateStr = new Date(pub).toLocaleDateString('pt-BR',{day:'2-digit',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'}); } catch(e){} }
+
+  // Limpa HTML do description e remove boilerplate G1
+  const tmp = document.createElement('div');
+  tmp.innerHTML = item.description || '';
+  let descTexto = (tmp.textContent || tmp.innerText || '').trim();
+  // Remove boilerplate G1 e artefatos comuns
+  descTexto = descTexto
+    .replace(/Tem alguma sugestão[^.]*\./gi, '')
+    .replace(/Envie para o [gG]1[^.]*\./gi, '')
+    .replace(/Para o [gG]1[^.]*\./gi, '')
+    .replace(/[\u{1F300}-\u{1FFFF}]/gu, '')
+    .replace(/📷[^\n]*/g, '')
+    .replace(/Divulgação\/[^\n]*/g, '')
+    .replace(/\s{2,}/g, ' ')
+    .trim();
+
+  // Quebra em parágrafos naturais (ponto final + maiúscula ou quebra de linha)
+  const paragrafos = descTexto
+    .split(/(?<=[.!?])\s+(?=[A-ZÁÉÍÓÚÂÊÔÃÕÇ])/g)
+    .map(p => p.trim())
+    .filter(p => p.length > 20);
+
+  const resumoHTML = paragrafos.length > 0
+    ? paragrafos.map(p => `<p style="margin:0;">${p}</p>`).join('')
+    : `<p style="margin:0;">${descTexto || 'Sem descrição disponível. Acesse a matéria completa.'}</p>`;
+
+  // Análise de impacto
+  const txt = (title + ' ' + descTexto).toLowerCase();
+  const impacto = _oiiGerarImpacto(txt);
+
+  // Preenche modal
+  document.getElementById('oii-modal-title').textContent = title;
+  const dateEl = document.querySelector('#oii-modal-date span');
+  if (dateEl) dateEl.textContent = dateStr;
+  document.getElementById('oii-modal-resumo').innerHTML = resumoHTML;
+  document.getElementById('oii-modal-impacto').innerHTML = impacto;
+  document.getElementById('oii-modal-link').href = link;
+
+  // Guarda texto puro para o TTS (sem tags)
+  document.getElementById('oii-modal-resumo').dataset.plain = paragrafos.join('. ');
+
+  modal.classList.remove('hidden');
+  document.body.style.overflow = 'hidden';
+  // Scroll para o topo do corpo
+  const corpo = modal.querySelector('[style*="overflow-y:auto"]');
+  if (corpo) corpo.scrollTop = 0;
+}
+
+function _oiiGerarImpacto(txt) {
+  const linhas = [];
+  if (/varejo|comércio|loja|cdl|fecomércio|comerciante|venda(s)? no|vendas no/.test(txt))
+    linhas.push('🛒 <b>Varejo direto:</b> Pode impactar volume de vendas e fluxo de clientes nas lojas.');
+  if (/dólar|câmbio|moeda|real x|usd|brl/.test(txt))
+    linhas.push('💵 <b>Câmbio:</b> Variação do dólar afeta o custo de importação de produtos e margens no varejo.');
+  if (/inflação|ipca|igpm|preço|caro|alta de preço|reajuste/.test(txt))
+    linhas.push('📈 <b>Inflação:</b> Pressão de preços reduz o poder de compra do consumidor e exige gestão de margem.');
+  if (/selic|juros|taxa de juro|banco central|bcb|copom/.test(txt))
+    linhas.push('🏦 <b>Juros:</b> A Selic influencia o crédito ao consumidor e o custo de financiamento do estoque.');
+  if (/emprego|desemprego|renda|salário|mercado de trabalho|geração de empreg/.test(txt))
+    linhas.push('👷 <b>Emprego/Renda:</b> Nível de emprego e renda afetam diretamente o consumo nas lojas.');
+  if (/trump|tarifa|guerra comercial|protecionismo|eua x|china x/.test(txt))
+    linhas.push('🌐 <b>Comércio global:</b> Tarifas e tensões geopolíticas podem encarecer insumos e produtos importados.');
+  if (/petróleo|combustível|gasolina|frete|logística|custo de transport/.test(txt))
+    linhas.push('⛽ <b>Logística:</b> Variação no combustível impacta custos de frete e entrega de mercadorias.');
+  if (/bahia|salvador|feira de santana|vitória da conquista|ilhéus|porto seguro/.test(txt))
+    linhas.push('📍 <b>Bahia:</b> Acontecimento local com potencial de afetar o comércio e a economia da região.');
+  if (/espírito santo|vitória|serra|cariacica|vila velha|cachoeiro/.test(txt))
+    linhas.push('📍 <b>Espírito Santo:</b> Evento regional que pode influenciar o varejo e consumo no estado.');
+  if (/pib|crescimento econômico|recessão|economia brasileira|crescimento do brasil/.test(txt))
+    linhas.push('📊 <b>Macro:</b> O desempenho da economia como um todo define o apetite de consumo da população.');
+  if (/crédito|financiamento|parcelamento|inadimplência|calote/.test(txt))
+    linhas.push('💳 <b>Crédito:</b> Condições de crédito afetam as vendas parceladas e o ticket médio no varejo.');
+  if (linhas.length === 0)
+    linhas.push('📌 <b>Contexto geral:</b> Acompanhe o desdobramento desta notícia e seus possíveis reflexos no cenário econômico local e nacional.');
+  return linhas.map(l => `<p style="margin-bottom:.5rem;">${l}</p>`).join('');
+}
+function oiiFecharModal() {
+  oiiPararAudio();
+  const m = document.getElementById('oii-modal');
+  if (m) m.classList.add('hidden');
+  document.body.style.overflow = '';
+}
+
+var _oiiAudio = null;
+var _oiiQueue = [];
+var _oiiPlaying = false;
+var _OII_EL_KEY   = 'sk_6b6a360504c6008e9bc599cafc990502e732404782154fc9';
+var _OII_EL_VOICE = 'KHmfNHtEjHhLK9eER20w';
+
+function _oiiBtnParar() {
+  const btn = document.getElementById('oii-btn-ouvir');
+  if (!btn) return;
+  btn.innerHTML = '<i class="fas fa-stop"></i> Parar';
+  btn.style.background  = 'rgba(239,68,68,.18)';
+  btn.style.borderColor = 'rgba(239,68,68,.4)';
+  btn.style.color = '#f87171';
+  btn.onclick = oiiPararAudio;
+}
+function _oiiBtnOuvir() {
+  const btn = document.getElementById('oii-btn-ouvir');
+  if (!btn) return;
+  btn.innerHTML = '<i class="fas fa-volume-high"></i> Ouvir resumo';
+  btn.style.background  = 'rgba(34,197,94,.14)';
+  btn.style.borderColor = 'rgba(34,197,94,.38)';
+  btn.style.color = '#4ade80';
+  btn.onclick = oiiOuvirResumo;
+}
+
+function oiiPararAudio() {
+  _oiiPlaying = false;
+  _oiiQueue = [];
+  if (_oiiAudio) { _oiiAudio.pause(); _oiiAudio.src = ''; _oiiAudio = null; }
+  if (window.speechSynthesis) window.speechSynthesis.cancel();
+  _oiiBtnOuvir();
+}
+
+// Pausa em ms após cada tipo de pontuação
+var _OII_PAUSA = { '.': 620, '!': 620, '?': 650, ';': 420, ':': 320, ',': 180 };
+var _OII_SPEED = 0.87; // playbackRate — mais lento sem distorcer timbre
+
+function _oiiTokenizar(texto) {
+  // Divide o texto em tokens {text, pausaMs} respeitando pontuação
+  // Cada token = uma frase/cláusula com a pausa que vem depois dela
+  const tokens = [];
+  // Separa em cláusulas: ponto, exclamação, interrogação, ponto-e-vírgula, dois-pontos, vírgula
+  const re = /([^.!?;:,]+[.!?;:,]?)/g;
+  let m;
+  while ((m = re.exec(texto)) !== null) {
+    let t = m[1].trim();
+    if (!t) continue;
+    const ultimo = t[t.length - 1];
+    const pausa  = _OII_PAUSA[ultimo] || 80;
+    // Remove pontuação do final para evitar entonação estranha no Polly
+    const fala = t.replace(/[;:,]$/, '').trim();
+    if (fala.length > 1) tokens.push({ text: fala, pausa });
+  }
+  return tokens;
+}
+
+function _oiiAgruparTokens(tokens, max) {
+  // Agrupa tokens em chunks de até max chars, preservando pausa do último token
+  const chunks = [];
+  let acum = '';
+  let pausaAcum = 80;
+  for (const tk of tokens) {
+    if (acum && (acum + ' ' + tk.text).length > max) {
+      chunks.push({ text: acum.trim(), pausa: pausaAcum });
+      acum = tk.text;
+      pausaAcum = tk.pausa;
+    } else {
+      acum = acum ? acum + ' ' + tk.text : tk.text;
+      pausaAcum = tk.pausa;
+    }
+  }
+  if (acum.trim()) chunks.push({ text: acum.trim(), pausa: 0 });
+  return chunks;
+}
+
+async function _oiiPlayNext() {
+  if (!_oiiPlaying || _oiiQueue.length === 0) { if (_oiiPlaying) oiiPararAudio(); return; }
+  const chunk = _oiiQueue.shift();
+  try {
+    const resp = await fetch('https://api.elevenlabs.io/v1/text-to-speech/' + _OII_EL_VOICE, {
+      method: 'POST',
+      headers: { 'xi-api-key': _OII_EL_KEY, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        text: chunk.text,
+        model_id: 'eleven_multilingual_v2',
+        voice_settings: { stability: 0.48, similarity_boost: 0.78, style: 0.12, use_speaker_boost: true }
+      })
+    });
+    if (!resp.ok) throw new Error('EL ' + resp.status);
+    const blob = await resp.blob();
+    const objUrl = URL.createObjectURL(blob);
+    _oiiAudio = new Audio(objUrl);
+    _oiiAudio.onended = () => {
+      URL.revokeObjectURL(objUrl);
+      if (!_oiiPlaying) return;
+      chunk.pausa > 0 ? setTimeout(_oiiPlayNext, chunk.pausa) : _oiiPlayNext();
+    };
+    _oiiAudio.onerror = () => { URL.revokeObjectURL(objUrl); if (_oiiPlaying) _oiiPlayNext(); };
+    await _oiiAudio.play();
+  } catch(e) {
+    console.warn('ElevenLabs TTS:', e);
+    _oiiFallbackSpeech(chunk.text, chunk.pausa);
+  }
+}
+
+function _oiiFallbackSpeech(texto, pausa) {
+  if (!window.speechSynthesis) { oiiPararAudio(); return; }
+  const utter = new SpeechSynthesisUtterance(texto);
+  utter.lang = 'pt-BR'; utter.rate = 0.82; utter.pitch = 1.05;
+  const vozes = speechSynthesis.getVoices().filter(v => v.lang.startsWith('pt'));
+  const fem = vozes.find(v => /luciana|francisca|edith|google port/i.test(v.name)) || vozes[0];
+  if (fem) utter.voice = fem;
+  utter.onend = () => { if (!_oiiPlaying) return; setTimeout(_oiiPlayNext, pausa || 80); };
+  speechSynthesis.speak(utter);
+}
+
+function _oiiLimparTexto(titulo, resumo) {
+  // Remove do resumo qualquer trecho que já apareça no título (anti-repetição)
+  let r = resumo;
+  // RSS frequentemente repete o título no início do description
+  const tNorm = titulo.toLowerCase().replace(/\s+/g,' ').trim();
+  const rNorm = r.toLowerCase().replace(/\s+/g,' ').trim();
+  if (rNorm.startsWith(tNorm)) {
+    r = r.slice(titulo.length).replace(/^[\s\.\-:,]+/, '');
+  }
+  // Remove frases que começam com "Tem alguma sugestão" / "Mande para" (boilerplate G1)
+  r = r.replace(/Tem alguma sugestão[^.]*\./gi, '');
+  r = r.replace(/Mande para o [^\n.]+[.\n]/gi, '');
+  r = r.replace(/Para o G1[^.]*\./gi, '');
+  // Remove emojis e caracteres estranhos
+  r = r.replace(/[\u{1F300}-\u{1FFFF}]/gu, '').replace(/\s{2,}/g,' ').trim();
+  // Monta texto final: título uma vez + resumo limpo
+  return titulo.replace(/[?!.]$/, '') + '. ' + r;
+}
+
+function oiiOuvirResumo() {
+  const titulo  = document.getElementById('oii-modal-title')?.textContent || '';
+  const resumoEl = document.getElementById('oii-modal-resumo');
+  const resumo  = resumoEl?.dataset?.plain || resumoEl?.textContent || '';
+  const texto   = _oiiLimparTexto(titulo.trim(), resumo.trim());
+  if (!texto || texto.length < 3) return;
+  oiiPararAudio();
+  _oiiPlaying = true;
+  const tokens = _oiiTokenizar(texto);
+  _oiiQueue    = _oiiAgruparTokens(tokens, 400);
+  _oiiBtnParar();
+  _oiiPlayNext();
+}
+function oiiToggle(bodyId, iconId) {
+  const body = document.getElementById(bodyId);
+  const icon = document.getElementById(iconId);
+  const hint = document.getElementById(bodyId.replace('oii-','oii-hint-'));
+  if (!body) return;
+  const open = body.style.display !== 'none';
+  body.style.display = open ? 'none' : '';
+  if (icon) icon.style.transform = open ? 'rotate(0deg)' : 'rotate(180deg)';
+  if (hint) hint.textContent = open ? '(clique para expandir)' : '(clique para recolher)';
+}
+// ─── fim Olha Isso ────────────────────────────
+
 function _diarioInit() {
   _diarioShowView('landing');
   _diarioRenderLanding();
@@ -25286,13 +26903,18 @@ let _FOLGAS_DATA = {
   '2026-08-17': [
     {nome:'ADF Maria', loja:'cariacica'},
     {nome:'Andreza de Jesus Souza', loja:'itabuna'},
+    {nome:'Tailane Cristina', loja:'serra'},
+    {nome:'Antoniely', loja:'saomateus'},
   ],
   '2026-08-19': [
     {nome:'Crislaine Loureiro Almeida', loja:'itabuna'},
     {nome:'Stella', loja:'laranjeiras'},
+    {nome:'Carlos Augusto', loja:'serra'},
+    {nome:'Tailaine', loja:'serra'},
   ],
   '2026-08-20': [
     {nome:'Mikaelle Santos das Virgens', loja:'itabuna'},
+    {nome:'Hiully Medeiros', loja:'serra'},
   ],
   '2026-08-24': [
     {nome:'Mikaelle Santos das Virgens', loja:'itabuna'},
@@ -25519,6 +27141,11 @@ const _OCORRENCIAS_DATA = {
     { nome:'Arthur (trainee)',  loja:'linhares',  data:'2026-08-10', motivo:'Mandado para casa — desrespeitou hierarquia (disciplinar)' },
     { nome:'Adriano Jeremias',  loja:'montserrat',data:'2026-08-12', motivo:'Liberado antecipado — passando mal "novamente"' },
     { nome:'Wenderson (trainee)',loja:'linhares', data:'2026-08-12', motivo:'Saiu mais cedo — hospital (passou mal)' },
+    { nome:'Tainá Koppe Pereira',loja:'montserrat',data:'2026-08-15', motivo:'Não compareceu — passando mal' },
+    { nome:'Tainá Koppe Pereira',loja:'montserrat',data:'2026-08-16', motivo:'Não compareceu — dores; enviou declaração de comparecimento UPA' },
+    { nome:'Sthefane',           loja:'saomateus', data:'2026-08-17', motivo:'Pesadelo de madrugada; acordou assustada, bateu a cabeça — sem atestado', alerta:true },
+    { nome:'Krystian (Subgerente)',loja:'linhares',data:'2026-08-17', motivo:'Acordou mal — foi ao médico; atestado pendente' },
+    { nome:'Brainer Rodrigues Soares de Matos',loja:'teixeira',data:'2026-08-17', motivo:'Desligado em 17/08/2026', alerta:true },
   ],
   declaracoes: [
     { nome:'Andreza',             loja:'itabuna',   data:'2026-08-13', tipo:'Saída antecipada',   motivo:'Solicitou liberação às 10h30 — hospital' },
@@ -25529,6 +27156,9 @@ const _OCORRENCIAS_DATA = {
     { nome:'Keifit',              loja:'itabuna',   data:'2026-08-10', tipo:'Atraso',              motivo:'Ônibus atrasou' },
     { nome:'Izabhela Sene (ADF)', loja:'barreiras', data:'2026-08-10', tipo:'Ausência parcial',    motivo:'Irmã acidentada — ficou cuidando pela manhã' },
     { nome:'Luana (trainee)',     loja:'itabuna',   data:'2026-08-08', tipo:'Chegada tardia',      motivo:'Problema com celular — chegou depois' },
+    { nome:'Victor Roberto',      loja:'barreiras', data:'2026-08-15', tipo:'Comparecimento UPA',  motivo:'UPA 24h Clarice Borges — ombro machucado jiu jitsu; CID M796; 11:11–14:59' },
+    { nome:'Tainá Koppe Pereira', loja:'montserrat',data:'2026-08-16', tipo:'Comparecimento UPA',  motivo:'UPA 24h Carapina (Serra-ES) — dores; 17:01–17:30' },
+    { nome:'Isabela Chagas (ADF)',loja:'barreiras', data:'2026-08-17', tipo:'Atraso autorizado',   motivo:'Reunião na creche do filho — autorizada a entrar mais tarde' },
   ],
 };
 

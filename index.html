@@ -18292,23 +18292,96 @@ function _gerarReuniaoHTML(tipo, val, diagData, prevMesData) {
         const dFat = _delta(fat, prevFatScope);
         const dAc  = _delta(acTotal, prevAcScope);
 
-        // Linha de resumo de cada loja para tabela
-        const lojasCompHtml = prevPorLoja.length > 1 ? `
-        <div style="overflow-x:auto;margin-top:.5rem;">
-        <table class="reun-table">
-            <thead><tr><th>Loja</th><th>${prevLabel} equiv.</th><th>${_d.periodo||'Mês atual'}</th><th>Δ%</th><th></th></tr></thead>
-            <tbody>${prevPorLoja.map(r => {
-                const d2 = _delta(r.curFat, r.prevEquiv);
-                if (!d2) return '';
-                return `<tr>
-                    <td style="font-weight:700;">${r.label}</td>
-                    <td style="color:#6b7280;">${_brlC(r.prevEquiv)}</td>
-                    <td style="font-weight:700;color:#374151;">${_brlC(r.curFat)}</td>
-                    <td style="font-weight:800;color:${d2.cor};">${d2.seta} ${Math.abs(d2.p)}%</td>
-                    <td style="font-size:.65rem;color:${d2.cor};">${d2.d>=0?'Crescimento':'Queda'}</td>
-                </tr>`;
-            }).join('')}</tbody>
-        </table></div>` : '';
+        // ── Comparativo por Subredes (apenas reunião da rede) ──
+        const subCores = { t1:'#f59e0b', t2:'#6366f1', t3:'#10b981' };
+        const subNomes = { t1:'Titãs 1 · Talysson', t2:'Titãs 2 · Adriel', t3:'Titãs 3 · Arthur' };
+        let subRedesCompHtml = '';
+        if (tipo === 'rede') {
+            const subTotais = {};
+            Object.entries(_d.subredes).forEach(([sk, sv]) => {
+                const subLojas = sv.lojas || [];
+                let curFatSub = 0, prevEquivSub = 0, curAcSub = 0;
+                subLojas.forEach(lk => {
+                    const pLojaH = prevMesData.lojas[lk] || {};
+                    const pTot   = pLojaH.total || 0;
+                    const pAcTot = pLojaH.acessorios?.total || 0;
+                    curFatSub   += _d.lojas[lk]?.total || 0;
+                    curAcSub    += _d.lojas[lk]?.acessorios?.total || 0;
+                    prevEquivSub+= prevDias > 0 ? Math.round(pTot / prevDias * dias) : pTot;
+                });
+                subTotais[sk] = { curFat: curFatSub, prevEquiv: prevEquivSub, curAc: curAcSub };
+            });
+
+            subRedesCompHtml = `
+            <div style="margin-bottom:.6rem;">
+                <div style="font-size:.58rem;font-weight:800;color:#374151;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.4rem;">⚡ SUBREDES — crescimento vs ${prevLabel}</div>
+                <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem;">
+                ${Object.entries(subTotais).map(([sk, sv]) => {
+                    const d2 = _delta(sv.curFat, sv.prevEquiv);
+                    const cor = subCores[sk] || '#6b7280';
+                    return `<div style="border-radius:.6rem;padding:.6rem .75rem;background:${d2&&d2.d>=0?'#f0fdf4':'#fef2f2'};border:1px solid ${d2&&d2.d>=0?'#bbf7d0':'#fca5a5'};">
+                        <div style="font-size:.58rem;font-weight:800;color:${cor};text-transform:uppercase;margin-bottom:.2rem;">${subNomes[sk]||sk}</div>
+                        <div style="font-size:.78rem;font-weight:800;color:#111;">${_brlC(sv.curFat)}</div>
+                        <div style="font-size:.62rem;color:#6b7280;margin:.1rem 0;">${prevLabel}: ${_brlC(sv.prevEquiv)}</div>
+                        <div style="font-size:.7rem;font-weight:800;color:${d2?d2.cor:'#6b7280'};">${d2?d2.seta+' '+Math.abs(d2.p)+'%':'—'}</div>
+                    </div>`;
+                }).join('')}
+                </div>
+            </div>`;
+        }
+
+        // Lojas agrupadas por subrede (reunião rede) ou lista simples
+        let lojasCompHtml = '';
+        if (prevPorLoja.length > 1) {
+            const periodoLabel = _d.periodo || 'Mês atual';
+            if (tipo === 'rede') {
+                // Agrupar por subrede
+                const subGrupos = {};
+                prevPorLoja.forEach(r => {
+                    const sk = _d.lojas[r.key]?.sub || 'x';
+                    if (!subGrupos[sk]) subGrupos[sk] = [];
+                    subGrupos[sk].push(r);
+                });
+                lojasCompHtml = Object.entries(subGrupos).map(([sk, lojas]) => {
+                    const cor = subCores[sk] || '#6b7280';
+                    const rows = lojas.map(r => {
+                        const d2 = _delta(r.curFat, r.prevEquiv);
+                        if (!d2) return '';
+                        return `<tr>
+                            <td style="font-weight:700;">${r.label}</td>
+                            <td style="color:#6b7280;">${_brlC(r.prevEquiv)}</td>
+                            <td style="font-weight:700;color:#374151;">${_brlC(r.curFat)}</td>
+                            <td style="font-weight:800;color:${d2.cor};">${d2.seta} ${Math.abs(d2.p)}%</td>
+                            <td style="font-size:.65rem;color:${d2.cor};">${d2.d>=0?'Crescimento':'Queda'}</td>
+                        </tr>`;
+                    }).join('');
+                    return `<div style="margin-bottom:.55rem;">
+                        <div style="font-size:.6rem;font-weight:800;color:${cor};text-transform:uppercase;letter-spacing:.07em;padding:.25rem .5rem;background:rgba(0,0,0,.03);border-left:3px solid ${cor};margin-bottom:.2rem;">${subNomes[sk]||sk}</div>
+                        <div style="overflow-x:auto;">
+                        <table class="reun-table">
+                            <thead><tr><th>Loja</th><th>${prevLabel} equiv.</th><th>${periodoLabel}</th><th>Δ%</th><th></th></tr></thead>
+                            <tbody>${rows}</tbody>
+                        </table></div>
+                    </div>`;
+                }).join('');
+            } else {
+                lojasCompHtml = `<div style="overflow-x:auto;margin-top:.5rem;">
+                <table class="reun-table">
+                    <thead><tr><th>Loja</th><th>${prevLabel} equiv.</th><th>${periodoLabel}</th><th>Δ%</th><th></th></tr></thead>
+                    <tbody>${prevPorLoja.map(r => {
+                        const d2 = _delta(r.curFat, r.prevEquiv);
+                        if (!d2) return '';
+                        return `<tr>
+                            <td style="font-weight:700;">${r.label}</td>
+                            <td style="color:#6b7280;">${_brlC(r.prevEquiv)}</td>
+                            <td style="font-weight:700;color:#374151;">${_brlC(r.curFat)}</td>
+                            <td style="font-weight:800;color:${d2.cor};">${d2.seta} ${Math.abs(d2.p)}%</td>
+                            <td style="font-size:.65rem;color:${d2.cor};">${d2.d>=0?'Crescimento':'Queda'}</td>
+                        </tr>`;
+                    }).join('')}</tbody>
+                </table></div>`;
+            }
+        }
 
         // Ranking vendedores vs loja do mês anterior
         const vendCompHtml = podeVerVend && todosVendedores.length ? `
@@ -18377,6 +18450,7 @@ function _gerarReuniaoHTML(tipo, val, diagData, prevMesData) {
                     <div style="font-size:.62rem;color:#6b7280;margin-top:.1rem;">Faturamento ${dFat.d>=0?'acima':'abaixo'} em ${_brlC(Math.abs(dFat.d))} no mesmo período de ${dias} dias</div>
                 </div>
             </div>` : ''}
+            ${subRedesCompHtml}
             ${lojasCompHtml}
             ${vendCompHtml}
         </div>

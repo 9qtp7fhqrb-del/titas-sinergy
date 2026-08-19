@@ -17931,16 +17931,38 @@ async function _fetchPrevMesReuniao() {
     const chave    = `${prevAno}_${String(prevMes).padStart(2,'0')}`;
     const _FSKEY   = 'AIzaSyDFrLshzqf8Ct9U1SkM9MSveDNPuy_2--8';
     const _FSPRJ   = 'titas-sinergy';
-    // Tenta Firestore SDK primeiro, REST como fallback
+
+    // Conversor REST Firestore → JS (self-contained, sem dependência de escopo externo)
+    function _toJs(fields) {
+        if (!fields) return null;
+        const o = {};
+        for (const [k, v] of Object.entries(fields)) {
+            if      ('stringValue'  in v) o[k] = v.stringValue;
+            else if ('integerValue' in v) o[k] = Number(v.integerValue);
+            else if ('doubleValue'  in v) o[k] = v.doubleValue;
+            else if ('booleanValue' in v) o[k] = v.booleanValue;
+            else if ('nullValue'    in v) o[k] = null;
+            else if ('mapValue'     in v) o[k] = _toJs(v.mapValue.fields || {});
+            else if ('arrayValue'   in v) o[k] = (v.arrayValue.values || []).map(i =>
+                i.mapValue ? _toJs(i.mapValue.fields || {}) :
+                i.stringValue !== undefined ? i.stringValue :
+                i.integerValue !== undefined ? Number(i.integerValue) :
+                i.doubleValue !== undefined ? i.doubleValue : null);
+        }
+        return o;
+    }
+
+    // 1. Firestore SDK (path mais rápida)
     if (window._acadFBOk && window._acadDB) {
         try {
             const doc = await window._acadDB.collection('ts_d360_historico').doc(chave).get();
             if (doc.exists) return { ...doc.data(), _chave: chave };
         } catch(e) {}
     }
+    // 2. REST fallback
     try {
         const r = await fetch(`https://firestore.googleapis.com/v1/projects/${_FSPRJ}/databases/(default)/documents/ts_d360_historico/${chave}?key=${_FSKEY}`);
-        if (r.ok) { const rw = await r.json(); if (rw.fields) return { ..._fsRestToJs(rw.fields), _chave: chave }; }
+        if (r.ok) { const rw = await r.json(); if (rw.fields) return { ..._toJs(rw.fields), _chave: chave }; }
     } catch(e) {}
     return null;
 }

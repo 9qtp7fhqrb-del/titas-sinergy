@@ -68,5 +68,13 @@ service cloud.firestore {
     match /ts_notificacoes/{docId} {
       allow read, write: if true;
     }
+
+    match /ts_rastreios/{docId} {
+      allow read, write: if true;
+    }
+
+    match /ts_rastros_roberto/{docId} {
+      allow read, write: if true;
+    }
   }
 }

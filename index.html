@@ -4576,6 +4576,12 @@ async function renderUsuarios() {
                             onmouseenter="this.style.color='#c4b5fd'" onmouseleave="this.style.color='#a78bfa'">
                         <i class="fas fa-shoe-prints text-[10px]"></i>
                     </button>` : ''}
+                    ${u.cargo === 'franqueado' && (u.nome||u.name||'').toLowerCase().includes('roberto') ? `<button onclick="_abrirRastrosRoberto()" title="Ver rastros de Roberto"
+                            class="w-7 h-7 rounded-lg flex items-center justify-center transition-all"
+                            style="background:rgba(8,145,178,.1);border:1px solid rgba(8,145,178,.3);color:#22d3ee;"
+                            onmouseenter="this.style.color='#67e8f9'" onmouseleave="this.style.color='#22d3ee'">
+                        <i class="fas fa-shoe-prints text-[10px]"></i>
+                    </button>` : ''}
                     <button onclick="abrirModalEditarUsuario('${u.key}')" title="Editar usuário"
                             class="w-7 h-7 rounded-lg flex items-center justify-center transition-all"
                             style="background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.2);color:#6b7280;"
@@ -6421,6 +6427,8 @@ function _registrarAcao(desc) {
     _usrUpdate(userKey(user.cargo, user.name), { ultimaAcao: now, ultimaAcaoDesc: desc }).catch(() => {});
     // Rastro detalhado de Aguiar
     _rastroAguiar(desc);
+    // Rastro detalhado de Roberto
+    _rastroRoberto(desc);
 }
 
 /* ════════════════════════════════════════════════════════
@@ -6521,6 +6529,105 @@ function _abrirRastrosAguiar() {
 }
 function _fecharRastrosAguiar() {
     const m = document.getElementById('modal-rastros-aguiar');
+    if (m) m.style.display = 'none';
+}
+
+/* ════════════════════════════════════════════════════════
+   RASTREAMENTO ROBERTO — histórico completo de ações
+   Coleção: ts_rastros_roberto  |  visível só para Melo/Neto
+════════════════════════════════════════════════════════ */
+function _isRoberto() {
+    return user && user.cargo === 'franqueado' && (user.name || '').toLowerCase().includes('roberto');
+}
+async function _rastroRoberto(acao, detalhe) {
+    if (!_isRoberto()) return;
+    _usrTryInitFirebase();
+    if (!window._acadFBOk || !window._acadDB) return;
+    try {
+        await window._acadDB.collection('ts_rastros_roberto').add({
+            acao: acao || '',
+            detalhe: detalhe || '',
+            ts: new Date().toISOString(),
+            tsMs: Date.now(),
+            pagina: (typeof window !== 'undefined' ? window.location.pathname : '')
+        });
+    } catch(e) { console.warn('_rastroRoberto:', e.message); }
+}
+async function _carregarRastrosRoberto() {
+    const wrap = document.getElementById('rastros-roberto-body');
+    if (!wrap) return;
+    wrap.innerHTML = '<p style="font-size:.75rem;color:#6b7280;font-style:italic;">Carregando…</p>';
+    try {
+        const _5diasAtras = Date.now() - (5 * 24 * 60 * 60 * 1000);
+        const _queryBody = {
+            structuredQuery: {
+                from: [{ collectionId: 'ts_rastros_roberto' }],
+                where: { fieldFilter: { field: { fieldPath: 'tsMs' }, op: 'GREATER_THAN_OR_EQUAL', value: { integerValue: String(_5diasAtras) } } },
+                orderBy: [{ field: { fieldPath: 'tsMs' }, direction: 'DESCENDING' }],
+                limit: 200
+            }
+        };
+        let resp = await fetch(`${_USR_BASE}:runQuery?key=${_USR_KEY}`, {
+            method: 'POST', headers: {'Content-Type':'application/json'},
+            body: JSON.stringify(_queryBody)
+        });
+        let data = await resp.json();
+        let docs = (Array.isArray(data) ? data : []).filter(r => r.document).map(r => {
+            const f = r.document.fields || {};
+            return { acao: _usrFSVal(f.acao)||'', detalhe: _usrFSVal(f.detalhe)||'', ts: _usrFSVal(f.ts)||'', tsMs: _usrFSVal(f.tsMs)||0 };
+        });
+        if (!docs.length) {
+            const _queryAll = { structuredQuery: { from:[{collectionId:'ts_rastros_roberto'}], orderBy:[{field:{fieldPath:'tsMs'},direction:'DESCENDING'}], limit:200 } };
+            resp = await fetch(`${_USR_BASE}:runQuery?key=${_USR_KEY}`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(_queryAll) });
+            data = await resp.json();
+            docs = (Array.isArray(data) ? data : []).filter(r => r.document).map(r => {
+                const f = r.document.fields || {};
+                return { acao: _usrFSVal(f.acao)||'', detalhe: _usrFSVal(f.detalhe)||'', ts: _usrFSVal(f.ts)||'', tsMs: _usrFSVal(f.tsMs)||0 };
+            });
+        }
+        if (!docs.length) {
+            wrap.innerHTML = '<p style="font-size:.75rem;color:#6b7280;padding:1rem;font-style:italic;">Nenhum rastro registrado ainda.</p>'; return;
+        }
+        const _icones = { 'Login':'fa-right-to-bracket','Acessou':'fa-arrow-right','Abriu':'fa-eye','Clicou':'fa-hand-pointer','Expandiu':'fa-chevron-down' };
+        const porDia = {};
+        docs.forEach(r => {
+            const dt = new Date(r.ts);
+            const diaKey = dt.toLocaleDateString('pt-BR', {weekday:'long',day:'2-digit',month:'2-digit',year:'2-digit'});
+            if (!porDia[diaKey]) porDia[diaKey] = [];
+            porDia[diaKey].push(r);
+        });
+        const rows = [];
+        Object.entries(porDia).forEach(([dia, registros]) => {
+            rows.push(`<div style="padding:.4rem .75rem .2rem;font-size:.6rem;font-weight:800;color:#0891b2;text-transform:uppercase;letter-spacing:.05em;background:rgba(8,145,178,.06);border-bottom:1px solid rgba(8,145,178,.12);">${dia}</div>`);
+            registros.forEach(r => {
+                const dt = new Date(r.ts);
+                const hora = dt.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+                const ico = Object.entries(_icones).find(([k]) => r.acao.includes(k))?.[1] || 'fa-circle-dot';
+                const detalheHtml = r.detalhe ? `<span style="color:#6b7280;font-size:.65rem;margin-left:.5rem;">· ${r.detalhe}</span>` : '';
+                rows.push(`<div style="display:flex;align-items:flex-start;gap:.75rem;padding:.5rem .75rem;border-bottom:1px solid rgba(255,255,255,.03);">
+                    <div style="width:22px;height:22px;border-radius:6px;background:rgba(8,145,178,.12);border:1px solid rgba(8,145,178,.25);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:.05rem;">
+                        <i class="fas ${ico}" style="font-size:.55rem;color:#22d3ee;"></i>
+                    </div>
+                    <div style="flex:1;min-width:0;">
+                        <div style="font-size:.75rem;font-weight:600;color:#e5e7eb;line-height:1.3;">${r.acao}${detalheHtml}</div>
+                        <div style="font-size:.62rem;color:#4b5563;margin-top:.1rem;">${hora}</div>
+                    </div>
+                </div>`);
+            });
+        });
+        wrap.innerHTML = rows.join('');
+    } catch(e) {
+        wrap.innerHTML = `<p style="font-size:.75rem;color:#f87171;padding:1rem;">Erro: ${e.message}</p>`;
+    }
+}
+function _abrirRastrosRoberto() {
+    const m = document.getElementById('modal-rastros-roberto');
+    if (!m) return;
+    m.style.display = 'flex';
+    _carregarRastrosRoberto();
+}
+function _fecharRastrosRoberto() {
+    const m = document.getElementById('modal-rastros-roberto');
     if (m) m.style.display = 'none';
 }
 
@@ -30804,6 +30911,35 @@ window._dirDirUpdateTimestamp = _dirDirUpdateTimestamp;
     </div>
     <!-- Body -->
     <div id="rastros-aguiar-body" style="overflow-y:auto;flex:1;padding:.5rem 0;">
+      <p style="font-size:.75rem;color:#6b7280;padding:1rem;font-style:italic;">Carregando…</p>
+    </div>
+  </div>
+</div>
+
+<div id="modal-rastros-roberto" onclick="if(event.target===this)_fecharRastrosRoberto()"
+     style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.85);align-items:center;justify-content:center;padding:.75rem;">
+  <div style="background:#0d1117;border:1px solid rgba(8,145,178,.35);border-radius:1.25rem;width:100%;max-width:500px;max-height:88vh;display:flex;flex-direction:column;box-shadow:0 24px 64px rgba(0,0,0,.8);">
+    <!-- Header -->
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:1rem 1.25rem .85rem;border-bottom:1px solid rgba(8,145,178,.15);flex-shrink:0;">
+      <div style="display:flex;align-items:center;gap:.65rem;">
+        <div style="width:34px;height:34px;border-radius:10px;background:rgba(8,145,178,.15);border:1px solid rgba(8,145,178,.3);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <i class="fas fa-shoe-prints" style="color:#22d3ee;font-size:.85rem;"></i>
+        </div>
+        <div>
+          <div style="font-size:.85rem;font-weight:800;color:#f9fafb;line-height:1.2;">Rastros — Roberto</div>
+          <div style="font-size:.6rem;color:#6b7280;">Histórico completo de navegação</div>
+        </div>
+        <span style="font-size:.6rem;padding:.2rem .55rem;border-radius:99px;font-weight:700;background:rgba(8,145,178,.15);color:#22d3ee;border:1px solid rgba(8,145,178,.3);margin-left:.25rem;">CONFIDENCIAL</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:.5rem;">
+        <button onclick="_carregarRastrosRoberto()" style="font-size:.7rem;color:#6b7280;background:transparent;border:none;cursor:pointer;padding:.3rem .5rem;border-radius:.4rem;" title="Atualizar">
+          <i class="fas fa-rotate-right"></i>
+        </button>
+        <button onclick="_fecharRastrosRoberto()" style="color:#6b7280;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:.5rem;padding:.3rem .65rem;cursor:pointer;font-size:1rem;line-height:1;">✕</button>
+      </div>
+    </div>
+    <!-- Body -->
+    <div id="rastros-roberto-body" style="overflow-y:auto;flex:1;padding:.5rem 0;">
       <p style="font-size:.75rem;color:#6b7280;padding:1rem;font-style:italic;">Carregando…</p>
     </div>
   </div>

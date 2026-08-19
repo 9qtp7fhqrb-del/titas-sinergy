@@ -17922,6 +17922,29 @@ async function _fetchDiagDataReuniao(tipo, val) {
     return Object.keys(results).length ? results : null;
 }
 
+/* Busca dados do mês anterior para comparativo nas reuniões */
+async function _fetchPrevMesReuniao() {
+    const hoje = new Date();
+    const anoAtual = hoje.getFullYear(), mesAtual = hoje.getMonth() + 1;
+    const prevMes  = mesAtual === 1 ? 12 : mesAtual - 1;
+    const prevAno  = mesAtual === 1 ? anoAtual - 1 : anoAtual;
+    const chave    = `${prevAno}_${String(prevMes).padStart(2,'0')}`;
+    const _FSKEY   = 'AIzaSyDFrLshzqf8Ct9U1SkM9MSveDNPuy_2--8';
+    const _FSPRJ   = 'titas-sinergy';
+    // Tenta Firestore SDK primeiro, REST como fallback
+    if (window._acadFBOk && window._acadDB) {
+        try {
+            const doc = await window._acadDB.collection('ts_d360_historico').doc(chave).get();
+            if (doc.exists) return { ...doc.data(), _chave: chave };
+        } catch(e) {}
+    }
+    try {
+        const r = await fetch(`https://firestore.googleapis.com/v1/projects/${_FSPRJ}/databases/(default)/documents/ts_d360_historico/${chave}?key=${_FSKEY}`);
+        if (r.ok) { const rw = await r.json(); if (rw.fields) return { ..._fsRestToJs(rw.fields), _chave: chave }; }
+    } catch(e) {}
+    return null;
+}
+
 /* Abre overlay in-page com a reunião (sem popup — compatível com bloqueadores) */
 async function _visualizarReuniaoPopup() {
     if (!_reuniaoAtual) return;
@@ -17939,11 +17962,14 @@ async function _visualizarReuniaoPopup() {
     document.body.appendChild(overlay);
     document.body.style.overflow = 'hidden';
 
-    // Buscar dados de diagnóstico em paralelo
-    let diagData = null;
-    try { diagData = await _fetchDiagDataReuniao(tipo, val); } catch(e) {}
+    // Buscar dados de diagnóstico e mês anterior em paralelo
+    let diagData = null, prevMesData = null;
+    [diagData, prevMesData] = await Promise.all([
+        _fetchDiagDataReuniao(tipo, val).catch(()=>null),
+        _fetchPrevMesReuniao().catch(()=>null)
+    ]);
 
-    const html = _gerarReuniaoHTML(tipo, val, diagData);
+    const html = _gerarReuniaoHTML(tipo, val, diagData, prevMesData);
 
     // Substituir loading pelo conteúdo real (reusa o overlay já criado)
     overlay.innerHTML = `
@@ -18159,7 +18185,7 @@ var _META_MAIO26 = {
 };
 
 /* ── Gerador principal de HTML da reunião ── */
-function _gerarReuniaoHTML(tipo, val, diagData) {
+function _gerarReuniaoHTML(tipo, val, diagData, prevMesData) {
     const _d    = _360D();
     const dias   = _d.diasDecorridos || 1;
     const diasM  = _d.diasMes || 31;
@@ -18212,6 +18238,128 @@ function _gerarReuniaoHTML(tipo, val, diagData) {
     });
     todosVendedores.sort((a,b)=>b.t-a.t);
     const top15 = todosVendedores.slice(0,15);
+
+    // ── Comparativo mês anterior ──
+    let blocoComparativo = '';
+    if (prevMesData && prevMesData.lojas) {
+        const prevDias  = prevMesData.diasDecorridos || 31;
+        const prevLabel = prevMesData.periodo || 'Mês anterior';
+        const _brlC = v => 'R$ ' + Math.round(v).toLocaleString('pt-BR');
+        const _delta = (cur, prev) => {
+            if (!prev) return null;
+            const d = cur - prev, p = Math.round(d / prev * 100);
+            const cor = d >= 0 ? '#059669' : '#dc2626';
+            const seta = d >= 0 ? '▲' : '▼';
+            return { d, p, cor, seta };
+        };
+
+        // Totais do período anterior (proporcional aos mesmos dias)
+        let prevFatScope = 0, prevAcScope = 0;
+        const prevPorLoja = [];
+        lojasList.forEach(l => {
+            const pLoja = prevMesData.lojas[l.key] || {};
+            const pTotal = pLoja.total || 0;
+            const pAc    = pLoja.acessorios?.total || 0;
+            const equiv  = prevDias > 0 ? Math.round(pTotal / prevDias * dias) : pTotal;
+            const equivAc= prevDias > 0 ? Math.round(pAc    / prevDias * dias) : pAc;
+            prevFatScope += equiv;
+            prevAcScope  += equivAc;
+            prevPorLoja.push({ key: l.key, label: l.label||l.key, curFat: l.total||0, prevEquiv: equiv, curAc: l.acessorios?.total||0, prevEquivAc: equivAc });
+        });
+
+        const dFat = _delta(fat, prevFatScope);
+        const dAc  = _delta(acTotal, prevAcScope);
+
+        // Linha de resumo de cada loja para tabela
+        const lojasCompHtml = prevPorLoja.length > 1 ? `
+        <div style="overflow-x:auto;margin-top:.5rem;">
+        <table class="reun-table">
+            <thead><tr><th>Loja</th><th>${prevLabel} equiv.</th><th>${_d.periodo||'Mês atual'}</th><th>Δ%</th><th></th></tr></thead>
+            <tbody>${prevPorLoja.map(r => {
+                const d2 = _delta(r.curFat, r.prevEquiv);
+                if (!d2) return '';
+                return `<tr>
+                    <td style="font-weight:700;">${r.label}</td>
+                    <td style="color:#6b7280;">${_brlC(r.prevEquiv)}</td>
+                    <td style="font-weight:700;color:#374151;">${_brlC(r.curFat)}</td>
+                    <td style="font-weight:800;color:${d2.cor};">${d2.seta} ${Math.abs(d2.p)}%</td>
+                    <td style="font-size:.65rem;color:${d2.cor};">${d2.d>=0?'Crescimento':'Queda'}</td>
+                </tr>`;
+            }).join('')}</tbody>
+        </table></div>` : '';
+
+        // Ranking vendedores vs loja do mês anterior
+        const vendCompHtml = podeVerVend && todosVendedores.length ? `
+        <div style="margin-top:.6rem;">
+            <div style="font-size:.58rem;font-weight:800;color:#6b7280;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.3rem;">👤 VENDEDORES — comparativo por loja (${prevLabel} equiv. × ${dias} dias)</div>
+            <div style="overflow-x:auto;">
+            <table class="reun-table">
+                <thead><tr><th>Vendedor</th><th>Loja</th><th>Atual</th><th>${prevLabel} equiv.</th><th>Δ%</th></tr></thead>
+                <tbody>${todosVendedores.slice(0,20).map(v => {
+                    const pL = prevMesData.lojas[v.lojaKey] || {};
+                    const pLojaTotal = pL.total || 0;
+                    const pLojaTop   = lojasList.find(l=>l.key===v.lojaKey)?.top||[];
+                    // Proporção do vendedor no mês atual em relação ao total da loja → aplica no total anterior
+                    const lojaAtual  = lojasList.find(l=>l.key===v.lojaKey);
+                    const lojaFatAtual = lojaAtual?.total || 1;
+                    const vShare = lojaFatAtual > 0 ? v.t / lojaFatAtual : 0;
+                    const prevEquivVend = prevDias > 0 ? Math.round((pLojaTotal / prevDias * dias) * vShare) : 0;
+                    const d3 = prevEquivVend > 0 ? _delta(v.t, prevEquivVend) : null;
+                    return `<tr>
+                        <td style="font-weight:700;">${v.n.split(' ').slice(0,2).join(' ')}</td>
+                        <td style="font-size:.65rem;color:#6b7280;">${v.loja}</td>
+                        <td style="font-weight:700;">${_brlC(v.t)}</td>
+                        <td style="color:#6b7280;">${prevEquivVend>0?_brlC(prevEquivVend):'—'}</td>
+                        <td style="font-weight:800;color:${d3?d3.cor:'#6b7280'};">${d3?d3.seta+' '+Math.abs(d3.p)+'%':'—'}</td>
+                    </tr>`;
+                }).join('')}
+            </tbody></table></div>
+        </div>` : '';
+
+        blocoComparativo = `
+    <div class="reun-section" style="border-left-color:#0891b2;">
+        <div class="reun-section-header" style="background:#ecfeff;">
+            <span class="reun-badge" style="background:#0891b2;color:#fff;">📅 COMPARATIVO</span>
+            <span class="reun-icon">📊</span>
+            <strong style="color:#0e7490;">MÊS ANTERIOR — ${prevLabel.toUpperCase()} (mesmo período: ${dias} dias)</strong>
+        </div>
+        <div class="reun-body">
+            <!-- KPIs comparativos -->
+            <div class="reun-kpi-grid" style="margin-bottom:.5rem;">
+                <div class="reun-kpi">
+                    <div class="reun-kpi-label">💰 Fat. Atual</div>
+                    <div class="reun-kpi-value" style="color:#0e7490;">${_brlC(fat)}</div>
+                    <div class="reun-kpi-sub" style="color:${dFat?dFat.cor:'#6b7280'};font-weight:700;">${dFat?dFat.seta+' '+Math.abs(dFat.p)+'% vs '+prevLabel:'—'}</div>
+                </div>
+                <div class="reun-kpi">
+                    <div class="reun-kpi-label">📅 ${prevLabel} equiv.</div>
+                    <div class="reun-kpi-value" style="color:#6b7280;">${_brlC(prevFatScope)}</div>
+                    <div class="reun-kpi-sub">base: ${dias} dias</div>
+                </div>
+                <div class="reun-kpi">
+                    <div class="reun-kpi-label">🏷️ Acess. Atual</div>
+                    <div class="reun-kpi-value" style="color:#059669;">${_brlC(acTotal)}</div>
+                    <div class="reun-kpi-sub" style="color:${dAc?dAc.cor:'#6b7280'};font-weight:700;">${dAc?dAc.seta+' '+Math.abs(dAc.p)+'% vs '+prevLabel:'—'}</div>
+                </div>
+                <div class="reun-kpi">
+                    <div class="reun-kpi-label">📅 Acess. ${prevLabel}</div>
+                    <div class="reun-kpi-value" style="color:#6b7280;">${_brlC(prevAcScope)}</div>
+                    <div class="reun-kpi-sub">equivalente ${dias} dias</div>
+                </div>
+            </div>
+            <!-- Banner verde/vermelho -->
+            ${dFat ? `<div style="padding:.55rem .8rem;border-radius:.55rem;background:${dFat.d>=0?'#f0fdf4':'#fef2f2'};border:1px solid ${dFat.d>=0?'#bbf7d0':'#fca5a5'};margin-bottom:.55rem;display:flex;align-items:center;gap:.6rem;">
+                <span style="font-size:1.3rem;">${dFat.d>=0?'📈':'📉'}</span>
+                <div>
+                    <div style="font-size:.72rem;font-weight:800;color:${dFat.cor};">${dFat.d>=0?'CRESCIMENTO':'QUEDA'} DE ${Math.abs(dFat.p)}% em relação a ${prevLabel}</div>
+                    <div style="font-size:.62rem;color:#6b7280;margin-top:.1rem;">Faturamento ${dFat.d>=0?'acima':'abaixo'} em ${_brlC(Math.abs(dFat.d))} no mesmo período de ${dias} dias</div>
+                </div>
+            </div>` : ''}
+            ${lojasCompHtml}
+            ${vendCompHtml}
+        </div>
+    </div>`;
+    }
 
     // ── Alertas: discrepância entre vendedores (por loja) ──
     const alertasDiscrepancia = [];
@@ -18786,6 +18934,9 @@ function _gerarReuniaoHTML(tipo, val, diagData) {
     ${rankingSubredes}
     ${rankingLojas}
     ${rankingVendedores}
+
+    <!-- ══ COMPARATIVO MÊS ANTERIOR ══ -->
+    ${blocoComparativo}
 
     <!-- ══ ALERTAS ══ -->
     ${(alertasDiscrepancia.length||alertasAcessorios.length)?`

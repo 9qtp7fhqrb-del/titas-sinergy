@@ -7,7 +7,7 @@
     <script>
     // Cache-buster: força reload se a versão mudou
     (function(){
-      var BUILD = '20260824172713';
+      var BUILD = '20260824175036';
       var stored = localStorage.getItem('d360_build');
       if (stored && stored !== BUILD) {
         localStorage.setItem('d360_build', BUILD);
@@ -10467,8 +10467,7 @@ function _renderHistAcessAbr26() {
 
         var metaDiariaAcess = '';
         if (l.meta > 0) {
-            var _dAcess = _360D();
-            var _diasRestAcess = (_dAcess.diasMes||0) - (_dAcess.diasDecorridos||0);
+            var _diasRestAcess = _diasUteisRestantes(l.k);
             var _faltaAcess = Math.max(0, l.meta - l.total);
             if (_diasRestAcess > 0 && _faltaAcess > 0) {
                 metaDiariaAcess = '<div style="font-size:9px;color:#f87171;font-weight:700;margin-top:1px;">⚡ meta diária ' + _brl(Math.round(_faltaAcess/_diasRestAcess)) + '</div>';
@@ -11619,8 +11618,7 @@ function rankRow(pos, sigla, label, sublabel, rawTotal, lojaMeta, first, metaOk,
                 :             'linear-gradient(90deg,#92400e,#f59e0b)';
     const projVal = (() => { const _d=_360D(); if(!_d.diasDecorridos) return 0; return Math.round(rawTotal/_d.diasDecorridos*_d.diasMes); })();
     const necDiaVal = (() => {
-        const _d = _360D();
-        const diasRestantes = (_d.diasMes||0) - (_d.diasDecorridos||0);
+        const diasRestantes = _diasUteisRestantes(lojaKey);
         if (diasRestantes <= 0 || !lojaMeta) return 0;
         return Math.max(0, Math.round((lojaMeta - rawTotal) / diasRestantes));
     })();
@@ -12665,6 +12663,38 @@ const _FERIADOS_BR = new Set([
 /* Lojas shopping (domingo a domingo) — demais são rua (seg a sab) */
 const _LOJAS_SHOPPING = new Set(['moxuara','praiadacosta','serra','montserrat']);
 
+/* Meta diária de uma sub-rede = soma da meta diária de cada loja individualmente —
+   necessário porque sub-redes misturam lojas de rua e de shopping (dias úteis diferentes) */
+function _metaDiariaSubrede(lojaKeys, lojasData, metaTotalSub) {
+    const n = (lojaKeys||[]).length || 1;
+    return (lojaKeys||[]).reduce((soma, lk) => {
+        const lj = lojasData[lk]; if (!lj) return soma;
+        const ljMeta = lj.meta || (metaTotalSub / n);
+        const falta  = Math.max(0, ljMeta - (lj.total||0));
+        const dRest  = _diasUteisRestantes(lk);
+        return soma + (dRest > 0 ? falta / dRest : 0);
+    }, 0);
+}
+
+/* Dias úteis restantes no mês para uma loja específica — domingo não conta para lojas de rua */
+function _diasUteisRestantes(lojaKey) {
+    const _d = _360D();
+    const diasMes = _d.diasMes || 0, diasDecorridos = _d.diasDecorridos || 0;
+    if (!diasMes || diasDecorridos >= diasMes) return 0;
+    const isShopping = _LOJAS_SHOPPING.has(lojaKey);
+    const hoje = new Date(); const ano = hoje.getFullYear(); const mes = hoje.getMonth();
+    let count = 0;
+    for (let d = diasDecorridos + 1; d <= diasMes; d++) {
+        const dt  = new Date(ano, mes, d);
+        const dow = dt.getDay();
+        const ds  = `${ano}-${String(mes+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+        if (_FERIADOS_BR.has(ds)) continue;
+        if (!isShopping && dow === 0) continue;
+        count++;
+    }
+    return count;
+}
+
 /* Retorna quantos dias úteis o vendedor está sem vender */
 function _diasSemVender(ult, lojaKey) {
     if (!ult) return 0;
@@ -12943,7 +12973,7 @@ function _buildVendDetail(nome, rawVal, meta, lojaKey, ds) {
     </div>`;
 }
 
-function metaBar(nome, gestor, lojas, realizado, meta, color) {
+function metaBar(nome, gestor, lojas, realizado, meta, color, metaDiariaPreCalc) {
     const p = pct(realizado, meta);
     const barColor = p >= 100 ? 'linear-gradient(90deg,#064e3b,#4ade80)'
                   : p >= 80  ? 'linear-gradient(90deg,#064e3b,#10b981)'
@@ -12952,14 +12982,11 @@ function metaBar(nome, gestor, lojas, realizado, meta, color) {
     const textColor = p >= 100 ? '#4ade80' : p >= 80 ? '#4ade80' : p >= 60 ? '#c084fc' : '#fbbf24';
     const badge = p >= 100 ? '<span style="font-size:.6rem;color:#4ade80;font-weight:700;margin-left:.5rem;">😊 Meta batida!</span>' : '';
     const proj = projecaoMes(realizado);
-    const necDia = (() => {
-        const _d = _360D();
-        const diasRestantes = (_d.diasMes||0) - (_d.diasDecorridos||0);
-        if (diasRestantes <= 0 || !meta) return '';
-        const falta = Math.max(0, meta - realizado);
-        if (falta <= 0) return '';
-        return `<span style="font-size:.6rem;color:#f87171;font-weight:700;" title="Meta diária necessária para bater a meta do mês">⚡ meta diária ${brl(Math.round(falta/diasRestantes))}</span>`;
-    })();
+    /* metaDiariaPreCalc: soma de (falta/dias úteis restantes) por loja da sub-rede —
+       calculado no call site porque domingo só conta como dia útil p/ lojas de shopping */
+    const necDia = (metaDiariaPreCalc > 0)
+        ? `<span style="font-size:.6rem;color:#f87171;font-weight:700;" title="Meta diária necessária para bater a meta do mês (considera domingo só para lojas de shopping)">⚡ meta diária ${brl(Math.round(metaDiariaPreCalc))}</span>`
+        : '';
     return `<div>
         <div class="flex justify-between items-center mb-1.5">
             <div>
@@ -14182,7 +14209,7 @@ function render360(tipo, val) {
         metas = `<h3 class="text-xs font-bold text-white tracking-widest uppercase mb-4">
                     <i class="fas fa-network-wired mr-2" style="color:#a855f7;"></i>Meta — ${s.nome}
                  </h3>
-                 <div class="space-y-4">${metaBar(s.nome, s.gestor, s.lojas.length+' lojas', subTotal, s.meta)}</div>`;
+                 <div class="space-y-4">${metaBar(s.nome, s.gestor, s.lojas.length+' lojas', subTotal, s.meta, null, _metaDiariaSubrede(s.lojas, lojas, s.meta))}</div>`;
         subtitulo = `${l.label} · ${s.nome} · Gestor ${s.gestor}`;
 
     } else if (tipo==='sub') {
@@ -14232,7 +14259,7 @@ function render360(tipo, val) {
         metas = `<h3 class="text-xs font-bold text-white tracking-widest uppercase mb-4">
                     <i class="fas fa-network-wired mr-2" style="color:#a855f7;"></i>Meta — ${s.nome}
                  </h3>
-                 <div class="space-y-4">${metaBar(s.nome, s.gestor, s.lojas.length+' lojas', subTotal, s.meta)}</div>`;
+                 <div class="space-y-4">${metaBar(s.nome, s.gestor, s.lojas.length+' lojas', subTotal, s.meta, null, _metaDiariaSubrede(s.lojas, lojas, s.meta))}</div>`;
         subtitulo = `${s.nome} · Gestor ${s.gestor} · ${s.lojas.length} lojas`;
 
     } else {
@@ -14346,7 +14373,7 @@ function render360(tipo, val) {
         const metasHtml = _subsArr.map(({s, subT, subPed, subAcessPct, subMeta}) => {
             const acessCor = subAcessPct>=5?'#4ade80':subAcessPct>=3?'#f59e0b':'#f87171';
             const pedInfo  = `<span style="font-size:.6rem;color:#94a3b8;margin-left:.5rem;">📦 ${subPed} ped. · <span style="color:${acessCor};">🎧 ${subAcessPct}% acess.</span></span>`;
-            return metaBar(s.nome, s.gestor, s.lojas.length+' lojas' + ` · ${pedInfo}`, subT, subMeta);
+            return metaBar(s.nome, s.gestor, s.lojas.length+' lojas' + ` · ${pedInfo}`, subT, subMeta, null, _metaDiariaSubrede(s.lojas, lojas, subMeta));
         }).join('');
         const _btnSubStyle = (ativo, cor) => `display:inline-flex;align-items:center;gap:.25rem;padding:.18rem .5rem;border-radius:999px;font-size:.58rem;font-weight:700;cursor:pointer;border:1px solid ${ativo ? cor : 'rgba(255,255,255,.12)'};background:${ativo ? cor+'22' : 'transparent'};color:${ativo ? cor : '#6b7280'};transition:all .15s;`;
         metas = `<h3 class="text-xs font-bold text-white tracking-widest uppercase mb-4" style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;">

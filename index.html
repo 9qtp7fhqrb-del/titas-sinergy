@@ -7,7 +7,7 @@
     <script>
     // Cache-buster: força reload se a versão mudou
     (function(){
-      var BUILD = '20260824163817';
+      var BUILD = '20260824170513';
       var stored = localStorage.getItem('d360_build');
       if (stored && stored !== BUILD) {
         localStorage.setItem('d360_build', BUILD);
@@ -11607,6 +11607,12 @@ function rankRow(pos, sigla, label, sublabel, rawTotal, lojaMeta, first, metaOk,
                 : p >= 60  ? 'linear-gradient(90deg,#7c3aed,#06b6d4)'
                 :             'linear-gradient(90deg,#92400e,#f59e0b)';
     const projVal = (() => { const _d=_360D(); if(!_d.diasDecorridos) return 0; return Math.round(rawTotal/_d.diasDecorridos*_d.diasMes); })();
+    const necDiaVal = (() => {
+        const _d = _360D();
+        const diasRestantes = (_d.diasMes||0) - (_d.diasDecorridos||0);
+        if (diasRestantes <= 0 || !lojaMeta) return 0;
+        return Math.max(0, Math.round((lojaMeta - rawTotal) / diasRestantes));
+    })();
 
     return `<div class="flex items-center gap-3 p-3 rounded-xl" style="${bgFirst}cursor:${lojaKey?'pointer':'default'};" ${clickAttr}>
         <div class="flex flex-col items-center flex-shrink-0" style="min-width:1.75rem;">
@@ -11626,6 +11632,7 @@ function rankRow(pos, sigla, label, sublabel, rawTotal, lojaMeta, first, metaOk,
                 <span class="text-[10px] font-semibold" style="color:${pos<=3?'#d1d5db':'#6b7280'};">${brl(rawTotal)}</span>
                 ${lojaMeta ? `<span class="text-[9px] text-gray-600">meta ${brl(lojaMeta)}</span>` : ''}
                 ${projVal ? `<span style="color:#6b7280;font-size:.6rem;">↗ proj. ${brl(projVal)}</span>` : ''}
+                ${necDiaVal > 0 ? `<span style="color:#f87171;font-size:.6rem;font-weight:700;">⚡ nec. ${brl(necDiaVal)}/dia</span>` : ''}
             </div>
         </div>
         ${first ? '<i class="fas fa-crown flex-shrink-0" style="color:#a855f7;font-size:.8rem;"></i>' : ''}

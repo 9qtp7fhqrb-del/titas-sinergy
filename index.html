@@ -7,7 +7,7 @@
     <script>
     // Cache-buster: força reload se a versão mudou
     (function(){
-      var BUILD = '20260824170956';
+      var BUILD = '20260824171247';
       var stored = localStorage.getItem('d360_build');
       if (stored && stored !== BUILD) {
         localStorage.setItem('d360_build', BUILD);
@@ -11632,7 +11632,7 @@ function rankRow(pos, sigla, label, sublabel, rawTotal, lojaMeta, first, metaOk,
                 <span class="text-[10px] font-semibold" style="color:${pos<=3?'#d1d5db':'#6b7280'};">${brl(rawTotal)}</span>
                 ${lojaMeta ? `<span class="text-[9px] text-gray-600">meta ${brl(lojaMeta)}</span>` : ''}
                 ${projVal ? `<span style="color:#6b7280;font-size:.6rem;">↗ proj. ${brl(projVal)}</span>` : ''}
-                ${necDiaVal > 0 ? `<span style="color:#f87171;font-size:.6rem;font-weight:700;">⚡ nec. ${brl(necDiaVal)}/dia</span>` : ''}
+                ${necDiaVal > 0 ? `<span style="color:#f87171;font-size:.6rem;font-weight:700;">⚡ meta diária ${brl(necDiaVal)}</span>` : ''}
             </div>
         </div>
         ${first ? '<i class="fas fa-crown flex-shrink-0" style="color:#a855f7;font-size:.8rem;"></i>' : ''}
@@ -12947,7 +12947,7 @@ function metaBar(nome, gestor, lojas, realizado, meta, color) {
         if (diasRestantes <= 0 || !meta) return '';
         const falta = Math.max(0, meta - realizado);
         if (falta <= 0) return '';
-        return `<span style="font-size:.6rem;color:#f87171;font-weight:700;" title="Necessário por dia para bater a meta">⚡ nec. ${brl(Math.round(falta/diasRestantes))}/dia</span>`;
+        return `<span style="font-size:.6rem;color:#f87171;font-weight:700;" title="Meta diária necessária para bater a meta do mês">⚡ meta diária ${brl(Math.round(falta/diasRestantes))}</span>`;
     })();
     return `<div>
         <div class="flex justify-between items-center mb-1.5">

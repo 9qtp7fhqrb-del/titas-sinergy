@@ -7,7 +7,7 @@
     <script>
     // Cache-buster: força reload se a versão mudou
     (function(){
-      var BUILD = '20260824163046';
+      var BUILD = '20260824163817';
       var stored = localStorage.getItem('d360_build');
       if (stored && stored !== BUILD) {
         localStorage.setItem('d360_build', BUILD);
@@ -17889,15 +17889,31 @@ function fecharFlowMeeting() {
     document.getElementById('modal-reuniao').classList.add('hidden');
 }
 
+/* Override pontual: substitui o PDF da reunião de Rede apenas no dia 24/08/2026 — some sozinho no dia seguinte */
+function _reuniaoOverrideAtivo(tipo) {
+    if (tipo !== 'rede') return false;
+    const hoje = new Date();
+    const ds = hoje.getFullYear() + '-' + String(hoje.getMonth()+1).padStart(2,'0') + '-' + String(hoje.getDate()).padStart(2,'0');
+    return ds === '2026-08-24';
+}
+
 /* Abre popup de visualização a partir do card */
 function _verReuniaoCard(tipo, val) {
     _reuniaoAtual = { tipo, val };
+    if (_reuniaoOverrideAtivo(tipo)) { window.open('/flow_meeting_rede_override.pdf', '_blank'); return; }
     _visualizarReuniaoPopup();
 }
 
 /* Baixa PDF a partir do card */
 function _downloadReuniaoCard(tipo, val) {
     _reuniaoAtual = { tipo, val };
+    if (_reuniaoOverrideAtivo(tipo)) {
+        const a = document.createElement('a');
+        a.href = '/flow_meeting_rede_override.pdf';
+        a.download = 'Flow_Meeting_Rede_Titas_24-08-2026.pdf';
+        document.body.appendChild(a); a.click(); a.remove();
+        return;
+    }
     _gerarReuniaoPDF(tipo, val);
 }
 
@@ -18315,16 +18331,17 @@ function _gerarReuniaoHTML(tipo, val, diagData, prevMesData) {
             const subTotais = {};
             Object.entries(_d.subredes).forEach(([sk, sv]) => {
                 const subLojas = sv.lojas || [];
-                let curFatSub = 0, prevEquivSub = 0, curAcSub = 0;
+                let curFatSub = 0, prevEquivSub = 0, curAcSub = 0, prevEquivAcSub = 0;
                 subLojas.forEach(lk => {
                     const pLojaH = prevMesData.lojas[lk] || {};
                     const pTot   = pLojaH.total || 0;
                     const pAcTot = pLojaH.acessorios?.total || 0;
-                    curFatSub   += _d.lojas[lk]?.total || 0;
-                    curAcSub    += _d.lojas[lk]?.acessorios?.total || 0;
-                    prevEquivSub+= prevDias > 0 ? Math.round(pTot / prevDias * dias) : pTot;
+                    curFatSub      += _d.lojas[lk]?.total || 0;
+                    curAcSub       += _d.lojas[lk]?.acessorios?.total || 0;
+                    prevEquivSub   += prevDias > 0 ? Math.round(pTot   / prevDias * dias) : pTot;
+                    prevEquivAcSub += prevDias > 0 ? Math.round(pAcTot / prevDias * dias) : pAcTot;
                 });
-                subTotais[sk] = { curFat: curFatSub, prevEquiv: prevEquivSub, curAc: curAcSub };
+                subTotais[sk] = { curFat: curFatSub, prevEquiv: prevEquivSub, curAc: curAcSub, prevEquivAc: prevEquivAcSub };
             });
 
             subRedesCompHtml = `
@@ -18398,33 +18415,26 @@ function _gerarReuniaoHTML(tipo, val, diagData, prevMesData) {
             }
         }
 
-        // Ranking vendedores vs loja do mês anterior
-        const vendCompHtml = podeVerVend && todosVendedores.length ? `
-        <div style="margin-top:.6rem;">
-            <div style="font-size:.58rem;font-weight:800;color:#6b7280;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.3rem;">👤 VENDEDORES — comparativo por loja (${prevLabel} equiv. × ${dias} dias)</div>
-            <div style="overflow-x:auto;">
-            <table class="reun-table">
-                <thead><tr><th>Vendedor</th><th>Loja</th><th>Atual</th><th>${prevLabel} equiv.</th><th>Δ%</th></tr></thead>
-                <tbody>${todosVendedores.slice(0,20).map(v => {
-                    const pL = prevMesData.lojas[v.lojaKey] || {};
-                    const pLojaTotal = pL.total || 0;
-                    const pLojaTop   = lojasList.find(l=>l.key===v.lojaKey)?.top||[];
-                    // Proporção do vendedor no mês atual em relação ao total da loja → aplica no total anterior
-                    const lojaAtual  = lojasList.find(l=>l.key===v.lojaKey);
-                    const lojaFatAtual = lojaAtual?.total || 1;
-                    const vShare = lojaFatAtual > 0 ? v.t / lojaFatAtual : 0;
-                    const prevEquivVend = prevDias > 0 ? Math.round((pLojaTotal / prevDias * dias) * vShare) : 0;
-                    const d3 = prevEquivVend > 0 ? _delta(v.t, prevEquivVend) : null;
-                    return `<tr>
-                        <td style="font-weight:700;">${v.n.split(' ').slice(0,2).join(' ')}</td>
-                        <td style="font-size:.65rem;color:#6b7280;">${v.loja}</td>
-                        <td style="font-weight:700;">${_brlC(v.t)}</td>
-                        <td style="color:#6b7280;">${prevEquivVend>0?_brlC(prevEquivVend):'—'}</td>
-                        <td style="font-weight:800;color:${d3?d3.cor:'#6b7280'};">${d3?d3.seta+' '+Math.abs(d3.p)+'%':'—'}</td>
-                    </tr>`;
+        // Acessórios por subrede (mesmo estilo dos cards de faturamento)
+        let acSubRedesCompHtml = '';
+        if (tipo === 'rede' && Object.keys(subTotais).length) {
+            acSubRedesCompHtml = `
+            <div style="margin-top:.5rem;margin-bottom:.3rem;">
+                <div style="font-size:.58rem;font-weight:800;color:#374151;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.4rem;">🏷️ ACESSÓRIOS POR SUBREDE — vs ${prevLabel}</div>
+                <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem;">
+                ${Object.entries(subTotais).map(([sk, sv]) => {
+                    const dA = _delta(sv.curAc, sv.prevEquivAc);
+                    const cor = subCores[sk] || '#6b7280';
+                    return `<div style="border-radius:.6rem;padding:.6rem .75rem;background:${dA&&dA.d>=0?'#f0fdf4':'#fef2f2'};border:1px solid ${dA&&dA.d>=0?'#bbf7d0':'#fca5a5'};">
+                        <div style="font-size:.58rem;font-weight:800;color:${cor};text-transform:uppercase;margin-bottom:.2rem;">${subNomes[sk]||sk}</div>
+                        <div style="font-size:.78rem;font-weight:800;color:#111;">${_brlC(sv.curAc)}</div>
+                        <div style="font-size:.62rem;color:#6b7280;margin:.1rem 0;">${prevLabel}: ${_brlC(sv.prevEquivAc||0)}</div>
+                        <div style="font-size:.7rem;font-weight:800;color:${dA?dA.cor:'#6b7280'};">${dA?dA.seta+' '+Math.abs(dA.p)+'%':'—'}</div>
+                    </div>`;
                 }).join('')}
-            </tbody></table></div>
-        </div>` : '';
+                </div>
+            </div>`;
+        }
 
         blocoComparativo = `
     <div class="reun-section" style="border-left-color:#0891b2;">
@@ -18466,8 +18476,8 @@ function _gerarReuniaoHTML(tipo, val, diagData, prevMesData) {
                 </div>
             </div>` : ''}
             ${subRedesCompHtml}
+            ${acSubRedesCompHtml}
             ${lojasCompHtml}
-            ${vendCompHtml}
         </div>
     </div>`;
     }
@@ -19901,12 +19911,35 @@ const _T20={id:20,modulo:'Fotografia',nome:"Lente Ultrawide: Como usar para vend
 ]};
 ACAD_TEMAS.push(_T20);
 
+const _T22={id:22,modulo:'Fotografia',nome:"Fotografia Computacional: O papel da IA no pós-processamento",questoes:[
+{q:"O que é 'fotografia computacional' em smartphones?",opts:["Fotos tiradas exclusivamente com tripé e computador externo","O uso de processamento algorítmico e IA para combinar múltiplos quadros e melhorar a imagem além do que o sensor captura sozinho","Um modo que só funciona em estúdios profissionais","Fotos armazenadas apenas em formato RAW"],ans:1},
+{q:"Como o modo noturno (Night Mode) de smartphones modernos consegue clarear fotos escuras sem tripé?",opts:["Aumenta o ISO ao máximo em uma única exposição longa","Captura e alinha múltiplos quadros de exposição curta, combinando-os via IA para reduzir ruído e tremor","Usa apenas o flash em potência máxima","Aplica um filtro de brilho depois que a foto já foi tirada"],ans:1},
+{q:"O que é 'HDR' (High Dynamic Range) processado por IA em fotos de smartphone?",opts:["Um filtro de cor aplicado manualmente no editor","A combinação de várias exposições (clara, média, escura) em uma única imagem equilibrada, feita automaticamente pelo software","Uma resolução de imagem específica","Um modo exclusivo para vídeos em 4K"],ans:1},
+{q:"No Modo Retrato, como a IA cria o efeito de desfoque de fundo (bokeh) sem uma lente física grande?",opts:["Usando apenas o zoom óptico","Através de segmentação semântica que separa o sujeito do fundo e aplica desfoque artificial progressivo","Reduzindo a resolução do fundo da imagem","Aplicando preto e branco automaticamente no fundo"],ans:1},
+{q:"O que é 'zoom por IA' (como o Space Zoom da Samsung) em altas ampliações?",opts:["Zoom óptico puro sem nenhum processamento","Combinação de zoom óptico com upscaling e reconstrução de detalhes via algoritmos de IA treinados em reconhecimento de padrões (ex: a Lua)","Um recurso que não existe na prática","Zoom que funciona apenas em ambientes com muita luz"],ans:1},
+{q:"Qual é a principal função da 'fusão de múltiplos quadros' (multi-frame stacking) usada por recursos como o Deep Fusion (Apple)?",opts:["Aumentar o tamanho do arquivo da foto","Analisar dezenas de quadros pixel a pixel para maximizar textura e reduzir ruído antes mesmo do usuário apertar o obturador","Criar um vídeo a partir de várias fotos","Reduzir a resolução para economizar espaço"],ans:1},
+{q:"Por que uma foto processada por IA pode parecer 'artificial' ou 'over-processada' em algumas situações?",opts:["Porque o sensor físico é de baixa qualidade","Porque algoritmos de nitidez e redução de ruído aplicados de forma agressiva podem eliminar textura natural da pele ou objetos","Porque a bateria do celular está fraca","Porque a tela do celular tem baixo brilho"],ans:1},
+{q:"O que é 'detecção de cena' (Scene Detection) por IA na câmera?",opts:["Um recurso que impede o uso da câmera em locais escuros","O sistema reconhece automaticamente o que está sendo fotografado (comida, céu, rosto, texto) e ajusta cor, exposição e foco para aquele contexto","Uma função exclusiva de tablets","Um recurso que só funciona com Wi-Fi conectado"],ans:1},
+{q:"Como argumentar a um cliente cético sobre 'a câmera é só IA, não é foto de verdade'?",opts:["Concordar que a foto é falsa e sem valor","Explicar que toda foto digital sempre passou por processamento (revelação, ajuste); a IA hoje faz em tempo real o que antes exigia edição manual, entregando resultado melhor automaticamente","Dizer que só câmeras profissionais tiram fotos reais","Evitar o assunto e mudar de produto"],ans:1},
+{q:"O que é 'super-resolução' via IA aplicada em zoom digital?",opts:["Aumentar apenas o brilho da imagem ampliada","Técnica que reconstrói detalhes plausíveis em áreas ampliadas digitalmente, usando modelos treinados em milhões de imagens, para reduzir a pixelização","Duplicar o tamanho do sensor fisicamente","Um recurso disponível apenas em desktops"],ans:1},
+{q:"Qual a diferença entre uma foto em RAW e uma foto processada computacionalmente (JPEG com IA)?",opts:["RAW e JPEG com IA são idênticos em resultado final","RAW entrega o dado bruto do sensor para edição manual posterior; a foto com IA já aplica HDR, nitidez e correções automaticamente, pronta para uso imediato","RAW é sempre pior em qualidade","JPEG com IA não pode ser editado depois"],ans:1},
+{q:"Para que serve a função de 'remoção de objetos' (Magic Eraser / Object Eraser) baseada em IA generativa?",opts:["Apagar contatos da agenda automaticamente","Identificar e remover elementos indesejados do fundo da foto, preenchendo o espaço com conteúdo gerado por IA de forma coerente com o entorno","Deletar fotos duplicadas da galeria","Reduzir o tamanho do arquivo de imagem"],ans:1},
+{q:"Por que fotos noturnas de smartphones atuais mostram estrelas e detalhes que o olho humano mal percebe no momento do clique?",opts:["Porque o flash ilumina o céu inteiro","Porque a IA combina múltiplas exposições longas e realça sinais fracos de luz que o sensor capta ao longo de vários segundos","Porque a tela do celular satura a imagem artificialmente","Porque isso é apenas um efeito de marketing sem base real"],ans:1},
+{q:"Qual argumento de venda é mais eficaz para um cliente que valoriza fotos de família e memórias afetivas?",opts:["Focar apenas na quantidade de megapixels do sensor","Destacar que a fotografia computacional (modo retrato, HDR automático, correção de rosto em baixa luz) garante fotos boas mesmo sem conhecimento técnico do usuário","Recomendar sempre o modelo mais caro sem explicar o motivo","Evitar falar de câmera e focar apenas no preço"],ans:1},
+{q:"O que é 'redução de ruído multi-quadro' e por que ela é preferível a simplesmente 'suavizar' a imagem?",opts:["É o mesmo que aplicar um filtro de desfoque geral na foto","Compara informação real de vários quadros para distinguir ruído de detalhe verdadeiro, preservando textura em vez de borrar a imagem inteira","Reduz a resolução da câmera automaticamente","Aumenta o tempo de exposição a ponto de causar tremor"],ans:1},
+{q:"Qual é o papel da IA no ajuste automático de tom de pele em modo retrato?",opts:["A IA ignora completamente o tom de pele do sujeito","Algoritmos treinados reconhecem características faciais e ajustam exposição e cor para retratos mais naturais e equilibrados, algo que exigia habilidade manual antes","Aplica sempre o mesmo filtro de cor a qualquer rosto","Só funciona corretamente com luz de estúdio profissional"],ans:1},
+{q:"Por que o processamento computacional é especialmente importante em sensores pequenos, como os de smartphones (comparados a câmeras profissionais)?",opts:["Sensores pequenos não precisam de processamento adicional","Sensores menores captam menos luz fisicamente, então a IA compensa essa limitação combinando dados de múltiplos quadros para simular qualidade de sensores maiores","Sensores pequenos são sempre superiores tecnicamente","O processamento computacional só é usado em vídeos, não em fotos"],ans:1},
+{q:"Um cliente pergunta se pode 'desligar' os efeitos de IA da câmera. O que responder tecnicamente correto?",opts:["Não, é impossível desligar qualquer processamento no celular","Sim — modos como 'Pro' ou captura em RAW geralmente permitem reduzir o processamento automático, entregando uma imagem mais próxima do sensor bruto para quem prefere editar manualmente","Sim, mas isso danifica permanentemente a câmera","Não, e insistir nisso quebra a garantia do aparelho"],ans:1},
+{q:"O que caracteriza o recurso 'Photonic Engine' (Apple) e equivalentes em outras marcas?",opts:["Um novo tipo de tela OLED","Aplicação do processo de fusão de múltiplos quadros e HDR mais cedo no pipeline de imagem, preservando mais detalhe e cor antes da compressão final da foto","Um sistema de carregamento de bateria mais rápido","Um recurso exclusivo para chamadas de vídeo"],ans:1},
+{q:"Qual é o principal benefício comercial de explicar fotografia computacional ao cliente, em vez de apenas citar 'megapixels'?",opts:["Confundir o cliente com termos técnicos para fechar a venda mais rápido","Ajudar o cliente a entender que a qualidade real da foto depende do processamento e não somente do número de megapixels, justificando o valor de aparelhos com melhor IA de imagem mesmo com sensor similar","Não há benefício, megapixels é o único fator relevante","Evitar comparações com aparelhos concorrentes"],ans:1}
+]};
+ACAD_TEMAS.push(_T22);
+
 // ─── STUBS para temas 16-100 (IDs 21-105) — questões serão adicionadas semanalmente ───
 
 (function() {
   const temasStub = [
     {id:21,nome:"Lente Macro: Vendendo para empreendedores e detalhes"},
-    {id:22,nome:"Fotografia Computacional: O papel da IA no pós-processamento"},
     {id:23,nome:"Modo Retrato: Sensor de Profundidade vs. Algoritmo"},
     {id:24,nome:"HDR Dinâmico: Equilibrando luz e sombra"},
     {id:25,nome:"Gravação em 4K e 8K: Quando oferecer cada uma?"},
@@ -28030,23 +28063,70 @@ let _FOLGAS_DATA = {
     {nome:'Tailaine', loja:'serra'},
     {nome:'Paloma de Jesus', loja:'teixeira'},
     {nome:'Carol Lisboa', loja:'saomateus'},
+    {nome:'Victor', loja:'barreiras'},
   ],
   '2026-08-20': [
     {nome:'Mikaelle Santos das Virgens', loja:'itabuna'},
     {nome:'Hiully Medeiros', loja:'serra'},
+    {nome:'Levy', loja:'saomateus'},
+    {nome:'Crislaine (ADF)', loja:'itabuna'},
+  ],
+  '2026-08-22': [
+    {nome:'Kysiane', loja:'saomateus'},
+  ],
+  '2026-08-23': [
+    {nome:'Vinicius', loja:'praiadacosta'},
   ],
   '2026-08-24': [
     {nome:'Mikaelle Santos das Virgens', loja:'itabuna'},
+    {nome:'Isabela Souza da Silva', loja:'itabuna'},
+    {nome:'Mateus da Silva Matos', loja:'barreiras'},
+    {nome:'Roberta', loja:'cariacica'},
+    {nome:'Vinicius', loja:'praiadacosta'},
+  ],
+  '2026-08-25': [
+    {nome:'Mikaelle Santos das Virgens', loja:'itabuna'},
+    {nome:'Mateus da Silva Matos', loja:'barreiras'},
+    {nome:'Vinicius', loja:'praiadacosta'},
   ],
   '2026-08-26': [
     {nome:'Keifit Moreira dos Santos', loja:'itabuna'},
     {nome:'Stella', loja:'laranjeiras'},
+    {nome:'Mateus da Silva Matos', loja:'barreiras'},
+    {nome:'Vinicius', loja:'praiadacosta'},
   ],
   '2026-08-27': [
     {nome:'Crislaine Loureiro Almeida', loja:'itabuna'},
+    {nome:'Keifit Moreira dos Santos', loja:'itabuna'},
+    {nome:'Mateus da Silva Matos', loja:'barreiras'},
+    {nome:'Vinicius', loja:'praiadacosta'},
+  ],
+  '2026-08-28': [
+    {nome:'Mateus da Silva Matos', loja:'barreiras'},
+    {nome:'Vinicius', loja:'praiadacosta'},
+  ],
+  '2026-08-29': [
+    {nome:'Vinicius', loja:'praiadacosta'},
+    {nome:'Tailane Cristina (ADF)', loja:'serra'},
+  ],
+  '2026-09-02': [
+    {nome:'Evellyn Batista Cruz do Espírito Santo', loja:'itabuna'},
+  ],
+  '2026-09-03': [
+    {nome:'Crislaine Loureiro Almeida', loja:'itabuna'},
+    {nome:'Andreza de Jesus Souza', loja:'itabuna'},
   ],
   '2026-09-05': [
     {nome:'Roberta', loja:'cariacica'},
+  ],
+  '2026-09-09': [
+    {nome:'Andreza de Jesus Souza', loja:'itabuna'},
+  ],
+  '2026-09-10': [
+    {nome:'Evellyn Batista Cruz do Espírito Santo', loja:'itabuna'},
+  ],
+  '2026-09-11': [
+    {nome:'Mikaelle Santos das Virgens', loja:'itabuna'},
   ],
 };
 
@@ -28244,6 +28324,26 @@ const _OCORRENCIAS_DATA = {
       local:'hospital (a confirmar)',
       medico:'—', cid:'—',
       obs:'Atestado prometido — aguardando confirmação do documento físico' },
+    { nome:'Krystian (Subgerente)', loja:'linhares',  data:'2026-08-17', dias:1,
+      local:'não informado',
+      medico:'não informado',
+      cid:'—',
+      obs:'Atestado enviado em 18/08, referente ao dia 17/08' },
+    { nome:'Luana',                 loja:'itabuna',   data:'2026-08-19', dias:1,
+      local:'não informado',
+      medico:'não informado',
+      cid:'—',
+      obs:'Dores no pescoço; atestado enviado em 21/08' },
+    { nome:'Fagner (trainee)',      loja:'linhares',  data:'2026-08-19', dias:1,
+      local:'não informado',
+      medico:'não informado',
+      cid:'—',
+      obs:'Foi ao dentista arrancar dente em 19/08; atestado enviado em 20/08, só retornou à loja em 20/08' },
+    { nome:'Isabela Chagas',        loja:'barreiras', data:'2026-08-22', dias:1,
+      local:'não informado',
+      medico:'não informado',
+      cid:'—',
+      obs:'Atestado enviado em 22/08 (foto), referente a passar mal em loja' },
   ],
   faltas: [
     { nome:'Beatriz', loja:'serra',     data:'2026-08-07', motivo:'Sem justificativa',                          alerta:true },
@@ -28263,8 +28363,32 @@ const _OCORRENCIAS_DATA = {
     { nome:'Tainá Koppe Pereira',loja:'montserrat',data:'2026-08-15', motivo:'Não compareceu — passando mal' },
     { nome:'Tainá Koppe Pereira',loja:'montserrat',data:'2026-08-16', motivo:'Não compareceu — dores; enviou declaração de comparecimento UPA' },
     { nome:'Sthefane',           loja:'saomateus', data:'2026-08-17', motivo:'Pesadelo de madrugada; acordou assustada, bateu a cabeça — sem atestado', alerta:true },
-    { nome:'Krystian (Subgerente)',loja:'linhares',data:'2026-08-17', motivo:'Acordou mal — foi ao médico; atestado pendente' },
-    { nome:'Brainer Rodrigues Soares de Matos',loja:'teixeira',data:'2026-08-17', motivo:'Desligado em 17/08/2026', alerta:true },
+    { nome:'Krystian (Subgerente)',loja:'linhares',data:'2026-08-17', motivo:'Acordou mal — foi ao médico; atestado enviado em 18/08' },
+    { nome:'Brainer Rodrigues Soares de Matos',loja:'teixeira',data:'2026-08-17', motivo:'Desligado em 17/08/2026 (data efetiva do desligamento ajustada para 22/08/2026)', alerta:true },
+    { nome:'Stefany Santiago', loja:'laranjeiras', data:'2026-08-17', motivo:'Não compareceu — sem justificativa', alerta:true },
+    { nome:'Nicoly',           loja:'laranjeiras', data:'2026-08-17', motivo:'Passando mal — não apresentou atestado', alerta:true },
+    { nome:'Gustavo Santana',  loja:'teixeira',    data:'2026-08-18', motivo:'Não sentindo-se bem — aguardando atestado ou declaração' },
+    { nome:'Lídia Diogo',      loja:'laranjeiras', data:'2026-08-18', motivo:'Perdeu o celular no Uber — foi à delegacia, não compareceu', alerta:true },
+    { nome:'Hericles',         loja:'itabuna',     data:'2026-08-18', motivo:'Fisioterapia marcada — chegaria após abertura/reunião, não compareceu até o momento' },
+    { nome:'Isabela Chagas',   loja:'barreiras',   data:'2026-08-19', motivo:'Levou filho ao médico — atestado do filho (2 dias); DP avalia usar como folga compensatória' },
+    { nome:'Juliana',          loja:'linhares',    data:'2026-08-19', motivo:'Acompanhou filha ao médico — aguardando atestado' },
+    { nome:'Wenderson (trainee)',loja:'linhares',  data:'2026-08-19', motivo:'Não estava bem — foi ao médico, aguardando atestado' },
+    { nome:'Luana',            loja:'itabuna',     data:'2026-08-19', motivo:'Fortes dores no pescoço — foi ao médico, atestado enviado em 21/08' },
+    { nome:'Fagner (trainee)', loja:'linhares',    data:'2026-08-19', motivo:'Foi ao dentista arrancar dente — atestado enviado' },
+    { nome:'Hericles',         loja:'itabuna',     data:'2026-08-20', motivo:'Fisioterapia — ainda sem atestado (recorrente)', alerta:true },
+    { nome:'Taine',            loja:'barreiras',   data:'2026-08-22', motivo:'Desligada', alerta:true },
+    { nome:'Gustavo Santana',  loja:'teixeira',    data:'2026-08-22', motivo:'Não compareceu — sem justificativa, declaração ou atestado', alerta:true },
+    { nome:'Isabela Chagas',   loja:'barreiras',   data:'2026-08-22', motivo:'Passando mal em loja — liberada para o médico, atestado enviado' },
+    { nome:'Cleonice Alvarenga (trainee)', loja:'serra', data:'2026-08-22', motivo:'Desligada — não continuará (trainee iniciado 19/08)', alerta:true },
+    { nome:'Ludimilla',        loja:'montserrat',  data:'2026-08-21', motivo:'Problemas familiares — não compareceu' },
+    { nome:'Tainá Koppe Pereira', loja:'montserrat', data:'2026-08-22', motivo:'Não compareceu' },
+    { nome:'Felipe',           loja:'praiadacosta',data:'2026-08-22', motivo:'Não compareceu' },
+    { nome:'Ludimilla',        loja:'montserrat',  data:'2026-08-23', motivo:'Não compareceu — desligada em seguida (trabalhou apenas 20/08 e 22/08)', alerta:true },
+    { nome:'Ramirys',          loja:'saomateus',   data:'2026-08-24', motivo:'Não compareceu novamente — sem justificativa; 3ª advertência solicitada no mesmo dia', alerta:true },
+    { nome:'Williane (ADF)',   loja:'linhares',    data:'2026-08-24', motivo:'Perdeu a hora — não compareceu' },
+    { nome:'Arthur (trainee)', loja:'linhares',    data:'2026-08-24', motivo:'Não compareceu — sem justificativa' },
+    { nome:'Rayca',            loja:'linhares',    data:'2026-08-24', motivo:'Não estava se sentindo bem — foi para casa, aguardando atestado' },
+    { nome:'Fagner (trainee)', loja:'linhares',    data:'2026-08-24', motivo:'Desligado — não continuará (trainee)', alerta:true },
   ],
   declaracoes: [
     { nome:'Andreza',             loja:'itabuna',   data:'2026-08-13', tipo:'Saída antecipada',   motivo:'Solicitou liberação às 10h30 — hospital' },
@@ -28278,6 +28402,9 @@ const _OCORRENCIAS_DATA = {
     { nome:'Victor Roberto',      loja:'barreiras', data:'2026-08-15', tipo:'Comparecimento UPA',  motivo:'UPA 24h Clarice Borges — ombro machucado jiu jitsu; CID M796; 11:11–14:59' },
     { nome:'Tainá Koppe Pereira', loja:'montserrat',data:'2026-08-16', tipo:'Comparecimento UPA',  motivo:'UPA 24h Carapina (Serra-ES) — dores; 17:01–17:30' },
     { nome:'Isabela Chagas (ADF)',loja:'barreiras', data:'2026-08-17', tipo:'Atraso autorizado',   motivo:'Reunião na creche do filho — autorizada a entrar mais tarde' },
+    { nome:'Eliza Queiroz',       loja:'saomateus', data:'2026-08-19', tipo:'Liberação',           motivo:'Muitas horas acumuladas — liberada às 12h para resolver assuntos pessoais' },
+    { nome:'Luana',               loja:'itabuna',   data:'2026-08-20', tipo:'Saída antecipada',    motivo:'Dores contínuas na cabeça — foi ao médico' },
+    { nome:'Victor',              loja:'barreiras', data:'2026-08-24', tipo:'Atraso',              motivo:'Prova da autoescola — aguardando atestado de comparecimento' },
   ],
 };
 
@@ -28462,7 +28589,7 @@ function _ocRenderTab(tab) {
         </div>`;
       }).join('')}
       <div style="margin-top:.8rem;color:#6b7280;font-size:.72rem">
-        <strong>Nota:</strong> Dados de 01/08 a 15/08/2026 — grupo Departamento Pessoal TITÃS.
+        <strong>Nota:</strong> Dados de 01/08 a 24/08/2026 — grupo Departamento Pessoal TITÃS.
       </div>`;
     return;
   }
@@ -32541,6 +32668,61 @@ window._dirDirUpdateTimestamp = _dirDirUpdateTimestamp;
     document.getElementById('modal-unificar-conta').classList.add('hidden');
   };
 
+})();
+</script>
+
+<script>
+// Esc fecha o modal/popup mais recente aberto
+(function() {
+    function _vis(id) {
+        const el = document.getElementById(id);
+        if (!el) return false;
+        if (el.classList.contains('hidden')) return false;
+        if (el.style.display === 'none') return false;
+        return true;
+    }
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key !== 'Escape') return;
+
+        // Prioridade: z-index mais alto primeiro
+        const esc = [
+            ['modal-trm-pdf',          () => window.trmFecharModal && trmFecharModal('modal-trm-pdf')],
+            ['modal-unificar-conta',    () => document.getElementById('modal-unificar-conta').classList.add('hidden')],
+            ['modal-metas',            () => fecharModalMetas()],
+            ['modal-trm-inscricao',    () => window.trmFecharModal && trmFecharModal('modal-trm-inscricao')],
+            ['modal-trm-cert',         () => window.trmFecharModal && trmFecharModal('modal-trm-cert')],
+            ['modal-trm-diretor',      () => window.trmFecharModal && trmFecharModal('modal-trm-diretor')],
+            ['modal-cadastrar-forn',   () => _fecharCadastrarFornecedor()],
+            ['modal-ver-estoque',      () => _fecharVerEstoque()],
+            ['modal-sugestao-pedido',  () => _fecharSugestaoPedido()],
+            ['modal-rastros-aguiar',   () => _fecharRastrosAguiar()],
+            ['modal-rastros-roberto',  () => _fecharRastrosRoberto()],
+            ['modal-pptx-viewer',      () => fecharVisualizadorPPTX()],
+            ['modal-agenda-semanal',   () => fecharAgendaSemanal()],
+            ['modal-foto-perfil',      () => fecharModalFotoPerfil()],
+            ['modal-plan-checkins',    () => fecharPlanModal('checkins')],
+            ['modal-plan-roteiros',    () => fecharPlanModal('roteiros')],
+            ['modal-plan-checklists',  () => fecharPlanModal('checklists')],
+            ['modal-editar-usuario',   () => fecharModalEditarUsuario()],
+            ['modal-criar-usuario',    () => fecharModalCriarUsuario()],
+            ['modal-acessorios',       () => document.getElementById('modal-acessorios').classList.add('hidden')],
+            ['modal-agendamentos',     () => fecharAgendamentos()],
+            ['modal-fat-diario',       () => fecharFatDiario()],
+            ['modal-detalhes-fat',     () => _fecharDetalhesFat()],
+            ['modal-modelos-fin',      () => fecharModelosFin()],
+            ['modal-salao-fin',        () => fecharSalaoFin()],
+            ['modal-reuniao',          () => fecharFlowMeeting()],
+            ['modal-360',              () => fechar360Modal()],
+            ['_popup-loja-360',        () => fecharPopupLoja()],
+            ['modal-rastreio-status',  () => document.getElementById('modal-rastreio-status').classList.add('hidden')],
+            ['modal-rastreio',         () => document.getElementById('modal-rastreio').classList.add('hidden')],
+        ];
+
+        for (const [id, fn] of esc) {
+            if (_vis(id)) { fn(); e.preventDefault(); return; }
+        }
+    });
 })();
 </script>
 

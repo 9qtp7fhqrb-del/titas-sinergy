@@ -7,7 +7,7 @@
     <script>
     // Cache-buster: força reload se a versão mudou
     (function(){
-      var BUILD = '20260824175036';
+      var BUILD = '20260824180112';
       var stored = localStorage.getItem('d360_build');
       if (stored && stored !== BUILD) {
         localStorage.setItem('d360_build', BUILD);
@@ -13704,6 +13704,12 @@ function render360(tipo, val) {
         if (tipo==='loja')  return [lojas[val]];
         return Object.values(lojas);
     }
+    function lojaKeysDeScope() {
+        if (tipo==='geral') return Object.keys(lojas);
+        if (tipo==='sub')   return subs[val].lojas;
+        if (tipo==='loja')  return [val];
+        return Object.keys(lojas);
+    }
 
     const scope = lojasDeScope();
 
@@ -13887,6 +13893,7 @@ function render360(tipo, val) {
     const _fatBarPct  = Math.min(100, pct(total, meta));
     const _fatNota    = `${pct(total,meta)}% da meta (${brl(meta)})` + (_d.diasDecorridos > 0 ? ` · méd. ${brl(Math.round(total/_d.diasDecorridos))}/dia` : '');
     const _fatProjVal = _d.diasDecorridos ? Math.round(total / _d.diasDecorridos * _d.diasMes) : 0;
+    const _fatMetaDiaria = _metaDiariaSubrede(lojaKeysDeScope(), lojas, meta);
     // Salva dados para o popup
     window._fatCardDetalhe = { total, meta, barPct: _fatBarPct, nota: _fatNota, antLine: _antLine, margLine: _margLine, projVal: _fatProjVal, periodo: _d.periodo, tipo, val, ticketGeral: _ticketGeral, ticketCel: _ticketCel, ticketAcess: _ticketAcess, pedidos, pedCel: _pedCel, pedAcess: _pedAcess };
     const _fatCard = (() => {
@@ -13907,6 +13914,7 @@ function render360(tipo, val) {
                     <div style="height:100%;width:${_fatBarPct}%;background:${perfBarStyle};border-radius:3px;transition:width .4s;"></div>
                 </div>
                 <p style="font-size:.6rem;color:#9ca3af;margin:0 0 .15rem;line-height:1.4;">↗ proj. <span style="font-weight:700;color:${_C1L};">${brl(_fatProjVal)}</span>${_mediaDia>0?' · méd. <span style="color:#9ca3af;">'+brl(_mediaDia)+'/dia</span>':''}</p>
+                ${_fatMetaDiaria > 0 ? `<p style="font-size:.6rem;color:#f87171;font-weight:700;margin:0 0 .15rem;line-height:1.4;" title="Considera domingo só como dia útil para lojas de shopping">⚡ meta diária ${brl(Math.round(_fatMetaDiaria))}</p>` : ''}
                 ${_antLine}
             </div>
             ${_margLine}

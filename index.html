@@ -7,7 +7,7 @@
     <script>
     // Cache-buster: força reload se a versão mudou
     (function(){
-      var BUILD = '20260824171247';
+      var BUILD = '20260824172713';
       var stored = localStorage.getItem('d360_build');
       if (stored && stored !== BUILD) {
         localStorage.setItem('d360_build', BUILD);
@@ -10465,6 +10465,16 @@ function _renderHistAcessAbr26() {
               '<div style="height:100%;width:' + pctAtual + '%;background:' + corProj + ';border-radius:3px;transition:width .4s;"></div></div>'
             : '';
 
+        var metaDiariaAcess = '';
+        if (l.meta > 0) {
+            var _dAcess = _360D();
+            var _diasRestAcess = (_dAcess.diasMes||0) - (_dAcess.diasDecorridos||0);
+            var _faltaAcess = Math.max(0, l.meta - l.total);
+            if (_diasRestAcess > 0 && _faltaAcess > 0) {
+                metaDiariaAcess = '<div style="font-size:9px;color:#f87171;font-weight:700;margin-top:1px;">⚡ meta diária ' + _brl(Math.round(_faltaAcess/_diasRestAcess)) + '</div>';
+            }
+        }
+
         var vendRows = l.vendedores.map(function(v, vi) {
             var vcorBase = l.corBase;
             var vcor     = v.cor || vcorBase;
@@ -10507,6 +10517,7 @@ function _renderHistAcessAbr26() {
                     '<div style="font-size:13px;font-weight:800;color:' + l.corBase + ';">' + _brl(l.total) + '</div>' +
                     '<div style="font-size:9px;color:' + corProj + ';font-weight:700;">↗ proj ' + _brl(l.proj) + '</div>' +
                     (l.meta > 0 ? '<div style="font-size:9px;color:#6b7280;margin-top:1px;">meta ' + _brl(l.meta) + '</div>' : '') +
+                    metaDiariaAcess +
                 '</div>' +
                 '<i class="fas fa-chevron-down" style="color:#6b7280;font-size:10px;margin-left:4px;transition:transform .22s;"></i>' +
             '</div>' +

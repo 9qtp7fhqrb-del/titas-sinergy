@@ -7,7 +7,7 @@
     <script>
     // Cache-buster: força reload se a versão mudou
     (function(){
-      var BUILD = '20260824170513';
+      var BUILD = '20260824170956';
       var stored = localStorage.getItem('d360_build');
       if (stored && stored !== BUILD) {
         localStorage.setItem('d360_build', BUILD);
@@ -12941,6 +12941,14 @@ function metaBar(nome, gestor, lojas, realizado, meta, color) {
     const textColor = p >= 100 ? '#4ade80' : p >= 80 ? '#4ade80' : p >= 60 ? '#c084fc' : '#fbbf24';
     const badge = p >= 100 ? '<span style="font-size:.6rem;color:#4ade80;font-weight:700;margin-left:.5rem;">😊 Meta batida!</span>' : '';
     const proj = projecaoMes(realizado);
+    const necDia = (() => {
+        const _d = _360D();
+        const diasRestantes = (_d.diasMes||0) - (_d.diasDecorridos||0);
+        if (diasRestantes <= 0 || !meta) return '';
+        const falta = Math.max(0, meta - realizado);
+        if (falta <= 0) return '';
+        return `<span style="font-size:.6rem;color:#f87171;font-weight:700;" title="Necessário por dia para bater a meta">⚡ nec. ${brl(Math.round(falta/diasRestantes))}/dia</span>`;
+    })();
     return `<div>
         <div class="flex justify-between items-center mb-1.5">
             <div>
@@ -12950,6 +12958,7 @@ function metaBar(nome, gestor, lojas, realizado, meta, color) {
             <div class="flex items-center gap-3 flex-wrap justify-end">
                 <span class="text-[10px] text-gray-400">${brl(realizado)} / ${brl(meta)}</span>
                 <span class="text-[10px] text-gray-500">${proj}</span>
+                ${necDia}
                 <span class="text-[10px] font-bold" style="color:${textColor};">${p}%</span>
             </div>
         </div>

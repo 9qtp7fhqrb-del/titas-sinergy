@@ -13642,341 +13642,132 @@
         "sigla": "SM",
         "sub": "t3",
         "meta": 500000,
-        "total": 357229,
-        "ped": 334,
+        "total": 365183,
+        "ped": 0,
         "cancel": 0,
         "agend": 0,
         "agendCount": 0,
-        "top": [
-          {
-            "i": "AC",
-            "n": "ALICE CHRISTINO MONTEIRO",
-            "p": 85,
-            "t": 93909
-          },
-          {
-            "i": "EQ",
-            "n": "ELIZA QUEIROZ DE SOUZA",
-            "p": 83,
-            "t": 91448
-          },
-          {
-            "i": "LD",
-            "n": "LEANDRO DA CRUZ SILVA",
-            "p": 53,
-            "t": 75248
-          }
-        ]
+        "top": []
       },
       "cariacica": {
         "label": "Cariacica",
         "sigla": "CC",
         "sub": "t1",
         "meta": 500000,
-        "total": 326391,
-        "ped": 257,
+        "total": 338399,
+        "ped": 0,
         "cancel": 0,
         "agend": 0,
         "agendCount": 0,
-        "top": [
-          {
-            "i": "RF",
-            "n": "ROBERTA FELIPE MALAQUIAS",
-            "p": 110,
-            "t": 153584
-          },
-          {
-            "i": "LS",
-            "n": "Liz Sophia Andrade Pereira",
-            "p": 83,
-            "t": 107696
-          },
-          {
-            "i": "NS",
-            "n": "nicolas santos borges",
-            "p": 31,
-            "t": 44919
-          }
-        ]
+        "top": []
       },
       "itabuna": {
         "label": "Itabuna",
         "sigla": "IT",
         "sub": "t1",
         "meta": 400000,
-        "total": 255727,
-        "ped": 329,
+        "total": 268279,
+        "ped": 0,
         "cancel": 0,
         "agend": 0,
         "agendCount": 0,
-        "top": [
-          {
-            "i": "MS",
-            "n": "MIKAELLE SANTOS VIRGENS",
-            "p": 104,
-            "t": 84930
-          },
-          {
-            "i": "AD",
-            "n": "ANDREZA DE JESUS SOUZA",
-            "p": 64,
-            "t": 54994
-          },
-          {
-            "i": "JL",
-            "n": "jhonatas lucas machado pereira",
-            "p": 64,
-            "t": 47038
-          }
-        ]
+        "top": []
       },
       "barreiras": {
         "label": "Barreiras",
         "sigla": "BR",
         "sub": "t2",
         "meta": 300000,
-        "total": 251157,
-        "ped": 204,
+        "total": 260557,
+        "ped": 0,
         "cancel": 0,
         "agend": 0,
         "agendCount": 0,
-        "top": [
-          {
-            "i": "VR",
-            "n": "VICTOR ROBERTO DE OLIVEIRA NASCIMENTO",
-            "p": 51,
-            "t": 69860
-          },
-          {
-            "i": "LR",
-            "n": "Larisse Ribeiro Dos Santos",
-            "p": 51,
-            "t": 55714
-          },
-          {
-            "i": "IC",
-            "n": "ISABELA CHAGAS",
-            "p": 38,
-            "t": 47868
-          }
-        ]
+        "top": []
       },
       "moxuara": {
         "label": "Moxuara",
         "sigla": "MX",
         "sub": "t1",
         "meta": 300000,
-        "total": 299182,
-        "ped": 309,
+        "total": 301912,
+        "ped": 0,
         "cancel": 0,
         "agend": 0,
         "agendCount": 0,
-        "top": [
-          {
-            "i": "KD",
-            "n": "KHAYLLANE DE ALMEIDA FERREIRA",
-            "p": 119,
-            "t": 129399
-          },
-          {
-            "i": "IV",
-            "n": "Iasmim vitoria medeiros gaio",
-            "p": 101,
-            "t": 110135
-          },
-          {
-            "i": "LD",
-            "n": "LUCCAS DA SILVA MEDEIROS MARTINS",
-            "p": 73,
-            "t": 57958
-          }
-        ]
+        "top": []
       },
       "teixeira": {
         "label": "Teixeira de Freitas",
         "sigla": "TF",
         "sub": "t2",
         "meta": 260000,
-        "total": 214544,
-        "ped": 229,
+        "total": 220899,
+        "ped": 0,
         "cancel": 0,
         "agend": 0,
         "agendCount": 0,
-        "top": [
-          {
-            "i": "CS",
-            "n": "CARLA SANTOS LUIZ",
-            "p": 83,
-            "t": 83165
-          },
-          {
-            "i": "AG",
-            "n": "AMANDA GOULART ANDRADE",
-            "p": 39,
-            "t": 40447
-          },
-          {
-            "i": "PD",
-            "n": "PALOMA DE JESUS SANTOS",
-            "p": 39,
-            "t": 38570
-          }
-        ]
+        "top": []
       },
       "laranjeiras": {
         "label": "Laranjeiras",
         "sigla": "LJ",
         "sub": "t2",
         "meta": 220000,
-        "total": 117362,
-        "ped": 128,
+        "total": 131172,
+        "ped": 0,
         "cancel": 0,
         "agend": 0,
         "agendCount": 0,
-        "top": [
-          {
-            "i": "LD",
-            "n": "LÍDIA DA PENHA DIOGO",
-            "p": 47,
-            "t": 50259
-          },
-          {
-            "i": "MK",
-            "n": "MAYARA KULL RODRIGUES",
-            "p": 40,
-            "t": 36150
-          },
-          {
-            "i": "NC",
-            "n": "Nycolly Calazans Paulo",
-            "p": 29,
-            "t": 28083
-          }
-        ]
+        "top": []
       },
       "serra": {
         "label": "Serra",
         "sigla": "SR",
         "sub": "t3",
         "meta": 220000,
-        "total": 140791,
-        "ped": 166,
+        "total": 146238,
+        "ped": 0,
         "cancel": 0,
         "agend": 0,
         "agendCount": 0,
-        "top": [
-          {
-            "i": "LH",
-            "n": "LUIZ HENRIQUE VIANA DA ROCHA",
-            "p": 55,
-            "t": 41785
-          },
-          {
-            "i": "KS",
-            "n": "KAREN SCAVELO SOUZA",
-            "p": 46,
-            "t": 40959
-          },
-          {
-            "i": "LL",
-            "n": "LUCAS LOYOLA ARAUJO",
-            "p": 38,
-            "t": 38221
-          }
-        ]
+        "top": []
       },
       "linhares": {
         "label": "Linhares",
         "sigla": "LH",
         "sub": "t3",
         "meta": 220000,
-        "total": 146643,
-        "ped": 180,
+        "total": 149468,
+        "ped": 0,
         "cancel": 0,
         "agend": 0,
         "agendCount": 0,
-        "top": [
-          {
-            "i": "NR",
-            "n": "NATALIA ROCHA LEONEL",
-            "p": 77,
-            "t": 71687
-          },
-          {
-            "i": "RM",
-            "n": "RAYCA MENDES MORAIS",
-            "p": 90,
-            "t": 66511
-          },
-          {
-            "i": "KL",
-            "n": "KRYSTIAN LINCOLN DALFIOR GONÇALVES",
-            "p": 12,
-            "t": 8275
-          }
-        ]
+        "top": []
       },
       "montserrat": {
         "label": "Montserrat",
         "sigla": "MT",
         "sub": "t3",
         "meta": 170000,
-        "total": 170173,
-        "ped": 232,
+        "total": 172482,
+        "ped": 0,
         "cancel": 0,
         "agend": 0,
         "agendCount": 0,
-        "top": [
-          {
-            "i": "JE",
-            "n": "JOAQUIN EMILIANO RODRIGO",
-            "p": 97,
-            "t": 65545
-          },
-          {
-            "i": "VD",
-            "n": "vinicius de almeida medeiros vargas",
-            "p": 78,
-            "t": 57357
-          },
-          {
-            "i": "AJ",
-            "n": "ADRIANO JEREMIAS CARDOSO MONTEIRO",
-            "p": 46,
-            "t": 39056
-          }
-        ]
+        "top": []
       },
       "praiadacosta": {
         "label": "Praia da Costa",
         "sigla": "PC",
-        "sub": "t1",
+        "sub": "t2",
         "meta": 140000,
-        "total": 79983,
-        "ped": 61,
+        "total": 85983,
+        "ped": 0,
         "cancel": 0,
         "agend": 0,
         "agendCount": 0,
-        "top": [
-          {
-            "i": "FM",
-            "n": "FILIPE MATTOS QUEIROZ",
-            "p": 16,
-            "t": 24351
-          },
-          {
-            "i": "RL",
-            "n": "Renato Lembranci Metzke Junior",
-            "p": 7,
-            "t": 8325
-          },
-          {
-            "i": "NS",
-            "n": "nicolas santos borges",
-            "p": 4,
-            "t": 7000
-          }
-        ]
+        "top": []
       }
     },
     "subredes": {
@@ -13985,20 +13776,20 @@
         "lojas": [
           "cariacica",
           "itabuna",
-          "moxuara",
-          "praiadacosta"
+          "moxuara"
         ],
-        "meta": 1340000,
+        "meta": 1200000,
         "nome": "Titãs 1"
       },
       "t2": {
         "gestor": "Adriel",
         "lojas": [
+          "praiadacosta",
           "barreiras",
           "teixeira",
           "laranjeiras"
         ],
-        "meta": 780000,
+        "meta": 920000,
         "nome": "Titãs 2"
       },
       "t3": {
@@ -14015,10 +13806,10 @@
     }
   },
   "2026_07": {
-    "diasDecorridos": 24,
+    "diasDecorridos": 31,
     "diasMes": 31,
     "meta_rede": 3230000,
-    "periodo": "Jul 2026 (PARCIAL — dados só até 24/07, automação de sync parou nesse dia)",
+    "periodo": "Jul 2026",
     "savedAt": 0,
     "lojas": {
       "saomateus": {
@@ -14026,341 +13817,132 @@
         "sigla": "SM",
         "sub": "t3",
         "meta": 500000,
-        "total": 212945,
-        "ped": 218,
+        "total": 304708,
+        "ped": 0,
         "cancel": 0,
         "agend": 0,
         "agendCount": 0,
-        "top": [
-          {
-            "i": "CS",
-            "n": "CARLA SANTOS LUIZ",
-            "p": 58,
-            "t": 58059
-          },
-          {
-            "i": "EQ",
-            "n": "ELIZA QUEIROZ DE SOUZA",
-            "p": 43,
-            "t": 45519
-          },
-          {
-            "i": "SS",
-            "n": "STEFANY SPEROTTO BARCELOS",
-            "p": 52,
-            "t": 39630
-          }
-        ]
+        "top": []
       },
       "cariacica": {
         "label": "Cariacica",
         "sigla": "CC",
         "sub": "t1",
         "meta": 500000,
-        "total": 275570,
-        "ped": 231,
+        "total": 352264,
+        "ped": 0,
         "cancel": 0,
         "agend": 0,
         "agendCount": 0,
-        "top": [
-          {
-            "i": "RF",
-            "n": "ROBERTA FELIPE MALAQUIAS",
-            "p": 92,
-            "t": 127335
-          },
-          {
-            "i": "LS",
-            "n": "Liz Sophia Andrade Pereira",
-            "p": 85,
-            "t": 116191
-          },
-          {
-            "i": "AC",
-            "n": "ANA CAROLINA DA SILVA",
-            "p": 25,
-            "t": 16449
-          }
-        ]
+        "top": []
       },
       "itabuna": {
         "label": "Itabuna",
         "sigla": "IT",
         "sub": "t1",
         "meta": 400000,
-        "total": 182138,
-        "ped": 203,
+        "total": 235233,
+        "ped": 0,
         "cancel": 0,
         "agend": 0,
         "agendCount": 0,
-        "top": [
-          {
-            "i": "MS",
-            "n": "MIKAELLE SANTOS VIRGENS",
-            "p": 81,
-            "t": 71223
-          },
-          {
-            "i": "AD",
-            "n": "ANDREZA DE JESUS SOUZA",
-            "p": 54,
-            "t": 47070
-          },
-          {
-            "i": "KM",
-            "n": "KEIFIT MOREIRA DOS SANTOS",
-            "p": 38,
-            "t": 34820
-          }
-        ]
+        "top": []
       },
       "barreiras": {
         "label": "Barreiras",
         "sigla": "BR",
         "sub": "t2",
         "meta": 300000,
-        "total": 162987,
-        "ped": 136,
+        "total": 218735,
+        "ped": 0,
         "cancel": 0,
         "agend": 0,
         "agendCount": 0,
-        "top": [
-          {
-            "i": "LR",
-            "n": "Larisse Ribeiro Dos Santos",
-            "p": 32,
-            "t": 41959
-          },
-          {
-            "i": "VR",
-            "n": "VICTOR ROBERTO DE OLIVEIRA NASCIMENTO",
-            "p": 31,
-            "t": 34145
-          },
-          {
-            "i": "IC",
-            "n": "ISABELA CHAGAS",
-            "p": 29,
-            "t": 29622
-          }
-        ]
+        "top": []
       },
       "moxuara": {
         "label": "Moxuara",
         "sigla": "MX",
         "sub": "t1",
         "meta": 300000,
-        "total": 195243,
-        "ped": 214,
+        "total": 244910,
+        "ped": 0,
         "cancel": 0,
         "agend": 0,
         "agendCount": 0,
-        "top": [
-          {
-            "i": "KD",
-            "n": "KHAYLLANE DE ALMEIDA FERREIRA",
-            "p": 77,
-            "t": 72268
-          },
-          {
-            "i": "IV",
-            "n": "Iasmim vitoria medeiros gaio",
-            "p": 59,
-            "t": 56614
-          },
-          {
-            "i": "LD",
-            "n": "LUCCAS DA SILVA MEDEIROS MARTINS",
-            "p": 55,
-            "t": 49107
-          }
-        ]
+        "top": []
       },
       "teixeira": {
         "label": "Teixeira de Freitas",
         "sigla": "TF",
         "sub": "t2",
         "meta": 260000,
-        "total": 132164,
-        "ped": 138,
+        "total": 173065,
+        "ped": 0,
         "cancel": 0,
         "agend": 0,
         "agendCount": 0,
-        "top": [
-          {
-            "i": "CF",
-            "n": "CARINE FERREIRA FRANCO",
-            "p": 49,
-            "t": 49958
-          },
-          {
-            "i": "PD",
-            "n": "PALOMA DE JESUS SANTOS",
-            "p": 27,
-            "t": 33034
-          },
-          {
-            "i": "AG",
-            "n": "AMANDA GOULART ANDRADE",
-            "p": 32,
-            "t": 29138
-          }
-        ]
+        "top": []
       },
       "laranjeiras": {
         "label": "Laranjeiras",
         "sigla": "LJ",
         "sub": "t2",
         "meta": 220000,
-        "total": 126560,
-        "ped": 115,
+        "total": 160110,
+        "ped": 0,
         "cancel": 0,
         "agend": 0,
         "agendCount": 0,
-        "top": [
-          {
-            "i": "LD",
-            "n": "LÍDIA DA PENHA DIOGO",
-            "p": 53,
-            "t": 57434
-          },
-          {
-            "i": "MK",
-            "n": "MAYARA KULL RODRIGUES",
-            "p": 42,
-            "t": 50442
-          },
-          {
-            "i": "NC",
-            "n": "Nycolly Calazans Paulo",
-            "p": 18,
-            "t": 18614
-          }
-        ]
+        "top": []
       },
       "serra": {
         "label": "Serra",
         "sigla": "SR",
         "sub": "t3",
         "meta": 220000,
-        "total": 137982,
-        "ped": 183,
+        "total": 188615,
+        "ped": 0,
         "cancel": 0,
         "agend": 0,
         "agendCount": 0,
-        "top": [
-          {
-            "i": "JE",
-            "n": "JOAQUIN EMILIANO RODRIGO",
-            "p": 84,
-            "t": 76367
-          },
-          {
-            "i": "LH",
-            "n": "LUIZ HENRIQUE VIANA DA ROCHA",
-            "p": 95,
-            "t": 56616
-          },
-          {
-            "i": "LG",
-            "n": "LUIZ GUSTAVO",
-            "p": 4,
-            "t": 4999
-          }
-        ]
+        "top": []
       },
       "linhares": {
         "label": "Linhares",
         "sigla": "LH",
         "sub": "t3",
         "meta": 220000,
-        "total": 140693,
-        "ped": 170,
+        "total": 192372,
+        "ped": 0,
         "cancel": 0,
         "agend": 0,
         "agendCount": 0,
-        "top": [
-          {
-            "i": "RM",
-            "n": "RAYCA MENDES MORAIS",
-            "p": 75,
-            "t": 68652
-          },
-          {
-            "i": "JP",
-            "n": "Juliana Pereira do Nascimento",
-            "p": 49,
-            "t": 45115
-          },
-          {
-            "i": "NR",
-            "n": "NATALIA ROCHA LEONEL",
-            "p": 30,
-            "t": 20118
-          }
-        ]
+        "top": []
       },
       "montserrat": {
         "label": "Montserrat",
         "sigla": "MT",
         "sub": "t3",
         "meta": 170000,
-        "total": 147471,
-        "ped": 181,
+        "total": 192529,
+        "ped": 0,
         "cancel": 0,
         "agend": 0,
         "agendCount": 0,
-        "top": [
-          {
-            "i": "AJ",
-            "n": "ADRIANO JEREMIAS CARDOSO MONTEIRO",
-            "p": 101,
-            "t": 97867
-          },
-          {
-            "i": "VD",
-            "n": "vinicius de almeida medeiros vargas",
-            "p": 28,
-            "t": 23752
-          },
-          {
-            "i": "LL",
-            "n": "LUCAS LOYOLA ARAUJO",
-            "p": 36,
-            "t": 14250
-          }
-        ]
+        "top": []
       },
       "praiadacosta": {
         "label": "Praia da Costa",
         "sigla": "PC",
-        "sub": "t1",
+        "sub": "t2",
         "meta": 140000,
-        "total": 57896,
-        "ped": 50,
+        "total": 71046,
+        "ped": 0,
         "cancel": 0,
         "agend": 0,
         "agendCount": 0,
-        "top": [
-          {
-            "i": "RL",
-            "n": "Renato Lembranci Metzke Junior",
-            "p": 14,
-            "t": 15869
-          },
-          {
-            "i": "FM",
-            "n": "FILIPE MATTOS QUEIROZ",
-            "p": 8,
-            "t": 13119
-          },
-          {
-            "i": "VD",
-            "n": "vinicius de almeida medeiros vargas",
-            "p": 13,
-            "t": 11109
-          }
-        ]
+        "top": []
       }
     },
     "subredes": {
@@ -14369,20 +13951,20 @@
         "lojas": [
           "cariacica",
           "itabuna",
-          "moxuara",
-          "praiadacosta"
+          "moxuara"
         ],
-        "meta": 1340000,
+        "meta": 1200000,
         "nome": "Titãs 1"
       },
       "t2": {
         "gestor": "Adriel",
         "lojas": [
+          "praiadacosta",
           "barreiras",
           "teixeira",
           "laranjeiras"
         ],
-        "meta": 780000,
+        "meta": 920000,
         "nome": "Titãs 2"
       },
       "t3": {

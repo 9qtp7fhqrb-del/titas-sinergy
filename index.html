@@ -7,7 +7,7 @@
     <script>
     // Cache-buster: força reload se a versão mudou
     (function(){
-      var BUILD = '20260825161159';
+      var BUILD = '20260825174953';
       var stored = localStorage.getItem('d360_build');
       if (stored && stored !== BUILD) {
         localStorage.setItem('d360_build', BUILD);
@@ -11857,27 +11857,62 @@ function _lojaDailyDeltas(lojaKey) {
     return out;
 }
 
+/* "Nice" tick step — pra eixo com números redondos (ex.: 5k, 10k, 15k...) */
+function _niceStep(rough) {
+    if (rough <= 0) return 1;
+    const exp = Math.floor(Math.log10(rough));
+    const frac = rough / Math.pow(10, exp);
+    const nice = frac < 1.5 ? 1 : frac < 3 ? 2 : frac < 7 ? 5 : 10;
+    return nice * Math.pow(10, exp);
+}
+
 function _lojaHistDiarioSVG(lojaKey) {
     const pts = _lojaDailyDeltas(lojaKey);
     if (!pts.length) {
         return `<p style="text-align:center;color:#6b7280;font-size:.62rem;padding:1.2rem 0;margin:0;">Sem dados diários disponíveis ainda.</p>`;
     }
+    const _d   = _360D();
+    const loja = (_d.lojas || {})[lojaKey] || {};
     const brl2 = v => v.toLocaleString('pt-BR',{style:'currency',currency:'BRL',maximumFractionDigits:0});
-    const W = 100, H = 78, PAD_T = 14, PAD_B = 14, PAD_L = 5, PAD_R = 5;
+    const brlAxis = v => v >= 1000 ? 'R$' + (v/1000).toLocaleString('pt-BR',{maximumFractionDigits:1}) + 'k' : 'R$' + Math.round(v);
+
     const diasHoje = pts.length;
     const reais    = pts.filter(p => !p.estimado);
-    const maxV     = Math.max(...pts.map(p => p.delta), 1);
-    const x = d => diasHoje > 1 ? PAD_L + ((d - 1) / (diasHoje - 1)) * (W - PAD_L - PAD_R) : W / 2;
-    const y = v => PAD_T + (H - PAD_T - PAD_B) * (1 - (v / maxV));
+    const hojePt   = pts[pts.length - 1];
+    const maxPt    = reais.length ? reais.reduce((a, b) => b.delta > a.delta ? b : a, reais[0]) : hojePt;
+    const mediaV   = reais.length ? reais.reduce((s, p) => s + p.delta, 0) / reais.length : 0;
+    const temEstimado = pts.some(p => p.estimado);
+    // meta diária de referência (linha "desejada") — meta mensal distribuída pelos dias do mês
+    const metaDiaria = loja.meta > 0 ? loja.meta / (_d.diasMes || 30) : 0;
 
-    const hojePt = pts[pts.length - 1];
-    const maxPt  = reais.length ? reais.reduce((a, b) => b.delta > a.delta ? b : a, reais[0]) : hojePt;
-    const mediaV = reais.length ? reais.reduce((s, p) => s + p.delta, 0) / reais.length : 0;
-    const statsRow = `<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.4rem;margin-bottom:.4rem;font-size:.54rem;color:#9ca3af;text-align:center;">
+    const statsRow = `<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.4rem;margin-bottom:.5rem;font-size:.54rem;color:#9ca3af;text-align:center;">
         <span>Hoje<br><b style="font-size:.62rem;color:#fbbf24;">${brl2(hojePt.delta)}</b></span>
         <span>Média/dia<br><b style="font-size:.62rem;color:#c4b5fd;">${brl2(mediaV)}</b></span>
         <span>Melhor dia<br><b style="font-size:.62rem;color:#4ade80;">${brl2(maxPt.delta)}</b> <span style="color:#6b7280;">(dia ${String(maxPt.d).padStart(2,'0')})</span></span>
     </div>`;
+
+    /* ── Painel estilo "desejada vs sintetizada", com a paleta do Sinergy (fundo escuro, roxo/dourado) ── */
+    const W = 320, H = 220;
+    const M_L = 36, M_R = 14, M_T = 28, M_B = 26;
+    const plotW = W - M_L - M_R, plotH = H - M_T - M_B;
+
+    const maxRaw = Math.max(...pts.map(p => p.delta), metaDiaria, 1);
+    const yStep  = _niceStep(maxRaw / 4);
+    const yMax   = Math.max(yStep, Math.ceil(maxRaw / yStep) * yStep);
+    const yTicks = []; for (let v = 0; v <= yMax + 1e-9; v += yStep) yTicks.push(Math.round(v));
+
+    const xStep  = diasHoje <= 10 ? 1 : diasHoje <= 20 ? 2 : 5;
+    const xTicks = [...new Set([1, ...Array.from({length: Math.floor((diasHoje-1)/xStep)}, (_, i) => 1 + (i+1)*xStep), diasHoje])];
+
+    const x = d => diasHoje > 1 ? M_L + ((d - 1) / (diasHoje - 1)) * plotW : M_L + plotW / 2;
+    const y = v => M_T + plotH * (1 - v / yMax);
+
+    const gridH = yTicks.map(v => `<line x1="${M_L}" y1="${y(v).toFixed(2)}" x2="${W-M_R}" y2="${y(v).toFixed(2)}" stroke="rgba(255,255,255,.08)" stroke-width="1"/>`).join('');
+    const gridV = xTicks.map(d => `<line x1="${x(d).toFixed(2)}" y1="${M_T}" x2="${x(d).toFixed(2)}" y2="${H-M_B}" stroke="rgba(255,255,255,.06)" stroke-width="1"/>`).join('');
+    const yLabels = yTicks.map(v => `<text x="${M_L-4}" y="${(y(v)+3).toFixed(2)}" font-size="8" fill="#9ca3af" text-anchor="end">${brlAxis(v)}</text>`).join('');
+    const xLabels = xTicks.map(d => `<text x="${x(d).toFixed(2)}" y="${H-M_B+13}" font-size="8" fill="#9ca3af" text-anchor="middle">${d}</text>`).join('');
+    const axisLines = `<line x1="${M_L}" y1="${M_T}" x2="${M_L}" y2="${H-M_B}" stroke="rgba(196,181,253,.5)" stroke-width="1.2"/>
+        <line x1="${M_L}" y1="${H-M_B}" x2="${W-M_R}" y2="${H-M_B}" stroke="rgba(196,181,253,.5)" stroke-width="1.2"/>`;
 
     // Desenha em trechos contínuos por tipo (real vs estimado) — a linha nunca
     // pula um dia (cobre 01 até hoje), mas muda de estilo onde o dado é estimado.
@@ -11891,79 +11926,84 @@ function _lojaHistDiarioSVG(lojaKey) {
         atual.push(p);
     });
     if (atual.length) segs.push({ estimado: atualTipo, pts: atual });
-    // conecta visualmente um segmento ao próximo (senão fica um buraco de 1px na virada real/estimado)
     for (let i = 0; i < segs.length - 1; i++) segs[i].pts.push(segs[i + 1].pts[0]);
 
-    const smoothPath = arr => {
+    const linePath = arr => {
         let d = `M${x(arr[0].d).toFixed(2)},${y(arr[0].delta).toFixed(2)}`;
-        for (let i = 0; i < arr.length - 1; i++) {
-            const p0 = arr[i], p1 = arr[i + 1];
-            const cx = (x(p0.d) + x(p1.d)) / 2;
-            d += ` C${cx.toFixed(2)},${y(p0.delta).toFixed(2)} ${cx.toFixed(2)},${y(p1.delta).toFixed(2)} ${x(p1.d).toFixed(2)},${y(p1.delta).toFixed(2)}`;
-        }
+        for (let i = 1; i < arr.length; i++) d += ` L${x(arr[i].d).toFixed(2)},${y(arr[i].delta).toFixed(2)}`;
         return d;
     };
 
-    const linePaths = segs.map(seg => seg.pts.length > 1
-        ? `<path d="${smoothPath(seg.pts)}" fill="none" stroke="${seg.estimado ? '#6b7280' : 'url(#_lojaDiaGrad)'}" stroke-width="${seg.estimado ? 1.1 : 1.6}" stroke-dasharray="${seg.estimado ? '2.2,1.6' : 'none'}" vector-effect="non-scaling-stroke"/>`
-        : `<circle cx="${x(seg.pts[0].d)}" cy="${y(seg.pts[0].delta)}" r="1.4" fill="${seg.estimado ? '#6b7280' : '#a855f7'}"/>`
-    ).join('');
-
-    const areaPaths = segs.filter(s => !s.estimado && s.pts.length > 1).map(seg => {
-        const first = seg.pts[0], last = seg.pts[seg.pts.length - 1];
-        return `<path d="${smoothPath(seg.pts)} L${x(last.d).toFixed(2)},${(H - PAD_B).toFixed(2)} L${x(first.d).toFixed(2)},${(H - PAD_B).toFixed(2)} Z" fill="url(#_lojaDiaFill)" opacity=".35"/>`;
+    const linePaths = segs.map(seg => {
+        if (seg.pts.length < 2) return '';
+        return seg.estimado
+            ? `<path d="${linePath(seg.pts)}" fill="none" stroke="#6b7280" stroke-width="1.2" stroke-dasharray="2.4,1.6" vector-effect="non-scaling-stroke"/>`
+            : `<path d="${linePath(seg.pts)}" fill="none" stroke="url(#_lojaDiaGrad)" stroke-width="1.7" vector-effect="non-scaling-stroke"/>`;
     }).join('');
 
-    const hojeMarker = `<circle cx="${x(hojePt.d)}" cy="${y(hojePt.delta)}" r="2.2" fill="#D4AF37" stroke="#111827" stroke-width=".6"/>`;
-    const maxMarker  = !maxPt.estimado && maxPt.d !== hojePt.d
-        ? `<circle cx="${x(maxPt.d)}" cy="${y(maxPt.delta)}" r="1.8" fill="#4ade80" stroke="#111827" stroke-width=".5"/>`
+    // marcador circular dourado em CADA dia real — estilo "senoide sintetizada", cor Sinergy
+    const marcadoresReais = reais.map(p => {
+        const destaque = p.d === hojePt.d || p.d === maxPt.d;
+        const r = destaque ? 3 : 2.1;
+        const fill = p.d === hojePt.d ? '#D4AF37' : p.d === maxPt.d ? '#4ade80' : '#1a1333';
+        const stroke = p.d === hojePt.d ? '#D4AF37' : p.d === maxPt.d ? '#4ade80' : '#fbbf24';
+        return `<circle cx="${x(p.d).toFixed(2)}" cy="${y(p.delta).toFixed(2)}" r="${r}" fill="${fill}" stroke="${stroke}" stroke-width="1.1"/>`;
+    }).join('');
+
+    // linha de referência "meta diária" — estilo "senoide desejada"
+    const metaLine = metaDiaria > 0
+        ? `<line x1="${M_L}" y1="${y(metaDiaria).toFixed(2)}" x2="${W-M_R}" y2="${y(metaDiaria).toFixed(2)}" stroke="#818cf8" stroke-width="1.3" stroke-dasharray="4,2.4" vector-effect="non-scaling-stroke"/>`
         : '';
 
-    // Rótulos de valor (R$) diretamente no gráfico — hoje e melhor dia
-    const valLabel = (p, cor) => {
-        const ly = Math.max(5, y(p.delta) - 4.5);
-        return `<text x="${x(p.d).toFixed(2)}" y="${ly.toFixed(2)}" font-size="3.6" font-weight="700" fill="${cor}" text-anchor="middle">${brl2(p.delta)}</text>`;
-    };
-    const valueLabels = [
-        valLabel(hojePt, hojePt.estimado ? '#9ca3af' : '#fbbf24'),
-        (!maxPt.estimado && maxPt.d !== hojePt.d) ? valLabel(maxPt, '#4ade80') : ''
-    ].join('');
-
-    // pontos com tooltip ao passar o mouse (hover) — e clique, pra funcionar em touch também
     const pontosClicaveis = pts.map(p =>
-        `<circle cx="${x(p.d)}" cy="${y(p.delta)}" r="3.4" fill="transparent" style="cursor:pointer;" onmouseenter="_lojaDiaDetalhe(${p.d},${p.delta},${!!p.estimado})" onclick="_lojaDiaDetalhe(${p.d},${p.delta},${!!p.estimado})"><title>Dia ${String(p.d).padStart(2,'0')}${p.estimado?' (estimado)':''}: ${brl2(p.delta)}</title></circle>`
+        `<circle cx="${x(p.d).toFixed(2)}" cy="${y(p.delta).toFixed(2)}" r="6" fill="transparent" style="cursor:pointer;" onmouseenter="_lojaDiaDetalhe(${p.d},${p.delta},${!!p.estimado})" onclick="_lojaDiaDetalhe(${p.d},${p.delta},${!!p.estimado})"><title>Dia ${String(p.d).padStart(2,'0')}${p.estimado?' (estimado)':''}: ${brl2(p.delta)}</title></circle>`
     ).join('');
 
-    const labelDias = [...new Set([1, Math.ceil(diasHoje / 2), diasHoje])];
-    const labels = labelDias.map(d => `<text x="${x(d).toFixed(2)}" y="${H}" font-size="3.4" fill="#6b7280" text-anchor="middle">${d}</text>`).join('');
+    const titulo = `<text x="${W/2}" y="15" font-size="10" font-weight="700" fill="#f3f4f6" text-anchor="middle">Vendas diárias — ${loja.label || lojaKey} (dia 01 a ${diasHoje})</text>`;
 
-    const temEstimado = pts.some(p => p.estimado);
+    // legenda estilo "desejada vs sintetizada", com fundo escuro do Sinergy
+    const legW = metaDiaria > 0 ? 96 : 74, legH = metaDiaria > 0 ? 28 : 16;
+    const legX = W - M_R - legW - 4, legY = M_T + 4;
+    const legenda = `<g>
+        <rect x="${legX}" y="${legY}" width="${legW}" height="${legH}" rx="3" fill="rgba(17,11,35,.92)" stroke="rgba(255,255,255,.18)" stroke-width="0.8"/>
+        <line x1="${legX+6}" y1="${legY+9}" x2="${legX+20}" y2="${legY+9}" stroke="url(#_lojaDiaGrad)" stroke-width="1.8"/>
+        <circle cx="${legX+13}" cy="${legY+9}" r="2.1" fill="#1a1333" stroke="#fbbf24" stroke-width="1"/>
+        <text x="${legX+24}" y="${legY+11.5}" font-size="7.5" fill="#e5e7eb">vendas reais</text>
+        ${metaDiaria > 0 ? `<line x1="${legX+6}" y1="${legY+21}" x2="${legX+20}" y2="${legY+21}" stroke="#818cf8" stroke-width="1.3" stroke-dasharray="3,2"/>
+        <text x="${legX+24}" y="${legY+23.5}" font-size="7.5" fill="#e5e7eb">meta diária</text>` : ''}
+    </g>`;
+
+    let hojeAnchor = 'middle', hojeTX = x(hojePt.d);
+    if (hojeTX > W - M_R - 26) { hojeAnchor = 'end'; hojeTX = W - M_R; }
+    else if (hojeTX < M_L + 26) { hojeAnchor = 'start'; hojeTX = M_L; }
+    const hojeAnnotY = Math.max(M_T + 8, y(hojePt.delta) - 6);
+    const hojeAnnot = `<text x="${hojeTX.toFixed(2)}" y="${hojeAnnotY.toFixed(2)}" font-size="7.5" font-weight="700" fill="#fbbf24" text-anchor="${hojeAnchor}">hoje: ${brl2(hojePt.delta)}</text>`;
+
     const legendaEstimado = temEstimado
-        ? `<div style="display:flex;align-items:center;justify-content:center;gap:.3rem;margin-top:.3rem;font-size:.5rem;color:#6b7280;">
-               <span style="display:inline-block;width:10px;border-top:1.5px dashed #6b7280;"></span>
-               trecho estimado — automação sem histórico diário nesses dias
-           </div>`
+        ? `<div style="font-size:.5rem;color:#6b7280;margin-top:.3rem;text-align:center;">trecho tracejado cinza = estimado — automação sem histórico diário nesses dias</div>`
         : '';
 
-    return `${statsRow}<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:86px;overflow:visible;display:block;" onmouseleave="_lojaDiaHoverOut()">
-        <defs>
-            <linearGradient id="_lojaDiaGrad" x1="0" y1="0" x2="1" y2="0">
-                <stop offset="0%" stop-color="#6366f1"/>
-                <stop offset="100%" stop-color="#a855f7"/>
-            </linearGradient>
-            <linearGradient id="_lojaDiaFill" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stop-color="#a855f7"/>
-                <stop offset="100%" stop-color="#a855f7" stop-opacity="0"/>
-            </linearGradient>
-        </defs>
-        ${areaPaths}
-        ${linePaths}
-        ${maxMarker}
-        ${hojeMarker}
-        ${valueLabels}
-        ${pontosClicaveis}
-        ${labels}
-    </svg>${legendaEstimado}`;
+    return `${statsRow}<div style="background:rgba(0,0,0,.28);border:1px solid rgba(168,85,247,.22);border-radius:.7rem;padding:.4rem .25rem;">
+        <svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;display:block;overflow:visible;" onmouseleave="_lojaDiaHoverOut()">
+            <defs>
+                <linearGradient id="_lojaDiaGrad" x1="0" y1="0" x2="1" y2="0">
+                    <stop offset="0%" stop-color="#6366f1"/>
+                    <stop offset="100%" stop-color="#a855f7"/>
+                </linearGradient>
+            </defs>
+            ${titulo}
+            ${gridH}${gridV}
+            ${axisLines}
+            ${yLabels}${xLabels}
+            <text x="${(M_L+plotW/2).toFixed(2)}" y="${H-3}" font-size="8" fill="#9ca3af" text-anchor="middle">dia do mês</text>
+            ${metaLine}
+            ${linePaths}
+            ${marcadoresReais}
+            ${hojeAnnot}
+            ${legenda}
+            ${pontosClicaveis}
+        </svg>
+    </div>${legendaEstimado}`;
 }
 
 function _lojaDiaHoverOut() {

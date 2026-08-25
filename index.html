@@ -7,7 +7,7 @@
     <script>
     // Cache-buster: força reload se a versão mudou
     (function(){
-      var BUILD = '20260825174953';
+      var BUILD = '20260825175601';
       var stored = localStorage.getItem('d360_build');
       if (stored && stored !== BUILD) {
         localStorage.setItem('d360_build', BUILD);
@@ -11891,9 +11891,10 @@ function _lojaHistDiarioSVG(lojaKey) {
         <span>Melhor dia<br><b style="font-size:.62rem;color:#4ade80;">${brl2(maxPt.delta)}</b> <span style="color:#6b7280;">(dia ${String(maxPt.d).padStart(2,'0')})</span></span>
     </div>`;
 
-    /* ── Painel estilo "desejada vs sintetizada", com a paleta do Sinergy (fundo escuro, roxo/dourado) ── */
-    const W = 320, H = 220;
-    const M_L = 36, M_R = 14, M_T = 28, M_B = 26;
+    /* ── Painel estilo "desejada vs sintetizada", com a paleta do Sinergy (fundo escuro, roxo/dourado) ──
+       Legenda fica numa faixa própria acima da grade (M_T maior) — nunca sobrepõe a curva. */
+    const W = 320, H = 232;
+    const M_L = 36, M_R = 14, M_T = 40, M_B = 26;
     const plotW = W - M_L - M_R, plotH = H - M_T - M_B;
 
     const maxRaw = Math.max(...pts.map(p => p.delta), metaDiaria, 1);
@@ -11928,17 +11929,22 @@ function _lojaHistDiarioSVG(lojaKey) {
     if (atual.length) segs.push({ estimado: atualTipo, pts: atual });
     for (let i = 0; i < segs.length - 1; i++) segs[i].pts.push(segs[i + 1].pts[0]);
 
-    const linePath = arr => {
+    // curva suave (bezier) em vez de segmentos retos — evita o visual "pontudo"
+    const smoothPath = arr => {
         let d = `M${x(arr[0].d).toFixed(2)},${y(arr[0].delta).toFixed(2)}`;
-        for (let i = 1; i < arr.length; i++) d += ` L${x(arr[i].d).toFixed(2)},${y(arr[i].delta).toFixed(2)}`;
+        for (let i = 0; i < arr.length - 1; i++) {
+            const p0 = arr[i], p1 = arr[i + 1];
+            const cx = (x(p0.d) + x(p1.d)) / 2;
+            d += ` C${cx.toFixed(2)},${y(p0.delta).toFixed(2)} ${cx.toFixed(2)},${y(p1.delta).toFixed(2)} ${x(p1.d).toFixed(2)},${y(p1.delta).toFixed(2)}`;
+        }
         return d;
     };
 
     const linePaths = segs.map(seg => {
         if (seg.pts.length < 2) return '';
         return seg.estimado
-            ? `<path d="${linePath(seg.pts)}" fill="none" stroke="#6b7280" stroke-width="1.2" stroke-dasharray="2.4,1.6" vector-effect="non-scaling-stroke"/>`
-            : `<path d="${linePath(seg.pts)}" fill="none" stroke="url(#_lojaDiaGrad)" stroke-width="1.7" vector-effect="non-scaling-stroke"/>`;
+            ? `<path d="${smoothPath(seg.pts)}" fill="none" stroke="#6b7280" stroke-width="1.2" stroke-dasharray="2.4,1.6" vector-effect="non-scaling-stroke"/>`
+            : `<path d="${smoothPath(seg.pts)}" fill="none" stroke="url(#_lojaDiaGrad)" stroke-width="1.7" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>`;
     }).join('');
 
     // marcador circular dourado em CADA dia real — estilo "senoide sintetizada", cor Sinergy
@@ -11959,18 +11965,19 @@ function _lojaHistDiarioSVG(lojaKey) {
         `<circle cx="${x(p.d).toFixed(2)}" cy="${y(p.delta).toFixed(2)}" r="6" fill="transparent" style="cursor:pointer;" onmouseenter="_lojaDiaDetalhe(${p.d},${p.delta},${!!p.estimado})" onclick="_lojaDiaDetalhe(${p.d},${p.delta},${!!p.estimado})"><title>Dia ${String(p.d).padStart(2,'0')}${p.estimado?' (estimado)':''}: ${brl2(p.delta)}</title></circle>`
     ).join('');
 
-    const titulo = `<text x="${W/2}" y="15" font-size="10" font-weight="700" fill="#f3f4f6" text-anchor="middle">Vendas diárias — ${loja.label || lojaKey} (dia 01 a ${diasHoje})</text>`;
+    const titulo = `<text x="${W/2}" y="14" font-size="10" font-weight="700" fill="#f3f4f6" text-anchor="middle">Vendas diárias — ${loja.label || lojaKey} (dia 01 a ${diasHoje})</text>`;
 
-    // legenda estilo "desejada vs sintetizada", com fundo escuro do Sinergy
-    const legW = metaDiaria > 0 ? 96 : 74, legH = metaDiaria > 0 ? 28 : 16;
-    const legX = W - M_R - legW - 4, legY = M_T + 4;
+    // legenda inline numa faixa PRÓPRIA acima da grade (nunca sobre a curva/pontos)
+    const legY = 30;
+    const itemW1 = 68, itemW2 = 66, gap = 14;
+    const legTotalW = metaDiaria > 0 ? (itemW1 + gap + itemW2) : itemW1;
+    let legCX = (W - legTotalW) / 2;
     const legenda = `<g>
-        <rect x="${legX}" y="${legY}" width="${legW}" height="${legH}" rx="3" fill="rgba(17,11,35,.92)" stroke="rgba(255,255,255,.18)" stroke-width="0.8"/>
-        <line x1="${legX+6}" y1="${legY+9}" x2="${legX+20}" y2="${legY+9}" stroke="url(#_lojaDiaGrad)" stroke-width="1.8"/>
-        <circle cx="${legX+13}" cy="${legY+9}" r="2.1" fill="#1a1333" stroke="#fbbf24" stroke-width="1"/>
-        <text x="${legX+24}" y="${legY+11.5}" font-size="7.5" fill="#e5e7eb">vendas reais</text>
-        ${metaDiaria > 0 ? `<line x1="${legX+6}" y1="${legY+21}" x2="${legX+20}" y2="${legY+21}" stroke="#818cf8" stroke-width="1.3" stroke-dasharray="3,2"/>
-        <text x="${legX+24}" y="${legY+23.5}" font-size="7.5" fill="#e5e7eb">meta diária</text>` : ''}
+        <line x1="${legCX}" y1="${legY}" x2="${legCX+14}" y2="${legY}" stroke="url(#_lojaDiaGrad)" stroke-width="1.8"/>
+        <circle cx="${legCX+7}" cy="${legY}" r="2.1" fill="#1a1333" stroke="#fbbf24" stroke-width="1"/>
+        <text x="${legCX+18}" y="${legY+2.5}" font-size="7.5" fill="#e5e7eb">vendas reais</text>
+        ${metaDiaria > 0 ? `<line x1="${legCX+itemW1+gap}" y1="${legY}" x2="${legCX+itemW1+gap+14}" y2="${legY}" stroke="#818cf8" stroke-width="1.3" stroke-dasharray="3,2"/>
+        <text x="${legCX+itemW1+gap+18}" y="${legY+2.5}" font-size="7.5" fill="#e5e7eb">meta diária</text>` : ''}
     </g>`;
 
     let hojeAnchor = 'middle', hojeTX = x(hojePt.d);

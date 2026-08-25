@@ -6370,6 +6370,8 @@ function switchTab(tab) {
         } else {
             render360('geral', '');
         }
+        // Carrega o comparativo com o mesmo período do mês anterior (uma vez só)
+        try { _d360CarregarMesAnteriorUmaVez(); } catch(e) {}
         // Atualiza Ranking de Acessórios com dados do mês atual
         try { _renderHistAcessAbr26(); } catch(e) {}
         // Força resize do chart após o tab ficar visível (evita barras zeradas)
@@ -6945,20 +6947,16 @@ const D360 = {
     agendMetaPorLoja: 90000,   // meta mensal por loja — central de agendamentos
 
     // ── Dados históricos para o card Performance ──
+    // mesAnterior é recarregado automaticamente em runtime por _d360CarregarMesAnterior()
+    // (busca o mês corrente - 1 em ts_d360_historico) — este objeto é só o placeholder
+    // inicial até a busca terminar, evita usar um mês desatualizado por engano.
     performance: {
         mesAnterior: {
-            nome: 'Mai 2026',
-            diasMes: 31,   // total de dias do mês de referência (para cálculo proporcional)
-            rede: 2463502.42,
-            subredes: { t1:991167.63, t2:632689.14, t3:839645.65 },
-            lojas: { saomateus:400063.73, cariacica:367763.14, itabuna:241284.0, barreiras:227649.0,
-                     moxuara:304474.49, teixeira:233514.99, laranjeiras:171525.15, serra:171641.94,
-                     linhares:141196.99, montserrat:126742.99, praiadacosta:77646.0 },
-            // Âncoras reais para interpolação — quanto mais pontos, mais preciso
-            // Para dias sem âncora, o código interpola linearmente entre os pontos mais próximos
-            parcial: {
-                31: { rede: 2463502.42 }  // Total real Mai 2026 (dia 31)
-            }
+            nome: '—',
+            diasMes: 30,
+            rede: 0,
+            subredes: { t1:0, t2:0, t3:0 },
+            lojas: {}
         },
         recordHistorico: {
             nome: 'Abr 2026',   // melhor mês histórico disponível — atualizar quando superado
@@ -7030,7 +7028,7 @@ const D360 = {
     },
     lojas: {
         // ── Totais acumulados 2026-08-01 a 2026-08-25 · Atualizado automaticamente ──
-        saomateus:   { label:'São Mateus',         sigla:'SM', sub:'t3', meta:350000,  total:248384.0, ped:197,  cancel:0, agend:0, agendCount:0, agendFat:46594.0,  fat_dia:7130.0, acess_dia:200.0, acess_dia_top:[{n:'STEFANY SPEROTTO BARCELOS',i:'SS',t:200.0}], top_dia:[{n:'ELIZA QUEIROZ DE SOUZA',i:'EQ',t:3230.0}, {n:'STEFANY SPEROTTO BARCELOS',i:'SS',t:2400.0}, {n:'RANDECLAY MARIANO GOMES',i:'RM',t:1500.0}], fin_dia:4730.0, fin_mes:151568.0, top_fin_mes:[{n:'ELIZA QUEIROZ DE SOUZA',i:'EQ',t:64950.0,bd:[{nm:'PayJoy',t:50400.0},{nm:'OdresCred',t:14550.0},{nm:'Outras',t:0}]},{n:'RANDECLAY MARIANO GOMES',i:'RM',t:50174.0,bd:[{nm:'PayJoy',t:25600.0},{nm:'OdresCred',t:20805.0},{nm:'Outras',t:3769.0}]},{n:'LEANDRO DA CRUZ SILVA',i:'LD',t:34944.0,bd:[{nm:'PayJoy',t:12750.0},{nm:'OdresCred',t:15994.0},{nm:'Outras',t:6200.0}]},{n:'CARLA SANTOS LUIZ',i:'CS',t:1500.0,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:1500.0},{nm:'Outras',t:0}]}], fin_bd:[{nm:'PayJoy',t:88750.0},{nm:'OdresCred',t:52849.0},{nm:'Outras',t:9969.0}], top_fin:[{n:'ELIZA QUEIROZ DE SOUZA',i:'EQ',t:3230.0}, {n:'RANDECLAY MARIANO GOMES',i:'RM',t:1500.0}], metaAcess:11500,
+        saomateus:   { label:'São Mateus',         sigla:'SM', sub:'t3', meta:350000,  total:248384.0, ped:197,  cancel:0, agend:0, agendCount:0, agendFat:46594.0,  fat_dia:7130.0, acess_dia:200.0, dia_a_dia:{"1":11064.0,"2":11064.0,"3":32823.0,"4":33273.0,"5":44368.0,"6":51797.0,"7":60034.0,"8":97689.0,"9":98019.0,"10":101943.0,"11":121220.0,"12":124720.0,"13":129899.0,"14":133589.0,"15":162579.0,"16":162579.0,"17":162579.0,"18":171334.0,"19":179524.0,"20":184772.0,"21":205321.0,"22":223629.0,"23":223629.0,"24":229814.0,"25":248384.0}, acess_dia_top:[{n:'STEFANY SPEROTTO BARCELOS',i:'SS',t:200.0}], top_dia:[{n:'ELIZA QUEIROZ DE SOUZA',i:'EQ',t:3230.0}, {n:'STEFANY SPEROTTO BARCELOS',i:'SS',t:2400.0}, {n:'RANDECLAY MARIANO GOMES',i:'RM',t:1500.0}], fin_dia:4730.0, fin_mes:151568.0, top_fin_mes:[{n:'ELIZA QUEIROZ DE SOUZA',i:'EQ',t:64950.0,bd:[{nm:'PayJoy',t:50400.0},{nm:'OdresCred',t:14550.0},{nm:'Outras',t:0}]},{n:'RANDECLAY MARIANO GOMES',i:'RM',t:50174.0,bd:[{nm:'PayJoy',t:25600.0},{nm:'OdresCred',t:20805.0},{nm:'Outras',t:3769.0}]},{n:'LEANDRO DA CRUZ SILVA',i:'LD',t:34944.0,bd:[{nm:'PayJoy',t:12750.0},{nm:'OdresCred',t:15994.0},{nm:'Outras',t:6200.0}]},{n:'CARLA SANTOS LUIZ',i:'CS',t:1500.0,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:1500.0},{nm:'Outras',t:0}]}], fin_bd:[{nm:'PayJoy',t:88750.0},{nm:'OdresCred',t:52849.0},{nm:'Outras',t:9969.0}], top_fin:[{n:'ELIZA QUEIROZ DE SOUZA',i:'EQ',t:3230.0}, {n:'RANDECLAY MARIANO GOMES',i:'RM',t:1500.0}], metaAcess:11500,
             agendamentos:{total:46594.0, fin:46594.0, fin_bd:[{nm:'PayJoy',t:27950.0},{nm:'OdresCred',t:18744.0},{nm:'Outras',t:0}], top:[{n:'ELIZA QUEIROZ DE SOUZA',i:'EQ',t:15824.0}, {n:'LEANDRO DA CRUZ SILVA',i:'LD',t:12647.0}, {n:'RANDECLAY MARIANO GOMES',i:'RM',t:9424.0}, {n:'STEFANY SPEROTTO BARCELOS',i:'SS',t:8699.0}]},
             acessorios:{total:6638.0, top:[
                 {n:'Juliana Cristina dos Santos',i:'JC',t:2947,ds:12,ult:'12/06'},
@@ -7045,7 +7043,7 @@ const D360 = {
                 {n:'LEANDRO DA CRUZ SILVA',i:'LD',p:42,t:64734.0,ds:33,ult:'25/08'},
                 {n:'STEFANY SPEROTTO BARCELOS',i:'SS',p:32,t:27023.0,ds:61,ult:'25/08'},
                 {n:'CARLA SANTOS LUIZ',i:'CS',p:3,t:5300.0,ds:26,ult:'24/07'}]},
-        cariacica:   { label:'Cariacica',          sigla:'CC', sub:'t1', meta:380000,  total:327650.0, ped:240,  cancel:0, agend:0, agendCount:0, agendFat:51296.0,  fat_dia:2223.0, acess_dia:423.0, acess_dia_top:[{n:'MAYARA KULL RODRIGUES',i:'MK',t:343.0}, {n:'Liz Sophia Andrade Pereira',i:'LS',t:80.0}], top_dia:[{n:'MAYARA KULL RODRIGUES',i:'MK',t:2143.0}, {n:'Liz Sophia Andrade Pereira',i:'LS',t:80.0}], fin_dia:0, fin_mes:235754.0, top_fin_mes:[{n:'ROBERTA FELIPE MALAQUIAS',i:'RF',t:86776.0,bd:[{nm:'PayJoy',t:64040.0},{nm:'OdresCred',t:19436.0},{nm:'Outras',t:3300.0}]},{n:'Liz Sophia Andrade Pereira',i:'LS',t:75046.0,bd:[{nm:'PayJoy',t:50540.0},{nm:'OdresCred',t:22806.0},{nm:'Outras',t:1700.0}]},{n:'Fabiano Francisco Fontes',i:'FF',t:39483.0,bd:[{nm:'PayJoy',t:15670.0},{nm:'OdresCred',t:21313.0},{nm:'Outras',t:6629.0}]},{n:'MAYARA KULL RODRIGUES',i:'MK',t:34449.0,bd:[{nm:'PayJoy',t:27450.0},{nm:'OdresCred',t:3699.0},{nm:'Outras',t:3300.0}]}], fin_bd:[{nm:'PayJoy',t:157700.0},{nm:'OdresCred',t:67254.0},{nm:'Outras',t:14929.0}], top_fin:[], metaAcess:13500,
+        cariacica:   { label:'Cariacica',          sigla:'CC', sub:'t1', meta:380000,  total:327650.0, ped:240,  cancel:0, agend:0, agendCount:0, agendFat:51296.0,  fat_dia:2223.0, acess_dia:423.0, dia_a_dia:{"1":21495.0,"2":21495.0,"3":28775.0,"4":31810.0,"5":45833.0,"6":59832.0,"7":65962.0,"8":96987.0,"9":108942.0,"10":108942.0,"11":135861.0,"12":145721.0,"13":151940.0,"14":159014.0,"15":184525.0,"16":184525.0,"17":184525.0,"18":209460.0,"19":210420.0,"20":225608.0,"21":270816.0,"22":306400.0,"23":306400.0,"24":307900.0,"25":327650.0}, acess_dia_top:[{n:'MAYARA KULL RODRIGUES',i:'MK',t:343.0}, {n:'Liz Sophia Andrade Pereira',i:'LS',t:80.0}], top_dia:[{n:'MAYARA KULL RODRIGUES',i:'MK',t:2143.0}, {n:'Liz Sophia Andrade Pereira',i:'LS',t:80.0}], fin_dia:0, fin_mes:235754.0, top_fin_mes:[{n:'ROBERTA FELIPE MALAQUIAS',i:'RF',t:86776.0,bd:[{nm:'PayJoy',t:64040.0},{nm:'OdresCred',t:19436.0},{nm:'Outras',t:3300.0}]},{n:'Liz Sophia Andrade Pereira',i:'LS',t:75046.0,bd:[{nm:'PayJoy',t:50540.0},{nm:'OdresCred',t:22806.0},{nm:'Outras',t:1700.0}]},{n:'Fabiano Francisco Fontes',i:'FF',t:39483.0,bd:[{nm:'PayJoy',t:15670.0},{nm:'OdresCred',t:21313.0},{nm:'Outras',t:6629.0}]},{n:'MAYARA KULL RODRIGUES',i:'MK',t:34449.0,bd:[{nm:'PayJoy',t:27450.0},{nm:'OdresCred',t:3699.0},{nm:'Outras',t:3300.0}]}], fin_bd:[{nm:'PayJoy',t:157700.0},{nm:'OdresCred',t:67254.0},{nm:'Outras',t:14929.0}], top_fin:[], metaAcess:13500,
             agendamentos:{total:51296.0, fin:49781.0, fin_bd:[{nm:'PayJoy',t:31485.0},{nm:'OdresCred',t:16596.0},{nm:'Outras',t:1700.0}], top:[{n:'Liz Sophia Andrade Pereira',i:'LS',t:20250.0}, {n:'ROBERTA FELIPE MALAQUIAS',i:'RF',t:16598.0}, {n:'MAYARA KULL RODRIGUES',i:'MK',t:7850.0}, {n:'Fabiano Francisco Fontes',i:'FF',t:6598.0}]},
             acessorios:{total:9448.0, top:[
                 {n:'Roberta Felipe Malaquias',i:'RF',t:3580,ds:12,ult:'12/06'},
@@ -7059,7 +7057,7 @@ const D360 = {
                 {n:'MAYARA KULL RODRIGUES',i:'MK',p:29,t:46012.0,ds:12,ult:'25/08'},
                 {n:'mirelly vieira portugal',i:'MV',p:5,t:4100.0,ds:17,ult:'05/08'},
                 {n:'ANA CAROLINA DA SILVA',i:'AC',p:16,t:1380.0,ds:36,ult:'23/08'}]},
-        itabuna:     { label:'Itabuna',            sigla:'IT', sub:'t1', meta:270000,  total:207388.5,  ped:221,  cancel:0, agend:0, agendCount:0, agendFat:66165.0,  fat_dia:1875.0, acess_dia:120.0, acess_dia_top:[{n:'KEIFIT MOREIRA DOS SANTOS',i:'KM',t:100.0}, {n:'ANDREZA DE JESUS SOUZA',i:'AD',t:20.0}], top_dia:[{n:'ANDREZA DE JESUS SOUZA',i:'AD',t:1775.0}, {n:'KEIFIT MOREIRA DOS SANTOS',i:'KM',t:100.0}], fin_dia:0, fin_mes:129876.0, top_fin_mes:[{n:'MIKAELLE SANTOS VIRGENS',i:'MS',t:88191.0,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:71961.0},{nm:'Outras',t:18229.0}]},{n:'ANDREZA DE JESUS SOUZA',i:'AD',t:20307.0,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:14907.0},{nm:'Outras',t:5400.0}]},{n:'jhonatas lucas machado pereira',i:'JL',t:10522.0,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:6897.0},{nm:'Outras',t:3625.0}]},{n:'KEIFIT MOREIRA DOS SANTOS',i:'KM',t:9057.0,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:7057.0},{nm:'Outras',t:2000.0}]},{n:'HERICLES LISBOA DE FREITAS',i:'HL',t:1799.0,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:1799.0},{nm:'Outras',t:0}]}], fin_bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:102621.0},{nm:'Outras',t:29254.0}], top_fin:[], metaAcess:10000,
+        itabuna:     { label:'Itabuna',            sigla:'IT', sub:'t1', meta:270000,  total:207388.5,  ped:221,  cancel:0, agend:0, agendCount:0, agendFat:66165.0,  fat_dia:1875.0, acess_dia:120.0, dia_a_dia:{"1":3680.0,"2":3680.0,"3":10376.5,"4":10456.5,"5":30329.5,"6":36923.5,"7":40181.5,"8":58261.5,"9":62177.5,"10":64090.5,"11":80842.5,"12":80842.5,"13":86559.5,"14":100490.5,"15":124429.5,"16":124429.5,"17":126228.5,"18":145570.5,"19":154713.5,"20":165710.5,"21":179780.5,"22":191307.5,"23":191307.5,"24":195347.5,"25":207388.5}, acess_dia_top:[{n:'KEIFIT MOREIRA DOS SANTOS',i:'KM',t:100.0}, {n:'ANDREZA DE JESUS SOUZA',i:'AD',t:20.0}], top_dia:[{n:'ANDREZA DE JESUS SOUZA',i:'AD',t:1775.0}, {n:'KEIFIT MOREIRA DOS SANTOS',i:'KM',t:100.0}], fin_dia:0, fin_mes:129876.0, top_fin_mes:[{n:'MIKAELLE SANTOS VIRGENS',i:'MS',t:88191.0,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:71961.0},{nm:'Outras',t:18229.0}]},{n:'ANDREZA DE JESUS SOUZA',i:'AD',t:20307.0,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:14907.0},{nm:'Outras',t:5400.0}]},{n:'jhonatas lucas machado pereira',i:'JL',t:10522.0,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:6897.0},{nm:'Outras',t:3625.0}]},{n:'KEIFIT MOREIRA DOS SANTOS',i:'KM',t:9057.0,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:7057.0},{nm:'Outras',t:2000.0}]},{n:'HERICLES LISBOA DE FREITAS',i:'HL',t:1799.0,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:1799.0},{nm:'Outras',t:0}]}], fin_bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:102621.0},{nm:'Outras',t:29254.0}], top_fin:[], metaAcess:10000,
             agendamentos:{total:66165.0, fin:59635.0, fin_bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:54575.0},{nm:'Outras',t:7059.0}], top:[{n:'MIKAELLE SANTOS VIRGENS',i:'MS',t:66165.0}]},
             acessorios:{total:8824.0, top:[
                 {n:'Hericles Lisboa de Freitas',i:'HL',t:1792,ds:12,ult:'12/06'},
@@ -7076,7 +7074,7 @@ const D360 = {
                 {n:'HERICLES LISBOA DE FREITAS',i:'HL',p:21,t:11414.0,ds:10,ult:'25/08'},
                 {n:'REINAN DOS SANTOS PACHECO',i:'RD',p:7,t:2049.0,ds:8,ult:'25/08'},
                 {n:'SANDY DE ARAUJO SANTOS LIMA',i:'SD',p:6,t:425.0,ds:9,ult:'25/08'}]},
-        barreiras:   { label:'Barreiras',          sigla:'BR', sub:'t2', meta:240000,  total:153201.98,  ped:127,  cancel:0, agend:0, agendCount:0, agendFat:26699.0,   fat_dia:3549.0, acess_dia:0, acess_dia_top:[], top_dia:[{n:'VICTOR ROBERTO DE OLIVEIRA NASCIMENTO',i:'VR',t:3549.0}], fin_dia:3549.0, fin_mes:104822.0, top_fin_mes:[{n:'Larisse Ribeiro Dos Santos',i:'LR',t:27580.0,bd:[{nm:'PayJoy',t:21765.0},{nm:'OdresCred',t:5815.0},{nm:'Outras',t:1815.0}]},{n:'ISABELA CHAGAS',i:'IC',t:27157.0,bd:[{nm:'PayJoy',t:14450.0},{nm:'OdresCred',t:12707.0},{nm:'Outras',t:0}]},{n:'VICTOR ROBERTO DE OLIVEIRA NASCIMENTO',i:'VR',t:21398.0,bd:[{nm:'PayJoy',t:18000.0},{nm:'OdresCred',t:3398.0},{nm:'Outras',t:0}]},{n:'MATEUS DA SILVA MATOS',i:'MD',t:20587.0,bd:[{nm:'PayJoy',t:14735.0},{nm:'OdresCred',t:5852.0},{nm:'Outras',t:0}]},{n:'TÁINE OLIVEIRA DOS SANTOS',i:'TO',t:8100.0,bd:[{nm:'PayJoy',t:6000.0},{nm:'OdresCred',t:2100.0},{nm:'Outras',t:0}]}], fin_bd:[{nm:'PayJoy',t:74950.0},{nm:'OdresCred',t:29872.0},{nm:'Outras',t:1815.0}], top_fin:[{n:'VICTOR ROBERTO DE OLIVEIRA NASCIMENTO',i:'VR',t:3549.0}], metaAcess:6500,
+        barreiras:   { label:'Barreiras',          sigla:'BR', sub:'t2', meta:240000,  total:153201.98,  ped:127,  cancel:0, agend:0, agendCount:0, agendFat:26699.0,   fat_dia:3549.0, acess_dia:0, dia_a_dia:{"1":7300.0,"2":7300.0,"3":11470.0,"4":15610.0,"5":32513.0,"6":42463.0,"7":42663.0,"8":51743.0,"9":51743.0,"10":51743.0,"11":67392.0,"12":71172.0,"13":78132.0,"14":82496.99,"15":97431.99,"16":97431.99,"17":99394.99,"18":105108.98,"19":108988.98,"20":112668.98,"21":129252.98,"22":138192.98,"23":138192.98,"24":142352.98,"25":153201.98}, acess_dia_top:[], top_dia:[{n:'VICTOR ROBERTO DE OLIVEIRA NASCIMENTO',i:'VR',t:3549.0}], fin_dia:3549.0, fin_mes:104822.0, top_fin_mes:[{n:'Larisse Ribeiro Dos Santos',i:'LR',t:27580.0,bd:[{nm:'PayJoy',t:21765.0},{nm:'OdresCred',t:5815.0},{nm:'Outras',t:1815.0}]},{n:'ISABELA CHAGAS',i:'IC',t:27157.0,bd:[{nm:'PayJoy',t:14450.0},{nm:'OdresCred',t:12707.0},{nm:'Outras',t:0}]},{n:'VICTOR ROBERTO DE OLIVEIRA NASCIMENTO',i:'VR',t:21398.0,bd:[{nm:'PayJoy',t:18000.0},{nm:'OdresCred',t:3398.0},{nm:'Outras',t:0}]},{n:'MATEUS DA SILVA MATOS',i:'MD',t:20587.0,bd:[{nm:'PayJoy',t:14735.0},{nm:'OdresCred',t:5852.0},{nm:'Outras',t:0}]},{n:'TÁINE OLIVEIRA DOS SANTOS',i:'TO',t:8100.0,bd:[{nm:'PayJoy',t:6000.0},{nm:'OdresCred',t:2100.0},{nm:'Outras',t:0}]}], fin_bd:[{nm:'PayJoy',t:74950.0},{nm:'OdresCred',t:29872.0},{nm:'Outras',t:1815.0}], top_fin:[{n:'VICTOR ROBERTO DE OLIVEIRA NASCIMENTO',i:'VR',t:3549.0}], metaAcess:6500,
             agendamentos:{total:26699.0, fin:24649.0, fin_bd:[{nm:'PayJoy',t:20950.0},{nm:'OdresCred',t:3699.0},{nm:'Outras',t:0}], top:[{n:'DANIELA MILENA GOMES MARES',i:'DM',t:11100.0}, {n:'TÁINE OLIVEIRA DOS SANTOS',i:'TO',t:8350.0}, {n:'VICTOR ROBERTO DE OLIVEIRA NASCIMENTO',i:'VR',t:7249.0}]},
             acessorios:{total:4377.55, top:[
                 {n:'Victor Roberto de Oliveira Nascimento',i:'VR',t:1000,ds:12,ult:'12/06'},
@@ -7091,7 +7089,7 @@ const D360 = {
                 {n:'VICTOR ROBERTO DE OLIVEIRA NASCIMENTO',i:'VR',p:29,t:25783.0,ds:58,ult:'25/08'},
                 {n:'DANIELA MILENA GOMES MARES',i:'DM',p:8,t:12890.0,ds:9,ult:'23/08'},
                 {n:'TÁINE OLIVEIRA DOS SANTOS',i:'TO',p:5,t:10250.0,ds:43,ult:'22/08'}]},
-        moxuara:     { label:'Moxuara',            sigla:'MX', sub:'t1', meta:270000,  total:166335.0,  ped:173, cancel:0, agend:0, agendCount:0, agendFat:65419.0,  fat_dia:1750.0, acess_dia:0, acess_dia_top:[], top_dia:[{n:'Iasmim vitoria medeiros gaio',i:'IV',t:1750.0}], fin_dia:1750.0, fin_mes:99545.0, top_fin_mes:[{n:'LUCCAS DA SILVA MEDEIROS MARTINS',i:'LD',t:40547.0,bd:[{nm:'PayJoy',t:33450.0},{nm:'OdresCred',t:7097.0},{nm:'Outras',t:0}]},{n:'Iasmim vitoria medeiros gaio',i:'IV',t:31371.0,bd:[{nm:'PayJoy',t:18400.0},{nm:'OdresCred',t:12971.0},{nm:'Outras',t:0}]},{n:'KHAYLLANE DE ALMEIDA FERREIRA',i:'KD',t:23367.0,bd:[{nm:'PayJoy',t:15750.0},{nm:'OdresCred',t:7617.0},{nm:'Outras',t:0}]},{n:'ROBERTA FELIPE MALAQUIAS',i:'RF',t:4260.0,bd:[{nm:'PayJoy',t:2160.0},{nm:'OdresCred',t:2100.0},{nm:'Outras',t:0}]}], fin_bd:[{nm:'PayJoy',t:69760.0},{nm:'OdresCred',t:29785.0},{nm:'Outras',t:0}], top_fin:[{n:'Iasmim vitoria medeiros gaio',i:'IV',t:1750.0}], metaAcess:12000,
+        moxuara:     { label:'Moxuara',            sigla:'MX', sub:'t1', meta:270000,  total:166335.0,  ped:173, cancel:0, agend:0, agendCount:0, agendFat:65419.0,  fat_dia:1750.0, acess_dia:0, dia_a_dia:{"1":1990.0,"2":7270.0,"3":16160.0,"4":16380.0,"5":20290.0,"6":20430.0,"7":26040.0,"8":33640.0,"9":52743.0,"10":52743.0,"11":63243.0,"12":65733.0,"13":80303.0,"14":82203.0,"15":96320.0,"16":106569.0,"17":108649.0,"18":120518.0,"19":127758.0,"20":131608.0,"21":140948.0,"22":147017.0,"23":158616.0,"24":160456.0,"25":166335.0}, acess_dia_top:[], top_dia:[{n:'Iasmim vitoria medeiros gaio',i:'IV',t:1750.0}], fin_dia:1750.0, fin_mes:99545.0, top_fin_mes:[{n:'LUCCAS DA SILVA MEDEIROS MARTINS',i:'LD',t:40547.0,bd:[{nm:'PayJoy',t:33450.0},{nm:'OdresCred',t:7097.0},{nm:'Outras',t:0}]},{n:'Iasmim vitoria medeiros gaio',i:'IV',t:31371.0,bd:[{nm:'PayJoy',t:18400.0},{nm:'OdresCred',t:12971.0},{nm:'Outras',t:0}]},{n:'KHAYLLANE DE ALMEIDA FERREIRA',i:'KD',t:23367.0,bd:[{nm:'PayJoy',t:15750.0},{nm:'OdresCred',t:7617.0},{nm:'Outras',t:0}]},{n:'ROBERTA FELIPE MALAQUIAS',i:'RF',t:4260.0,bd:[{nm:'PayJoy',t:2160.0},{nm:'OdresCred',t:2100.0},{nm:'Outras',t:0}]}], fin_bd:[{nm:'PayJoy',t:69760.0},{nm:'OdresCred',t:29785.0},{nm:'Outras',t:0}], top_fin:[{n:'Iasmim vitoria medeiros gaio',i:'IV',t:1750.0}], metaAcess:12000,
             agendamentos:{total:65419.0, fin:63519.0, fin_bd:[{nm:'PayJoy',t:49100.0},{nm:'OdresCred',t:14419.0},{nm:'Outras',t:0}], top:[{n:'LUCCAS DA SILVA MEDEIROS MARTINS',i:'LD',t:38847.0}, {n:'Iasmim vitoria medeiros gaio',i:'IV',t:19173.0}, {n:'KHAYLLANE DE ALMEIDA FERREIRA',i:'KD',t:7399.0}]},
             acessorios:{total:7760.0, top:[
                 {n:'Khayllane de Almeida Ferreira',i:'KF',t:3495,ds:12,ult:'12/06'},
@@ -7105,7 +7103,7 @@ const D360 = {
                 {n:'ROBERTA FELIPE MALAQUIAS',i:'RF',p:5,t:6270.0,ds:2,ult:'24/08'},
                 {n:'ANA CAROLINA DA SILVA',i:'AC',p:2,t:1550.0,ds:2,ult:'13/08'},
                 {n:'GABRIEL BARRETO PEREIRA',i:'GB',p:4,t:170.0,ds:16,ult:'24/07'}]},
-        teixeira:    { label:'Teixeira de Freitas',sigla:'TF', sub:'t2', meta:190000,  total:133021.0,  ped:102,  cancel:0, agend:0, agendCount:0, agendFat:23909.0,  fat_dia:3470.0, acess_dia:0, acess_dia_top:[], top_dia:[{n:'CARLA SANTOS LUIZ',i:'CS',t:3470.0}], fin_dia:1920.0, fin_mes:93860.0, top_fin_mes:[{n:'CARLA SANTOS LUIZ',i:'CS',t:37918.0,bd:[{nm:'PayJoy',t:22078.0},{nm:'OdresCred',t:15840.0},{nm:'Outras',t:0}]},{n:'CARINE FERREIRA FRANCO',i:'CF',t:28512.0,bd:[{nm:'PayJoy',t:14400.0},{nm:'OdresCred',t:14112.0},{nm:'Outras',t:0}]},{n:'AMANDA GOULART ANDRADE',i:'AG',t:15990.0,bd:[{nm:'PayJoy',t:15990.0},{nm:'OdresCred',t:0},{nm:'Outras',t:0}]},{n:'PALOMA DE JESUS SANTOS',i:'PD',t:8140.0,bd:[{nm:'PayJoy',t:6760.0},{nm:'OdresCred',t:1380.0},{nm:'Outras',t:0}]},{n:'GUSTAVO SANTANA BATISTA',i:'GS',t:3300.0,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:3300.0},{nm:'Outras',t:0}]}], fin_bd:[{nm:'PayJoy',t:59228.0},{nm:'OdresCred',t:34632.0},{nm:'Outras',t:0}], top_fin:[{n:'CARLA SANTOS LUIZ',i:'CS',t:1920.0}], metaAcess:6500,
+        teixeira:    { label:'Teixeira de Freitas',sigla:'TF', sub:'t2', meta:190000,  total:133021.0,  ped:102,  cancel:0, agend:0, agendCount:0, agendFat:23909.0,  fat_dia:3470.0, acess_dia:0, dia_a_dia:{"1":11494.0,"2":11494.0,"3":20799.0,"4":24587.0,"5":27247.0,"6":38574.0,"7":42388.0,"8":54082.0,"9":54082.0,"10":54082.0,"11":57117.0,"12":60432.0,"13":66582.0,"14":70367.0,"15":86491.0,"16":86491.0,"17":90691.0,"18":103886.0,"19":109776.0,"20":111221.0,"21":116046.0,"22":118126.0,"23":118126.0,"24":121826.0,"25":133021.0}, acess_dia_top:[], top_dia:[{n:'CARLA SANTOS LUIZ',i:'CS',t:3470.0}], fin_dia:1920.0, fin_mes:93860.0, top_fin_mes:[{n:'CARLA SANTOS LUIZ',i:'CS',t:37918.0,bd:[{nm:'PayJoy',t:22078.0},{nm:'OdresCred',t:15840.0},{nm:'Outras',t:0}]},{n:'CARINE FERREIRA FRANCO',i:'CF',t:28512.0,bd:[{nm:'PayJoy',t:14400.0},{nm:'OdresCred',t:14112.0},{nm:'Outras',t:0}]},{n:'AMANDA GOULART ANDRADE',i:'AG',t:15990.0,bd:[{nm:'PayJoy',t:15990.0},{nm:'OdresCred',t:0},{nm:'Outras',t:0}]},{n:'PALOMA DE JESUS SANTOS',i:'PD',t:8140.0,bd:[{nm:'PayJoy',t:6760.0},{nm:'OdresCred',t:1380.0},{nm:'Outras',t:0}]},{n:'GUSTAVO SANTANA BATISTA',i:'GS',t:3300.0,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:3300.0},{nm:'Outras',t:0}]}], fin_bd:[{nm:'PayJoy',t:59228.0},{nm:'OdresCred',t:34632.0},{nm:'Outras',t:0}], top_fin:[{n:'CARLA SANTOS LUIZ',i:'CS',t:1920.0}], metaAcess:6500,
             agendamentos:{total:23909.0, fin:23909.0, fin_bd:[{nm:'PayJoy',t:18910.0},{nm:'OdresCred',t:4999.0},{nm:'Outras',t:0}], top:[{n:'AMANDA GOULART ANDRADE',i:'AG',t:14790.0}, {n:'CARLA SANTOS LUIZ',i:'CS',t:9119.0}]},
             acessorios:{total:2431.0, top:[
                 {n:'Amanda Goulart Andrade',i:'AG',t:740,ds:12,ult:'12/06'},
@@ -7121,7 +7119,7 @@ const D360 = {
                 {n:'PALOMA DE JESUS SANTOS',i:'PD',p:11,t:9890.0,ds:46,ult:'21/08'},
                 {n:'GUSTAVO SANTANA BATISTA',i:'GS',p:5,t:8010.0,ds:4,ult:'16/08'},
                 {n:'WILGHYNER DE PADUA SOARES DE SOUZA',i:'WD',p:1,t:40.0,ds:1,ult:'15/08'}]},
-        laranjeiras: { label:'Laranjeiras',        sigla:'LJ', sub:'t2', meta:180000,  total:111043.0,ped:91,  cancel:0, agend:0, agendCount:0, agendFat:26572.5,   fat_dia:0, acess_dia:0, acess_dia_top:[], top_dia:[], fin_dia:0, fin_mes:52579.5, top_fin_mes:[{n:'LÍDIA DA PENHA DIOGO',i:'LD',t:32733.0,bd:[{nm:'PayJoy',t:20600.0},{nm:'OdresCred',t:12133.0},{nm:'Outras',t:0}]},{n:'MAYARA KULL RODRIGUES',i:'MK',t:10479.0,bd:[{nm:'PayJoy',t:1700.0},{nm:'OdresCred',t:8779.0},{nm:'Outras',t:1300.0}]},{n:'Nycolly Calazans Paulo',i:'NC',t:9367.5,bd:[{nm:'PayJoy',t:7117.5},{nm:'OdresCred',t:2250.0},{nm:'Outras',t:0}]}], fin_bd:[{nm:'PayJoy',t:29417.5},{nm:'OdresCred',t:23162.0},{nm:'Outras',t:1300.0}], top_fin:[], metaAcess:3500,
+        laranjeiras: { label:'Laranjeiras',        sigla:'LJ', sub:'t2', meta:180000,  total:111043.0,ped:91,  cancel:0, agend:0, agendCount:0, agendFat:26572.5,   fat_dia:0, acess_dia:0, dia_a_dia:{"1":8792.5,"2":8792.5,"3":13371.5,"4":14721.5,"5":17610.0,"6":26251.0,"7":27911.0,"8":33781.0,"9":33781.0,"10":33781.0,"11":43396.0,"12":47856.0,"13":53148.5,"14":62317.5,"15":77426.5,"16":77426.5,"17":77546.5,"18":91037.5,"19":96045.0,"20":96045.0,"21":103049.0,"22":105189.0,"23":105189.0,"24":106949.0,"25":111043.0}, acess_dia_top:[], top_dia:[], fin_dia:0, fin_mes:52579.5, top_fin_mes:[{n:'LÍDIA DA PENHA DIOGO',i:'LD',t:32733.0,bd:[{nm:'PayJoy',t:20600.0},{nm:'OdresCred',t:12133.0},{nm:'Outras',t:0}]},{n:'MAYARA KULL RODRIGUES',i:'MK',t:10479.0,bd:[{nm:'PayJoy',t:1700.0},{nm:'OdresCred',t:8779.0},{nm:'Outras',t:1300.0}]},{n:'Nycolly Calazans Paulo',i:'NC',t:9367.5,bd:[{nm:'PayJoy',t:7117.5},{nm:'OdresCred',t:2250.0},{nm:'Outras',t:0}]}], fin_bd:[{nm:'PayJoy',t:29417.5},{nm:'OdresCred',t:23162.0},{nm:'Outras',t:1300.0}], top_fin:[], metaAcess:3500,
             agendamentos:{total:26572.5, fin:24945.0, fin_bd:[{nm:'PayJoy',t:7640.0},{nm:'OdresCred',t:17305.0},{nm:'Outras',t:0}], top:[{n:'jhennyfer eduarda rodrigues dos santos',i:'JE',t:18348.5}, {n:'stefany santiago rocha',i:'SS',t:4699.0}, {n:'Nycolly Calazans Paulo',i:'NC',t:3525.0}]},
             acessorios:{total:1319.5, top:[
                 {n:'Nycolly Calazans Paulo',i:'NC',t:580,ds:12,ult:'12/06'},
@@ -7134,7 +7132,7 @@ const D360 = {
                 {n:'Nycolly Calazans Paulo',i:'NC',p:11,t:12900.0,ds:24,ult:'16/08'},
                 {n:'MAYARA KULL RODRIGUES',i:'MK',p:12,t:11349.0,ds:49,ult:'05/08'},
                 {n:'stefany santiago rocha',i:'SS',p:8,t:10198.0,ds:6,ult:'23/08'}]},
-        serra:       { label:'Serra',              sigla:'SR', sub:'t3', meta:210000,  total:203815.98, ped:207,  cancel:0, agend:0, agendCount:0, agendFat:52447.0,  fat_dia:0, acess_dia:0, acess_dia_top:[], top_dia:[], fin_dia:0, fin_mes:33190.0, top_fin_mes:[{n:'Gabriel Moura Dos Reis',i:'GM',t:24594.0,bd:[{nm:'PayJoy',t:3500.0},{nm:'OdresCred',t:21094.0},{nm:'Outras',t:0}]},{n:'Hiully Medeiros Vargas',i:'HM',t:8596.0,bd:[{nm:'PayJoy',t:1500.0},{nm:'OdresCred',t:7096.0},{nm:'Outras',t:0}]}], fin_bd:[{nm:'PayJoy',t:5000.0},{nm:'OdresCred',t:28190.0},{nm:'Outras',t:0}], top_fin:[], metaAcess:15000,
+        serra:       { label:'Serra',              sigla:'SR', sub:'t3', meta:210000,  total:203815.98, ped:207,  cancel:0, agend:0, agendCount:0, agendFat:52447.0,  fat_dia:0, acess_dia:0, dia_a_dia:{"1":1400.0,"2":14719.0,"3":20299.0,"4":20299.0,"5":23238.0,"6":31602.0,"7":33611.0,"8":39839.0,"9":70066.0,"10":71935.0,"11":86639.0,"12":86759.0,"13":96188.0,"14":104686.0,"15":128310.0,"16":134519.0,"17":137239.0,"18":152268.0,"19":156557.0,"20":156607.0,"21":173053.0,"22":188763.0,"23":197462.0,"24":195651.98,"25":203815.98}, acess_dia_top:[], top_dia:[], fin_dia:0, fin_mes:33190.0, top_fin_mes:[{n:'Gabriel Moura Dos Reis',i:'GM',t:24594.0,bd:[{nm:'PayJoy',t:3500.0},{nm:'OdresCred',t:21094.0},{nm:'Outras',t:0}]},{n:'Hiully Medeiros Vargas',i:'HM',t:8596.0,bd:[{nm:'PayJoy',t:1500.0},{nm:'OdresCred',t:7096.0},{nm:'Outras',t:0}]}], fin_bd:[{nm:'PayJoy',t:5000.0},{nm:'OdresCred',t:28190.0},{nm:'Outras',t:0}], top_fin:[], metaAcess:15000,
             agendamentos:{total:52447.0, fin:50977.0, fin_bd:[{nm:'PayJoy',t:15050.0},{nm:'OdresCred',t:35927.0},{nm:'Outras',t:0}], top:[{n:'LUIZ HENRIQUE VIANA DA ROCHA',i:'LH',t:35851.0}, {n:'Gabriel Moura Dos Reis',i:'GM',t:13397.0}, {n:'Hiully Medeiros Vargas',i:'HM',t:3199.0}]},
             acessorios:{total:9498.0, top:[
                 {n:'Marcela da Silva Lopes',i:'ML',t:1850,ds:12,ult:'12/06'},
@@ -7145,7 +7143,7 @@ const D360 = {
             top:[{n:'LUIZ HENRIQUE VIANA DA ROCHA',i:'LH',p:174,t:161316.98,ds:60,ult:'25/08'},
                 {n:'Gabriel Moura Dos Reis',i:'GM',p:20,t:28078.0,ds:8,ult:'25/08'},
                 {n:'Hiully Medeiros Vargas',i:'HM',p:13,t:14421.0,ds:7,ult:'25/08'}]},
-        linhares:    { label:'Linhares',           sigla:'LH', sub:'t3', meta:210000,  total:141453.98,  ped:138,  cancel:0, agend:0, agendCount:0, agendFat:38365.99,  fat_dia:6907.99, acess_dia:399.99, acess_dia_top:[{n:'Juliana Pereira do Nascimento',i:'JP',t:219.99}, {n:'RAYCA MENDES MORAIS',i:'RM',t:180.0}], top_dia:[{n:'RAYCA MENDES MORAIS',i:'RM',t:6688.0}, {n:'Juliana Pereira do Nascimento',i:'JP',t:219.99}], fin_dia:4758.0, fin_mes:43735.0, top_fin_mes:[{n:'RAYCA MENDES MORAIS',i:'RM',t:43735.0,bd:[{nm:'PayJoy',t:5360.0},{nm:'OdresCred',t:38375.0},{nm:'Outras',t:0}]}], fin_bd:[{nm:'PayJoy',t:5360.0},{nm:'OdresCred',t:38375.0},{nm:'Outras',t:0}], top_fin:[{n:'RAYCA MENDES MORAIS',i:'RM',t:4758.0}], metaAcess:9000,
+        linhares:    { label:'Linhares',           sigla:'LH', sub:'t3', meta:210000,  total:141453.98,  ped:138,  cancel:0, agend:0, agendCount:0, agendFat:38365.99,  fat_dia:6907.99, acess_dia:399.99, dia_a_dia:{"1":5409.99,"2":5409.99,"3":10958.99,"4":12257.99,"5":17520.99,"6":24844.99,"7":26414.99,"8":39918.99,"9":39918.99,"10":45893.99,"11":56671.99,"12":63670.99,"13":63860.99,"14":69928.99,"15":88722.99,"16":88722.99,"17":88822.99,"18":100928.99,"19":104867.99,"20":104937.99,"21":122897.99,"22":122897.99,"23":122897.99,"24":125156.99,"25":141453.98}, acess_dia_top:[{n:'Juliana Pereira do Nascimento',i:'JP',t:219.99}, {n:'RAYCA MENDES MORAIS',i:'RM',t:180.0}], top_dia:[{n:'RAYCA MENDES MORAIS',i:'RM',t:6688.0}, {n:'Juliana Pereira do Nascimento',i:'JP',t:219.99}], fin_dia:4758.0, fin_mes:43735.0, top_fin_mes:[{n:'RAYCA MENDES MORAIS',i:'RM',t:43735.0,bd:[{nm:'PayJoy',t:5360.0},{nm:'OdresCred',t:38375.0},{nm:'Outras',t:0}]}], fin_bd:[{nm:'PayJoy',t:5360.0},{nm:'OdresCred',t:38375.0},{nm:'Outras',t:0}], top_fin:[{n:'RAYCA MENDES MORAIS',i:'RM',t:4758.0}], metaAcess:9000,
             agendamentos:{total:38365.99, fin:34915.99, fin_bd:[{nm:'PayJoy',t:5074.99},{nm:'OdresCred',t:29841.0},{nm:'Outras',t:0}], top:[{n:'Juliana Pereira do Nascimento',i:'JP',t:38365.99}]},
             acessorios:{total:4574.99, top:[
                 {n:'Rayca Mendes Morais',i:'RM',t:940,ds:12,ult:'12/06'},
@@ -7154,7 +7152,7 @@ const D360 = {
             top:[{n:'Juliana Pereira do Nascimento',i:'JP',p:73,t:77473.98,ds:36,ult:'25/08'},
                 {n:'RAYCA MENDES MORAIS',i:'RM',p:58,t:61550.0,ds:54,ult:'25/08'},
                 {n:'KRYSTIAN LINCOLN DALFIOR GONÇALVES',i:'KL',p:7,t:2430.0,ds:2,ult:'25/08'}]},
-        montserrat:  { label:'Montserrat',         sigla:'MT', sub:'t3', meta:200000,  total:171466.0,  ped:197,  cancel:0, agend:0, agendCount:0, agendFat:45890.0,  fat_dia:0, acess_dia:0, acess_dia_top:[], top_dia:[], fin_dia:0, fin_mes:98903.0, top_fin_mes:[{n:'JOAQUIN EMILIANO RODRIGO',i:'JE',t:48386.0,bd:[{nm:'PayJoy',t:13150.0},{nm:'OdresCred',t:35236.0},{nm:'Outras',t:0}]},{n:'ADRIANO JEREMIAS CARDOSO MONTEIRO',i:'AJ',t:30824.0,bd:[{nm:'PayJoy',t:22525.0},{nm:'OdresCred',t:8299.0},{nm:'Outras',t:0}]},{n:'vinicius de almeida medeiros vargas',i:'VD',t:19693.0,bd:[{nm:'PayJoy',t:7700.0},{nm:'OdresCred',t:11993.0},{nm:'Outras',t:0}]}], fin_bd:[{nm:'PayJoy',t:43375.0},{nm:'OdresCred',t:55528.0},{nm:'Outras',t:0}], top_fin:[], metaAcess:20000,
+        montserrat:  { label:'Montserrat',         sigla:'MT', sub:'t3', meta:200000,  total:171466.0,  ped:197,  cancel:0, agend:0, agendCount:0, agendFat:45890.0,  fat_dia:0, acess_dia:0, dia_a_dia:{"1":4810.0,"2":12980.0,"3":24958.0,"4":28643.0,"5":36209.0,"6":44954.0,"7":46954.0,"8":52024.0,"9":71314.0,"10":71314.0,"11":77033.0,"12":78783.0,"13":83107.0,"14":87706.0,"15":96476.0,"16":103885.0,"17":103995.0,"18":119594.0,"19":135720.0,"20":133840.0,"21":153517.0,"22":159512.0,"23":161507.0,"24":161597.0,"25":171466.0}, acess_dia_top:[], top_dia:[], fin_dia:0, fin_mes:98903.0, top_fin_mes:[{n:'JOAQUIN EMILIANO RODRIGO',i:'JE',t:48386.0,bd:[{nm:'PayJoy',t:13150.0},{nm:'OdresCred',t:35236.0},{nm:'Outras',t:0}]},{n:'ADRIANO JEREMIAS CARDOSO MONTEIRO',i:'AJ',t:30824.0,bd:[{nm:'PayJoy',t:22525.0},{nm:'OdresCred',t:8299.0},{nm:'Outras',t:0}]},{n:'vinicius de almeida medeiros vargas',i:'VD',t:19693.0,bd:[{nm:'PayJoy',t:7700.0},{nm:'OdresCred',t:11993.0},{nm:'Outras',t:0}]}], fin_bd:[{nm:'PayJoy',t:43375.0},{nm:'OdresCred',t:55528.0},{nm:'Outras',t:0}], top_fin:[], metaAcess:20000,
             agendamentos:{total:45890.0, fin:38390.0, fin_bd:[{nm:'PayJoy',t:14300.0},{nm:'OdresCred',t:24090.0},{nm:'Outras',t:0}], top:[{n:'vinicius de almeida medeiros vargas',i:'VD',t:24193.0}, {n:'JOAQUIN EMILIANO RODRIGO',i:'JE',t:12248.0}, {n:'ADRIANO JEREMIAS CARDOSO MONTEIRO',i:'AJ',t:9449.0}]},
             acessorios:{total:12046.02, top:[
                 {n:'Joaquin Emiliano Rodrigo',i:'JE',t:3820,ds:12,ult:'12/06'},
@@ -7164,7 +7162,7 @@ const D360 = {
             top:[{n:'JOAQUIN EMILIANO RODRIGO',i:'JE',p:104,t:88309.0,ds:22,ult:'25/08'},
                 {n:'ADRIANO JEREMIAS CARDOSO MONTEIRO',i:'AJ',p:46,t:49569.0,ds:33,ult:'24/08'},
                 {n:'vinicius de almeida medeiros vargas',i:'VD',p:47,t:33588.0,ds:46,ult:'23/08'}]},
-        praiadacosta:{ label:'Praia da Costa',     sigla:'PC', sub:'t2', meta:100000,  total:58164.0,  ped:49,  cancel:0, agend:0, agendCount:0, agendFat:39522.0,  fat_dia:0, acess_dia:0, acess_dia_top:[], top_dia:[], fin_dia:0, fin_mes:33169.0, top_fin_mes:[{n:'Nycolly Calazans Paulo',i:'NC',t:31704.0,bd:[{nm:'PayJoy',t:16185.0},{nm:'OdresCred',t:15519.0},{nm:'Outras',t:0}]},{n:'LÍDIA DA PENHA DIOGO',i:'LD',t:1465.0,bd:[{nm:'PayJoy',t:1465.0},{nm:'OdresCred',t:0},{nm:'Outras',t:0}]}], fin_bd:[{nm:'PayJoy',t:17650.0},{nm:'OdresCred',t:15519.0},{nm:'Outras',t:0}], top_fin:[], metaAcess:2500,
+        praiadacosta:{ label:'Praia da Costa',     sigla:'PC', sub:'t2', meta:100000,  total:58164.0,  ped:49,  cancel:0, agend:0, agendCount:0, agendFat:39522.0,  fat_dia:0, acess_dia:0, dia_a_dia:{"1":1810.0,"2":1810.0,"3":3699.0,"4":3699.0,"5":10039.0,"6":10039.0,"7":15139.0,"8":17009.0,"9":19334.0,"10":19334.0,"11":25048.0,"12":25148.0,"13":25148.0,"14":25505.0,"15":29094.0,"16":30599.0,"17":30599.0,"18":34099.0,"19":36699.0,"20":38424.0,"21":50639.0,"22":54264.0,"23":54264.0,"24":54364.0,"25":58164.0}, acess_dia_top:[], top_dia:[], fin_dia:0, fin_mes:33169.0, top_fin_mes:[{n:'Nycolly Calazans Paulo',i:'NC',t:31704.0,bd:[{nm:'PayJoy',t:16185.0},{nm:'OdresCred',t:15519.0},{nm:'Outras',t:0}]},{n:'LÍDIA DA PENHA DIOGO',i:'LD',t:1465.0,bd:[{nm:'PayJoy',t:1465.0},{nm:'OdresCred',t:0},{nm:'Outras',t:0}]}], fin_bd:[{nm:'PayJoy',t:17650.0},{nm:'OdresCred',t:15519.0},{nm:'Outras',t:0}], top_fin:[], metaAcess:2500,
             agendamentos:{total:39522.0, fin:39522.0, fin_bd:[{nm:'PayJoy',t:23350.0},{nm:'OdresCred',t:16352.0},{nm:'Outras',t:0}], top:[{n:'Nycolly Calazans Paulo',i:'NC',t:24859.0}, {n:'stefany santiago rocha',i:'SS',t:11298.0}, {n:'ADRIEL SILVA DE OLIVEIRA',i:'AS',t:1900.0}, {n:'LÍDIA DA PENHA DIOGO',i:'LD',t:1465.0}]},
             acessorios:{total:2217.0, top:[], dias:[]},
             top:[{n:'Nycolly Calazans Paulo',i:'NC',p:31,t:39411.0,ds:9,ult:'24/08'},
@@ -10317,7 +10315,9 @@ function _buildAcessRankingAtual() {
     };
 }
 
-function _abrirRankingVendedoresAcess() {
+function _abrirRankingVendedoresAcess(modo) {
+    modo = modo || window._rankVendModoAtual || 'acess';
+    window._rankVendModoAtual = modo;
     var _d = _360D();
     var coresLojas = {
         moxuara:'#06b6d4', saomateus:'#f59e0b', montserrat:'#a855f7',
@@ -10328,60 +10328,75 @@ function _abrirRankingVendedoresAcess() {
     var todos = [];
     Object.entries(_d.lojas || {}).forEach(function(e) {
         var k = e[0]; var l = e[1];
-        if (!l.acessorios || !l.acessorios.top) return;
+        var origem = modo === 'fatdia' ? (l.top_dia || []) : (l.acessorios && l.acessorios.top || []);
+        if (!origem.length) return;
         var sigla = l.sigla || k.slice(0,2).toUpperCase();
         var cor   = coresLojas[k] || '#818cf8';
         var label = l.label || k;
-        l.acessorios.top.forEach(function(v) {
+        origem.forEach(function(v) {
             if (v.t > 0) todos.push({ n: v.n, t: v.t, sigla: sigla, cor: cor, loja: label });
         });
     });
     todos.sort(function(a,b){ return b.t - a.t; });
 
-    var _prevVendAcess = _d360LoadRankMap('_d360rk_vend_acess');
-    _d360SaveRankMap('_d360rk_vend_acess', todos.map(function(v){ return v.n; }));
+    var rankKey = modo === 'fatdia' ? '_d360rk_vend_fatdia' : '_d360rk_vend_acess';
+    var _prevVend = _d360LoadRankMap(rankKey);
+    _d360SaveRankMap(rankKey, todos.map(function(v){ return v.n; }));
 
-    var periodo = (window._360dataAtiva && window._360dataAtiva.periodo) ? window._360dataAtiva.periodo : (D360.periodo || '');
+    var now = new Date();
+    var hojeStr = String(now.getDate()).padStart(2,'0') + '/' + String(now.getMonth()+1).padStart(2,'0') + '/' + now.getFullYear();
+    var periodo = modo === 'fatdia'
+        ? hojeStr
+        : ((window._360dataAtiva && window._360dataAtiva.periodo) ? window._360dataAtiva.periodo : (D360.periodo || ''));
     var medalhas = ['🥇','🥈','🥉'];
+    var corValor = modo === 'fatdia' ? '#4ade80' : '#f59e0b';
     var rows = todos.map(function(v, i) {
         var pos = i + 1;
         var med = medalhas[i] || ('<span style="color:#6b7280;font-size:11px;font-weight:700;">' + pos + 'º</span>');
-        var delta = _d360RankBadge(_prevVendAcess, v.n, pos);
+        var delta = _d360RankBadge(_prevVend, v.n, pos);
         return '<tr style="border-bottom:1px solid rgba(255,255,255,.05);">' +
             '<td style="padding:7px 10px;text-align:center;font-size:12px;white-space:nowrap;">' + med + (delta ? '<br>' + delta : '') + '</td>' +
             '<td style="padding:7px 10px;font-size:11px;font-weight:600;color:#f3f4f6;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + v.n + '</td>' +
             '<td style="padding:7px 10px;">' +
                 '<span style="font-size:9px;font-weight:800;padding:2px 8px;border-radius:999px;background:' + v.cor + '22;color:' + v.cor + ';white-space:nowrap;">' + v.loja + '</span>' +
             '</td>' +
-            '<td style="padding:7px 10px;font-size:12px;font-weight:800;color:#f59e0b;text-align:right;white-space:nowrap;">' + _brlR(v.t) + '</td>' +
+            '<td style="padding:7px 10px;font-size:12px;font-weight:800;color:' + corValor + ';text-align:right;white-space:nowrap;">' + _brlR(v.t) + '</td>' +
         '</tr>';
     }).join('');
 
     var existente = document.getElementById('_modal-rank-vend-acess');
     if (existente) existente.remove();
 
+    function tabStyle(ativo, cor) {
+        return 'flex:1;cursor:pointer;font-size:11px;font-weight:700;padding:8px 10px;border-radius:10px;border:1px solid ' + (ativo ? cor : 'rgba(255,255,255,.1)') + ';background:' + (ativo ? cor+'1c' : 'rgba(255,255,255,.04)') + ';color:' + (ativo ? cor : '#9ca3af') + ';transition:all .15s;';
+    }
+
     var modal = document.createElement('div');
     modal.id = '_modal-rank-vend-acess';
-    modal.style.cssText = 'position:fixed;inset:0;z-index:9999;display:flex;align-items:flex-end;justify-content:center;background:rgba(0,0,0,.65);backdrop-filter:blur(4px);';
+    modal.style.cssText = 'position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.65);backdrop-filter:blur(4px);padding:24px 16px;';
     modal.onclick = function(ev){ if(ev.target===modal) modal.remove(); };
     modal.innerHTML =
-        '<div style="background:#111827;border-radius:20px 20px 0 0;width:100%;max-width:520px;max-height:82vh;display:flex;flex-direction:column;border-top:1px solid rgba(99,102,241,.35);">' +
+        '<div style="background:#111827;border-radius:20px;width:100%;max-width:520px;max-height:82vh;display:flex;flex-direction:column;border:1px solid rgba(99,102,241,.35);box-shadow:0 20px 60px rgba(0,0,0,.5);">' +
             '<div style="display:flex;align-items:center;justify-content:space-between;padding:16px 18px 10px;">' +
                 '<div>' +
                     '<div style="font-size:14px;font-weight:800;color:#f3f4f6;">👤 Ranking de Vendedores</div>' +
-                    '<div style="font-size:10px;color:#6b7280;margin-top:2px;">Acessórios · ' + periodo + ' · ' + todos.length + ' vendedores</div>' +
+                    '<div style="font-size:10px;color:#6b7280;margin-top:2px;">' + (modo === 'fatdia' ? 'Faturamento Diário' : 'Acessórios') + ' · ' + periodo + ' · ' + todos.length + ' vendedores</div>' +
                 '</div>' +
                 '<button onclick="document.getElementById(\'_modal-rank-vend-acess\').remove()" style="background:rgba(255,255,255,.07);border:none;border-radius:50%;width:30px;height:30px;cursor:pointer;color:#9ca3af;font-size:14px;display:flex;align-items:center;justify-content:center;">✕</button>' +
             '</div>' +
+            '<div style="display:flex;gap:8px;padding:0 18px 12px;">' +
+                '<button onclick="_abrirRankingVendedoresAcess(\'acess\')" style="' + tabStyle(modo!=='fatdia','#f59e0b') + '">💎 Acessórios</button>' +
+                '<button onclick="_abrirRankingVendedoresAcess(\'fatdia\')" style="' + tabStyle(modo==='fatdia','#4ade80') + '">💰 Faturamento Diário</button>' +
+            '</div>' +
             '<div style="overflow-y:auto;flex:1;padding:0 4px 16px;">' +
                 (todos.length === 0
-                    ? '<p style="text-align:center;color:#6b7280;font-size:12px;padding:40px;">Nenhum dado de acessórios disponível.</p>'
+                    ? '<p style="text-align:center;color:#6b7280;font-size:12px;padding:40px;">' + (modo === 'fatdia' ? 'Nenhuma venda registrada hoje ainda.' : 'Nenhum dado de acessórios disponível.') + '</p>'
                     : '<table style="width:100%;border-collapse:collapse;">' +
                           '<thead><tr style="background:rgba(0,0,0,.4);">' +
                               '<th style="padding:6px 10px;font-size:9px;color:#6b7280;text-align:center;">#</th>' +
                               '<th style="padding:6px 10px;font-size:9px;color:#6b7280;text-align:left;">Vendedor</th>' +
                               '<th style="padding:6px 10px;font-size:9px;color:#6b7280;text-align:left;">Loja</th>' +
-                              '<th style="padding:6px 10px;font-size:9px;color:#6b7280;text-align:right;">Acessórios</th>' +
+                              '<th style="padding:6px 10px;font-size:9px;color:#6b7280;text-align:right;">' + (modo === 'fatdia' ? 'Faturamento' : 'Acessórios') + '</th>' +
                           '</tr></thead>' +
                           '<tbody>' + rows + '</tbody>' +
                       '</table>') +
@@ -10612,6 +10627,80 @@ function _renderHistAcessAbr26() {
     // Chave localStorage: v2 força re-fetch do Firestore (invalida cache antigo)
     window._360storageKey = '_360data_v2_' + ano + '_' + (mes + 1);
 })();
+
+/* ══════════════════════════════════════════════════
+   PERFORMANCE — comparativo com o MESMO PERÍODO do mês anterior
+   Busca o total real do mês anterior (ts_d360_historico) e monta
+   D360.performance.mesAnterior dinamicamente, sempre relativo ao
+   mês corrente — nunca fica preso a um mês fixo desatualizado.
+══════════════════════════════════════════════════ */
+async function _d360CarregarMesAnterior() {
+    const MESES_PT = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+    const now      = new Date();
+    const anoNum   = now.getFullYear();
+    const mesNum   = now.getMonth() + 1; // 1-based
+    const prevMes  = mesNum === 1 ? 12 : mesNum - 1;
+    const prevAno  = mesNum === 1 ? anoNum - 1 : anoNum;
+    const prevChave = prevAno + '_' + String(prevMes).padStart(2, '0');
+    const prevLabel = MESES_PT[prevMes - 1] + ' ' + prevAno;
+
+    let prevData = null;
+    if (window._acadFBOk && window._acadDB) {
+        try {
+            const pdoc = await window._acadDB.collection('ts_d360_historico').doc(prevChave).get();
+            if (pdoc.exists) prevData = pdoc.data();
+        } catch (e) {}
+    }
+    if (!prevData) {
+        try {
+            const _FSKEY = 'AIzaSyDFrLshzqf8Ct9U1SkM9MSveDNPuy_2--8';
+            const _FSPRJ = 'titas-sinergy';
+            const pr = await fetch('https://firestore.googleapis.com/v1/projects/' + _FSPRJ + '/databases/(default)/documents/ts_d360_historico/' + prevChave + '?key=' + _FSKEY);
+            if (pr.ok) { const rw = await pr.json(); if (rw.fields) prevData = _fsRestToJs(rw.fields); }
+        } catch (e) {}
+    }
+    if (!prevData) {
+        try {
+            await _360LoadJsonHist();
+            if (window._360JsonHistorico && window._360JsonHistorico[prevChave]) prevData = window._360JsonHistorico[prevChave];
+        } catch (e) {}
+    }
+    if (!prevData || !prevData.lojas) return;
+
+    const prevLojas = {};
+    const prevSubs  = { t1: 0, t2: 0, t3: 0 };
+    let prevRede    = 0;
+    Object.keys(D360.lojas).forEach(function(k) {
+        const t = (prevData.lojas[k] && prevData.lojas[k].total) || 0;
+        prevLojas[k] = t;
+        const sub = D360.lojas[k].sub;
+        prevSubs[sub] = (prevSubs[sub] || 0) + t;
+        prevRede += t;
+    });
+    const prevDiasMes = new Date(prevAno, prevMes, 0).getDate();
+
+    D360.performance.mesAnterior = {
+        nome: prevLabel,
+        diasMes: prevDiasMes,
+        rede: prevRede,
+        subredes: prevSubs,
+        lojas: prevLojas,
+        // âncora única no último dia → interpolação linear proporcional ao dia atual
+        parcial: {}
+    };
+    D360.performance.mesAnterior.parcial[prevDiasMes] = { rede: prevRede };
+
+    try {
+        const pill = document.querySelector('#d360-pills .pill-360.active');
+        render360(pill ? pill.dataset.tipo : 'geral', pill ? pill.dataset.val : '');
+    } catch (e) {}
+}
+window._d360MesAnteriorCarregado = false;
+function _d360CarregarMesAnteriorUmaVez() {
+    if (window._d360MesAnteriorCarregado) return;
+    window._d360MesAnteriorCarregado = true;
+    _d360CarregarMesAnterior();
+}
 
 /* ══════════════════════════════════════════════════
    AUTO-ZERO FAT_DIA — zera o card às 23:59 de cada dia
@@ -11722,6 +11811,202 @@ function _lojaHistDetalhe(label, val, isBest, isAtual) {
     </div>`;
 }
 
+/* ══════════════════════════════════════════════════
+   HISTÓRICO DIÁRIO (senoide) — vendas próprias de cada dia, do dia 01 até hoje
+   Fonte: l.dia_a_dia = {"D": totalAcumuladoAteOFimDoDiaD, ...} (gravado por update_d360.py)
+══════════════════════════════════════════════════ */
+const _LOJA_HIST_TOGGLE_ON  = 'font-size:.55rem;font-weight:700;padding:.25rem .55rem;border-radius:999px;border:1px solid rgba(168,85,247,.5);background:rgba(168,85,247,.22);color:#c084fc;cursor:pointer;';
+const _LOJA_HIST_TOGGLE_OFF = 'font-size:.55rem;font-weight:700;padding:.25rem .55rem;border-radius:999px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);color:#9ca3af;cursor:pointer;';
+window._lojaHistModo = 'mensal';
+
+/* Converte o acumulado dia-a-dia em venda PRÓPRIA de cada dia (delta) — cobre
+   TODOS os dias de 01 até hoje, sem furos:
+   - Dias com dado real da automação: delta = acumulado[d] - acumulado[d-1].
+   - Dias ANTERIORES ao primeiro dado real (ex.: automação só começou a
+     registrar no dia 12): estimados por interpolação linear de 0 até o
+     primeiro valor conhecido, e marcados com estimado:true (não são medição).
+   - Buraco pontual no meio da série (automação fora do ar um dia isolado):
+     repete o último acumulado conhecido (delta=0 naquele dia), também marcado
+     como estimado. */
+function _lojaDailyDeltas(lojaKey) {
+    const _d = _360D();
+    const l  = (_d.lojas || {})[lojaKey] || {};
+    const diasHoje = _d.diasDecorridos || 1;
+    const cumReal = l.dia_a_dia || {};
+    const diasComDado = Object.keys(cumReal).map(Number).filter(d => d >= 1 && d <= diasHoje).sort((a, b) => a - b);
+    if (!diasComDado.length) return [];
+
+    const primeiroDia = diasComDado[0];
+    const cum = {};
+    for (let d = 1; d < primeiroDia; d++) cum[d] = cumReal[primeiroDia] * d / primeiroDia;
+    for (let d = primeiroDia; d <= diasHoje; d++) {
+        cum[d] = cumReal[d] != null ? cumReal[d] : cum[d - 1];
+    }
+
+    const out = [];
+    let anterior = 0;
+    for (let d = 1; d <= diasHoje; d++) {
+        const delta = Math.max(0, cum[d] - anterior);
+        // estimado quando o próprio dia não tem dado real, OU quando é o primeiro
+        // dia real mas depois de um trecho interpolado (delta usa base estimada) —
+        // se primeiroDia === 1 não há interpolação nenhuma, então não marca nada
+        const estimado = cumReal[d] == null || (d === primeiroDia && primeiroDia > 1);
+        out.push({ d, delta, estimado });
+        anterior = cum[d];
+    }
+    return out;
+}
+
+function _lojaHistDiarioSVG(lojaKey) {
+    const pts = _lojaDailyDeltas(lojaKey);
+    if (!pts.length) {
+        return `<p style="text-align:center;color:#6b7280;font-size:.62rem;padding:1.2rem 0;margin:0;">Sem dados diários disponíveis ainda.</p>`;
+    }
+    const brl2 = v => v.toLocaleString('pt-BR',{style:'currency',currency:'BRL',maximumFractionDigits:0});
+    const W = 100, H = 78, PAD_T = 14, PAD_B = 14, PAD_L = 5, PAD_R = 5;
+    const diasHoje = pts.length;
+    const reais    = pts.filter(p => !p.estimado);
+    const maxV     = Math.max(...pts.map(p => p.delta), 1);
+    const x = d => diasHoje > 1 ? PAD_L + ((d - 1) / (diasHoje - 1)) * (W - PAD_L - PAD_R) : W / 2;
+    const y = v => PAD_T + (H - PAD_T - PAD_B) * (1 - (v / maxV));
+
+    const hojePt = pts[pts.length - 1];
+    const maxPt  = reais.length ? reais.reduce((a, b) => b.delta > a.delta ? b : a, reais[0]) : hojePt;
+    const mediaV = reais.length ? reais.reduce((s, p) => s + p.delta, 0) / reais.length : 0;
+    const statsRow = `<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.4rem;margin-bottom:.4rem;font-size:.54rem;color:#9ca3af;text-align:center;">
+        <span>Hoje<br><b style="font-size:.62rem;color:#fbbf24;">${brl2(hojePt.delta)}</b></span>
+        <span>Média/dia<br><b style="font-size:.62rem;color:#c4b5fd;">${brl2(mediaV)}</b></span>
+        <span>Melhor dia<br><b style="font-size:.62rem;color:#4ade80;">${brl2(maxPt.delta)}</b> <span style="color:#6b7280;">(dia ${String(maxPt.d).padStart(2,'0')})</span></span>
+    </div>`;
+
+    // Desenha em trechos contínuos por tipo (real vs estimado) — a linha nunca
+    // pula um dia (cobre 01 até hoje), mas muda de estilo onde o dado é estimado.
+    const segs = [];
+    let atualTipo = null, atual = [];
+    pts.forEach(p => {
+        if (p.estimado !== atualTipo) {
+            if (atual.length) segs.push({ estimado: atualTipo, pts: atual });
+            atual = []; atualTipo = p.estimado;
+        }
+        atual.push(p);
+    });
+    if (atual.length) segs.push({ estimado: atualTipo, pts: atual });
+    // conecta visualmente um segmento ao próximo (senão fica um buraco de 1px na virada real/estimado)
+    for (let i = 0; i < segs.length - 1; i++) segs[i].pts.push(segs[i + 1].pts[0]);
+
+    const smoothPath = arr => {
+        let d = `M${x(arr[0].d).toFixed(2)},${y(arr[0].delta).toFixed(2)}`;
+        for (let i = 0; i < arr.length - 1; i++) {
+            const p0 = arr[i], p1 = arr[i + 1];
+            const cx = (x(p0.d) + x(p1.d)) / 2;
+            d += ` C${cx.toFixed(2)},${y(p0.delta).toFixed(2)} ${cx.toFixed(2)},${y(p1.delta).toFixed(2)} ${x(p1.d).toFixed(2)},${y(p1.delta).toFixed(2)}`;
+        }
+        return d;
+    };
+
+    const linePaths = segs.map(seg => seg.pts.length > 1
+        ? `<path d="${smoothPath(seg.pts)}" fill="none" stroke="${seg.estimado ? '#6b7280' : 'url(#_lojaDiaGrad)'}" stroke-width="${seg.estimado ? 1.1 : 1.6}" stroke-dasharray="${seg.estimado ? '2.2,1.6' : 'none'}" vector-effect="non-scaling-stroke"/>`
+        : `<circle cx="${x(seg.pts[0].d)}" cy="${y(seg.pts[0].delta)}" r="1.4" fill="${seg.estimado ? '#6b7280' : '#a855f7'}"/>`
+    ).join('');
+
+    const areaPaths = segs.filter(s => !s.estimado && s.pts.length > 1).map(seg => {
+        const first = seg.pts[0], last = seg.pts[seg.pts.length - 1];
+        return `<path d="${smoothPath(seg.pts)} L${x(last.d).toFixed(2)},${(H - PAD_B).toFixed(2)} L${x(first.d).toFixed(2)},${(H - PAD_B).toFixed(2)} Z" fill="url(#_lojaDiaFill)" opacity=".35"/>`;
+    }).join('');
+
+    const hojeMarker = `<circle cx="${x(hojePt.d)}" cy="${y(hojePt.delta)}" r="2.2" fill="#D4AF37" stroke="#111827" stroke-width=".6"/>`;
+    const maxMarker  = !maxPt.estimado && maxPt.d !== hojePt.d
+        ? `<circle cx="${x(maxPt.d)}" cy="${y(maxPt.delta)}" r="1.8" fill="#4ade80" stroke="#111827" stroke-width=".5"/>`
+        : '';
+
+    // Rótulos de valor (R$) diretamente no gráfico — hoje e melhor dia
+    const valLabel = (p, cor) => {
+        const ly = Math.max(5, y(p.delta) - 4.5);
+        return `<text x="${x(p.d).toFixed(2)}" y="${ly.toFixed(2)}" font-size="3.6" font-weight="700" fill="${cor}" text-anchor="middle">${brl2(p.delta)}</text>`;
+    };
+    const valueLabels = [
+        valLabel(hojePt, hojePt.estimado ? '#9ca3af' : '#fbbf24'),
+        (!maxPt.estimado && maxPt.d !== hojePt.d) ? valLabel(maxPt, '#4ade80') : ''
+    ].join('');
+
+    // pontos com tooltip ao passar o mouse (hover) — e clique, pra funcionar em touch também
+    const pontosClicaveis = pts.map(p =>
+        `<circle cx="${x(p.d)}" cy="${y(p.delta)}" r="3.4" fill="transparent" style="cursor:pointer;" onmouseenter="_lojaDiaDetalhe(${p.d},${p.delta},${!!p.estimado})" onclick="_lojaDiaDetalhe(${p.d},${p.delta},${!!p.estimado})"><title>Dia ${String(p.d).padStart(2,'0')}${p.estimado?' (estimado)':''}: ${brl2(p.delta)}</title></circle>`
+    ).join('');
+
+    const labelDias = [...new Set([1, Math.ceil(diasHoje / 2), diasHoje])];
+    const labels = labelDias.map(d => `<text x="${x(d).toFixed(2)}" y="${H}" font-size="3.4" fill="#6b7280" text-anchor="middle">${d}</text>`).join('');
+
+    const temEstimado = pts.some(p => p.estimado);
+    const legendaEstimado = temEstimado
+        ? `<div style="display:flex;align-items:center;justify-content:center;gap:.3rem;margin-top:.3rem;font-size:.5rem;color:#6b7280;">
+               <span style="display:inline-block;width:10px;border-top:1.5px dashed #6b7280;"></span>
+               trecho estimado — automação sem histórico diário nesses dias
+           </div>`
+        : '';
+
+    return `${statsRow}<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:86px;overflow:visible;display:block;" onmouseleave="_lojaDiaHoverOut()">
+        <defs>
+            <linearGradient id="_lojaDiaGrad" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stop-color="#6366f1"/>
+                <stop offset="100%" stop-color="#a855f7"/>
+            </linearGradient>
+            <linearGradient id="_lojaDiaFill" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#a855f7"/>
+                <stop offset="100%" stop-color="#a855f7" stop-opacity="0"/>
+            </linearGradient>
+        </defs>
+        ${areaPaths}
+        ${linePaths}
+        ${maxMarker}
+        ${hojeMarker}
+        ${valueLabels}
+        ${pontosClicaveis}
+        ${labels}
+    </svg>${legendaEstimado}`;
+}
+
+function _lojaDiaHoverOut() {
+    const el = document.getElementById('_popup-loja-hist-detail');
+    if (el) el.style.display = 'none';
+}
+
+function _lojaDiaDetalhe(dia, valor, estimado) {
+    const el = document.getElementById('_popup-loja-hist-detail');
+    if (!el) return;
+    const brl2 = v => v.toLocaleString('pt-BR',{style:'currency',currency:'BRL',maximumFractionDigits:0});
+    el.style.display = 'block';
+    el.innerHTML = `<div style="display:flex;align-items:center;justify-content:space-between;gap:.5rem;">
+        <div>
+            <div style="font-size:.5rem;color:#a78bfa;font-weight:700;text-transform:uppercase;">Dia ${String(dia).padStart(2,'0')}${estimado ? ' <span style="color:#6b7280;font-weight:600;text-transform:none;">(estimado)</span>' : ''}</div>
+            <div style="font-size:1rem;font-weight:900;color:#fff;margin-top:.1rem;">${brl2(valor)}</div>
+        </div>
+        <button onclick="document.getElementById('_popup-loja-hist-detail').style.display='none'"
+            style="background:rgba(255,255,255,.08);border:none;border-radius:.4rem;color:#6b7280;font-size:.7rem;cursor:pointer;padding:.2rem .45rem;">✕</button>
+    </div>`;
+}
+
+function _lojaHistSetModo(lojaKey, modo) {
+    window._lojaHistModo = modo;
+    const _d = _360D();
+    const l  = (_d.lojas || {})[lojaKey] || {};
+    const content = document.getElementById('_popup-loja-hist-content');
+    const titulo  = document.getElementById('_popup-loja-hist-titulo');
+    const detail  = document.getElementById('_popup-loja-hist-detail');
+    if (detail) detail.style.display = 'none';
+    if (modo === 'diario') {
+        if (content) content.innerHTML = _lojaHistDiarioSVG(lojaKey);
+        if (titulo) titulo.textContent = 'Histórico — Vendas Diárias (01 a ' + String(_d.diasDecorridos || 1).padStart(2, '0') + ')';
+    } else {
+        if (content) content.innerHTML = _lojaHistBars(lojaKey, l.total || 0);
+        if (titulo) titulo.textContent = 'Histórico — Últimos 24 Meses';
+    }
+    const bMensal = document.getElementById('_popup-loja-hist-btn-mensal');
+    const bDiario = document.getElementById('_popup-loja-hist-btn-diario');
+    if (bMensal) bMensal.setAttribute('style', modo === 'mensal' ? _LOJA_HIST_TOGGLE_ON : _LOJA_HIST_TOGGLE_OFF);
+    if (bDiario) bDiario.setAttribute('style', modo === 'diario' ? _LOJA_HIST_TOGGLE_ON : _LOJA_HIST_TOGGLE_OFF);
+}
+
 /* ── Popup de detalhes de loja ── */
 function _currentCargo() {
     if (user && user.cargo) return user.cargo;
@@ -11741,6 +12026,7 @@ function _hasDiagAccess() {
 }
 
 function abrirPopupLoja(lojaKey) {
+    window._lojaHistModo = 'mensal';
     const _d   = _360D();
     if (!_d || !_d.lojas) return;
     const l    = _d.lojas[lojaKey];
@@ -11842,12 +12128,18 @@ function abrirPopupLoja(lojaKey) {
             ${chip('Fat. Hoje', l.fat_dia > 0 ? brl(l.fat_dia) : '—', '#fbbf24')}
         </div>
 
-        <!-- Histórico 24 meses -->
+        <!-- Histórico (mensal / diário) -->
         <div style="background:rgba(168,85,247,.06);border:1px solid rgba(168,85,247,.2);border-radius:.9rem;padding:.85rem 1rem;margin-bottom:.75rem;">
-            <div style="font-size:.5rem;color:#c084fc;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:.6rem;display:flex;align-items:center;gap:.35rem;">
-                <i class="fas fa-chart-column" style="color:#a855f7;"></i>Histórico — Últimos 24 Meses
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.6rem;flex-wrap:wrap;gap:.4rem;">
+                <div style="font-size:.5rem;color:#c084fc;font-weight:700;text-transform:uppercase;letter-spacing:.07em;display:flex;align-items:center;gap:.35rem;">
+                    <i class="fas fa-chart-column" style="color:#a855f7;"></i><span id="_popup-loja-hist-titulo">Histórico — Últimos 24 Meses</span>
+                </div>
+                <div style="display:flex;gap:.3rem;">
+                    <button id="_popup-loja-hist-btn-mensal" onclick="_lojaHistSetModo('${lojaKey}','mensal')" style="${_LOJA_HIST_TOGGLE_ON}">Mensal</button>
+                    <button id="_popup-loja-hist-btn-diario" onclick="_lojaHistSetModo('${lojaKey}','diario')" style="${_LOJA_HIST_TOGGLE_OFF}">Diário</button>
+                </div>
             </div>
-            ${_lojaHistBars(lojaKey, l.total)}
+            <div id="_popup-loja-hist-content">${_lojaHistBars(lojaKey, l.total)}</div>
             <div id="_popup-loja-hist-detail" style="display:none;margin-top:.6rem;padding:.5rem .65rem;background:rgba(168,85,247,.1);border:1px solid rgba(168,85,247,.25);border-radius:.6rem;"></div>
         </div>
 

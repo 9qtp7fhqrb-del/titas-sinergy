@@ -764,7 +764,27 @@ def fmt_top(top_list):
     items = [f"{{n:'{e['n']}',i:'{e['i']}',t:{e['t']}}}" for e in top_list]
     return '[' + ', '.join(items) + ']'
 
-def update_store(content, store_key, total, acess_total, agend_total, agend_top, fat_dia=0, top_dia=None, acess_dia=0, acess_dia_top=None, fin_dia=0, top_fin=None, fin_mes=0, top_fin_mes=None, fin_bd=None, sellers_top=None, sellers_today=None, agend_fin=0, agend_fin_bd=None):
+def update_dia_a_dia_field(sec, dia_hoje, total_hoje):
+    """Mantém dia_a_dia:{"D":total,...} — total ACUMULADO do mês até o fim de cada dia,
+    usado pelo gráfico de vendas diárias (senoide) no popup da loja.
+    Reinicia na virada de mês (dia 1) para não vazar do mês anterior."""
+    m = re.search(r'dia_a_dia:\{([^}]*)\}', sec)
+    dados = {}
+    if m:
+        for k, v in re.findall(r'"(\d+)":([\d.]+)', m.group(1)):
+            dados[int(k)] = float(v)
+    if dia_hoje == 1:
+        dados = {}
+    dados[dia_hoje] = round(total_hoje, 2)
+    novo = 'dia_a_dia:{' + ','.join(f'"{d}":{dados[d]}' for d in sorted(dados)) + '}'
+    if m:
+        return sec[:m.start()] + novo + sec[m.end():]
+    sec2, n = re.subn(r'(\bacess_dia:\d+(?:\.\d+)?)', f'\\1, {novo}', sec, count=1)
+    if n == 0:
+        sec2, n = re.subn(r'(\bfat_dia:\d+(?:\.\d+)?)', f'\\1, {novo}', sec, count=1)
+    return sec2
+
+def update_store(content, store_key, total, acess_total, agend_total, agend_top, fat_dia=0, top_dia=None, acess_dia=0, acess_dia_top=None, fin_dia=0, top_fin=None, fin_mes=0, top_fin_mes=None, fin_bd=None, sellers_top=None, sellers_today=None, agend_fin=0, agend_fin_bd=None, dia_hoje=None):
     start, end = find_section(content, store_key)
     if start is None:
         print(f"  AVISO: seção '{store_key}' não encontrada no HTML")
@@ -774,6 +794,10 @@ def update_store(content, store_key, total, acess_total, agend_total, agend_top,
 
     # 1. total (na linha principal da loja)
     sec = re.sub(r'(\btotal:)\d+(?:\.\d+)?(?=\s*,\s*ped:)', f'\\g<1>{total}', sec, count=1)
+
+    # 1b. dia_a_dia (histórico diário do total acumulado — gráfico "senoide" no popup da loja)
+    if dia_hoje:
+        sec = update_dia_a_dia_field(sec, dia_hoje, total)
 
     # 2. agendFat
     sec = re.sub(r'\bagendFat:\d+(?:\.\d+)?', f'agendFat:{agend_total}', sec, count=1)
@@ -1599,6 +1623,7 @@ def main():
                     fin_dia=0, top_fin=[], fin_mes=0, top_fin_mes=[],
                     fin_bd=[{'nm': g['nm'], 't': 0} for g in FINANCEIRAS_GROUPS],
                     sellers_top=[], sellers_today=set(),
+                    dia_hoje=1,
                 )
                 print(f"  {sk}: sem vendas — zerado (dia 1 do mês)")
             else:
@@ -1624,6 +1649,7 @@ def main():
             sellers_today  = sellers_today_by_store.get(sk, set()),
             agend_fin      = _af.get('fin', 0),
             agend_fin_bd   = _af.get('fin_bd', [{'nm': g['nm'], 't': 0} for g in FINANCEIRAS_GROUPS]),
+            dia_hoje       = dias_decorridos,
         )
         print(f"  {sk}: atualizado")
 

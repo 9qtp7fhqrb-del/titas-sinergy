@@ -6998,7 +6998,7 @@ const D360 = {
     margem_lojas: {
         // ── FONTE PRIMÁRIA — atualizar aqui com o Relatório Gerencial por Loja ──
         // atualizado pelo update_d360.py (por loja via API, fallback por subrede)
-        cariacica:   48.88,
+        cariacica:   50.26,
         itabuna:     48.88,
         moxuara:     48.88,
         praiadacosta:48.25,
@@ -12166,9 +12166,7 @@ function abrirPopupLoja(lojaKey) {
     // Margem bruta — usa margem_lojas do D360 (atualizado pelo Python via ERP); fallback 50%
     const _mPct    = ((_d.margem_lojas || {})[lojaKey]) ?? 50;
     const mMes     = l.margem_mes > 0 ? l.margem_mes : Math.round(l.total * _mPct / 100);
-    const mDia     = l.margem_dia > 0 ? l.margem_dia : Math.round((l.fat_dia || 0) * _mPct / 100);
-    const mMesPct  = l.total > 0        ? (mMes / l.total * 100).toFixed(1)       : _mPct.toFixed(1);
-    const mDiaPct  = (l.fat_dia || 0) > 0 ? (mDia / (l.fat_dia || 1) * 100).toFixed(1) : _mPct.toFixed(1);
+    const mMesPct  = l.total > 0 ? (mMes / l.total * 100).toFixed(1) : _mPct.toFixed(1);
 
     // Vendedores (top + sem venda no mês)
     const _norm = s => (s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').split(/\s+/)[0];
@@ -12232,17 +12230,12 @@ function abrirPopupLoja(lojaKey) {
             </div>
         </div>
 
-        <!-- Margem de lucro -->
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:.5rem;">
+        <!-- Margem de lucro mensal -->
+        <div style="margin-bottom:.5rem;">
             <div style="background:rgba(16,185,129,.07);border:1px solid rgba(16,185,129,.22);border-radius:.9rem;padding:.75rem 1rem;">
-                <div style="font-size:.5rem;color:#34d399;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:.2rem;"><i class="fas fa-chart-line" style="margin-right:.3rem;"></i>Margem Mensal</div>
+                <div style="font-size:.5rem;color:#34d399;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:.2rem;"><i class="fas fa-chart-line" style="margin-right:.3rem;"></i>Margem Bruta Mensal</div>
                 <div style="font-size:1.05rem;font-weight:900;color:#34d399;">${brl(mMes)}</div>
                 <div style="font-size:.55rem;color:#6b7280;margin-top:.1rem;">${mMesPct}% sobre faturamento</div>
-            </div>
-            <div style="background:rgba(16,185,129,.04);border:1px solid rgba(16,185,129,.14);border-radius:.9rem;padding:.75rem 1rem;">
-                <div style="font-size:.5rem;color:#6ee7b7;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:.2rem;"><i class="fas fa-sun" style="margin-right:.3rem;"></i>Margem Hoje</div>
-                <div style="font-size:1.05rem;font-weight:900;color:${(l.fat_dia||0)>0?'#6ee7b7':'#4b5563'};">${(l.fat_dia||0)>0 ? brl(mDia) : '—'}</div>
-                <div style="font-size:.55rem;color:#6b7280;margin-top:.1rem;">${(l.fat_dia||0)>0 ? mDiaPct+'% sobre faturamento' : 'sem vendas hoje'}</div>
             </div>
         </div>
 

@@ -519,26 +519,76 @@ def update_margem_subredes(content, margens):
     return content
 
 
-def update_margem_lojas(content, margem_subredes):
+def fetch_metas_firestore():
+    """Busca metas lançadas no Firestore para o mês vigente via REST."""
+    mes_key = f"metas_{_now_brt.year}_{_now_brt.month:02d}"
+    url = (f'https://firestore.googleapis.com/v1/projects/{FIREBASE_PROJ}'
+           f'/databases/(default)/documents/ts_d360_historico/{mes_key}?key={FIREBASE_KEY}')
+    try:
+        r = requests.get(url, timeout=15)
+        if r.status_code != 200:
+            print(f'  AVISO: Firestore metas retornou {r.status_code}')
+            return {}
+        d = r.json()
+        lojas_map = (d.get('fields', {}).get('lojas', {})
+                      .get('mapValue', {}).get('fields', {}))
+        result = {}
+        for loja, lv in lojas_map.items():
+            vends = (lv.get('mapValue', {}).get('fields', {})
+                       .get('vendedores', {}).get('mapValue', {}).get('fields', {}))
+            if not vends:
+                continue
+            result[loja] = {}
+            for k, vv in vends.items():
+                vf = vv.get('mapValue', {}).get('fields', {})
+                cel = int(float(
+                    vf.get('meta_cel', {}).get('integerValue', 0) or
+                    vf.get('meta_cel', {}).get('doubleValue', 0) or 0
+                ))
+                if cel > 0:
+                    result[loja][k] = cel
+        return result
+    except Exception as e:
+        print(f'  AVISO: erro ao buscar metas Firestore: {e}')
+        return {}
+
+
+def update_vend_metas_db(content, firestore_metas):
     """
-    Propaga a margem da subrede para cada loja em margem_lojas.
-    _calcMargemPonderada usa margem_lojas como prioridade — sem essa atualização
-    o JS sempre exibe valores antigos ignorando margem_subredes atualizado.
+    Sincroniza VEND_METAS_DB com as metas lançadas no Firestore.
+    Atualiza entradas existentes; novas entradas são cobertas pelo _metasOverride em runtime.
     """
-    for sub, lojas in SUBREDE_LOJAS.items():
-        val = margem_subredes.get(sub)
-        if not val:
-            continue
-        for lk in lojas:
-            # margem_lojas é um objeto JS inline: cariacica: 44.67,
-            pattern = rf'(margem_lojas\s*:[^}}]*?\b{lk}\s*:\s*)\d+(?:\.\d+)?'
-            new = f'\\g<1>{val:.2f}'
-            updated = re.sub(pattern, new, content, count=1, flags=re.DOTALL)
-            if updated != content:
-                content = updated
-                print(f"  margem_lojas.{lk} → {val:.2f}%")
-            else:
-                print(f"  AVISO: margem_lojas.{lk} não encontrado no HTML")
+    if not firestore_metas:
+        return content
+    updated_count = 0
+    for loja, vends in firestore_metas.items():
+        for vendKey, cel in vends.items():
+            # Padrão: {k:'vendKey',     meta:  12345}
+            pattern = rf"(\{{k:'{re.escape(vendKey)}',\s*meta:\s*)\s*\d+"
+            new_content = re.sub(pattern, f'\\g<1> {cel}', content, count=1)
+            if new_content != content:
+                content = new_content
+                updated_count += 1
+                print(f'  VEND_METAS_DB.{loja}.{vendKey} → {cel:,}')
+            # Se não encontrou, _metasOverride cobre em runtime via Firestore
+    print(f'  VEND_METAS_DB: {updated_count} entradas sincronizadas com Firestore')
+    return content
+
+
+def update_margem_lojas(content, margem_por_loja):
+    """
+    Atualiza margem_lojas por loja individualmente.
+    margem_por_loja: {lojaKey: pct_float}
+    """
+    for lk, val in margem_por_loja.items():
+        pattern = rf'(margem_lojas\s*:[^}}]*?\b{lk}\s*:\s*)\d+(?:\.\d+)?'
+        new = f'\\g<1>{val:.2f}'
+        updated = re.sub(pattern, new, content, count=1, flags=re.DOTALL)
+        if updated != content:
+            content = updated
+            print(f"  margem_lojas.{lk} → {val:.2f}%")
+        else:
+            print(f"  AVISO: margem_lojas.{lk} não encontrado no HTML")
     return content
 
 
@@ -1506,10 +1556,12 @@ def main():
     else:
         print("  AVISO: margem_bruta não extraída — campo não será atualizado")
 
-    print("Buscando margem bruta por subrede (mês e dia)...")
+    print("Buscando margem bruta por loja e por subrede (mês e dia)...")
     margem_subredes = {}
     margem_dia_subredes = {}
+    margem_por_loja = {}
     if store_id_map:
+        # Por subrede (para margem_subredes e margem_dia_subredes)
         for sub, lojas in SUBREDE_LOJAS.items():
             ids = [store_id_map[lk] for lk in lojas if lk in store_id_map]
             if ids:
@@ -1529,8 +1581,23 @@ def main():
                         print(f"  Margem dia  {sub}: {m_dia:.2f}%")
                 except Exception as e:
                     print(f"  AVISO: erro ao buscar margem dia {sub}: {e}")
+        # Por loja individualmente (para margem_lojas — mês corrente)
+        print("  Buscando margem por loja individual...")
+        all_lojas = [lk for lojas in SUBREDE_LOJAS.values() for lk in lojas]
+        for lk in all_lojas:
+            sid = store_id_map.get(lk)
+            if not sid:
+                continue
+            try:
+                g = fetch_gerencial(token, start, today, store_ids=[sid])
+                m = extract_margem_bruta(g)
+                if m:
+                    margem_por_loja[lk] = m
+                    print(f"  Margem mês {lk}: {m:.2f}%")
+            except Exception as e:
+                print(f"  AVISO: erro ao buscar margem loja {lk}: {e}")
     else:
-        print("  IDs de lojas não disponíveis — margem_subredes não será atualizada automaticamente")
+        print("  IDs de lojas não disponíveis — margem_subredes/margem_lojas não serão atualizadas automaticamente")
 
     print("Buscando breakdown por grupo de financeiras...")
     fin_groups_data = {}
@@ -1672,8 +1739,18 @@ def main():
     # Atualiza margem_subredes
     if margem_subredes:
         content = update_margem_subredes(content, margem_subredes)
-        # Propaga para margem_lojas (fonte primária do _calcMargemPonderada no JS)
-        content = update_margem_lojas(content, margem_subredes)
+    # Atualiza margem_lojas com valores individuais por loja (mês corrente)
+    if margem_por_loja:
+        content = update_margem_lojas(content, margem_por_loja)
+    elif margem_subredes:
+        # fallback: propaga média da subrede se API por loja falhar
+        fallback = {}
+        for sub, lojas in SUBREDE_LOJAS.items():
+            if sub in margem_subredes:
+                for lk in lojas:
+                    fallback[lk] = margem_subredes[sub]
+        if fallback:
+            content = update_margem_lojas(content, fallback)
 
     # Atualiza margem_dia_subredes — zera subredes sem vendas no dia
     for sub in SUBREDE_LOJAS:
@@ -1716,6 +1793,14 @@ def main():
     if top_acessorios:
         content = update_top_acessorios(content, top_acessorios)
         print("  top_acessorios atualizado no HTML")
+
+    # Sincroniza VEND_METAS_DB com as metas lançadas no Firestore (corrige fallback do ranking)
+    print("Sincronizando VEND_METAS_DB com metas do Firestore...")
+    firestore_metas = fetch_metas_firestore()
+    if firestore_metas:
+        content = update_vend_metas_db(content, firestore_metas)
+    else:
+        print("  Nenhuma meta encontrada no Firestore — VEND_METAS_DB mantido")
 
     # Atualiza o timestamp de build (força browsers a recarregar após deploy)
     from datetime import datetime as _dt

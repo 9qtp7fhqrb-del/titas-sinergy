@@ -2406,26 +2406,17 @@
                 <!-- Linha: Consultar Período -->
                 <div id="d360-consultar-periodo" class="flex flex-wrap items-center gap-2 mt-3 pt-3" style="border-top:1px solid rgba(255,255,255,.05);">
                     <i class="fas fa-calendar-days text-[10px]" style="color:#a855f7;"></i>
-                    <span class="text-[10px] text-gray-500 tracking-widest uppercase">Consultar período</span>
-                    <select id="f360-sel-mes" class="text-[11px] rounded-lg px-2 py-1"
-                            style="background:#1f2937;border:1px solid rgba(255,255,255,.08);color:#d1d5db;outline:none;">
-                        <option value="1">Jan</option><option value="2">Fev</option>
-                        <option value="3">Mar</option><option value="4">Abr</option>
-                        <option value="5" selected>Mai</option><option value="6">Jun</option>
-                        <option value="7">Jul</option><option value="8">Ago</option>
-                        <option value="9">Set</option><option value="10">Out</option>
-                        <option value="11">Nov</option><option value="12">Dez</option>
-                    </select>
-                    <select id="f360-sel-ano" class="text-[11px] rounded-lg px-2 py-1"
-                            style="background:#1f2937;border:1px solid rgba(255,255,255,.08);color:#d1d5db;outline:none;">
-                        <option value="2022">2022</option>
-                        <option value="2023">2023</option>
-                        <option value="2024">2024</option>
-                        <option value="2025">2025</option>
-                        <option value="2026" selected>2026</option>
-                        <option value="2027">2027</option>
-                    </select>
-                    <button onclick="_360ConsultarPeriodo()"
+                    <span class="text-[10px] text-gray-500 tracking-widest uppercase">Período</span>
+                    <div style="display:flex;align-items:center;gap:.35rem;background:#1f2937;border:1px solid rgba(255,255,255,.08);border-radius:.6rem;padding:.2rem .5rem;">
+                        <input type="date" id="f360-dt-inicio"
+                               style="background:transparent;border:none;outline:none;color:#d1d5db;font-size:.68rem;font-family:inherit;cursor:pointer;width:108px;"
+                               onchange="_f360SyncRange()">
+                        <span style="color:#6b7280;font-size:.65rem;">→</span>
+                        <input type="date" id="f360-dt-fim"
+                               style="background:transparent;border:none;outline:none;color:#d1d5db;font-size:.68rem;font-family:inherit;cursor:pointer;width:108px;"
+                               onchange="_f360SyncRange()">
+                    </div>
+                    <button onclick="_360ConsultarRange()"
                             class="text-[10px] px-3 py-1 rounded-lg font-semibold"
                             style="background:rgba(168,85,247,.15);border:1px solid rgba(168,85,247,.3);color:#c084fc;">
                         <i class="fas fa-magnifying-glass mr-1" style="font-size:.65rem;"></i>Consultar
@@ -5242,6 +5233,7 @@ function proceedToDash() {
                 ov.classList.remove('flex');
                 openDash();
                 _360AutoArquivar().catch(()=>{});
+                _f360InitDateRange();
                 _setupFlagsAdmin().catch(()=>{});
                 // Garantia dupla: btn-diario sempre visível para cargos autorizados
                 // (evita sumiço por race condition ou erro silencioso antes da linha de show)
@@ -12232,10 +12224,10 @@ function abrirPopupLoja(lojaKey) {
 
         <!-- Margem de lucro mensal -->
         <div style="margin-bottom:.5rem;">
-            <div style="background:rgba(16,185,129,.07);border:1px solid rgba(16,185,129,.22);border-radius:.9rem;padding:.75rem 1rem;">
-                <div style="font-size:.5rem;color:#34d399;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:.2rem;"><i class="fas fa-chart-line" style="margin-right:.3rem;"></i>Margem Bruta Mensal</div>
-                <div style="font-size:1.05rem;font-weight:900;color:#34d399;">${brl(mMes)}</div>
-                <div style="font-size:.55rem;color:#6b7280;margin-top:.1rem;">${mMesPct}% sobre faturamento</div>
+            <div style="background:${parseFloat(mMesPct)<48?'rgba(239,68,68,.07)':parseFloat(mMesPct)>=50?'rgba(16,185,129,.07)':'rgba(251,191,36,.07)'};border:1px solid ${parseFloat(mMesPct)<48?'rgba(239,68,68,.3)':parseFloat(mMesPct)>=50?'rgba(16,185,129,.22)':'rgba(251,191,36,.3)'};border-radius:.9rem;padding:.75rem 1rem;text-align:center;">
+                <div style="font-size:.5rem;color:${parseFloat(mMesPct)<48?'#f87171':parseFloat(mMesPct)>=50?'#34d399':'#fbbf24'};font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:.2rem;"><i class="fas fa-chart-line" style="margin-right:.3rem;"></i>Margem Bruta Mensal</div>
+                <div style="font-size:1.4rem;font-weight:900;color:${parseFloat(mMesPct)<48?'#f87171':parseFloat(mMesPct)>=50?'#34d399':'#fbbf24'};line-height:1.1;">${mMesPct}%</div>
+                <div style="font-size:.6rem;color:#6b7280;margin-top:.15rem;">${brl(mMes)} sobre faturamento</div>
             </div>
         </div>
 
@@ -15102,15 +15094,158 @@ function _360VoltarAtual() {
     toast('Exibindo ' + D360.periodo, 'success');
 }
 
-/* Consulta período selecionado nos dropdowns */
-function _360ConsultarPeriodo() {
-    const mes = parseInt(document.getElementById('f360-sel-mes').value);
-    const ano = parseInt(document.getElementById('f360-sel-ano').value);
+/* Inicializa os inputs de data com o mês atual */
+function _f360InitDateRange() {
     const now = new Date();
-    if (ano === now.getFullYear() && mes === now.getMonth()+1) {
-        _360VoltarAtual(); return;
+    const yyyy = now.getFullYear();
+    const mm   = String(now.getMonth()+1).padStart(2,'0');
+    const dd   = String(now.getDate()).padStart(2,'0');
+    const ini  = document.getElementById('f360-dt-inicio');
+    const fim  = document.getElementById('f360-dt-fim');
+    if (ini && !ini.value) ini.value = `${yyyy}-${mm}-01`;
+    if (fim && !fim.value) fim.value = `${yyyy}-${mm}-${dd}`;
+}
+
+/* Garante que fim >= início ao alterar qualquer campo */
+function _f360SyncRange() {
+    const ini = document.getElementById('f360-dt-inicio');
+    const fim = document.getElementById('f360-dt-fim');
+    if (!ini || !fim) return;
+    if (fim.value && ini.value && fim.value < ini.value) fim.value = ini.value;
+}
+
+/* Consulta range de datas — mês único ou múltiplos meses */
+async function _360ConsultarRange() {
+    const ini = document.getElementById('f360-dt-inicio');
+    const fim = document.getElementById('f360-dt-fim');
+    if (!ini?.value || !fim?.value) { toast('Selecione as datas de início e fim', 'error'); return; }
+
+    const dIni = new Date(ini.value + 'T00:00:00');
+    const dFim = new Date(fim.value + 'T00:00:00');
+    if (dIni > dFim) { toast('Data de início deve ser anterior à data fim', 'error'); return; }
+
+    // Detecta mês atual
+    const now = new Date();
+    const isMesAtual = dIni.getFullYear()===now.getFullYear() && dIni.getMonth()===now.getMonth()
+                    && dFim.getFullYear()===now.getFullYear() && dFim.getMonth()===now.getMonth();
+    if (isMesAtual && dFim >= now) { _360VoltarAtual(); return; }
+
+    // Coleta todos os meses do range
+    const meses = [];
+    let cur = new Date(dIni.getFullYear(), dIni.getMonth(), 1);
+    const endM = new Date(dFim.getFullYear(), dFim.getMonth(), 1);
+    while (cur <= endM) {
+        meses.push({ ano: cur.getFullYear(), mes: cur.getMonth()+1 });
+        cur.setMonth(cur.getMonth()+1);
     }
-    _360CarregarHistorico(ano, mes);
+
+    if (meses.length === 1) {
+        _360CarregarHistorico(meses[0].ano, meses[0].mes);
+        return;
+    }
+
+    // Multi-mês: agrega dados de cada mês
+    const MESES_NM = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+    const label = `${String(dIni.getDate()).padStart(2,'0')}/${String(dIni.getMonth()+1).padStart(2,'0')}/${dIni.getFullYear()} – ${String(dFim.getDate()).padStart(2,'0')}/${String(dFim.getMonth()+1).padStart(2,'0')}/${dFim.getFullYear()}`;
+    toast('Carregando ' + meses.length + ' meses...', 'info');
+
+    const _FSKEY = 'AIzaSyDFrLshzqf8Ct9U1SkM9MSveDNPuy_2--8';
+    const _FSPRJ = 'titas-sinergy';
+
+    function _fsRestToJs(fields) {
+        if (!fields) return null;
+        const obj = {};
+        for (const [k, v] of Object.entries(fields)) {
+            if      ('stringValue'  in v) obj[k] = v.stringValue;
+            else if ('integerValue' in v) obj[k] = Number(v.integerValue);
+            else if ('doubleValue'  in v) obj[k] = v.doubleValue;
+            else if ('booleanValue' in v) obj[k] = v.booleanValue;
+            else if ('nullValue'    in v) obj[k] = null;
+            else if ('mapValue'     in v) obj[k] = _fsRestToJs(v.mapValue.fields || {});
+            else if ('arrayValue'   in v) obj[k] = (v.arrayValue.values || []).map(i =>
+                i.mapValue ? _fsRestToJs(i.mapValue.fields||{}) :
+                i.stringValue !== undefined ? i.stringValue :
+                i.integerValue !== undefined ? Number(i.integerValue) :
+                i.doubleValue !== undefined ? i.doubleValue : null);
+        }
+        return obj;
+    }
+
+    async function _fetchMes(ano, mes) {
+        const chave = ano + '_' + String(mes).padStart(2,'0');
+        if (window._acadFBOk && window._acadDB) {
+            try { const d = await window._acadDB.collection('ts_d360_historico').doc(chave).get(); if (d.exists) return d.data(); } catch(e){}
+        }
+        try {
+            const r = await fetch(`https://firestore.googleapis.com/v1/projects/${_FSPRJ}/databases/(default)/documents/ts_d360_historico/${chave}?key=${_FSKEY}`);
+            if (r.ok) { const j = await r.json(); if (j.fields) return _fsRestToJs(j.fields); }
+        } catch(e){}
+        const local = localStorage.getItem('_360hist_v2_'+chave);
+        if (local) { try { return JSON.parse(local); } catch(e){} }
+        return null;
+    }
+
+    // Busca todos os meses em paralelo
+    const snapshots = await Promise.all(meses.map(m => _fetchMes(m.ano, m.mes)));
+    const validos = snapshots.filter(Boolean);
+    if (!validos.length) { toast('Nenhum dado encontrado para o período', 'error'); return; }
+
+    // Agregação
+    const agregado = { lojas: {}, diasDecorridos: 0, periodo: label, isHistorico: true, isRange: true };
+    const lojaKeys = [...new Set(validos.flatMap(s => Object.keys(s.lojas || {})))];
+
+    function _mergeTop(arrays) {
+        const map = {};
+        arrays.flat().forEach(v => {
+            if (!v?.n) return;
+            if (!map[v.n]) map[v.n] = { n: v.n, i: v.i || v.n.split(' ').map(p=>p[0]).join('').slice(0,2).toUpperCase(), t: 0 };
+            map[v.n].t += (v.t || 0);
+        });
+        return Object.values(map).sort((a,b) => b.t - a.t);
+    }
+
+    lojaKeys.forEach(k => {
+        const partes = validos.map(s => s.lojas?.[k]).filter(Boolean);
+        agregado.lojas[k] = {
+            total:      partes.reduce((s,l) => s+(l.total||0), 0),
+            ped:        partes.reduce((s,l) => s+(l.ped||0), 0),
+            agendFat:   partes.reduce((s,l) => s+(l.agendFat||0), 0),
+            fin_mes:    partes.reduce((s,l) => s+(l.fin_mes||0), 0),
+            cancel:     partes.reduce((s,l) => s+(l.cancel||0), 0),
+            acessorios: { total: partes.reduce((s,l) => s+((l.acessorios||{}).total||0), 0), top: _mergeTop(partes.map(l=>(l.acessorios||{}).top||[])) },
+            top:        _mergeTop(partes.map(l => l.top||[])),
+            fat_dia: 0, acess_dia: 0
+        };
+    });
+    agregado.diasDecorridos = validos.reduce((s,v) => s+(v.diasDecorridos||0), 0);
+
+    // Aplica como histórico ativo
+    window._360dataAtiva = agregado;
+    const banner = document.getElementById('f360-hist-banner');
+    const btnAtual = document.getElementById('f360-btn-atual');
+    if (banner) { banner.textContent = '📅 Período: ' + label; banner.classList.remove('hidden'); }
+    if (btnAtual) btnAtual.classList.remove('hidden');
+
+    // Espelha em D360 temporariamente (sem alterar D360.lojas permanentemente)
+    const _d360Bak = JSON.parse(JSON.stringify(D360.lojas));
+    lojaKeys.forEach(k => { if (D360.lojas[k]) Object.assign(D360.lojas[k], agregado.lojas[k]); });
+    const _diasBak = D360.diasDecorridos;
+    D360.diasDecorridos = agregado.diasDecorridos;
+
+    const pill = document.querySelector('.f360-pill.active');
+    render360(pill?.dataset.tipo||'geral', pill?.dataset.val||'');
+    toast('Período ' + label + ' carregado', 'success');
+
+    // Restaura D360 original (o _360dataAtiva mantém os dados para re-renders futuros)
+    setTimeout(() => {
+        lojaKeys.forEach(k => { if (D360.lojas[k]) Object.assign(D360.lojas[k], _d360Bak[k]); });
+        D360.diasDecorridos = _diasBak;
+    }, 100);
+}
+
+/* Compat: função anterior mantida para não quebrar chamadas internas */
+function _360ConsultarPeriodo() {
+    _360ConsultarRange();
 }
 
 /* Auto-arquiva mês anterior se detectar virada de mês (chamado uma vez no login) */

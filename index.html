@@ -11641,8 +11641,15 @@ async function _carregarMetasParaD360() {
                 });
             }
         });
-        // Re-renderiza o D360 e o ranking de acessórios com as metas carregadas
-        try { var pill=document.querySelector('#d360-pills .pill-360.active'); render360(pill?pill.dataset.tipo:'geral',pill?pill.dataset.val:''); } catch(e) {}
+        // Re-renderiza o D360 com as metas carregadas — só se nenhum popup estiver aberto
+        try {
+            const popupAberto = document.getElementById('_popup-loja-360') &&
+                                !document.getElementById('_popup-loja-360').classList.contains('hidden');
+            if (!popupAberto) {
+                var pill = document.querySelector('#d360-pills .pill-360.active');
+                render360(pill ? pill.dataset.tipo : 'geral', pill ? pill.dataset.val : '');
+            }
+        } catch(e) {}
         try { _renderHistAcessAbr26(); } catch(e) {}
     } catch(e) { console.warn('_carregarMetasParaD360:', e); }
 }

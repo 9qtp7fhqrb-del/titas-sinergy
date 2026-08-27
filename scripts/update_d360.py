@@ -579,16 +579,30 @@ def update_margem_lojas(content, margem_por_loja):
     """
     Atualiza margem_lojas por loja individualmente.
     margem_por_loja: {lojaKey: pct_float}
+    Localiza o bloco margem_lojas:{...} e substitui cada chave dentro dele.
     """
+    block_m = re.search(r'margem_lojas\s*:\s*\{([^}]+)\}', content, re.DOTALL)
+    if not block_m:
+        print('  AVISO: bloco margem_lojas não encontrado no HTML')
+        return content
+
+    block_start = block_m.start()
+    block_end   = block_m.end()
+    block       = block_m.group(0)
+
     for lk, val in margem_por_loja.items():
-        pattern = rf'(margem_lojas\s*:[^}}]*?\b{lk}\s*:\s*)\d+(?:\.\d+)?'
-        new = f'\\g<1>{val:.2f}'
-        updated = re.sub(pattern, new, content, count=1, flags=re.DOTALL)
-        if updated != content:
-            content = updated
+        new_block = re.sub(
+            rf'(\b{re.escape(lk)}\s*:\s*)\d+(?:\.\d+)?',
+            f'\\g<1>{val:.2f}',
+            block, count=1
+        )
+        if new_block != block:
+            block = new_block
             print(f"  margem_lojas.{lk} → {val:.2f}%")
         else:
             print(f"  AVISO: margem_lojas.{lk} não encontrado no HTML")
+
+    content = content[:block_start] + block + content[block_end:]
     return content
 
 

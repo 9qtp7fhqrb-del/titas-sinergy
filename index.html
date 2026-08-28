@@ -7,7 +7,7 @@
     <script>
     // Cache-buster: força reload se a versão mudou
     (function(){
-      var BUILD = '20260828163512';
+      var BUILD = '20260828163842';
       var stored = localStorage.getItem('d360_build');
       if (stored && stored !== BUILD) {
         localStorage.setItem('d360_build', BUILD);
@@ -2399,8 +2399,19 @@
                     <button class="f360-pill" data-tipo="sub" data-val="t3" onclick="filtrar360(this,'sub','t3')">
                         ⚡ Titãs 3
                     </button>
+                    <button onclick="_abrirRankAcess()"
+                            style="display:flex;align-items:center;gap:.4rem;padding:.3rem .85rem;border-radius:999px;font-size:.7rem;font-weight:700;letter-spacing:.03em;background:linear-gradient(135deg,#065f46,#059669);border:1px solid #10b981;color:#6ee7b7;cursor:pointer;box-shadow:0 0 12px rgba(16,185,129,.35);transition:all .2s;"
+                            onmouseover="this.style.boxShadow='0 0 20px rgba(16,185,129,.6)';this.style.background='linear-gradient(135deg,#059669,#10b981)'"
+                            onmouseout="this.style.boxShadow='0 0 12px rgba(16,185,129,.35)';this.style.background='linear-gradient(135deg,#065f46,#059669)'">
+                        <i class="fas fa-tags" style="font-size:.65rem;"></i> Acessórios
+                    </button>
                     <div class="h-5 w-px bg-gray-700 hidden sm:block"></div>
                     <span class="text-[9px] text-gray-600 hidden sm:inline">clique em qualquer loja no ranking para acessá-la</span>
+                    <button onclick="_f360TogglePeriodo()" style="margin-left:auto;display:flex;align-items:center;gap:.35rem;padding:.25rem .7rem;border-radius:.6rem;font-size:.65rem;font-weight:600;background:rgba(124,58,237,.1);border:1px solid rgba(139,92,246,.25);color:#a78bfa;cursor:pointer;transition:all .2s;"
+                            onmouseover="this.style.background='rgba(124,58,237,.2)'" onmouseout="this.style.background='rgba(124,58,237,.1)'">
+                        <i id="f360-toggle-icon" class="fas fa-chevron-down" style="font-size:.55rem;"></i>
+                        <span id="f360-toggle-label">Consultar período</span>
+                    </button>
                 </div>
 
                 <!-- Linha: Consultar Período -->
@@ -2413,7 +2424,7 @@
                     #f360-dt-inicio::-webkit-calendar-picker-indicator:hover,
                     #f360-dt-fim::-webkit-calendar-picker-indicator:hover { opacity:1; }
                 </style>
-                <div id="d360-consultar-periodo" class="flex flex-wrap items-center gap-2 mt-3 pt-3" style="border-top:1px solid rgba(168,85,247,.12);">
+                <div id="d360-consultar-periodo" class="flex flex-wrap items-center gap-2 mt-3 pt-3" style="display:none;border-top:1px solid rgba(168,85,247,.12);">
                     <span style="font-size:.5rem;color:#7c3aed;font-weight:700;text-transform:uppercase;letter-spacing:.1em;display:flex;align-items:center;gap:.3rem;">
                         <i class="fas fa-calendar-range"></i>Período
                     </span>
@@ -2469,7 +2480,7 @@
 
 
             <!-- ── Modal Comparativo de Períodos ── -->
-            <div id="_modal-comparar-360" class="hidden" style="position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:1rem;">
+            <div id="_modal-comparar-360" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:1rem;">
                 <div style="background:#0f0a1e;border:1px solid rgba(139,92,246,.3);border-radius:1.2rem;width:100%;max-width:860px;max-height:90vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 25px 60px rgba(88,28,220,.3);">
 
                     <!-- Header -->
@@ -2574,11 +2585,17 @@
             <div id="360-rankings" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6"></div>
             <div id="360-metas" class="glass-360 rounded-2xl p-5 mb-6"></div>
 
-            <!-- ── Ranking Acessórios · Maio 2026 ── -->
-            <div class="glass-360 rounded-2xl p-5 mb-4" id="hist-acess-abr26-wrap"></div>
-
         </div>
         <!-- ══════════ fim 360° TAB ══════════ -->
+
+        <!-- Ranking Acessórios — modal overlay -->
+        <div id="_modal-rank-acess-wrap" style="display:none;position:fixed;inset:0;z-index:9998;background:rgba(0,0,0,.7);backdrop-filter:blur(5px);align-items:center;justify-content:center;padding:1rem;overflow-y:auto;"
+             onclick="if(event.target===this)_fecharRankAcess()">
+            <div style="position:relative;width:100%;max-width:1000px;margin:auto;">
+                <button onclick="_fecharRankAcess()" style="position:absolute;top:.75rem;right:.75rem;z-index:1;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:.5rem;color:#9ca3af;padding:.2rem .55rem;cursor:pointer;font-size:.8rem;line-height:1;">✕</button>
+                <div id="hist-acess-abr26-wrap"></div>
+            </div>
+        </div>
 
         <!-- ══════════ OLHA ISSO TAB ══════════ -->
         <div id="tab-olhaisso" class="hidden">
@@ -13848,6 +13865,17 @@ async function _360RenderChart(tipo, val) {
 }
 
 
+function _abrirRankAcess() {
+    const modal = document.getElementById('_modal-rank-acess-wrap');
+    if (!modal) return;
+    modal.style.display = 'flex';
+    _renderHistAcessAbr26();
+}
+function _fecharRankAcess() {
+    const modal = document.getElementById('_modal-rank-acess-wrap');
+    if (modal) modal.style.display = 'none';
+}
+
 function _abrirModalAcessorios(tipo, val) {
     const _d = D360;
     const lojas = _d.lojas;
@@ -15203,6 +15231,18 @@ function _360VoltarAtual() {
 }
 
 /* Inicializa os inputs de data com o mês atual */
+function _f360TogglePeriodo() {
+    const bloco = document.getElementById('d360-consultar-periodo');
+    const icon  = document.getElementById('f360-toggle-icon');
+    const label = document.getElementById('f360-toggle-label');
+    if (!bloco) return;
+    const aberto = bloco.style.display !== 'none';
+    bloco.style.display = aberto ? 'none' : 'flex';
+    if (icon)  icon.className  = aberto ? 'fas fa-chevron-down' : 'fas fa-chevron-up';
+    if (label) label.textContent = aberto ? 'Consultar período' : 'Fechar';
+    if (!aberto) _f360InitDateRange();
+}
+
 function _f360InitDateRange() {
     const now = new Date();
     const yyyy = now.getFullYear();
@@ -15390,8 +15430,10 @@ function _360FecharComparar() {
 // Fecha com Esc (integra ao listener global de ESC)
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
+        const mRank = document.getElementById('_modal-rank-acess-wrap');
+        if (mRank && mRank.style.display !== 'none') { _fecharRankAcess(); return; }
         const m = document.getElementById('_modal-comparar-360');
-        if (m && m.style.display !== 'none' && !m.classList.contains('hidden')) _360FecharComparar();
+        if (m && m.style.display !== 'none') _360FecharComparar();
     }
 });
 

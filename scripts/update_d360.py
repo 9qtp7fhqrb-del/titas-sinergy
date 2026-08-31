@@ -3,7 +3,7 @@
 D360 Titãs Sinergy — Atualização automática via API ERP CDC
 Atualiza por loja: total, acessorios.total, agendFat, agendamentos.total, agendamentos.top, fat_dia
 """
-import re, os, sys
+import re, os, sys, time
 from datetime import date, datetime, timezone, timedelta
 
 # Fuso horário de Brasília (BRT = UTC-3) — garante data correta no GitHub Actions (UTC)

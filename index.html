@@ -11875,12 +11875,13 @@ function rankRow(pos, sigla, label, sublabel, rawTotal, lojaMeta, first, metaOk,
     const metaBadge = metaOk ? '<span style="font-size:.55rem;color:#4ade80;font-weight:700;margin-left:.3rem;">😊</span>' : '';
     const clickAttr = lojaKey ? `onclick="abrirPopupLoja('${lojaKey}')" title="Detalhes — ${label}"` : '';
 
-    const p     = lojaMeta ? Math.min(100, Math.round(rawTotal / lojaMeta * 100)) : 0;
-    const pCor  = p >= 100 ? '#4ade80' : p >= 80 ? '#10b981' : p >= 60 ? '#c084fc' : '#fbbf24';
-    const barGr = p >= 100 ? 'linear-gradient(90deg,#064e3b,#4ade80)'
-                : p >= 80  ? 'linear-gradient(90deg,#065f46,#10b981)'
-                : p >= 60  ? 'linear-gradient(90deg,#7c3aed,#06b6d4)'
-                :             'linear-gradient(90deg,#92400e,#f59e0b)';
+    const pReal = lojaMeta ? Math.round(rawTotal / lojaMeta * 100) : 0;
+    const p     = Math.min(100, pReal);
+    const pCor  = pReal >= 100 ? '#4ade80' : pReal >= 80 ? '#10b981' : pReal >= 60 ? '#c084fc' : '#fbbf24';
+    const barGr = pReal >= 100 ? 'linear-gradient(90deg,#064e3b,#4ade80)'
+                : pReal >= 80  ? 'linear-gradient(90deg,#065f46,#10b981)'
+                : pReal >= 60  ? 'linear-gradient(90deg,#7c3aed,#06b6d4)'
+                :                'linear-gradient(90deg,#92400e,#f59e0b)';
     const projVal = (() => { const _d=_360D(); if(!_d.diasDecorridos) return 0; return Math.round(rawTotal/_d.diasDecorridos*_d.diasMes); })();
     const necDiaVal = (() => {
         const diasRestantes = _diasUteisRestantes(lojaKey);
@@ -11900,7 +11901,7 @@ function rankRow(pos, sigla, label, sublabel, rawTotal, lojaMeta, first, metaOk,
                 <div class="flex-1 h-1.5 bg-gray-800 rounded-full">
                     <div class="h-full rounded-full" style="width:${p}%;background:${barGr};"></div>
                 </div>
-                <span class="text-[10px] font-bold flex-shrink-0" style="color:${pCor};min-width:2rem;text-align:right;">${p}%</span>
+                <span class="text-[10px] font-bold flex-shrink-0" style="color:${pCor};min-width:2rem;text-align:right;">${pReal}%</span>
             </div>
             <div class="flex flex-wrap items-center gap-x-2 gap-y-0.5 mt-0.5">
                 <span class="text-[10px] font-semibold" style="color:${pos<=3?'#d1d5db':'#6b7280'};">${brl(rawTotal)}</span>
@@ -12258,12 +12259,13 @@ function abrirPopupLoja(lojaKey) {
     const sub  = subs[l.sub] || {};
     const _showDiag = _hasDiagAccess();
     const meta = l.meta || (sub.meta && sub.lojas ? sub.meta / sub.lojas.length : 0);
-    const p    = meta ? Math.min(100, Math.round(l.total / meta * 100)) : 0;
-    const pCor = p >= 100 ? '#4ade80' : p >= 80 ? '#10b981' : p >= 60 ? '#c084fc' : '#fbbf24';
-    const barGr= p >= 100 ? 'linear-gradient(90deg,#064e3b,#4ade80)'
-               : p >= 80  ? 'linear-gradient(90deg,#065f46,#10b981)'
-               : p >= 60  ? 'linear-gradient(90deg,#7c3aed,#06b6d4)'
-               :             'linear-gradient(90deg,#92400e,#f59e0b)';
+    const pReal = meta ? Math.round(l.total / meta * 100) : 0;
+    const p     = Math.min(100, pReal);
+    const pCor  = pReal >= 100 ? '#4ade80' : pReal >= 80 ? '#10b981' : pReal >= 60 ? '#c084fc' : '#fbbf24';
+    const barGr = pReal >= 100 ? 'linear-gradient(90deg,#064e3b,#4ade80)'
+                : pReal >= 80  ? 'linear-gradient(90deg,#065f46,#10b981)'
+                : pReal >= 60  ? 'linear-gradient(90deg,#7c3aed,#06b6d4)'
+                :                'linear-gradient(90deg,#92400e,#f59e0b)';
     const projVal  = _d.diasDecorridos ? Math.round(l.total / _d.diasDecorridos * _d.diasMes) : 0;
     const acessTot = l.acessorios?.total || 0;
     const acessPct = l.total > 0 ? (acessTot / l.total * 100).toFixed(1) : '0';
@@ -12297,7 +12299,7 @@ function abrirPopupLoja(lojaKey) {
     const vendHtml = todosVend.map((v,i) => vendRow(i+1, v.i, v.n, '', v.t, lojaKey, v.ds, v.ult, v.p)).join('');
 
     const chip = (lbl, val, cor='#9ca3af') =>
-        `<div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:.6rem;padding:.4rem .6rem;">
+        `<div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:.6rem;padding:.4rem .6rem;text-align:center;">
             <div style="font-size:.48rem;color:#6b7280;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.15rem;">${lbl}</div>
             <div style="font-size:.78rem;font-weight:800;color:${cor};">${val}</div>
          </div>`;
@@ -12323,26 +12325,60 @@ function abrirPopupLoja(lojaKey) {
                     <div style="font-size:.5rem;color:#6b7280;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:.15rem;">Faturamento Mensal</div>
                     <div style="font-size:1.5rem;font-weight:900;color:#fff;line-height:1;">${brl(l.total)}</div>
                 </div>
-                <span style="font-size:1.1rem;font-weight:900;color:${pCor};">${p}%</span>
+                <span style="font-size:1.1rem;font-weight:900;color:${pCor};">${pReal}%</span>
             </div>
             <div style="height:6px;background:#1f2937;border-radius:4px;margin-bottom:.4rem;">
                 <div style="height:100%;width:${p}%;background:${barGr};border-radius:4px;transition:width .4s;"></div>
             </div>
-            <div style="display:flex;gap:1.5rem;font-size:.6rem;color:#6b7280;">
+            <div style="display:flex;gap:1.5rem;font-size:.6rem;color:#6b7280;flex-wrap:wrap;">
                 <span>Meta <span style="color:#d1d5db;font-weight:700;">${brl(meta)}</span></span>
+                ${meta > 0 ? `<span>Supermeta <span style="color:#fbbf24;font-weight:700;">${brl(meta*1.2)}</span></span>` : ''}
                 ${projVal ? `<span>↗ Projeção <span style="color:#a78bfa;font-weight:700;">${brl(projVal)}</span></span>` : ''}
                 ${l.fat_dia > 0 ? `<span>Hoje <span style="color:#fbbf24;font-weight:700;">${brl(l.fat_dia)}</span></span>` : ''}
             </div>
         </div>
 
+        <!-- Supermeta (só aparece quando bate 100%) -->
+        ${(meta > 0 && l.total >= meta) ? (() => {
+            const supermeta   = meta * 1.2;
+            const faltaSM     = Math.max(0, supermeta - l.total);
+            const pctFaltaSM  = Math.round(faltaSM / supermeta * 100);
+            const bateuSM     = l.total >= supermeta;
+            const frases = [
+                'Meta batida. Agora é hora de ir além!',
+                'Meta no bolso. Supermeta na mira!',
+                'Você já ganhou. Agora vença de novo.',
+                'Quem bate meta, vai além. O time é forte!',
+                'O time já entregou. Ainda dá pra surpreender!'
+            ];
+            const frase = frases[Math.abs(meta) % frases.length];
+            return bateuSM
+                ? `<div style="background:linear-gradient(135deg,rgba(251,191,36,.12),rgba(245,158,11,.06));border:1px solid rgba(251,191,36,.4);border-radius:.9rem;padding:.85rem 1rem;margin-bottom:.75rem;text-align:center;">
+                    <div style="font-size:.48rem;color:#fbbf24;font-weight:800;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.3rem;">🏆 Supermeta Batida!</div>
+                    <div style="font-size:1rem;font-weight:900;color:#fde68a;">+${Math.round((l.total/supermeta-1)*100)}% acima da supermeta</div>
+                    <div style="font-size:.58rem;color:#9ca3af;margin-top:.3rem;font-style:italic;">Lendário. Isso é nível outro!</div>
+                   </div>`
+                : `<div style="background:linear-gradient(135deg,rgba(251,191,36,.08),rgba(245,158,11,.04));border:1px solid rgba(251,191,36,.25);border-radius:.9rem;padding:.85rem 1rem;margin-bottom:.75rem;">
+                    <div style="font-size:.48rem;color:#fbbf24;font-weight:800;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.5rem;">⚡ Rumo à Supermeta (+20%)</div>
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.4rem;">
+                        <span style="font-size:.58rem;color:#9ca3af;">Falta <span style="color:#fde68a;font-weight:800;">${brl(faltaSM)}</span></span>
+                        <span style="font-size:.85rem;font-weight:900;color:#fbbf24;">${pctFaltaSM}% restante</span>
+                    </div>
+                    <div style="height:5px;background:#1f2937;border-radius:4px;margin-bottom:.5rem;">
+                        <div style="height:100%;width:${Math.min(100,Math.round(l.total/supermeta*100))}%;background:linear-gradient(90deg,#d97706,#fbbf24);border-radius:4px;transition:width .4s;"></div>
+                    </div>
+                    <div style="font-size:.58rem;color:#a3a3a3;font-style:italic;text-align:center;">"${frase}"</div>
+                   </div>`;
+        })() : ''}
+
         <!-- Destaque: Pedidos + Acessórios -->
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:.5rem;">
-            <div style="background:rgba(148,163,184,.07);border:1px solid rgba(148,163,184,.15);border-radius:.9rem;padding:.75rem 1rem;">
+            <div style="background:rgba(148,163,184,.07);border:1px solid rgba(148,163,184,.15);border-radius:.9rem;padding:.75rem 1rem;text-align:center;">
                 <div style="font-size:.5rem;color:#94a3b8;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:.2rem;"><i class="fas fa-box" style="margin-right:.3rem;"></i>Pedidos</div>
                 <div style="font-size:1.4rem;font-weight:900;color:#e2e8f0;">${(l.ped||0).toLocaleString('pt-BR')}</div>
                 <div style="font-size:.55rem;color:#6b7280;margin-top:.1rem;">no mês</div>
             </div>
-            <div style="background:rgba(${parseFloat(acessPct)>=5?'74,222,128':'250,204,21'},0.07);border:1px solid rgba(${parseFloat(acessPct)>=5?'74,222,128':'250,204,21'},.18);border-radius:.9rem;padding:.75rem 1rem;">
+            <div style="background:rgba(${parseFloat(acessPct)>=5?'74,222,128':'250,204,21'},0.07);border:1px solid rgba(${parseFloat(acessPct)>=5?'74,222,128':'250,204,21'},.18);border-radius:.9rem;padding:.75rem 1rem;text-align:center;">
                 <div style="font-size:.5rem;color:${acessCor};font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:.2rem;"><i class="fas fa-headphones" style="margin-right:.3rem;"></i>Acessórios</div>
                 <div style="font-size:1.4rem;font-weight:900;color:${acessCor};">${acessPct}%</div>
                 <div style="font-size:.55rem;color:#6b7280;margin-top:.1rem;">${acessTot > 0 ? brl(acessTot) : '—'} em vendas</div>
@@ -13209,9 +13245,16 @@ function _metaDiariaSubrede(lojaKeys, lojasData, metaTotalSub) {
 function _diasUteisRestantes(lojaKey) {
     const _d = _360D();
     const diasMes = _d.diasMes || 0, diasDecorridos = _d.diasDecorridos || 0;
-    if (!diasMes || diasDecorridos >= diasMes) return 0;
+    if (!diasMes || diasDecorridos > diasMes) return 0;
     const isShopping = _LOJAS_SHOPPING.has(lojaKey);
     const hoje = new Date(); const ano = hoje.getFullYear(); const mes = hoje.getMonth();
+    // Último dia do mês: conta hoje como 1 dia útil restante
+    if (diasDecorridos === diasMes) {
+        const dt  = new Date(ano, mes, diasMes);
+        const dow = dt.getDay();
+        const ds  = `${ano}-${String(mes+1).padStart(2,'0')}-${String(diasMes).padStart(2,'0')}`;
+        return (!_FERIADOS_BR.has(ds) && (isShopping || dow !== 0)) ? 1 : 0;
+    }
     let count = 0;
     for (let d = diasDecorridos + 1; d <= diasMes; d++) {
         const dt  = new Date(ano, mes, d);

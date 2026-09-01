@@ -16,7 +16,7 @@ except ImportError:
     os.system(f"{sys.executable} -m pip install requests -q")
     import requests
 
-ERP_BASE      = 'https://apicdc.casadocelular.com.br/api/v1'
+ERP_BASE      = 'https://api.erp.odrestech.com.br/api/v1'
 INDEX_HTML    = os.environ.get('INDEX_HTML', 'index.html')
 FIREBASE_KEY  = 'AIzaSyDFrLshzqf8Ct9U1SkM9MSveDNPuy_2--8'
 FIREBASE_PROJ = 'titas-sinergy'
@@ -32,17 +32,18 @@ PRODUCT_GROUP_CEL   = 4   # SBON — celulares
 PRODUCT_GROUP_ACESS = 3   # ACESSÓRIOS
 
 STORE_MAP = {
-    'CDC BARREIRAS':              'barreiras',
-    'CDC CARIACICA':              'cariacica',
-    'CDC ITABUNA':                'itabuna',
-    'CDC LINHARES':               'linhares',
-    'CDC LARANJEIRAS':            'laranjeiras',
-    'CDC MONTSERRAT':             'montserrat',
+    # OdresTech (novo ERP — sem prefixo CDC)
+    'BARREIRAS':                  'barreiras',
+    'CARIACICA':                  'cariacica',
+    'ITABUNA':                    'itabuna',
+    'LINHARES':                   'linhares',
+    'LARANJEIRAS':                'laranjeiras',
+    'MONTSERRAT':                 'montserrat',
     'SHOPPING MOXUARA':           'moxuara',
-    'CDC PRAIA DA COSTA':         'praiadacosta',
-    'CDC SAO MATEUS':             'saomateus',
-    'CDC SERRA':                  'serra',
-    'CDC TEIXEIRA DE FREITAS NOVO': 'teixeira',
+    'PRAIA DA COSTA':             'praiadacosta',
+    'SAO MATEUS':                 'saomateus',
+    'SERRA':                      'serra',
+    'TEIXEIRA DE FREITAS NOVO':   'teixeira',
 }
 
 # Lojas de cada subrede (chaves do STORE_MAP)
@@ -282,8 +283,14 @@ def fetch_store_ids(token, retries=3, wait=10):
             except Exception as e:
                 if attempt < retries:
                     time.sleep(wait)
-    print("  AVISO: IDs de lojas não encontrados — gerencial por subrede indisponível")
-    return {}
+    # Fallback: IDs confirmados via metadata do gerencial (mesmo para CDC e OdresTech)
+    fallback = {
+        'cariacica': 388, 'itabuna': 391, 'moxuara': 390, 'praiadacosta': 392,
+        'barreiras': 395, 'teixeira': 396, 'laranjeiras': 397, 'linhares': 398,
+        'serra': 399, 'saomateus': 400, 'montserrat': 393,
+    }
+    print(f"  IDs de lojas encontrados via fallback hardcoded: {fallback}")
+    return fallback
 
 
 def fetch_gerencial(token, start, end, payment_method_ids=None, store_ids=None, channel_ids=None, group_ids=None, retries=4, wait=15):

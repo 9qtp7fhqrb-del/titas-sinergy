@@ -85,7 +85,7 @@
         *, *::before, *::after { box-sizing: border-box; }
         body {
             font-family: 'Inter', sans-serif;
-            background: #06091a url('assets/bg-sinergy.png') center center / cover no-repeat fixed;
+            background: #000;
             min-height: 100vh;
             overflow-x: hidden;
         }
@@ -824,6 +824,75 @@
         .oii-loading { display:flex; align-items:center; gap:.5rem; color:#6b7280; font-size:.75rem; padding:.25rem 0; }
         .oii-spin { width:13px;height:13px;border:2px solid rgba(255,255,255,.12);border-top-color:#22d3ee;border-radius:50%;animation:spin-ring .7s linear infinite;flex-shrink:0; }
         .oii-atualizado { font-size:.62rem; color:#6b7280; margin-top:.25rem; }
+
+        /* ═══════════════════════════════════════════════════════════════
+           TEMA RAV HOLDING — preview exclusivo Marcelo (rem classe body.tema-rav para liberar geral)
+        ═══════════════════════════════════════════════════════════════ */
+
+        /* Fundo já definido no body — tema-rav mantém, só reforça o preto */
+        body.tema-rav {
+            background-color: #000 !important;
+        }
+        /* Gradientes de sobreposição mais quentes e densos */
+        body.tema-rav .bg-gradient {
+            background:
+                radial-gradient(ellipse at 12% 55%, rgba(16,8,0,.97) 0%, transparent 55%),
+                radial-gradient(ellipse at 88% 15%, rgba(12,5,0,.90) 0%, transparent 52%),
+                radial-gradient(ellipse at 50% 90%, rgba(8,4,0,.93) 0%, transparent 55%),
+                linear-gradient(160deg, rgba(6,3,0,.99) 0%, rgba(10,5,0,.97) 55%, rgba(6,3,0,.99) 100%) !important;
+        }
+        /* Rede azul quase invisível — fundo deve ser negro com ouro */
+        body.tema-rav #bg-canvas {
+            opacity: 0.05 !important;
+            filter: sepia(1) hue-rotate(8deg) saturate(1.4) !important;
+        }
+        /* Cards de vidro mais escuros e com borda dourada mais presente */
+        body.tema-rav .glass {
+            background: rgba(12,7,1,.95) !important;
+            border-color: rgba(201,168,76,.32) !important;
+            box-shadow: 0 8px 48px rgba(0,0,0,.88),
+                        0 0 0 1px rgba(201,168,76,.08),
+                        inset 0 1px 0 rgba(255,220,80,.06) !important;
+        }
+        /* Separadores — azul → dourado */
+        body.tema-rav .blue-sep {
+            background: linear-gradient(90deg, transparent, #D4AF37, transparent) !important;
+        }
+        /* Abas ativas: troca azul-elétrico por dourado */
+        body.tema-rav .tab-btn.active { color: #D4AF37 !important; border-bottom-color: #D4AF37 !important; }
+        body.tema-rav #btn-360 .tab-360-icon { color: #c9953a !important; }
+        body.tema-rav #btn-360.active .tab-360-icon { color: #D4AF37 !important; }
+        body.tema-rav #btn-360.active { color: #D4AF37 !important; border-bottom-color: #D4AF37 !important; }
+        body.tema-rav #btn-360 .tab-360-label { color: rgba(201,168,76,.7) !important; }
+        /* Pills do 360 — troca roxo por dourado */
+        body.tema-rav .f360-pill { border-color: rgba(201,168,76,.22); color: #9ca3af; background: transparent; }
+        body.tema-rav .f360-pill:hover { border-color: rgba(201,168,76,.5); color: #D4AF37; background: rgba(201,168,76,.09); }
+        body.tema-rav .f360-pill.active { background: rgba(201,168,76,.16); border-color: rgba(201,168,76,.6); color: #fff; }
+        body.tema-rav .f360-date-input { border-color: rgba(201,168,76,.22); color: #e9d5ff; }
+        body.tema-rav .f360-date-input:focus { border-color: rgba(201,168,76,.55); }
+        /* Hover de linhas de lojas — dourado em vez de roxo */
+        body.tema-rav .rank-row-loja:hover {
+            background: rgba(201,168,76,.1) !important;
+            border-color: rgba(201,168,76,.38) !important;
+        }
+        /* Tabela relatório 360 */
+        body.tema-rav .rpt-table th { background: rgba(201,168,76,.14); color: #D4AF37; }
+
+        /* Logo RAV no nav: oculta por padrão, visível com tema-rav */
+        #rav-logo-nav { display: none; }
+        body.tema-rav #rav-logo-nav { display: block; }
+        body.tema-rav #sinergy-wordmark { display: none; }
+        /* Texto "TITÃS SINERGY" no login — se quiser preservar deixe como está */
+        body.tema-rav .logo-ring {
+            box-shadow: 0 0 32px rgba(201,168,76,.18), 0 0 64px rgba(201,168,76,.08) !important;
+        }
+        /* Botão gold — brilho levemente mais cálido */
+        body.tema-rav .btn-gold:hover {
+            box-shadow: 0 0 36px rgba(201,168,76,.7) !important;
+        }
+        /* Chip de cargo no header direito */
+        body.tema-rav .cargo-chip { background: rgba(201,168,76,.08); border-color: rgba(201,168,76,.3); color: rgba(212,175,55,.8); }
+        body.tema-rav .cargo-chip:hover { background: rgba(201,168,76,.15); border-color: rgba(201,168,76,.5); color: #D4AF37; }
     </style>
 </head>
 <body>
@@ -833,6 +902,12 @@
 ════════════════════════════════════════ -->
 <div class="bg-gradient"></div>
 <canvas id="bg-canvas"></canvas>
+
+<!-- Logo RAV — watermark central, acima dos overlays -->
+<div style="position:fixed;inset:0;z-index:1;display:flex;align-items:center;justify-content:center;pointer-events:none;mix-blend-mode:screen;">
+    <img src="assets/Logo RAV.png"
+         style="width:68%;max-width:780px;min-width:320px;opacity:0.28;user-select:none;-webkit-user-drag:none;">
+</div>
 
 <!-- ════════════════════════════════════════
      TELA 1 — LOGIN
@@ -1075,7 +1150,10 @@
                         <circle cx="32" cy="32" r="5" fill="#F0D060"/>
                     </svg>
                 </div>
-                <span class="orbitron text-xs font-bold gold-text hidden sm:block tracking-widest">TITÃS SINERGY</span>
+                <span id="sinergy-wordmark" class="orbitron text-xs font-bold gold-text hidden sm:block tracking-widest">TITÃS SINERGY</span>
+                <img id="rav-logo-nav" src="assets/Logo RAV.png"
+                     style="height:44px;width:44px;object-fit:cover;border-radius:50%;border:1px solid rgba(201,168,76,.45);box-shadow:0 0 12px rgba(201,168,76,.25);opacity:.96;"
+                     alt="RAV Holding">
             </div>
 
             <!-- User chip + logout -->
@@ -5505,6 +5583,12 @@ function openDash() {
     const ls = document.getElementById('login-screen');
     const ds = document.getElementById('dash-screen');
     if (!ls || !ds) return;
+
+    // Tema RAV — ativo apenas para Marcelo até aprovação; remover o guard quando liberar para todos
+    if (_isMeloUser()) {
+        document.body.classList.add('tema-rav');
+        _aplicarPaletaRav();
+    }
 
     ls.classList.add('out');
     setTimeout(() => {
@@ -13722,12 +13806,14 @@ async function _360RenderChart(tipo, val) {
     const bgColors  = values.map((_, i) => {
         if (i === values.length - 1) return 'rgba(212,175,55,.65)';   // mês atual — âmbar
         if (medalIdx.includes(i))    return 'rgba(34,197,94,.75)';    // recorde — verde
-        return 'rgba(99,102,241,.7)';                                  // histórico — roxo/índigo
+        const isRav = document.body.classList.contains('tema-rav');
+        return isRav ? 'rgba(170,100,18,.72)' : 'rgba(99,102,241,.7)';  // histórico — bronze (rav) ou índigo
     });
     const bdrColors = values.map((_, i) => {
+        const isRav = document.body.classList.contains('tema-rav');
         if (i === values.length - 1) return '#D4AF37';
         if (medalIdx.includes(i))    return '#16a34a';
-        return '#818cf8';
+        return isRav ? '#c9853a' : '#818cf8';
     });
 
     /* Plugin: desenha 🥇 dentro da barra do melhor mês */
@@ -13822,10 +13908,10 @@ async function _360RenderChart(tipo, val) {
             plugins: {
                 legend: { display: false },
                 tooltip: {
-                    backgroundColor: 'rgba(10,15,30,.95)',
-                    titleColor: '#c084fc',
+                    backgroundColor: 'rgba(10,6,1,.96)',
+                    titleColor: document.body.classList.contains('tema-rav') ? '#e0a855' : '#c084fc',
                     bodyColor: '#d1d5db',
-                    borderColor: 'rgba(168,85,247,.3)',
+                    borderColor: document.body.classList.contains('tema-rav') ? 'rgba(180,110,25,.35)' : 'rgba(168,85,247,.3)',
                     borderWidth: 1,
                     callbacks: {
                         title: items => {
@@ -27247,6 +27333,33 @@ function _diarioIsOwner(mgrId) {
     return nomeUser.includes(m.nome.toLowerCase()) || user.uid === mgrId;
   }
   return false;
+}
+
+// Substitui inline purples por âmbar/bronze no tema RAV
+function _aplicarPaletaRav() {
+    const mapa = [
+        [/rgba\(168,\s*85,\s*247,/g,   'rgba(180,110,22,'],
+        [/rgba\(99,\s*102,\s*241,/g,   'rgba(165,95,15,'],
+        [/rgba\(139,\s*92,\s*246,/g,   'rgba(175,105,18,'],
+        [/#a855f7/gi,                   '#c9853a'],
+        [/#c084fc/gi,                   '#e0a040'],
+        [/#818cf8/gi,                   '#d4943a'],
+        [/#9333ea/gi,                   '#a86828'],
+        [/#7c3aed/gi,                   '#996020'],
+        [/#6d28d9/gi,                   '#885018'],
+    ];
+    document.querySelectorAll('[style]').forEach(el => {
+        let s = el.getAttribute('style');
+        let changed = false;
+        mapa.forEach(([from, to]) => {
+            const ns = s.replace(from, to);
+            if (ns !== s) { s = ns; changed = true; }
+        });
+        if (changed) el.setAttribute('style', s);
+    });
+    // Reaplicar após renders dinâmicos (360, rankings etc.)
+    setTimeout(_aplicarPaletaRav, 1800);
+    setTimeout(_aplicarPaletaRav, 4000);
 }
 
 function _isMeloUser() {

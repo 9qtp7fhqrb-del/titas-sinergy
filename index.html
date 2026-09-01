@@ -7,7 +7,7 @@
     <script>
     // Cache-buster: força reload se a versão mudou
     (function(){
-      var BUILD = '20260901195841';
+      var BUILD = '20260901202331';
       var stored = localStorage.getItem('d360_build');
       if (stored && stored !== BUILD) {
         localStorage.setItem('d360_build', BUILD);
@@ -7097,25 +7097,25 @@ const D360 = {
         }
     },
     top_acessorios:{"rede":[{"nm":"PELICULA TPU SOFT CLEAR DEVIA","qt":4,"val":320,"pct":33.3,"abc":"A"},{"nm":"PELICULA TPU SOFT FOSCA DEVIA","qt":2,"val":300,"pct":50.0,"abc":"A"},{"nm":"CABO V8 8.0","qt":1,"val":40,"pct":58.3,"abc":"A"},{"nm":"CAPA IPHONE ORIGINAL","qt":1,"val":70,"pct":66.7,"abc":"A"},{"nm":"RELOGIO SMARTWATCH 3.8","qt":1,"val":300,"pct":75.0,"abc":"A"},{"nm":"PELICULA DEVIA PRIVACIDADE","qt":1,"val":105,"pct":83.3,"abc":"B"},{"nm":"CARREGADOR POWER BANK 10000 MAH","qt":1,"val":150,"pct":91.7,"abc":"B"},{"nm":"FONE DE OUVIDO P2 C/MIC VOL FAM FCM-OE12","qt":1,"val":50,"pct":100.0,"abc":"C"}],"lojas":{"barreiras":[],"cariacica":[],"itabuna":[],"laranjeiras":[],"linhares":[],"montserrat":[],"praiadacosta":[],"saomateus":[],"serra":[],"teixeira":[],"moxuara":[]}},
-    top_modelos:{"payjoy":[{"nm":"SMARTPHONE  REALME NOTE 70","qt":6,"val":10400},{"nm":"SMARTPHONE TECNO SPARK 30C","qt":5,"val":8850},{"nm":"SMARTPHONE REALME C71","qt":3,"val":6100}],"odrescred":[{"nm":"SMARTPHONE TECNO SPARK 30C","qt":5,"val":7877},{"nm":"SMARTPHONE  REALME NOTE 70","qt":4,"val":7077},{"nm":"REALME C100i","qt":2,"val":4000},{"nm":"SMARTPHONE REALME C71","qt":2,"val":3679},{"nm":"SMARTPHONE INFINIX HOT 60I","qt":1,"val":1799}],"salao":[{"nm":"SMARTPHONE TECNO SPARK 30C","qt":3,"val":4900},{"nm":"SMARTPHONE  REALME NOTE 70","qt":2,"val":3300},{"nm":"SMARTPHONE REALME C71","qt":2,"val":3660},{"nm":"SMARTPHONE  OUKITEL C33","qt":1,"val":1200}],"lojas":{"barreiras":{"payjoy":[],"odrescred":[],"salao":[]},"cariacica":{"payjoy":[],"odrescred":[],"salao":[]},"itabuna":{"payjoy":[],"odrescred":[],"salao":[]},"laranjeiras":{"payjoy":[],"odrescred":[],"salao":[]},"linhares":{"payjoy":[],"odrescred":[],"salao":[]},"montserrat":{"payjoy":[],"odrescred":[],"salao":[]},"praiadacosta":{"payjoy":[],"odrescred":[],"salao":[]},"saomateus":{"payjoy":[],"odrescred":[],"salao":[]},"serra":{"payjoy":[],"odrescred":[],"salao":[]},"teixeira":{"payjoy":[],"odrescred":[],"salao":[]},"moxuara":{"payjoy":[],"odrescred":[],"salao":[]}}},
+    top_modelos:{"payjoy":[{"nm":"SMARTPHONE  REALME NOTE 70","qt":6,"val":10400},{"nm":"SMARTPHONE TECNO SPARK 30C","qt":6,"val":10840},{"nm":"SMARTPHONE REALME C71","qt":3,"val":6100}],"odrescred":[{"nm":"SMARTPHONE TECNO SPARK 30C","qt":5,"val":7877},{"nm":"SMARTPHONE  REALME NOTE 70","qt":4,"val":7077},{"nm":"REALME C100i","qt":2,"val":4000},{"nm":"SMARTPHONE REALME C71","qt":2,"val":3679},{"nm":"SMARTPHONE INFINIX HOT 60I","qt":1,"val":1799}],"salao":[{"nm":"SMARTPHONE TECNO SPARK 30C","qt":3,"val":4900},{"nm":"SMARTPHONE  REALME NOTE 70","qt":2,"val":3300},{"nm":"SMARTPHONE REALME C71","qt":2,"val":3660},{"nm":"SMARTPHONE  OUKITEL C33","qt":1,"val":1200}],"lojas":{"barreiras":{"payjoy":[],"odrescred":[],"salao":[]},"cariacica":{"payjoy":[],"odrescred":[],"salao":[]},"itabuna":{"payjoy":[],"odrescred":[],"salao":[]},"laranjeiras":{"payjoy":[],"odrescred":[],"salao":[]},"linhares":{"payjoy":[],"odrescred":[],"salao":[]},"montserrat":{"payjoy":[],"odrescred":[],"salao":[]},"praiadacosta":{"payjoy":[],"odrescred":[],"salao":[]},"saomateus":{"payjoy":[],"odrescred":[],"salao":[]},"serra":{"payjoy":[],"odrescred":[],"salao":[]},"teixeira":{"payjoy":[],"odrescred":[],"salao":[]},"moxuara":{"payjoy":[],"odrescred":[],"salao":[]}}},
     diasDecorridos: 1, // atualizado pelo script de automação — não alterar manualmente
     diasMes: 31,          // agosto tem 31 dias
-    ticket_cel: 1746,        // ticket médio celulares (SBON) — atualizado pelo bot
-    ticket_acess: 93,      // ticket médio acessórios — atualizado pelo bot
-    ped_cel: 36,           // pedidos celulares — atualizado pelo bot
-    ped_acess: 16,         // pedidos acessórios — atualizado pelo bot
+    ticket_cel: 1752,        // ticket médio celulares (SBON) — atualizado pelo bot
+    ticket_acess: 90,      // ticket médio acessórios — atualizado pelo bot
+    ped_cel: 37,           // pedidos celulares — atualizado pelo bot
+    ped_acess: 17,         // pedidos acessórios — atualizado pelo bot
 
     // ── Margem Bruta Mensal ──────────────────────────────────────────────────────
     // FONTE PRIMÁRIA: margem_lojas (por loja, do Relatório Gerencial ERP CDC)
     // O sistema deriva automaticamente: margem por loja → subrede → rede
     // COMO ATUALIZAR: edite apenas margem_lojas com os valores do ERP por loja
     // ─────────────────────────────────────────────────────────────────────────────
-    margem_dia: 50.99,              // rede hoje · zerado automaticamente à meia-noite
-    margem_dia_subredes: { t1: 50.95, t2: 50.07, t3: 51.23 },
+    margem_dia: 51.05,              // rede hoje · zerado automaticamente à meia-noite
+    margem_dia_subredes: { t1: 51.48, t2: 50.07, t3: 51.23 },
     margem_lojas: {
         // ── FONTE PRIMÁRIA — atualizar aqui com o Relatório Gerencial por Loja ──
         // atualizado pelo update_d360.py (por loja via API, fallback por subrede)
-        cariacica:   51.78,
+        cariacica:   52.54,
         itabuna:     49.55,
         moxuara:     89.43,
         praiadacosta:45.48,
@@ -7128,10 +7128,10 @@ const D360 = {
         linhares:    49.92,
     },
     margem_subredes: {  // fallback quando margem_lojas estiver incompleta
-        t1: 50.95, t2: 50.07, t3: 51.23
+        t1: 51.48, t2: 50.07, t3: 51.23
     },
     // margem_mes: derivada automaticamente pelo _calcMargemPonderada (não editar)
-    margem_mes: 50.99,
+    margem_mes: 51.05,
 
     subredes: {
         t1: { nome:'Titãs 1', gestor:'Talysson', meta:0,
@@ -7156,9 +7156,9 @@ const D360 = {
             top:[{n:'ELIZA QUEIROZ DE SOUZA',i:'EQ',p:2,t:3800.0,ds:13,ult:'01/09'},
                 {n:'STEFANY SPEROTTO BARCELOS',i:'SS',p:3,t:3329.0,ds:13,ult:'01/09'},
                 {n:'RANDECLAY MARIANO GOMES',i:'RM',p:4,t:1909.0,ds:13,ult:'01/09'}]},
-        cariacica:   { label:'Cariacica',          sigla:'CC', sub:'t1', meta:380000,  total:16590.0, ped:13,  cancel:0, agend:0, agendCount:0, agendFat:1800.0,  fat_dia:16590.0, acess_dia:440.0, dia_a_dia:{"1":16590.0}, acess_dia_top:[{n:'Fabiano Francisco Fontes',i:'FF',t:150.0}, {n:'ANA CAROLINA DA SILVA',i:'AC',t:150.0}, {n:'mirelly vieira portugal',i:'MV',t:110.0}, {n:'Liz Sophia Andrade Pereira',i:'LS',t:30.0}], top_dia:[{n:'Liz Sophia Andrade Pereira',i:'LS',t:5430.0}, {n:'MAYARA KULL RODRIGUES',i:'MK',t:5100.0}, {n:'Fabiano Francisco Fontes',i:'FF',t:4000.0}, {n:'ROBERTA FELIPE MALAQUIAS',i:'RF',t:1800.0}, {n:'ANA CAROLINA DA SILVA',i:'AC',t:150.0}, {n:'mirelly vieira portugal',i:'MV',t:110.0}], fin_dia:16180.0, fin_mes:16180.0, top_fin_mes:[{n:'Liz Sophia Andrade Pereira',i:'LS',t:5430.0,bd:[{nm:'PayJoy',t:5430.0},{nm:'OdresCred',t:0},{nm:'Outras',t:0}]},{n:'MAYARA KULL RODRIGUES',i:'MK',t:5100.0,bd:[{nm:'PayJoy',t:5100.0},{nm:'OdresCred',t:0},{nm:'Outras',t:0}]},{n:'Fabiano Francisco Fontes',i:'FF',t:3850.0,bd:[{nm:'PayJoy',t:3850.0},{nm:'OdresCred',t:0},{nm:'Outras',t:0}]},{n:'ROBERTA FELIPE MALAQUIAS',i:'RF',t:1800.0,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:0},{nm:'Outras',t:1800.0}]}], fin_bd:[{nm:'PayJoy',t:14380.0},{nm:'OdresCred',t:0},{nm:'Outras',t:1800.0}], top_fin:[{n:'Liz Sophia Andrade Pereira',i:'LS',t:5430.0}, {n:'MAYARA KULL RODRIGUES',i:'MK',t:5100.0}, {n:'Fabiano Francisco Fontes',i:'FF',t:3850.0}, {n:'ROBERTA FELIPE MALAQUIAS',i:'RF',t:1800.0}], metaAcess:13500,
+        cariacica:   { label:'Cariacica',          sigla:'CC', sub:'t1', meta:380000,  total:18620.0, ped:14,  cancel:0, agend:0, agendCount:0, agendFat:1800.0,  fat_dia:18620.0, acess_dia:480.0, dia_a_dia:{"1":18620.0}, acess_dia_top:[{n:'Fabiano Francisco Fontes',i:'FF',t:150.0}, {n:'ANA CAROLINA DA SILVA',i:'AC',t:150.0}, {n:'mirelly vieira portugal',i:'MV',t:110.0}, {n:'ROBERTA FELIPE MALAQUIAS',i:'RF',t:40.0}, {n:'Liz Sophia Andrade Pereira',i:'LS',t:30.0}], top_dia:[{n:'Liz Sophia Andrade Pereira',i:'LS',t:5430.0}, {n:'MAYARA KULL RODRIGUES',i:'MK',t:5100.0}, {n:'Fabiano Francisco Fontes',i:'FF',t:4000.0}, {n:'ROBERTA FELIPE MALAQUIAS',i:'RF',t:3830.0}, {n:'ANA CAROLINA DA SILVA',i:'AC',t:150.0}, {n:'mirelly vieira portugal',i:'MV',t:110.0}], fin_dia:18210.0, fin_mes:18210.0, top_fin_mes:[{n:'Liz Sophia Andrade Pereira',i:'LS',t:5430.0,bd:[{nm:'PayJoy',t:5430.0},{nm:'OdresCred',t:0},{nm:'Outras',t:0}]},{n:'MAYARA KULL RODRIGUES',i:'MK',t:5100.0,bd:[{nm:'PayJoy',t:5100.0},{nm:'OdresCred',t:0},{nm:'Outras',t:0}]},{n:'Fabiano Francisco Fontes',i:'FF',t:3850.0,bd:[{nm:'PayJoy',t:3850.0},{nm:'OdresCred',t:0},{nm:'Outras',t:0}]},{n:'ROBERTA FELIPE MALAQUIAS',i:'RF',t:3830.0,bd:[{nm:'PayJoy',t:2030.0},{nm:'OdresCred',t:0},{nm:'Outras',t:1800.0}]}], fin_bd:[{nm:'PayJoy',t:16410.0},{nm:'OdresCred',t:0},{nm:'Outras',t:1800.0}], top_fin:[{n:'Liz Sophia Andrade Pereira',i:'LS',t:5430.0}, {n:'MAYARA KULL RODRIGUES',i:'MK',t:5100.0}, {n:'Fabiano Francisco Fontes',i:'FF',t:3850.0}, {n:'ROBERTA FELIPE MALAQUIAS',i:'RF',t:3830.0}], metaAcess:13500,
             agendamentos:{total:1800.0, fin:1800.0, fin_bd:[{nm:'PayJoy',t:1500.0},{nm:'OdresCred',t:0},{nm:'Outras',t:1800.0}], top:[{n:'ROBERTA FELIPE MALAQUIAS',i:'RF',t:1800.0}]},
-            acessorios:{total:440.0, top:[
+            acessorios:{total:480.0, top:[
                 {n:'Roberta Felipe Malaquias',i:'RF',t:3580,ds:12,ult:'12/06'},
                 {n:'Liz Sophia Andrade Pereira',i:'LS',t:1380,ds:12,ult:'12/06'},
                 {n:'Nicolas Santos Borges',i:'NB',t:470,ds:12,ult:'12/06'},
@@ -7167,7 +7167,7 @@ const D360 = {
             top:[{n:'Liz Sophia Andrade Pereira',i:'LS',p:3,t:5430.0,ds:13,ult:'01/09'},
                 {n:'MAYARA KULL RODRIGUES',i:'MK',p:3,t:5100.0,ds:1,ult:'01/09'},
                 {n:'Fabiano Francisco Fontes',i:'FF',p:3,t:4000.0,ds:1,ult:'01/09'},
-                {n:'ROBERTA FELIPE MALAQUIAS',i:'RF',p:1,t:1800.0,ds:1,ult:'01/09'},
+                {n:'ROBERTA FELIPE MALAQUIAS',i:'RF',p:2,t:3830.0,ds:1,ult:'01/09'},
                 {n:'ANA CAROLINA DA SILVA',i:'AC',p:1,t:150.0,ds:1,ult:'01/09'},
                 {n:'mirelly vieira portugal',i:'MV',p:2,t:110.0,ds:1,ult:'01/09'}]},
         itabuna:     { label:'Itabuna',            sigla:'IT', sub:'t1', meta:270000,  total:10964.0,  ped:8,  cancel:0, agend:0, agendCount:0, agendFat:5100.0,  fat_dia:10964.0, acess_dia:465.0, dia_a_dia:{"1":10964.0}, acess_dia_top:[{n:'MIKAELLE SANTOS VIRGENS',i:'MS',t:465.0}], top_dia:[{n:'MIKAELLE SANTOS VIRGENS',i:'MS',t:7565.0}, {n:'KEIFIT MOREIRA DOS SANTOS',i:'KM',t:1799.0}, {n:'ANDREZA DE JESUS SOUZA',i:'AD',t:1600.0}], fin_dia:9304.0, fin_mes:9304.0, top_fin_mes:[{n:'MIKAELLE SANTOS VIRGENS',i:'MS',t:7505.0,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:5600.0},{nm:'Outras',t:3905.0}]},{n:'KEIFIT MOREIRA DOS SANTOS',i:'KM',t:1799.0,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:1799.0},{nm:'Outras',t:0}]}], fin_bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:7399.0},{nm:'Outras',t:3905.0}], top_fin:[{n:'MIKAELLE SANTOS VIRGENS',i:'MS',t:7505.0}, {n:'KEIFIT MOREIRA DOS SANTOS',i:'KM',t:1799.0}], metaAcess:10000,
@@ -7183,8 +7183,8 @@ const D360 = {
             top:[{n:'MIKAELLE SANTOS VIRGENS',i:'MS',p:6,t:7565.0,ds:13,ult:'01/09'},
                 {n:'KEIFIT MOREIRA DOS SANTOS',i:'KM',p:1,t:1799.0,ds:13,ult:'01/09'},
                 {n:'ANDREZA DE JESUS SOUZA',i:'AD',p:1,t:1600.0,ds:13,ult:'01/09'}]},
-        barreiras:   { label:'Barreiras',          sigla:'BR', sub:'t2', meta:240000,  total:3200.0,  ped:2,  cancel:0, agend:0, agendCount:0, agendFat:1600.0,   fat_dia:3200.0, acess_dia:0, dia_a_dia:{"1":3200.0}, acess_dia_top:[], top_dia:[{n:'DANIELA MILENA GOMES MARES',i:'DM',t:1600.0}, {n:'ISABELA CHAGAS',i:'IC',t:1600.0}], fin_dia:1600.0, fin_mes:1600.0, top_fin_mes:[{n:'ISABELA CHAGAS',i:'IC',t:1600.0,bd:[{nm:'PayJoy',t:1600.0},{nm:'OdresCred',t:0},{nm:'Outras',t:0}]}], fin_bd:[{nm:'PayJoy',t:1600.0},{nm:'OdresCred',t:0},{nm:'Outras',t:0}], top_fin:[{n:'ISABELA CHAGAS',i:'IC',t:1600.0}], metaAcess:6500,
-            agendamentos:{total:1600.0, fin:0, fin_bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:0},{nm:'Outras',t:0}], top:[{n:'DANIELA MILENA GOMES MARES',i:'DM',t:1600.0}]},
+        barreiras:   { label:'Barreiras',          sigla:'BR', sub:'t2', meta:240000,  total:5200.0,  ped:3,  cancel:0, agend:0, agendCount:0, agendFat:3600.0,   fat_dia:5200.0, acess_dia:0, dia_a_dia:{"1":5200.0}, acess_dia_top:[], top_dia:[{n:'DANIELA MILENA GOMES MARES',i:'DM',t:3600.0}, {n:'ISABELA CHAGAS',i:'IC',t:1600.0}], fin_dia:1600.0, fin_mes:1600.0, top_fin_mes:[{n:'ISABELA CHAGAS',i:'IC',t:1600.0,bd:[{nm:'PayJoy',t:1600.0},{nm:'OdresCred',t:0},{nm:'Outras',t:0}]}], fin_bd:[{nm:'PayJoy',t:1600.0},{nm:'OdresCred',t:0},{nm:'Outras',t:0}], top_fin:[{n:'ISABELA CHAGAS',i:'IC',t:1600.0}], metaAcess:6500,
+            agendamentos:{total:3600.0, fin:0, fin_bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:0},{nm:'Outras',t:0}], top:[{n:'DANIELA MILENA GOMES MARES',i:'DM',t:3600.0}]},
             acessorios:{total:0, top:[
                 {n:'Victor Roberto de Oliveira Nascimento',i:'VR',t:1000,ds:12,ult:'12/06'},
                 {n:'Larisse Ribeiro Dos Santos',i:'LR',t:995,ds:12,ult:'12/06'},
@@ -7192,7 +7192,7 @@ const D360 = {
                 {n:'Táine Oliveira dos Santos',i:'TO',t:530,ds:12,ult:'12/06'},
                 {n:'Isabela Chagas',i:'IC',t:180,ds:12,ult:'12/06'}
             ], dias:[{d:'01/06',ac:50,cel:5716},{d:'06/06',ac:1145,cel:57025},{d:'08/06',ac:230,cel:6300}]},
-            top:[{n:'DANIELA MILENA GOMES MARES',i:'DM',p:1,t:1600.0,ds:1,ult:'01/09'},
+            top:[{n:'DANIELA MILENA GOMES MARES',i:'DM',p:2,t:3600.0,ds:1,ult:'01/09'},
                 {n:'ISABELA CHAGAS',i:'IC',p:1,t:1600.0,ds:13,ult:'01/09'}]},
         moxuara:     { label:'Moxuara',            sigla:'MX', sub:'t1', meta:270000,  total:40.0,  ped:1, cancel:0, agend:0, agendCount:0, agendFat:0,  fat_dia:40.0, acess_dia:40.0, dia_a_dia:{"1":40.0}, acess_dia_top:[{n:'LUCCAS DA SILVA MEDEIROS MARTINS',i:'LD',t:40.0}], top_dia:[{n:'LUCCAS DA SILVA MEDEIROS MARTINS',i:'LD',t:40.0}], fin_dia:0, fin_mes:0, top_fin_mes:[], fin_bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:0},{nm:'Outras',t:0}], top_fin:[], metaAcess:12000,
             agendamentos:{total:0, fin:0, fin_bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:0},{nm:'Outras',t:0}], top:[]},
@@ -8413,7 +8413,7 @@ var _ERP_ESTOQUE = {
       'ZENFONE MAX PLUS':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:0},
       'ZENFONE MAX SHOT':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:0},
     };
-    var _ERP_ESTOQUE_TS = '01/09/2026 16:58';
+    var _ERP_ESTOQUE_TS = '01/09/2026 17:23';
 // Preços por produto — populado pelo update_d360.py a cada 30 min
 var _ERP_PRECOS = {
       'ALCATEL A2 XL': {custo:0.00,venda:0.00},
@@ -8780,7 +8780,7 @@ var _ERP_PRECOS = {
       'ZENFONE MAX PLUS': {custo:0.00,venda:0.00},
       'ZENFONE MAX SHOT': {custo:0.00,venda:0.00},
     };
-    var _ERP_PRECOS_TS = '01/09/2026 16:58';
+    var _ERP_PRECOS_TS = '01/09/2026 17:23';
 // Flag de sessão: true = fetch já tentado (sucesso ou falha), não tentar de novo
 var _erpPrecosCarregados = false;
 var _SUG_SPECS = {

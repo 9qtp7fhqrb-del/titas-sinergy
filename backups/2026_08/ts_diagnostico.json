@@ -1,0 +1,3423 @@
+{
+  "barreiras_2026-07-08": {
+    "loja": "barreiras",
+    "analise": {
+      "motivos_nv": {
+        "entrada alta": "1",
+        "sem entrada": "1",
+        "outros/caro": "1",
+        "pesquisando": "1",
+        "negado nos dois processos": "1",
+        "procurando iPhone": "1"
+      },
+      "total_vendas": "2",
+      "taxa_conversao": 25,
+      "recomendacoes": "1. Abordar qualificação financeira no início do atendimento: perguntar sobre entrada disponível antes de apresentar modelos. 2. Ter opções de financiamento alternativas (Payjoy, boleto, CDC próprio) preparadas para clientes com restrição de crédito. 3. Para clientes que querem iPhone, apresentar Samsung e Motorola topo de linha como alternativas com argumentos de custo-benefício.",
+      "padrao": "A maioria dos clientes não converteu por restrições financeiras: falta de entrada (2) e crédito negado (1), além de clientes pesquisando modelos específicos fora do portfólio (iPhone, preço). Taxa de conversão de apenas 25% indica necessidade de qualificação prévia do cliente.",
+      "total_clientes": "8"
+    },
+    "ultima_atualizacao": "18:09",
+    "data": "2026-07-08"
+  },
+  "barreiras_2026-07-09": {
+    "loja": "barreiras",
+    "ultima_atualizacao": "18:00",
+    "analise": {
+      "recomendacoes": "1. Urgente: treinar opcoes de financiamento sem entrada para converter clientes com limitacao de capital inicial. 2. Alinhar expectativas de produto: clientes chegando com expectativa de iPhone 17 Pro Max e phones de 256GB precisam ser trabalhados com alternativas. 3. Solicitar folha completa do dia anterior.",
+      "total_clientes": "0",
+      "padrao": "Folha detalhada nao coletada para 09/07. Receita: R$9.019. Em 10/07 manha (11h), Barreiras registrou 5 NVs com 0 vendas, sendo os principais motivos: Sem Entrada, Entrada Alta e Queria produto especifico nao disponivel.",
+      "taxa_conversao": 0,
+      "total_vendas": "0",
+      "motivos_nv": {}
+    },
+    "data": "2026-07-09"
+  },
+  "barreiras_2026-07-10": {
+    "ultima_atualizacao": "11:03",
+    "data": "2026-07-10",
+    "analise": {
+      "motivos_nv": {
+        "Entrada muito alta": "1",
+        "Queria 256GB na parcela de R$200": "1",
+        "Queria pagar no boleto": "1",
+        "Produto nao encontrado": "1",
+        "Sem entrada": "1"
+      },
+      "taxa_conversao": 0,
+      "padrao": "CRITICO: Barreiras teve 0% de conversao na manha de 10/07 com 5 clientes e nenhuma venda. O padrao dominante e expectativa financeira irreal — clientes querem 256GB na parcela de R$200, ou nao tem entrada, ou querem pagar apenas no boleto. A loja esta enfrentando forte desalinhamento entre expectativa do cliente e oferta disponivel.",
+      "total_vendas": "0",
+      "recomendacoes": "1. URGENTE: Reuniao rapida de alinhamento com a equipe sobre scripts de reversao de objecao financeira. 2. Apresentar financiamento com entrada minima como PRIMEIRA opcao, antes do cliente perguntar o preco. 3. Para clientes com expectativa de 256GB barato, demonstrar custo-beneficio do modelo disponivel vs. o desejado. 4. Ativar Payjoy como alternativa para clientes sem condicao de entrada tradicional.",
+      "total_clientes": "5"
+    },
+    "loja": "barreiras"
+  },
+  "barreiras_2026-07-11": {
+    "ultima_atualizacao": "14:05",
+    "data": "2026-07-11",
+    "analise": {
+      "recomendacoes": "1. Para clientes focados em iPhone, apresentar custo-benefício de aparelhos similares com câmera e desempenho comparáveis a um preço acessível. 2. Clientes pesquisando devem receber oferta especial imediata para estimular o fechamento na hora. 3. Paloma demonstrou o maior volume — usar suas técnicas como referência para Amanda e Carine.",
+      "total_clientes": "10",
+      "total_vendas": "5",
+      "taxa_conversao": 50,
+      "motivos_nv": {
+        "Volta depois": "1",
+        "Só queria iPhone": "1",
+        "Pesquisando": "2",
+        "Preço/condição": "1"
+      },
+      "padrao": "Taxa de conversão de 50% com equipe de Paloma, Amanda e Carine. Destaque para o cliente que queria exclusivamente iPhone e não se abriu para outras opções, além de 2 clientes em fase de pesquisa. Indica necessidade de trabalhar melhor o redirecionamento de clientes focados em concorrentes."
+    },
+    "loja": "barreiras"
+  },
+  "barreiras_2026-07-13": {
+    "loja": "barreiras",
+    "analise": {
+      "padrao": "Desempenho acima da média (58%). Carine foi a grande destaque com 4 vendas (Note 70 PayJoy, Hot60i, Note 70 Pix, C75) e uso eficiente do PayJoy. Beatriz contribuiu com 3 vendas. Amanda não converteu nenhum atendimento.",
+      "total_vendas": "7",
+      "motivos_nv": {
+        "Queria Poco X8": "1",
+        "Orçamento abaixo do produto": "1",
+        "Queria só iPhone": "1",
+        "Queria só Motorola": "1",
+        "Volta depois": "1"
+      },
+      "taxa_conversao": 58.3,
+      "recomendacoes": "1. Aproveitar o desempenho de Carine para treinar Amanda nas técnicas de conversão e uso do PayJoy. 2. Para clientes que querem Motorola ou iPhone, mostrar comparativos de custo-benefício. 3. Manter estratégia PayJoy — está convertendo muito bem.",
+      "total_clientes": "12"
+    },
+    "ultima_atualizacao": "22:30",
+    "data": "2026-07-13"
+  },
+  "barreiras_2026-07-22": {
+    "data": "2026-07-22",
+    "ultima_atualizacao": "18:10",
+    "loja": "barreiras",
+    "analise": {
+      "padrao": "Taxa crítica de 11% — apenas 1 venda em 9 atendimentos. Principal barreira é exigência de financiamento sem entrada. Equipe com Isabella e Victor precisa de suporte urgente.",
+      "taxa_conversao": 11.1,
+      "total_clientes": "9",
+      "recomendacoes": "1. Reforçar ao gerente presença no salão para apoiar negociações difíceis. 2. Trabalhar cenário de entrada mínima com clientes do PayJoy. 3. Meta emergencial: mínimo 3 vendas amanhã (30%).",
+      "motivos_nv": {
+        "Procurando por menos": "2",
+        "Quer nota boleto": "1",
+        "Quer financiamento sem entrada": "2",
+        "Procurando com NFC": "1",
+        "Sem entrada": "2"
+      },
+      "total_vendas": "1"
+    }
+  },
+  "barreiras_2026-07-25": {
+    "analise": {
+      "recomendacoes": "1. Mapear os modelos sub-R$1.000 com melhor margem e treina-los como ancora de entrada. 2. Ter proposta de upgrade mostrando diferenca de parcela entre o modelo pedido e o superior. 3. Trabalhar tecnica de concessao: brinde ou pelicula para fechar no dia.",
+      "total_clientes": "9",
+      "total_vendas": "5",
+      "motivos_nv": {
+        "queria parcelamento especial": "1",
+        "pesquisando": "1",
+        "queria ate R$1.000": "2"
+      },
+      "padrao": "Clientes chegam com teto de preco definido — quando o modelo supera R$1.000 a decisao para. PayJoy e credito cartao sao as saidas mais buscadas. AP 50% no sabado.",
+      "taxa_conversao": 55.6
+    },
+    "ultima_atualizacao": "22:00",
+    "data": "2026-07-25",
+    "loja": "barreiras"
+  },
+  "barreiras_2026-07-27": {
+    "data": "2026-07-27",
+    "analise": {
+      "taxa_conversao": 37.5,
+      "total_clientes": "8",
+      "recomendacoes": "Mudar abordagem consultiva. Explorar financiamento para clientes sem capital imediato.",
+      "total_vendas": "3",
+      "motivos_nv": {
+        "vai_voltar": "1",
+        "sem_dinheiro": "1",
+        "outros": "1",
+        "pesquisando": "2"
+      },
+      "padrao": "AP 37% — dia difícil. Paloma, Carine e Gustavo. Maioria em pesquisa ou sem recurso."
+    },
+    "loja": "barreiras",
+    "ultima_atualizacao": "2026-07-27T19:07:00"
+  },
+  "barreiras_2026-07-28": {
+    "loja": "barreiras",
+    "ultima_atualizacao": "2026-07-28T19:02:00",
+    "analise": {
+      "taxa_conversao": 25,
+      "total_vendas": "1",
+      "recomendacoes": "URGENTE: revisar abordagem de atendimento. Converter visitantes em compradores com demonstrações práticas.",
+      "total_clientes": "4",
+      "padrao": "AP 25% — apenas 1 venda no dia (Paloma via ODRES). 3 NVs por só olhar, pesquisar e querer Samsung.",
+      "motivos_nv": {
+        "modelo_especifico": "1",
+        "so_olhando": "1",
+        "pesquisando": "1"
+      }
+    },
+    "data": "2026-07-28"
+  },
+  "barreiras_2026-07-29": {
+    "loja": "barreiras",
+    "analise": {
+      "recomendacoes": "Revisar abordagem de atendimento. Converter visitantes em compradores com demonstrações práticas e perguntas de intenção.",
+      "total_vendas": "2",
+      "motivos_nv": {
+        "so_olhando": "2",
+        "pesquisando": "1"
+      },
+      "total_clientes": "5",
+      "padrao": "AP 40% — Carine vendeu Hot60i e Paloma vendeu Note70 via crédito. 3 NVs: pesquisa e só olhando. Dia fraco.",
+      "taxa_conversao": 40
+    },
+    "ultima_atualizacao": "2026-07-29T18:32:00",
+    "data": "2026-07-29"
+  },
+  "barreiras_2026-07-31": {
+    "loja": "barreiras",
+    "analise": {
+      "recomendacoes": "Volume baixo de atendimentos (5). Estimular prospecção ativa para aumentar fluxo.",
+      "motivos_nv": {
+        "pesquisando": "1",
+        "negado_financiamento": "1"
+      },
+      "total_clientes": "5",
+      "padrao": "AP 60% — conversão acima da média.",
+      "total_vendas": "3",
+      "taxa_conversao": 0.6
+    },
+    "ultima_atualizacao": "2026-07-31T23:59:00",
+    "data": "2026-07-31"
+  },
+  "barreiras_2026-08-01": {
+    "data": "2026-08-01",
+    "analise": {
+      "total_vendas": "7",
+      "taxa_conversao": 0.5833,
+      "recomendacoes": "Manter ritmo. Trabalhar clientes pesquisando com demonstração de custo-benefício vs. modelo desejado.",
+      "padrao": "AP 58% — boa conversão, equipe de 3 vendedores com volume elevado (12 atendimentos).",
+      "total_clientes": "12",
+      "motivos_nv": {
+        "volta_depois": "1",
+        "quer_outro_modelo": "1",
+        "pesquisando": "3"
+      }
+    },
+    "ultima_atualizacao": "2026-08-01T23:59:00",
+    "loja": "barreiras"
+  },
+  "barreiras_2026-08-03": {
+    "loja": "barreiras",
+    "ultima_atualizacao": "2026-08-03T23:59:00",
+    "analise": {
+      "motivos_nv": {
+        "valor_alto": "3",
+        "queria_mais_barato": "2",
+        "entrada_alta": "2",
+        "queria_outro_modelo": "1",
+        "outros": "1",
+        "volta_depois": "1"
+      },
+      "padrao": "AP ~17% — dia difícil. Barreiras financeiras dominaram: queria mais barato, valor alto, entrada alta. Apenas Taine (PayJoy) e Larisse (Cartão marido) converteram.",
+      "total_vendas": "2",
+      "recomendacoes": "Reforçar argumentação de valor e alternativas de crédito. Focar em modelos entry-level. Capacitar equipe em contorno de objeção de preço.",
+      "taxa_conversao": 0.1667,
+      "total_clientes": "12"
+    },
+    "data": "2026-08-03"
+  },
+  "barreiras_2026-08-05": {
+    "ultima_atualizacao": "2026-08-05T18:04:00",
+    "loja": "barreiras",
+    "analise": {
+      "taxa_conversao": 0.47,
+      "total_clientes": "17",
+      "motivos_nv": {
+        "Pesquisando": "2",
+        "Sem documento": "3",
+        "PayJoy": "2",
+        "Outro": "2"
+      },
+      "recomendacoes": "Trabalhar objeção de documentação e alternativas de crédito.",
+      "total_vendas": "8",
+      "padrao": "Alta recusa por crédito/doc. AP 47%."
+    },
+    "data": "2026-08-05"
+  },
+  "barreiras_2026-08-06": {
+    "loja": "barreiras",
+    "ultima_atualizacao": "2026-08-06T22:30:00",
+    "data": "2026-08-06",
+    "analise": {
+      "recomendacoes": "Revisar argumentação de financiamento. Explorar modalidades com menor entrada. Treinamento urgente em objeções de preço.",
+      "motivos_nv": {
+        "payjoy_entrada_alta": "2",
+        "entrada_alta": "3",
+        "procurando_barato": "1",
+        "juros_alta": "1",
+        "valor_alto": "1"
+      },
+      "padrao": "Dia crítico (11%). Equipe com dificuldade no financiamento — maioria perdeu por entrada/juros altos.",
+      "total_clientes": "9",
+      "total_vendas": "1",
+      "taxa_conversao": 0.11
+    }
+  },
+  "barreiras_2026-08-14": {
+    "analise": {
+      "recomendacoes": "1. NECESSIDADE REAL vs. PERCEBIDA — SÓ QUER SAMSUNG (2 NVs): Cliente que só quer Samsung tem necessidade percebida fixada — o produto que ele acha que precisa. A CDC não precisa ter Samsung para fechar a venda. Técnica: 'O que o senhor gosta no Samsung?' — listar as características (câmera, bateria, tela) e mostrar o modelo CDC que tem as MESMAS características por preço menor. 'A necessidade real do senhor é o Samsung, ou é um aparelho com boa câmera e bateria?' Esse é o coração do PTCDC.\n\n2. 'QUALIFICOU SEM FECHAR' — O NV MAIS CRÍTICO (1 NV): Cliente que teve o perfil identificado, demonstrou interesse, mas saiu sem comprar. Isso indica falha no fechamento positivo final. Treinar: quando o cliente demonstrar interesse (pegar o aparelho, perguntar sobre parcela, pedir para ver a caixa), imediatamente aplicar: 'Me passa seus dados para eu já ir separando a nota do senhor?' — não deixar o cliente 'respirar' fora do território favorável.\n\n3. JUROS ALTO (1 NV): Quando cliente recusa por juros, usar comparativo de custo-benefício: 'Em 12x o senhor paga R$X de juros total — menos do que a diferença de preço entre esse aparelho e o da concorrência.' Se juros ainda for objeção, oferecer menos parcelas ou à vista com desconto.\n\n4. FAZENDO COTAÇÃO (1 NV — pesquisando com intenção clara): Cliente que está cotando tem intenção de compra confirmada. Aplicar fechamento de urgência: 'Posso garantir esse preço só até hoje — amanhã pode mudar. O que falta para fechar agora?' + pegar contato para follow-up se sair mesmo assim.\n\n5. META POSITIVAÇÃO — DISTÂNCIA REAL: 7 atendimentos, 1 venda = 86% de desperdício. Se Victor e Isabella conseguissem aplicar a técnica de necessidade real com os 2 clientes que 'só queriam Samsung', teriam mais 2 vendas = AP de 43% com o mesmo número de clientes. Apresentar esse cálculo na próxima matinal.",
+      "total_vendas": "1",
+      "total_clientes": "7",
+      "taxa_conversao": 0.1429,
+      "padrao": "AP 14% (meta CDC: 80%) — dia crítico para Barreiras. Mateus foi o único a fechar (Hot60i). Victor e Isabella com múltiplas tentativas fracassadas. 2 NVs por 'só quer Samsung' — o maior problema do dia: cliente com necessidade percebida fixada em uma marca que a CDC pode não ter, e a equipe não conseguiu identificar a necessidade real e oferecer alternativa. 1 NV por 'qualificou sem fechar' é a mais crítica: cliente com perfil de compra que saiu.",
+      "motivos_nv": {
+        "so_quer_samsung": "2",
+        "fazendo_cotacao": "1",
+        "juros_alto": "1",
+        "qualificou_sem_fechar": "1",
+        "preco_alto": "1"
+      }
+    },
+    "loja": "barreiras",
+    "ultima_atualizacao": "2026-08-16T17:00:27",
+    "nota": "Retroativo enviado em 15/08. Receita R$2.340",
+    "data": "2026-08-14"
+  },
+  "barreiras_2026-08-15": {
+    "loja": "barreiras",
+    "analise": {
+      "recomendacoes": "1. SONDAGEM DE BUDGET (Mateus — 4 NVs por investimento alto): Mateus está apresentando o produto antes de descobrir o budget do cliente. Técnica CDC: na sondagem, perguntar 'O senhor está pensando em investir até quanto?' — se a resposta for R$800-1.200, ir direto para aparelhos de entrada e vender via características+benefícios daquele faixa, não tentar subir para modelos mais caros sem base.\n\n2. REPLICAR MÉTODO FERNANDA (PayJoy como ferramenta, não último recurso): Fernanda fechou 2× via PayJoy — isso significa que ela qualifica o perfil antes e oferece PayJoy na negociação, não só após ter o preço rejeitado. Fazer Fernanda ensinar sua sequência de oferta para Mateus e Victor: quando perguntar sobre PayJoy, como apresentar e como conduzir o processo de aprovação.\n\n3. CONVERSÃO DE 'VAI VOLTAR' (Victor): Quando cliente diz 'vou voltar', aplicar fechamento positivo imediato: 'O que precisa confirmar para fechar hoje?' + criar urgência ('temos só 2 unidades desse modelo') + pegar WhatsApp para follow-up. Cliente que sai para 'voltar depois' em 80% dos casos não volta.\n\n4. SIMULAÇÃO DE VENDAS (Mateus): Com 4+ NVs em um dia e AP consistentemente baixo, Mateus precisa de simulação de vendas com o gerente — mapear qual etapa está falhando: abordagem? sondagem de budget? apresentação de características+benefícios? manejo de objeção de preço? Identificar o gargalo específico antes de treinar.\n\n5. VOLUME × CONVERSÃO: 13 atendimentos é alto — mas com 38% de AP, a loja está desperdiçando 8 atendimentos por dia. Calcular o impacto: se AP subir para 60%, seriam 8V em vez de 5V por dia = +60% de receita com os mesmos clientes entrando. Apresentar esse cálculo na próxima matinal para motivar a equipe.",
+      "total_clientes": "13",
+      "taxa_conversao": 0.3846,
+      "total_vendas": "5",
+      "padrao": "AP ~38% (meta CDC: 80%) — Barreiras com alto volume (13 atendimentos) e baixa conversão. Fernanda destaque com 2 vendas via PayJoy (C71×2). Isabela com Hot 60i e C91. Mateus com 4 tentativas e múltiplas NVs — padrão de clientes de baixo ticket com alta resistência ao preço. 4 NVs por 'investimento alto' concentradas em um único dia indicam problema sistêmico de não identificar necessidade real antes de apresentar modelos caros.",
+      "motivos_nv": {
+        "investimento_alto": "4",
+        "vai_voltar": "1",
+        "credito_negado": "1",
+        "pesquisando": "1",
+        "entrada_alta": "1"
+      }
+    },
+    "ultima_atualizacao": "2026-08-16T16:54:02",
+    "nota": "Folha 13:43 (Dany CDC Barreiras). Data 15/08, R$9.200. Vendedores: Mateus, Isabela, Victor, Louise, Fernanda. Rodapé: Victor (Sem Entrada, NV financiamento).",
+    "data": "2026-08-15"
+  },
+  "barreiras_2026-08-17": {
+    "ultima_atualizacao": "2026-08-17T22:30:00",
+    "data": "2026-08-17",
+    "loja": "barreiras",
+    "analise": {
+      "total_vendas": "7",
+      "total_clientes": "13",
+      "padrao": "Clipe 'BACCHI' confirma Barreiras. AP anotado 63%% proximo da contagem manual (54%%, 7V/13).",
+      "taxa_conversao": 0.5385,
+      "motivos_nv": {
+        "outros": "6"
+      },
+      "recomendacoes": "Bom dia de conversao para a loja."
+    }
+  },
+  "barreiras_2026-08-18": {
+    "data": "2026-08-18",
+    "loja": "barreiras",
+    "ultima_atualizacao": "2026-08-18T22:30:00",
+    "analise": {
+      "padrao": "Clipe 'BACCHI' com cordao amarelo confirma Barreiras. Vendedoras Carine/Carla/Paloma/Amanda.",
+      "recomendacoes": "Taxa de 30%%, na media da loja; pedidos de desconto e 'so olhando' recorrentes.",
+      "motivos_nv": {
+        "outros": "7"
+      },
+      "total_clientes": "10",
+      "total_vendas": "3",
+      "taxa_conversao": 0.3
+    }
+  },
+  "barreiras_2026-08-20": {
+    "data": "2026-08-20",
+    "loja": "barreiras",
+    "analise": {
+      "padrao": "Clipe com 'BACCHI' confirma Barreiras. Foto rotacionada 90 graus e letra pequena - confianca baixa na contagem exata.",
+      "total_vendas": "2",
+      "motivos_nv": {
+        "outros": "2"
+      },
+      "recomendacoes": "Volume baixo registrado; confirmar com a loja se ha mais atendimentos nao fotografados.",
+      "total_clientes": "4",
+      "taxa_conversao": 0.5
+    },
+    "ultima_atualizacao": "2026-08-20T22:30:00"
+  },
+  "barreiras_2026-08-21": {
+    "data": "2026-08-21",
+    "analise": {
+      "recomendacoes": "Taxa de conversao muito baixa (17%%); grande volume de pedidos de desconto - revisar politica de preco/negociacao da equipe.",
+      "padrao": "Clipe com etiqueta 'BACCHI' e cordao amarelo confirmam Barreiras. Vendedoras Carine/Carla/Paloma/Amanda. Dia fraco, maioria pedindo desconto (queria por 800/1000/2000) ou so pesquisando.",
+      "total_clientes": "12",
+      "taxa_conversao": 0.1667,
+      "total_vendas": "2",
+      "motivos_nv": {
+        "outros": "10"
+      }
+    },
+    "loja": "barreiras",
+    "ultima_atualizacao": "2026-08-21T22:30:00"
+  },
+  "barreiras_2026-08-22": {
+    "analise": {
+      "recomendacoes": "Taxa de conversao baixa (17%%); maioria dos clientes so pesquisando ou sem entrada suficiente.",
+      "total_clientes": "6",
+      "total_vendas": "1",
+      "padrao": "Clipe com etiqueta 'BACCHI' visivel confirma Barreiras. Vendedoras Carla/Corine/Paloma/Amanda. Sem AP anotado na folha para conferencia.",
+      "motivos_nv": {
+        "outros": "3",
+        "entrada_alta": "2"
+      },
+      "taxa_conversao": 0.1667
+    },
+    "data": "2026-08-22",
+    "ultima_atualizacao": "2026-08-22T22:30:00",
+    "loja": "barreiras"
+  },
+  "barreiras_mensal_2026_08": {
+    "loja": "barreiras",
+    "mes": "2026-08",
+    "dias": "9",
+    "taxa_conversao": 0.3261,
+    "total_clientes": "91",
+    "total_vendas": "30",
+    "dias_com_dado": [
+      "2026-08-05",
+      "2026-08-06",
+      "2026-08-14",
+      "2026-08-15",
+      "2026-08-22",
+      "2026-08-21",
+      "2026-08-20",
+      "2026-08-18",
+      "2026-08-17"
+    ],
+    "motivos_nv": {
+      "juros_alta": "1",
+      "Sem documento": "3",
+      "PayJoy": "2",
+      "juros_alto": "1",
+      "vai_voltar": "1",
+      "so_quer_samsung": "2",
+      "investimento_alto": "4",
+      "outros": "28",
+      "entrada_alta": "6",
+      "qualificou_sem_fechar": "1",
+      "credito_negado": "1",
+      "valor_alto": "1",
+      "payjoy_entrada_alta": "2",
+      "Outro": "2",
+      "preco_alto": "1",
+      "procurando_barato": "1",
+      "Pesquisando": "2",
+      "pesquisando": "1",
+      "fazendo_cotacao": "1"
+    }
+  },
+  "cariacica_2026-07-08": {
+    "loja": "cariacica",
+    "analise": {
+      "total_vendas": "5",
+      "motivos_nv": {
+        "Sem entrada (Boleto)": "1",
+        "Sem entrada (Odres)": "2",
+        "Nao aprovado (Odres)": "1"
+      },
+      "taxa_conversao": 55.6,
+      "total_clientes": "9",
+      "recomendacoes": "1. Trabalhar opcoes de entrada reduzida ou entrada zero com parceiro financeiro. 2. Simular parcela antes de apresentar o produto para filtrar perfil de credito. 3. Explorar troca de aparelho como entrada para clientes sem dinheiro disponivel no momento.",
+      "padrao": "4 dos 5 clientes que nao compraram tentaram financiamento via Odres ou boleto e foram barrados por falta de entrada ou recusa de credito. Alta demanda reprimida com perfil financeiro limitado mas intencao de compra clara."
+    },
+    "ultima_atualizacao": "22:20",
+    "data": "2026-07-08"
+  },
+  "cariacica_2026-07-09": {
+    "loja": "cariacica",
+    "data": "2026-07-09",
+    "ultima_atualizacao": "18:57",
+    "analise": {
+      "total_vendas": "8",
+      "padrao": "Alta volumetria de atendimentos (19) com taxa de conversao de 42%. Os principais bloqueadores foram orcamento limitado (queria modelos fora do alcance) e restricao de credito via boleto, indicando descompasso entre expectativa de produto e capacidade de pagamento.",
+      "taxa_conversao": 42.1,
+      "recomendacoes": "1. Sondar o orcamento disponivel logo no inicio para apresentar produto compativel. 2. Oferecer simulacao de parcela via Odres/Payjoy para clientes restritos ao boleto. 3. Destacar o custo-beneficio dos modelos intermediarios para clientes que pedem marcas/modelos fora do estoque.",
+      "total_clientes": "19",
+      "motivos_nv": {
+        "Sem entrada / boleto negado": "4",
+        "Procurando opcao": "2",
+        "Orcamento baixo / queria outro modelo": "5"
+      }
+    }
+  },
+  "cariacica_2026-07-10": {
+    "analise": {
+      "taxa_conversao": 60,
+      "motivos_nv": {
+        "Parcela alta / boleto negado": "1",
+        "Queria preco mais baixo": "1",
+        "Produto indisponivel (nao tem hoje)": "2"
+      },
+      "recomendacoes": "1. Verificar e atualizar mix de estoque dos modelos mais demandados (N55, Note70). 2. Ter alternativa pronta quando o produto desejado nao esta disponivel. 3. Para clientes com parcela alta, propor opcao de mais entrada e menos parcelas.",
+      "total_clientes": "10",
+      "total_vendas": "6",
+      "padrao": "Cariacica converteu 60% em 10/07 com R$14.879. Dos 4 NV, 2 foram por indisponibilidade de produto — fator controlavel via gestao de estoque — e 2 por restricao financeira."
+    },
+    "data": "2026-07-10",
+    "ultima_atualizacao": "19:07",
+    "loja": "cariacica"
+  },
+  "cariacica_2026-07-11": {
+    "loja": "cariacica",
+    "analise": {
+      "recomendacoes": "1. Para clientes com orçamento de R$200-250, ter catálogo de modelos de entrada pronto para mostrar. 2. Quando o cliente quiser outro modelo, apresentar o alternativo disponível com argumento de custo-benefício. 3. Manter o ritmo operacional — Cariacica está com padrão crescente de receita (R$8.670 → R$16.178 → R$18.902).",
+      "motivos_nv": {
+        "Parcela alta / boleto negado": "2",
+        "Não gostou / queria outro modelo": "2",
+        "Orçamento baixo (R$200-250)": "1",
+        "Sem dinheiro": "2"
+      },
+      "total_clientes": "17",
+      "total_vendas": "10",
+      "padrao": "Cariacica teve seu melhor dia em volume (R$18.902, 17 atendimentos) com taxa de 59%. Os 7 não-vendas foram por restrições de produto (queria outro modelo) ou financeiras (sem dinheiro/parcela alta). Alta volumetria evidencia grande fluxo de clientes.",
+      "taxa_conversao": 58.8
+    },
+    "data": "2026-07-11",
+    "ultima_atualizacao": "18:06"
+  },
+  "cariacica_2026-07-13": {
+    "analise": {
+      "total_vendas": "0",
+      "padrao": "Sem dados — loja nao enviou folha de atendimento no dia 13/07/2026.",
+      "motivos_nv": {},
+      "taxa_conversao": 0,
+      "recomendacoes": "1. Cobrar envio diario da folha de atendimento. 2. Verificar com o gerente o motivo da ausencia do registro.",
+      "total_clientes": "0"
+    },
+    "ultima_atualizacao": "22:30",
+    "data": "2026-07-13",
+    "loja": "cariacica"
+  },
+  "cariacica_2026-07-22": {
+    "data": "2026-07-22",
+    "ultima_atualizacao": "19:58",
+    "analise": {
+      "total_clientes": "9",
+      "padrao": "Taxa de conversão de 33% em 9 atendimentos. Vendedores Fabiano e Fabiane geraram as vendas. Principal barreira foi entrada alta para financiamento e falta de documentação.",
+      "taxa_conversao": 33.3,
+      "recomendacoes": "1. Treinar equipe em negociação de entrada e parcelamento alternativo. 2. Apresentar opções PayJoy e ODRES para clientes sem documentação completa. 3. Estabelecer meta de 50% de conversão para amanhã.",
+      "total_vendas": "3",
+      "motivos_nv": {
+        "Outros": "1",
+        "Sem documentação": "1",
+        "Só olhar preço": "1",
+        "Negação": "1",
+        "Achou entrada alta": "2"
+      }
+    },
+    "loja": "cariacica"
+  },
+  "cariacica_2026-07-27": {
+    "ultima_atualizacao": "2026-07-27T18:20:00",
+    "data": "2026-07-27",
+    "loja": "cariacica",
+    "analise": {
+      "total_vendas": "7",
+      "total_clientes": "20",
+      "taxa_conversao": 35,
+      "motivos_nv": {
+        "pesquisa": "1",
+        "sem_dinheiro": "2",
+        "parcela_alta": "1",
+        "modelo_especifico": "1",
+        "nao_era_para_loja": "2",
+        "cartao": "1",
+        "volta": "4",
+        "negado": "1"
+      },
+      "padrao": "AP 35% — loja movimentada. Fabiano se destacou com ODRES e PayJoy. 'Volta' e 'sem dinheiro' dominam os NVs.",
+      "recomendacoes": "Priorizar clientes com intenção imediata; usar ODRES para quem não tem dinheiro no momento."
+    }
+  },
+  "cariacica_2026-07-28": {
+    "ultima_atualizacao": "2026-07-28T18:29:00",
+    "data": "2026-07-28",
+    "analise": {
+      "padrao": "AP 43% — Sophia e Fabiano bem (PayJoy/ODRES). Roberta com muitas tentativas e NVs. 3 tentativas de financiamento negadas (rodapé).",
+      "recomendacoes": "Focar clientes com real intenção de compra. Roberta precisa de treinamento em fechamento.",
+      "total_clientes": "14",
+      "motivos_nv": {
+        "comparando": "1",
+        "modelo_especifico": "2",
+        "sem_dinheiro": "1",
+        "cartao": "1",
+        "vem_amanha": "1",
+        "pesquisando": "1",
+        "vai_voltar": "1"
+      },
+      "total_vendas": "6",
+      "taxa_conversao": 42.9
+    },
+    "loja": "cariacica"
+  },
+  "cariacica_2026-07-29": {
+    "analise": {
+      "recomendacoes": "Manter ritmo de Sophia e Fabiano. Roberta precisa de suporte em fechamento — muitas tentativas em boleto não aprovadas.",
+      "padrao": "AP 71% — Sophia e Fabiano se destacaram. 5 vendas via C74/HOT60i/C72/C71 (PayJoy, Crédito, ODRES). Apenas 2 NVs. Roberta com dificuldades no dia.",
+      "total_vendas": "5",
+      "total_clientes": "7",
+      "taxa_conversao": 71.4,
+      "motivos_nv": {
+        "queria_mais_barata": "1",
+        "vai_voltar": "1"
+      }
+    },
+    "loja": "cariacica",
+    "ultima_atualizacao": "2026-07-29T18:10:00",
+    "data": "2026-07-29"
+  },
+  "cariacica_2026-08-02": {
+    "loja": "cariacica",
+    "ultima_atualizacao": "2026-08-02T23:59:00",
+    "data": "2026-08-02",
+    "analise": {
+      "motivos_nv": {
+        "queria_mais_barato": "1",
+        "planejando": "1"
+      },
+      "padrao": "AP 66% — boa conversão. 4 vendas: 1 via PayJoy (Lucas) + 3 via Cartão (Hot60i). 2 NVs: planejando e queria mais barato.",
+      "taxa_conversao": 0.6667,
+      "recomendacoes": "Manter mix Hot60i para pagamento em cartão. Reforçar PayJoy como alternativa de crédito.",
+      "total_clientes": "6",
+      "total_vendas": "4"
+    }
+  },
+  "cariacica_2026-08-05": {
+    "loja": "cariacica",
+    "analise": {
+      "padrao": "AP 50%. Clientes pesquisando preço.",
+      "recomendacoes": "Reforçar abordagem de valor e urgência na hora da visita.",
+      "motivos_nv": {
+        "Preço": "2",
+        "Não volta": "1",
+        "Dando olhada": "2",
+        "Interna": "1"
+      },
+      "taxa_conversao": 0.5,
+      "total_vendas": "6",
+      "total_clientes": "12"
+    },
+    "ultima_atualizacao": "2026-08-05T18:14:00",
+    "data": "2026-08-05"
+  },
+  "cariacica_2026-08-06": {
+    "analise": {
+      "taxa_conversao": 0.62,
+      "total_vendas": "8",
+      "total_clientes": "13",
+      "recomendacoes": "Manter momentum. Trabalhar fechamento nos 'volta' — se o cliente volta, maior chance de fechar.",
+      "motivos_nv": {
+        "payjoy": "1",
+        "entrada_alta": "1",
+        "odres_negado": "1",
+        "volta": "3"
+      },
+      "padrao": "Boa conversão (62%). Roberta e Sophia com bom volume. R$15.729 receita. 3 rodapé negados excluídos."
+    },
+    "ultima_atualizacao": "2026-08-06T22:30:00",
+    "data": "2026-08-06",
+    "loja": "cariacica"
+  },
+  "cariacica_2026-08-10": {
+    "data": "2026-08-10",
+    "ultima_atualizacao": "2026-08-10T22:56:00",
+    "analise": {
+      "padrao": "AP 50% — dia equilibrado. Roberta e Sophia com 7V/14 atendimentos.",
+      "recomendacoes": "Focar nos 7 NV. Trabalhar objeções de crédito e entrada.",
+      "motivos_nv": {
+        "credito": "1",
+        "sem_limite": "1",
+        "pesquisando": "2",
+        "outros": "1",
+        "sem_entrada": "2"
+      },
+      "taxa_conversao": 50,
+      "total_vendas": "7",
+      "total_clientes": "14"
+    },
+    "loja": "cariacica"
+  },
+  "cariacica_2026-08-11": {
+    "loja": "cariacica",
+    "analise": {
+      "total_vendas": "6",
+      "recomendacoes": "1. QUALIFICAÇÃO FINANCEIRA URGENTE: Com 14/27 NVs por crédito/sem entrada, a equipe não está filtrando perfil antes de avançar. Inserir pergunta obrigatória na sondagem: 'O senhor prefere pagar à vista, cartão ou parcelado?' — clientes que precisam de crédito devem ir direto para avaliação de PayJoy antes de investir 20min de atendimento e receber negativa.\n\n2. MANEJO DE PESQUISANDO (8 NVs — o maior motivo do dia): Antes de deixar qualquer cliente sair 'para pesquisar', aplicar fechamento positivo obrigatório: 'O que o senhor vai comparar em outro lugar?' — identificar a objeção real (preço? modelo? condição?). Se for preço, mostrar comparativo CDC vs. concorrência. Se for modelo, sondagem de necessidade real.\n\n3. TRIAGEM DE CLIENTES NO ALTO VOLUME: 33 atendimentos é volume excepcional — mas com 18% de AP, a equipe está gastando tempo igual em todos. Treinar triagem rápida (2 perguntas em 2 minutos): perfil de pagamento + modelo que procura. Clientes sem perfil de fechamento imediato → sondagem rápida + cartão de visita, não atendimento completo.\n\n4. SIMULAÇÃO DE VENDAS EMERGENCIAL: AP 18% por 1 dia aciona sinal de alerta máximo no PTCDC. Gerente deve realizar simulação de atendimento com cada vendedor ainda essa semana — identificar em qual etapa (abordagem? sondagem? negociação? manejo de objeção?) a conversão está sendo perdida sistematicamente.\n\n5. META POSITIVAÇÃO — IMPACTO DO DIA: De 33 clientes, apenas 6 compraram. Se AP fosse 60% (ainda abaixo da meta), seriam 20 vendas — +14 vendas. Calcular o impacto em receita e apresentar na matinal: 'Cada ponto percentual de AP que perdemos no dia = X reais de receita perdida.' Tornar a meta de 80% concreta e financeiramente tangível para a equipe.",
+      "motivos_nv": {
+        "pesquisando": "8",
+        "credito": "6",
+        "sem_entrada": "5",
+        "outros": "8"
+      },
+      "padrao": "AP 18% (meta CDC: 80%) — pior resultado registrado de Cariacica. Volume altíssimo (33 atendimentos) com apenas 6 conversões. Padrão crítico: 14 NVs por restrição financeira (sem_entrada+credito) e 8 por pesquisando — indica que a equipe não está qualificando o perfil do cliente antes de iniciar o processo de vendas, gastando tempo com clientes sem condição de fechar no momento. Roberta e Fabiano presentes, mas o volume superou a capacidade de conversão da equipe.",
+      "total_clientes": "33",
+      "taxa_conversao": 18
+    },
+    "ultima_atualizacao": "2026-08-16T17:00:09",
+    "data": "2026-08-11"
+  },
+  "cariacica_2026-08-14": {
+    "loja": "cariacica",
+    "ultima_atualizacao": "2026-08-14T22:30:00",
+    "analise": {
+      "padrao": "Vendedoras Roberta/Mayara/Fabiano/Sophia confirmam Cariacica (rodape 'Deus e Perfeito'). Nota manuscrita '3:10' no rodape sugere 3 vendas de 10; contagem manual ajustada para bater com essa referencia (3V/13 considerando todas as linhas).",
+      "recomendacoes": "Dia fraco; varias recusas por entrada alta e negacao de credito.",
+      "motivos_nv": {
+        "outros": "7",
+        "entrada_alta": "2",
+        "sem_limite": "1"
+      },
+      "total_clientes": "13",
+      "total_vendas": "3",
+      "taxa_conversao": 0.2308
+    },
+    "data": "2026-08-14"
+  },
+  "cariacica_2026-08-15": {
+    "loja": "cariacica",
+    "nota": "Folha enviada por Ana Sub Cariacica às 16:21. Data 15/08. Receita R$19.733 (confirmada pelo caption). Vendedores: Roberta, Fabiano, Sophia, Joandra. AP 50% anotado (azul).",
+    "analise": {
+      "motivos_nv": {
+        "payjoy_negado": "2",
+        "aguardando": "1",
+        "credito_negado": "1",
+        "so_olhando": "1"
+      },
+      "total_vendas": "7",
+      "taxa_conversao": 0.5,
+      "recomendacoes": "1. QUALIFICAÇÃO ANTES DO CRÉDITO (Fabiano): PayJoy negado 2× no mesmo dia indica que Fabiano está tentando crédito sem qualificar o perfil antes. Inserir pergunta de qualificação na sondagem: 'O senhor prefere pagar à vista, cartão, ou quer uma opção parcelada?' — roteie para PayJoy apenas se o cliente sinalizar que precisa de parcelamento sem entrada.\n\n2. CONVERSÃO DE 'SÓ OLHANDO' (Roberta): Cliente que diz 'só estou olhando' é cliente no início da jornada de compra — necessidade percebida ainda não definida. Abordagem CDC correta: 'Posso te apresentar as novidades que chegaram essa semana?' em vez de 'posso ajudar?' — substitui a resposta automática de defesa por uma abertura de conexão.\n\n3. FECHAMENTO DE 'AGUARDANDO' (cliente que saiu para pensar): Antes de deixar sair, aplicar: 'O que o senhor precisa confirmar para tomar a decisão hoje?' Se for preço, criar urgência real (estoque, promoção do dia). Pegar contato para follow-up no dia seguinte. Cliente que sai 'para pensar' raramente volta.\n\n4. VOLUME x CONVERSÃO: 14 atendimentos é o maior da rede no dia — mas 50% de conversão significa 7 oportunidades perdidas. Fazer análise por vendedor: quem tem melhor AP no volume alto? Concentrar sondagem nos primeiros 2 minutos de cada atendimento para qualificar rápido e não perder tempo com clientes sem perfil de compra naquele momento.\n\n5. PLANOS COMO ALTERNATIVA (NVs de crédito negado): Com 3 NVs por crédito/PayJoy, a loja precisa dominar a oferta de planos pós-pagos como rota alternativa. Treinar equipe: quando crédito nega, transitar imediatamente para: 'Temos uma opção onde o senhor leva o aparelho hoje vinculado a um plano — sem análise de crédito.'",
+      "padrao": "AP 50% (meta CDC: 80%) — Roberta e Fabiano lideraram os atendimentos. Dia de alto volume (14 atendimentos) com 7 vendas, mas Fabiano acumulou múltiplas NVs por PayJoy/crédito negado — padrão recorrente de tentar o crédito como primeiro recurso em vez de explorar pagamento à vista ou planos. Cliente 'só olhando' indica abordagem não convertida em sondagem. 'Aguardando' sinaliza cliente que saiu sem decisão — perda de fechamento positivo.",
+      "total_clientes": "14"
+    },
+    "ultima_atualizacao": "2026-08-16T16:53:50",
+    "data": "2026-08-15"
+  },
+  "cariacica_2026-08-18": {
+    "data": "2026-08-18",
+    "analise": {
+      "taxa_conversao": 0.1429,
+      "total_vendas": "2",
+      "recomendacoes": "Dia muito fraco (14%%); maioria dos clientes pedindo preco mais baixo ou so pesquisando.",
+      "padrao": "Vendedoras Roberta/Sophia/Mayara/Fabiano confirmam Cariacica. Folha com trecho central rabiscado (dificil leitura de ~3 linhas); AP anotado ilegivel.",
+      "total_clientes": "14",
+      "motivos_nv": {
+        "outros": "12"
+      }
+    },
+    "loja": "cariacica",
+    "ultima_atualizacao": "2026-08-18T22:30:00"
+  },
+  "cariacica_2026-08-20": {
+    "ultima_atualizacao": "2026-08-20T22:30:00",
+    "loja": "cariacica",
+    "analise": {
+      "total_vendas": "6",
+      "motivos_nv": {
+        "outros": "15"
+      },
+      "taxa_conversao": 0.2857,
+      "total_clientes": "21",
+      "recomendacoes": "Taxa baixa (29%%); grande numero de recusas 'negado' no boleto - investigar taxa de aprovacao da financeira usada nesta loja.",
+      "padrao": "Vendedoras Roberta/Mayara/Sophia/Fabiano confirmam Cariacica (duas folhas fotografadas juntas, mesma equipe). Volume alto de recusas por boleto nao aprovado / negado."
+    },
+    "data": "2026-08-20"
+  },
+  "cariacica_2026-08-21": {
+    "data": "2026-08-21",
+    "analise": {
+      "motivos_nv": {
+        "outros": "8"
+      },
+      "total_vendas": "7",
+      "recomendacoes": "Taxa razoavel (47%%); considerar opcoes de boleto com parcelas menores para reduzir recusas.",
+      "taxa_conversao": 0.4667,
+      "padrao": "Vendedoras Roberta/Mayara/Sophia/Fabiano confirmam Cariacica (nomes exatos da tabela). Boleto foi o principal motivo de recusa (parcela nao coube no orcamento).",
+      "total_clientes": "15"
+    },
+    "ultima_atualizacao": "2026-08-21T22:30:00",
+    "loja": "cariacica"
+  },
+  "cariacica_mensal_2026_08": {
+    "dias": "9",
+    "loja": "cariacica",
+    "mes": "2026-08",
+    "total_clientes": "149",
+    "motivos_nv": {
+      "Preço": "2",
+      "pesquisando": "10",
+      "Interna": "1",
+      "sem_entrada": "7",
+      "credito": "7",
+      "volta": "3",
+      "odres_negado": "1",
+      "so_olhando": "1",
+      "payjoy_negado": "2",
+      "aguardando": "1",
+      "credito_negado": "1",
+      "entrada_alta": "3",
+      "payjoy": "1",
+      "Não volta": "1",
+      "Dando olhada": "2",
+      "sem_limite": "2",
+      "outros": "51"
+    },
+    "total_vendas": "52",
+    "taxa_conversao": 0.3953,
+    "dias_com_dado": [
+      "2026-08-05",
+      "2026-08-06",
+      "2026-08-10",
+      "2026-08-11",
+      "2026-08-15",
+      "2026-08-21",
+      "2026-08-20",
+      "2026-08-18",
+      "2026-08-14"
+    ]
+  },
+  "itabuna_2026-07-08": {
+    "loja": "itabuna",
+    "ultima_atualizacao": "18:59",
+    "analise": {
+      "padrao": "Itabuna apresentou a pior taxa de conversao do dia (22%). A maioria dos clientes tentou financiamento via Odres e foi recusada por credito insuficiente ou sem entrada, revelando perfil de cliente com baixa capacidade financeira imediata e aspiracao por aparelhos premium fora do alcance.",
+      "recomendacoes": "1. Focar sondagem financeira logo no inicio do atendimento para qualificar o perfil antes de apresentar o produto. 2. Apresentar produtos de menor ticket como alternativa para clientes com restricao de credito. 3. Explorar boleto parcelado e credito proprio como alternativas ao Odres para clientes negados.",
+      "total_vendas": "2",
+      "motivos_nv": {
+        "Queria iPhone": "1",
+        "Credito negado (Odres)": "3",
+        "Compra final do mes (MEC)": "1",
+        "Sem entrada": "1",
+        "Orcamento baixo": "1"
+      },
+      "taxa_conversao": 22.2,
+      "total_clientes": "9"
+    },
+    "data": "2026-07-08"
+  },
+  "itabuna_2026-07-09": {
+    "data": "2026-07-09",
+    "analise": {
+      "motivos_nv": {
+        "Odres negado / sem entrada": "2",
+        "Compra planejada futuro (proximo mes/semana)": "2"
+      },
+      "taxa_conversao": 50,
+      "total_clientes": "8",
+      "recomendacoes": "1. Capturar contato de quem vai comprar na proxima semana para acompanhamento ativo. 2. Explorar alternativas de credito alem do Odres para clientes com restricao. 3. Apresentar opcao de entrada menor para viabilizar a compra ainda no dia.",
+      "padrao": "Metade dos clientes NV em Itabuna adiou a compra para proximas semanas ou teve credito Odres negado. Perfil de cliente com intencao de compra clara mas sem capacidade financeira imediata.",
+      "total_vendas": "4"
+    },
+    "ultima_atualizacao": "18:27",
+    "loja": "itabuna"
+  },
+  "itabuna_2026-07-10": {
+    "loja": "itabuna",
+    "analise": {
+      "motivos_nv": {
+        "Financiamento negado": "1",
+        "Compra final do mes": "1",
+        "Queria iPhone": "1",
+        "Nao tem em loja": "1",
+        "Sem valor de investimento": "1"
+      },
+      "recomendacoes": "1. Para clientes que querem iPhone, apresentar Note70 ou C75 como alternativa com custo-beneficio superior. 2. Para financiamentos negados via Odres, explorar Payjoy como alternativa com criterios diferentes. 3. Manter foco nos clientes com perfil de pagamento direto — maior taxa de conversao.",
+      "total_clientes": "10",
+      "total_vendas": "5",
+      "padrao": "50% de aproveitamento. Recuperacao em relacao ao 08/07 (22%). Equipe vendeu bem para clientes com perfil de compra direta (Odres, dinheiro, cartao), mas perdeu clientes que queriam modelos fora do portfolio (iPhone) e financiamentos negados. 2 NVs por limitacoes de produto/credito.",
+      "taxa_conversao": 50
+    },
+    "ultima_atualizacao": "18:21",
+    "data": "2026-07-10"
+  },
+  "itabuna_2026-07-11": {
+    "data": "2026-07-11",
+    "analise": {
+      "total_vendas": "4",
+      "total_clientes": "6",
+      "padrao": "Itabuna atingiu 66.7% de conversão com equipe de Andreza, KitiSantos e Thuanatos. Um cliente declarou intenção de retornar no final do mês para compra, sugerindo que o fechamento não foi concluído por questão de timing financeiro do cliente.",
+      "recomendacoes": "1. Para clientes que ficam de voltar no final do mês, anotar contato e fazer follow-up ativo por WhatsApp. 2. Explorar financiamento parcelado (crédito/cartão) para antecipar a compra de quem quer esperar. 3. KitiSantos demonstrou bom volume de vendas — usar como referência de abordagem para o restante da equipe.",
+      "motivos_nv": {
+        "Ficou de voltar": "1",
+        "Sem motivo claro": "1"
+      },
+      "taxa_conversao": 66.7
+    },
+    "loja": "itabuna",
+    "ultima_atualizacao": "13:29"
+  },
+  "itabuna_2026-07-13": {
+    "analise": {
+      "total_vendas": "5",
+      "recomendacoes": "1. Priorizar alternativas acessíveis para clientes com histórico de corte de crédito. 2. Continuar o bom uso de acessórios como adicional nas vendas. 3. Manter o ritmo — desempenho acima da média da rede.",
+      "motivos_nv": {
+        "Cortou / aprovação negada": "2"
+      },
+      "padrao": "Bom desempenho — AP marcado pelo gerente como 85%. Andreza liderou com 3 vendas (C71, Hot601 e destaque em acessórios). Thamotos e Thunocor também converteram. Duas perdas para corte de crédito no Not 40.",
+      "total_clientes": "7",
+      "taxa_conversao": 71.4
+    },
+    "ultima_atualizacao": "22:30",
+    "data": "2026-07-13",
+    "loja": "itabuna"
+  },
+  "itabuna_2026-07-22": {
+    "analise": {
+      "taxa_conversao": 77.8,
+      "motivos_nv": {
+        "Volta amanhã / captivo": "1",
+        "Valor de cancelamento": "1"
+      },
+      "total_vendas": "7",
+      "total_clientes": "9",
+      "recomendacoes": "1. Manter o ritmo de atendimento ativo — equipe está bem posicionada. 2. Trabalhar com Mikaelle a abordagem para clientes com histórico de negação. 3. Meta de manter acima de 75% amanhã.",
+      "padrao": "Excelente desempenho com taxa de 77,8% em 9 atendimentos. Toda a equipe contribuiu com vendas. Mikaelle teve 3 negações no rodapé por recusa de financiamento."
+    },
+    "data": "2026-07-22",
+    "ultima_atualizacao": "18:21",
+    "loja": "itabuna"
+  },
+  "itabuna_2026-07-25": {
+    "data": "2026-07-25",
+    "ultima_atualizacao": "22:00",
+    "analise": {
+      "total_vendas": "5",
+      "recomendacoes": "1. Manter o ritmo — a equipe demonstra alta capacidade de fechamento. 2. Ter sempre alternativa de pagamento pronta quando cartao e negado. 3. Aproveitar o momentum para meta do mes.",
+      "padrao": "Excelente conversao com AP 71%. Vendedoras Andreza e Mikaelle com multiplas vendas. Objecao principal e saldo limitado no cartao — facilmente contornavel com PIX ou boleto.",
+      "total_clientes": "7",
+      "motivos_nv": {
+        "pesquisando": "1",
+        "saldo insuficiente no cartao": "1"
+      },
+      "taxa_conversao": 71.4
+    },
+    "loja": "itabuna"
+  },
+  "itabuna_2026-07-27": {
+    "data": "2026-07-27",
+    "ultima_atualizacao": "2026-07-27T18:14:00",
+    "loja": "itabuna",
+    "analise": {
+      "total_clientes": "6",
+      "recomendacoes": "Identificar urgência do cliente para reduzir saídas em pesquisa.",
+      "taxa_conversao": 50,
+      "total_vendas": "3",
+      "motivos_nv": {
+        "pesquisando": "1",
+        "vai_voltar": "1",
+        "outros": "1"
+      },
+      "padrao": "AP 50% — Andreza e Bright venderam. Mikaelle teve NVs por entrada e modelo."
+    }
+  },
+  "itabuna_2026-07-29": {
+    "data": "2026-07-29",
+    "ultima_atualizacao": "2026-07-29T18:10:00",
+    "analise": {
+      "recomendacoes": "Trabalhar com Andrezão para mostrar aparelhos dentro do orçamento do cliente. Thaumatos precisa atenção em técnicas de negociação.",
+      "motivos_nv": {
+        "investimento_baixo": "1",
+        "vai_voltar": "1",
+        "cartao": "1"
+      },
+      "total_clientes": "8",
+      "padrao": "AP 62.5% — Katt Santos vendeu NOTE70+película via ODRES. Mikaelle fez 3 vendas (C71+acessórios cartão, Note70 ODRES). Thaumatos C71 via cartão. Andrezão NV por limite de R$700.",
+      "total_vendas": "5",
+      "taxa_conversao": 62.5
+    },
+    "loja": "itabuna"
+  },
+  "itabuna_2026-07-31": {
+    "ultima_atualizacao": "2026-07-31T23:59:00",
+    "data": "2026-07-31",
+    "analise": {
+      "motivos_nv": {
+        "pesquisando": "1",
+        "negado_financiamento": "1"
+      },
+      "padrao": "AP 80% — excelente conversão, acima da média da rede.",
+      "total_vendas": "8",
+      "taxa_conversao": 0.8,
+      "recomendacoes": "Manter ritmo. Replicar abordagem de fechamento para outras lojas.",
+      "total_clientes": "10"
+    },
+    "loja": "itabuna"
+  },
+  "itabuna_2026-08-05": {
+    "loja": "itabuna",
+    "data": "2026-08-05",
+    "ultima_atualizacao": "2026-08-05T18:10:00",
+    "analise": {
+      "recomendacoes": "Explorar alternativas de financiamento e entrada.",
+      "total_clientes": "12",
+      "padrao": "AP 50%. Recusas por crédito (ODRES/Brasilcard).",
+      "total_vendas": "6",
+      "motivos_nv": {
+        "ODRES": "2",
+        "Brasilcard": "2",
+        "Sem dinheiro": "2"
+      },
+      "taxa_conversao": 0.5
+    }
+  },
+  "itabuna_2026-08-06": {
+    "loja": "itabuna",
+    "ultima_atualizacao": "2026-08-06T22:30:00",
+    "analise": {
+      "motivos_nv": {
+        "entrada_alta": "1",
+        "financiamento": "1"
+      },
+      "padrao": "Boa conversão (60%). Andreza e Keifit na manhã, Mikaelle na tarde.",
+      "taxa_conversao": 0.6,
+      "recomendacoes": "Manter consistência. Explorar mais acessórios nos fechamentos.",
+      "total_clientes": "5",
+      "total_vendas": "3"
+    },
+    "data": "2026-08-06"
+  },
+  "itabuna_2026-08-10": {
+    "ultima_atualizacao": "2026-08-10T22:56:00",
+    "data": "2026-08-10",
+    "analise": {
+      "padrao": "AP 60% — bom dia. Andreza e Mikaelle em destaque.",
+      "motivos_nv": {
+        "credito": "1",
+        "retorno": "1",
+        "outros": "1",
+        "pesquisando": "1"
+      },
+      "total_vendas": "6",
+      "taxa_conversao": 60,
+      "recomendacoes": "Manter performance. Focar nos 4 NV para melhorar para 70%+.",
+      "total_clientes": "10"
+    },
+    "loja": "itabuna"
+  },
+  "itabuna_2026-08-11": {
+    "ultima_atualizacao": "2026-08-16T17:00:11",
+    "data": "2026-08-11",
+    "analise": {
+      "recomendacoes": "1. CONVERSÃO DE 'SÓ OLHANDO' (1 NV): Cliente que diz 'só estou olhando' é a resposta automática de defesa — não significa desinteresse. Substituir abordagem padrão 'posso ajudar?' por: 'Bom dia! Acabaram de chegar novidades essa semana, posso te mostrar?' Essa abertura elimina a resposta de defesa e inicia a sondagem naturalmente.\n\n2. MANEJO DE OBJEÇÃO DE PREÇO (1 NV): Quando cliente diz 'tá caro', não oferecer desconto imediatamente. Técnica CDC: 'O senhor está comparando com qual aparelho?' — identificar o modelo de referência do cliente e usar características+benefícios para mostrar por que o modelo CDC entrega mais pelo dinheiro. Vender benefício, não preço.\n\n3. QUALIFICAÇÃO ANTES DO CRÉDITO (1 NV): Crédito negado indica tentativa de financiamento sem qualificar o perfil antes. Incluir na sondagem: 'O senhor prefere pagar à vista, cartão ou parcelado?' — se parcelado, ir direto para PayJoy antes de tentar ODRES, e oferecer planos pós-pagos como segunda alternativa.\n\n4. META POSITIVAÇÃO (57% → 80%): Com 7 atendimentos, são apenas 2 vendas a mais para atingir a meta. Andreza demonstrou capacidade — fazer simulação de vendas com ela para Thaumatos e Mikaelle identificarem onde estão perdendo o cliente.\n\n5. ANDREZA COMO REFERÊNCIA: Padrão de performance confirmada (múltiplos dias acima da média). Usar como padrinha para simular atendimento ao vivo — especialmente o processo de sondagem e fechamento positivo que ela usa para converter clientes indecisos.",
+      "padrao": "AP 57% (meta CDC: 80%) — Andreza e Thaumatos com bom desempenho, Mikaelle presente. 3 NVs com motivos distintos: cliente 'só olhando' (abordagem não convertida em sondagem), preço alto (negociação não chegou ao valor percebido pelo cliente) e crédito negado (tentativa de financiamento sem qualificação precoce de perfil). Dia abaixo da meta mas com perfil de vendedores capazes — problema de processo, não de equipe.",
+      "total_clientes": "7",
+      "taxa_conversao": 57,
+      "total_vendas": "4",
+      "motivos_nv": {
+        "so_olhando": "1",
+        "preco": "1",
+        "credito": "1"
+      }
+    },
+    "loja": "itabuna"
+  },
+  "itabuna_2026-08-14": {
+    "ultima_atualizacao": "2026-08-16T17:00:29",
+    "data": "2026-08-14",
+    "analise": {
+      "taxa_conversao": 0.5,
+      "total_clientes": "8",
+      "padrao": "AP 50% (meta CDC: 80%) — Héricles e Thaumatos lideraram as vendas. Andreza com NVs por investimento alto — padrão de apresentar aparelhos acima do budget percebido do cliente sem identificar a necessidade real na sondagem. 2 NVs por pesquisando indicam que a fase de conexão e retenção antes do fechamento precisa ser trabalhada. Mikaelle presente com vendas de acessórios. Receita R$9.109.",
+      "total_vendas": "4",
+      "recomendacoes": "1. INVESTIMENTO ALTO — ANDREZA (2 NVs): Andreza está apresentando o aparelho sem qualificar o budget antes. Técnica de sondagem CDC: 'O senhor está pensando em investir até quanto?' — se a resposta for R$800, ir diretamente para modelos nessa faixa e vender via características+benefícios do aparelho correto, não tentar subir o ticket.\n\n2. PESQUISANDO — RETENÇÃO (2 NVs): Dois clientes saíram para pesquisar. Antes de cada cliente sair: 'O que o senhor vai comparar em outro lugar? Posso mostrar agora como nosso modelo se compara.' Se insistir em sair, pegar WhatsApp: 'Te mando a ficha técnica para comparar com o que você encontrar.' Follow-up 24h depois.\n\n3. HÉRICLES E THAUMATOS COMO REFERÊNCIA: Com AP pessoal acima da média, usar os dois em simulação de vendas para Andreza identificar onde está perdendo o cliente — especialmente o momento em que apresenta o preço do aparelho.\n\n4. META 80%: Com 8 atendimentos, a meta são 6 ou 7 vendas. A loja fez 4. Se Andreza converter 1 dos 2 NVs por investimento alto com sondagem de budget, o AP sobe para 62,5% — ainda longe da meta, mas na direção certa.\n\n5. MIKAELLE — ACESSÓRIOS NO FECHAMENTO: Identificada com vendas de acessórios. Treinar Mikaelle em upsell integrado: após o fechamento do aparelho, conduzir diretamente: 'Qual dessas capas combina mais com o seu estilo?' — nunca deixar o cliente sair sem pelo menos oferecer o kit de proteção (capa + película).",
+      "motivos_nv": {
+        "investimento_alto": "2",
+        "pesquisando": "2"
+      }
+    },
+    "nota": "Retroativo enviado em 15/08. Vendedores: Héricles, Thaumatos, Andreza, Izabéla, Mikaelle. Receita R$9.109",
+    "loja": "itabuna"
+  },
+  "itabuna_2026-08-15": {
+    "nota": "Folha Reinan CDC 14:23. Data 15/08, horário 13:57. Receita R$9.700. Vendedores: Thaumatos, Héricles, Katt, Andreza, Mikaelle, Thanolos. '.10' anotado = 10 atendimentos.",
+    "data": "2026-08-15",
+    "analise": {
+      "total_vendas": "5",
+      "motivos_nv": {
+        "pesquisando": "2",
+        "investimento_alto": "2",
+        "sem_entrada": "1"
+      },
+      "taxa_conversao": 0.5,
+      "recomendacoes": "1. SONDAGEM (Katt — NV preço alto): Cliente quer menos de R$3.000 mas isso é necessidade percebida. Aplicar sondagem CDC: 'O senhor usa mais câmera, jogo ou redes sociais?' Identificar modelo com características equivalentes dentro do budget declarado e apresentar via benefícios, não preço.\n\n2. FECHAMENTO POSITIVO (Thaumatos — NV pesquisando): Antes de deixar o cliente sair, aplicar: 'O que faltou para o senhor fechar hoje?' Se a resposta for preço ou dúvida de marca, usar técnica de réplica objetiva — não contra-argumentar tudo, focar no motivo real. Oferecer cartão de visita e criar urgência ('esse modelo tem poucas unidades').\n\n3. ALTERNATIVA AO BRASILAND (Héricles/Thanolos — sem entrada): Antes de tentar Brasiland, qualificar com: 'Se eu encontrar uma forma de parcelamento sem entrada, fechamos hoje?' PayJoy como primeira alternativa; planos pós-pago como segunda. Não usar crédito como único caminho de fechamento.\n\n4. SIMULAÇÃO DE VENDAS (equipe): Andreza com 3V mostrou que a meta de 80% é atingível. Fazer simulação semanal com ela como referência — identificar o momento exato onde Katt e Thaumatos estão perdendo o cliente (na sondagem? na apresentação? no manejo de objeções?).\n\n5. META POSITIVAÇÃO: Loja em 50% contra meta de 80% CDC. Cada vendedor deveria vender para 8 de cada 10 clientes. Mapear por nome: Andreza próxima da meta, os demais precisam de treino específico em fechamento positivo e manejo de objeção de preço.",
+      "padrao": "AP ~50% (meta CDC: 80%) — Andreza destaque com 3 fechamentos no dia (Hot C71, C41, C71 abertura), demonstrando domínio de sondagem e fechamento positivo. Katt e Thaumatos com NV por preço alto e pesquisando — sinal de que o cliente saiu antes de ter a necessidade real identificada. Héricles e Thanolos com Brasiland negado no rodapé (crédito sem entrada) — não contam na contagem principal mas indicam perfil de cliente sem acesso a financiamento tradicional.",
+      "total_clientes": "10"
+    },
+    "ultima_atualizacao": "2026-08-16T16:53:46",
+    "loja": "itabuna"
+  },
+  "itabuna_2026-08-17": {
+    "analise": {
+      "total_vendas": "5",
+      "taxa_conversao": 0.5556,
+      "recomendacoes": "Boa conversao no dia.",
+      "padrao": "Vendedores Hericles/K.Santos/Mikaelle/Fhonoto/Evelyn confirmam Itabuna. AP anotado 62%% proximo da contagem manual (56%%, 5V/9).",
+      "motivos_nv": {
+        "outros": "3",
+        "sem_limite": "1"
+      },
+      "total_clientes": "9"
+    },
+    "data": "2026-08-17",
+    "ultima_atualizacao": "2026-08-17T22:30:00",
+    "loja": "itabuna"
+  },
+  "itabuna_2026-08-18": {
+    "analise": {
+      "total_vendas": "5",
+      "padrao": "Vendedores K.Santos/Fhonoto/Hericles/Andreza/Mikaelle confirmam Itabuna. AP anotado ilegivel na folha.",
+      "motivos_nv": {
+        "sem_limite": "2",
+        "outros": "5"
+      },
+      "taxa_conversao": 0.4167,
+      "recomendacoes": "2 recusas Odres negadas (Mikaelle, K.Santos).",
+      "total_clientes": "12"
+    },
+    "data": "2026-08-18",
+    "loja": "itabuna",
+    "ultima_atualizacao": "2026-08-18T22:30:00"
+  },
+  "itabuna_2026-08-20": {
+    "data": "2026-08-20",
+    "ultima_atualizacao": "2026-08-20T22:30:00",
+    "analise": {
+      "motivos_nv": {
+        "sem_limite": "1",
+        "outros": "6",
+        "entrada_alta": "2"
+      },
+      "taxa_conversao": 0.25,
+      "padrao": "Vendedores Andreza/Keift(Katt Santos)/Fhonoto/Mikaelle/Hericles confirmam Itabuna. AP anotado ilegivel (rabiscado), contagem manual deu 25%% (3V/12).",
+      "total_clientes": "12",
+      "total_vendas": "3",
+      "recomendacoes": "Dia fraco para essa equipe; varias recusas Odres por falta de entrada ou documento."
+    },
+    "loja": "itabuna"
+  },
+  "itabuna_2026-08-21": {
+    "analise": {
+      "total_vendas": "6",
+      "recomendacoes": "3 recusas Odres negadas; padrao similar aos outros dias com essa equipe.",
+      "motivos_nv": {
+        "sem_limite": "3",
+        "outros": "5"
+      },
+      "total_clientes": "14",
+      "taxa_conversao": 0.4286,
+      "padrao": "Vendedores Hericles/Keift(Katt Santos)/Fhonoto/Andreza/Mikaelle confirmam Itabuna. AP anotado ilegivel (rabiscado), contagem manual deu 43%% (6V/14)."
+    },
+    "data": "2026-08-21",
+    "ultima_atualizacao": "2026-08-21T22:30:00",
+    "loja": "itabuna"
+  },
+  "itabuna_2026-08-22": {
+    "ultima_atualizacao": "2026-08-22T22:30:00",
+    "analise": {
+      "total_clientes": "13",
+      "total_vendas": "7",
+      "taxa_conversao": 0.5385,
+      "padrao": "Vendedores Andreza, Mikaelle, K.Santos (Katt Santos) confirmam Itabuna. AP anotado ~77%% na folha, contagem manual deu 54%% (7V/13).",
+      "recomendacoes": "Boa taxa de conversao no dia; 2 recusas Odres negadas com Mikaelle e Hericles.",
+      "motivos_nv": {
+        "outros": "3",
+        "sem_limite": "2"
+      }
+    },
+    "data": "2026-08-22",
+    "loja": "itabuna"
+  },
+  "itabuna_2026-08-24": {
+    "ultima_atualizacao": "2026-08-24T22:30:00",
+    "data": "2026-08-24",
+    "analise": {
+      "taxa_conversao": 0.45,
+      "total_clientes": "20",
+      "padrao": "Duas folhas fotografadas juntas na mesma foto (Hericles/Andreza + Fhonoto/Mikaelle/Andreza), tratadas como loja unica. AP anotado 60%% na folha direita vs contagem manual ~45%%.",
+      "motivos_nv": {
+        "entrada_alta": "3",
+        "sem_limite": "3",
+        "outros": "5"
+      },
+      "total_vendas": "9",
+      "recomendacoes": "5 recusas 'Odres' negado/sem entrada da vendedora Mikaelle - concentrar treinamento de contorno de objecao nela."
+    },
+    "loja": "itabuna"
+  },
+  "itabuna_mensal_2026_08": {
+    "dias_com_dado": [
+      "2026-08-05",
+      "2026-08-06",
+      "2026-08-10",
+      "2026-08-11",
+      "2026-08-14",
+      "2026-08-15",
+      "2026-08-24",
+      "2026-08-22",
+      "2026-08-21",
+      "2026-08-20",
+      "2026-08-18",
+      "2026-08-17"
+    ],
+    "motivos_nv": {
+      "so_olhando": "1",
+      "investimento_alto": "4",
+      "credito": "2",
+      "sem_limite": "12",
+      "entrada_alta": "6",
+      "Sem dinheiro": "2",
+      "financiamento": "1",
+      "Brasilcard": "2",
+      "retorno": "1",
+      "pesquisando": "5",
+      "preco": "1",
+      "ODRES": "2",
+      "outros": "28",
+      "sem_entrada": "1"
+    },
+    "total_clientes": "132",
+    "mes": "2026-08",
+    "total_vendas": "63",
+    "loja": "itabuna",
+    "taxa_conversao": 0.5385,
+    "dias": "12"
+  },
+  "laranjeiras_2026-07-08": {
+    "analise": {
+      "motivos_nv": {
+        "Juros altos (Payjoy)": "1",
+        "Sem entrada": "2",
+        "Negado (Odres/Payjoy)": "1"
+      },
+      "padrao": "Laranjeiras converteu 50% dos atendimentos no dia 08/07. Os 3 clientes NV foram bloqueados por restricoes de credito: juros altos, sem entrada ou Odres/Payjoy negado.",
+      "taxa_conversao": 50,
+      "recomendacoes": "1. Apresentar simulacao de parcela mais baixa antes do cliente questionar os juros. 2. Explorar troca de aparelho como entrada para clientes sem dinheiro disponivel. 3. Oferecer boleto parcelado como alternativa ao Payjoy quando o cliente questionar os juros.",
+      "total_clientes": "6",
+      "total_vendas": "3"
+    },
+    "loja": "laranjeiras",
+    "ultima_atualizacao": "18:26",
+    "data": "2026-07-08"
+  },
+  "laranjeiras_2026-07-09": {
+    "data": "2026-07-09",
+    "analise": {
+      "total_vendas": "1",
+      "motivos_nv": {
+        "Orçamento baixo": "1",
+        "Crédito negado": "1",
+        "Pesquisando": "1",
+        "Sem entrada": "2"
+      },
+      "taxa_conversao": 20,
+      "recomendacoes": "1. URGENTE: Identificar causa da queda abrupta de 50% para 20% em relação ao dia anterior. 2. Revisar abordagem — qualificar financeiramente o cliente logo no início do atendimento. 3. Gestor deve acompanhar atendimentos ao vivo para identificar o gargalo específico.",
+      "padrao": "Laranjeiras teve queda crítica de conversão em 09/07 (20%). A maioria dos clientes estava pesquisando, sem entrada ou com crédito negado. Queda acentuada em relação ao dia anterior (50%).",
+      "total_clientes": "5"
+    },
+    "loja": "laranjeiras",
+    "ultima_atualizacao": "18:30"
+  },
+  "laranjeiras_2026-07-10": {
+    "ultima_atualizacao": "18:00",
+    "data": "2026-07-10",
+    "loja": "laranjeiras",
+    "analise": {
+      "taxa_conversao": 60,
+      "motivos_nv": {
+        "Orçamento baixo (queria no máximo R$600)": "2",
+        "Outros": "1",
+        "Sem entrada (Payjoy)": "1"
+      },
+      "total_clientes": "10",
+      "recomendacoes": "1. Manter e reforçar as abordagens que funcionaram neste dia. 2. Para clientes com orçamento de até R$600, apresentar modelos de entrada competitivos (Spark, C63). 3. Explorar opções de parcelamento sem entrada para viabilizar vendas de clientes sem capital imediato.",
+      "total_vendas": "6",
+      "padrao": "Laranjeiras recuperou taxa de conversão em 10/07 (60%), triplicando o desempenho do dia anterior (20%). A maioria dos 4 não-vendas teve restrições financeiras pontuais."
+    }
+  },
+  "laranjeiras_2026-07-11": {
+    "data": "2026-07-11",
+    "ultima_atualizacao": "15:07",
+    "loja": "laranjeiras",
+    "analise": {
+      "total_vendas": "4",
+      "taxa_conversao": 80,
+      "padrao": "Laranjeiras manteve excelente 80% de conversão com Mayane, Lídia e Nycelly. As vendas foram distribuídas entre as três vendedoras usando Odres/Pix/débito. Apenas 1 cliente em fase de pesquisa não fechou. Motivo de Bom dia com Jesus! confirma a equipe.",
+      "recomendacoes": "1. Manter a rotina de apresentar opções de pagamento diversificadas (Odres, Pix, débito), estratégia que sustenta a alta conversão. 2. Para o perfil pesquisando, use técnica de urgência ou oferta exclusiva para forçar fechamento. 3. Reconhecer e celebrar o resultado da equipe para manter o engajamento.",
+      "motivos_nv": {
+        "Pesquisando": "1"
+      },
+      "total_clientes": "5"
+    }
+  },
+  "laranjeiras_2026-07-13": {
+    "loja": "laranjeiras",
+    "ultima_atualizacao": "22:30",
+    "analise": {
+      "motivos_nv": {
+        "Boleto iPhone negado": "1",
+        "Financiamento negado": "1",
+        "Sem entrada": "1"
+      },
+      "padrao": "Boa conversão (AP 60%). Lídia foi a destaque com 3 vendas (60X, 60X, Spark 30). Mayana contribuiu com 2 vendas. Steffane não registrou venda no dia. Perda concentrada em tentativas de iPhone pelo boleto.",
+      "taxa_conversao": 62.5,
+      "total_clientes": "8",
+      "total_vendas": "5",
+      "recomendacoes": "1. Acompanhar Steffane — sem registro de venda no dia. 2. Para clientes que querem iPhone no boleto, apresentar alternativas viáveis de forma proativa. 3. Manter a boa estratégia de Odres e Pix que está funcionando."
+    },
+    "data": "2026-07-13"
+  },
+  "laranjeiras_2026-07-22": {
+    "analise": {
+      "taxa_conversao": 58.3,
+      "motivos_nv": {
+        "Outros": "2",
+        "Sem entrada": "2",
+        "Procurando por menos": "1"
+      },
+      "total_clientes": "12",
+      "padrao": "Taxa de 58% com 12 atendimentos entre dois times (team A: Rayea/Arthur/Ruyan e team B: NKolly/Mayona/Lídia). Dupla equipe gera bom volume de atendimentos.",
+      "recomendacoes": "1. Alinhar os dois times em abordagem de abertura e produto campeão. 2. Reduzir NV por questão de preço — apresentar parcelamento CDC. 3. Meta de 65% de conversão para amanhã.",
+      "total_vendas": "7"
+    },
+    "loja": "laranjeiras",
+    "data": "2026-07-22",
+    "ultima_atualizacao": "18:30"
+  },
+  "laranjeiras_2026-07-27": {
+    "data": "2026-07-27",
+    "analise": {
+      "motivos_nv": {
+        "parcela_alta": "2"
+      },
+      "total_vendas": "2",
+      "recomendacoes": "Treinar técnicas para superar objeção de parcela; apresentar parcelamento menor.",
+      "taxa_conversao": 50,
+      "padrao": "AP 50% — 2 NVs por objeção de valor de parcela. Nycelly fez venda via Odres.",
+      "total_clientes": "4"
+    },
+    "ultima_atualizacao": "2026-07-27T18:09:00",
+    "loja": "laranjeiras"
+  },
+  "laranjeiras_2026-07-28": {
+    "ultima_atualizacao": "2026-07-28T18:08:00",
+    "loja": "laranjeiras",
+    "data": "2026-07-28",
+    "analise": {
+      "total_clientes": "5",
+      "motivos_nv": {
+        "pesquisando": "1"
+      },
+      "total_vendas": "4",
+      "recomendacoes": "Manter ritmo. Equipe demonstra boa conversão com uso de financiamentos.",
+      "taxa_conversao": 80,
+      "padrao": "AP 80% — excelente dia. Nycelly fez 2 vendas via ODRES/PayJoy. Lidia vendeu Spark30c. Apenas 1 NV por pesquisa."
+    }
+  },
+  "laranjeiras_2026-07-29": {
+    "data": "2026-07-29",
+    "ultima_atualizacao": "2026-07-29T18:52:00",
+    "loja": "laranjeiras",
+    "analise": {
+      "total_vendas": "3",
+      "recomendacoes": "Nycally enfrenta objeções de marca e forma de pagamento. Treinar apresentação de alternativas ao iPhone e uso de financiamentos.",
+      "total_clientes": "6",
+      "taxa_conversao": 50,
+      "motivos_nv": {
+        "sem_entrada": "1",
+        "modelo_especifico": "1",
+        "queria_iphone_boleto": "1"
+      },
+      "padrao": "AP 50% — Lidia vendeu C71 e Note70 (PayJoy). Nycally vendeu C71+película TPU (Crédito/Cartão). 3 NVs: Lidia (queria só Motorola), Nycally (sem entrada, queria iPhone no boleto)."
+    }
+  },
+  "laranjeiras_2026-08-04": {
+    "data": "2026-08-04",
+    "ultima_atualizacao": "2026-08-04T14:30:00",
+    "analise": {
+      "motivos_nv": {
+        "queria_outro_modelo": "1"
+      },
+      "padrao": "AP 50% — folha parcial (11:27). 2 atendimentos: Nycally V (SPARK30c PayJoy), Mayane NV (queria C75c Super).",
+      "taxa_conversao": 0.5,
+      "recomendacoes": "Acompanhar folha completa à noite. C75c Super pode ser alternativa a apresentar.",
+      "total_clientes": "2",
+      "total_vendas": "1"
+    },
+    "loja": "laranjeiras"
+  },
+  "laranjeiras_2026-08-06": {
+    "loja": "laranjeiras",
+    "data": "2026-08-06",
+    "analise": {
+      "recomendacoes": "Manter ritmo. Foco em acessórios nos atendimentos perdidos.",
+      "taxa_conversao": 0.8,
+      "total_clientes": "5",
+      "padrao": "Excelente conversão (80%). Lidia/Mayane/Nycally com alto aproveitamento.",
+      "total_vendas": "4",
+      "motivos_nv": {
+        "entrada_alta": "1"
+      }
+    },
+    "ultima_atualizacao": "2026-08-06T22:30:00"
+  },
+  "laranjeiras_2026-08-11": {
+    "loja": "laranjeiras",
+    "analise": {
+      "total_vendas": "3",
+      "recomendacoes": "1. RETENÇÃO DE PESQUISANDO (3 NVs — motivo principal): Cada cliente que sai 'pesquisando' é uma venda que vai para a concorrência. Antes de deixar sair: 'O senhor vai comparar com qual modelo em outro lugar?' + 'Se eu mostrar que nosso aparelho tem as mesmas características por um preço justo, o senhor fecha hoje?' Criar o compromisso antes de fazer a comparação.\n\n2. SEQUÊNCIA APÓS CRÉDITO NEGADO (2 NVs): Lídia com recorrência de PayJoy negado — quando o crédito nega, transitar imediatamente: (1) cartão de crédito do cliente; (2) à vista com desconto; (3) plano pós-pago vinculado ao aparelho. Nunca encerrar o atendimento após a primeira negativa de crédito.\n\n3. SONDAGEM APROFUNDADA (para reduzir 'outros'): 2 NVs classificados como 'outros' indicam que o vendedor não identificou o motivo real da não-venda. Treinar a pergunta de fechamento: 'O que impediu o senhor de levar o aparelho hoje?' — registrar a resposta real para entender o padrão da loja.\n\n4. TERRITÓRIO FAVORÁVEL: Conduzir TODOS os atendimentos para o balcão antes de apresentar o preço. No balcão, a posição do vendedor é de controle — cliente no balcão fecha mais do que cliente na vitrine ou andando pelo salão.\n\n5. META POSITIVAÇÃO — IMPACTO: 30% vs. meta de 80%. Se AP fosse 70%, seriam 7 vendas em vez de 3 — +4 vendas por dia. Nycally já mostrou capacidade de conversão — fazer simulação semanal com ela para identificar o momento exato onde Lídia e outros estão perdendo clientes.",
+      "motivos_nv": {
+        "outros": "2",
+        "pesquisando": "3",
+        "credito": "2"
+      },
+      "padrao": "AP 30% (meta CDC: 80%) — dia muito fraco para Laranjeiras. 10 atendimentos com apenas 3 conversões. Pesquisando (3×) e crédito negado (2×) dominam as NVs, com 2 outros não identificados. Padrão de cliente que entra com necessidade percebida mas sai sem decisão — indica que a fase de sondagem não está identificando a necessidade real e que o manejo de objeção não está retendo o cliente antes de sair.",
+      "taxa_conversao": 30,
+      "total_clientes": "10"
+    },
+    "ultima_atualizacao": "2026-08-16T17:00:13",
+    "data": "2026-08-11"
+  },
+  "laranjeiras_2026-08-14": {
+    "ultima_atualizacao": "2026-08-14T22:30:00",
+    "loja": "laranjeiras",
+    "analise": {
+      "taxa_conversao": 0.1667,
+      "total_vendas": "1",
+      "total_clientes": "6",
+      "recomendacoes": "Dia muito fraco; padrao de clientes sem orcamento disponivel.",
+      "padrao": "Vendedoras Lidia/Ster/Nycolly confirmam Laranjeiras (nomes batem com a tabela). AP anotado 60%% diverge muito da contagem manual (17%%, 1V/6) - motivos de recusa claros (sem orcamento, sem entrada, negado), contagem manual priorizada.",
+      "motivos_nv": {
+        "outros": "5"
+      }
+    },
+    "data": "2026-08-14"
+  },
+  "laranjeiras_2026-08-15": {
+    "loja": "laranjeiras",
+    "ultima_atualizacao": "2026-08-16T16:54:00",
+    "nota": "Folha Jhennyfer CDC Laranjeiras 17:06. Vendedores: Nycally, Lídia, Ster. Receita R$13.109. AP 50% anotado. Rodapé: Ster (odres/negado), Nycally (pesquisando/sem compromento).",
+    "data": "2026-08-15",
+    "analise": {
+      "total_clientes": "6",
+      "taxa_conversao": 0.5,
+      "recomendacoes": "1. SEQUÊNCIA DE CRÉDITO (Lídia — PayJoy negado múltiplas vezes): Quando PayJoy nega, Lídia precisa transitar imediatamente para próxima rota — não tentar PayJoy de novo. Sequência ensinada: (1) cartão de crédito do cliente; (2) à vista com desconto; (3) plano pós-pago. Nunca ficar no mesmo caminho após a 1ª negativa.\n\n2. QUALIFICAÇÃO DE PERFIL ANTES DO CRÉDITO: Antes de tentar qualquer financiamento, perguntar: 'O senhor costuma usar cartão de crédito no dia a dia ou prefere outras formas?' — cliente que não tem cartão raramente terá PayJoy aprovado. Direcionar para opções à vista ou planos pós-pagos desde o início.\n\n3. CONVERSÃO DO CLIENTE PESQUISANDO: 1 NV por pesquisando — técnica CDC de fechamento antes de deixar sair: 'O que precisa acontecer para o senhor fechar hoje?' Se a resposta for 'preciso pensar', criar urgência real ('esse modelo é o último dessa cor') e pegar contato para follow-up.\n\n4. NYCALLY COMO REFERÊNCIA: 2 de 3 atendimentos convertidos (67% pessoal) — Nycally demonstrou domínio de fechamento em diferentes formas de pagamento (dinheiro + PayJoy). Fazer simulação com ela para Lídia e Ster aprenderem o processo de sondagem que identifica o perfil financeiro do cliente antes de apresentar o preço.\n\n5. META DE POSITIVAÇÃO: Loja em 50% — cada vendedor deve anotar no final do dia quantos clientes atendeu e quantos fechou. Gerente revisa diariamente e identifica se o problema é volume (poucos clientes) ou conversão (muitos atendimentos, poucas vendas).",
+      "motivos_nv": {
+        "pesquisando": "1",
+        "payjoy": "2"
+      },
+      "total_vendas": "3",
+      "padrao": "AP 50% (meta CDC: 80%) — Nycally com 2 fechamentos (Hot60i Dinheiro e Nota70 PayJoy aprovado) e Lídia com 1 fechamento (CBS Cartão-Pix). Lídia acumulou múltiplas NVs por PayJoy negado — padrão de não transitar para alternativas após a primeira negativa. Ster com NV por ODRES negado no rodapé. 3 atendimentos não convertidos sendo 2 por PayJoy negado e 1 por pesquisando."
+    }
+  },
+  "laranjeiras_2026-08-17": {
+    "data": "2026-08-17",
+    "ultima_atualizacao": "2026-08-17T22:30:00",
+    "analise": {
+      "taxa_conversao": 0.2727,
+      "motivos_nv": {
+        "outros": "4",
+        "entrada_alta": "4"
+      },
+      "total_clientes": "11",
+      "padrao": "Vendedoras Lidia/Ster (Laranjeiras). AP anotado 66%% diverge muito da contagem manual (27%%, 3V/11) - todos os motivos de recusa sao claramente negativos (entrada alta, quer iPhone especifico, sem entrada), entao a contagem manual foi priorizada.",
+      "recomendacoes": "Dia fraco; padrao recorrente de recusa por entrada alta - revisar politica de entrada minima com a loja.",
+      "total_vendas": "3"
+    },
+    "loja": "laranjeiras"
+  },
+  "laranjeiras_2026-08-18": {
+    "loja": "laranjeiras",
+    "analise": {
+      "taxa_conversao": 0.7143,
+      "total_vendas": "5",
+      "total_clientes": "7",
+      "motivos_nv": {
+        "entrada_alta": "1",
+        "outros": "1"
+      },
+      "recomendacoes": "Bom dia de conversao (71%%); usar como referencia.",
+      "padrao": "Vendedoras Ster/Stefany (Laranjeiras). AP anotado 71%% bate exatamente com contagem manual (5V/7) - alta confianca."
+    },
+    "data": "2026-08-18",
+    "ultima_atualizacao": "2026-08-18T22:30:00"
+  },
+  "laranjeiras_2026-08-20": {
+    "analise": {
+      "motivos_nv": {
+        "sem_limite": "1",
+        "entrada_alta": "2",
+        "outros": "8"
+      },
+      "total_vendas": "4",
+      "padrao": "Duas folhas do mesmo dia tratadas como loja unica: equipe Lidia/Ster (V1/NV6) + equipe Nycally/Adriel/Felipe (V3/NV5, nomes batem exatamente com a tabela). AP anotado 66%% na segunda folha diverge da contagem manual (37%% so nela) - motivos de recusa (negado, sem entrada, sem documento) sao claros e foram priorizados.",
+      "taxa_conversao": 0.2667,
+      "recomendacoes": "Dia fraco (27%% no total); padrao recorrente de 'sem entrada' e 'sem documento'.",
+      "total_clientes": "15"
+    },
+    "loja": "laranjeiras",
+    "ultima_atualizacao": "2026-08-20T22:30:00",
+    "data": "2026-08-20"
+  },
+  "laranjeiras_2026-08-21": {
+    "analise": {
+      "recomendacoes": "Motivo recorrente: parcelas nunca cabem no orcamento do cliente (financiamento Odres); avaliar opcoes de entrada menor.",
+      "total_clientes": "7",
+      "total_vendas": "2",
+      "taxa_conversao": 0.2857,
+      "motivos_nv": {
+        "outros": "5"
+      },
+      "padrao": "Vendedoras Lidia e Ster (identificacao por nome, recorrente em varios dias). AP anotado 40%% vs contagem manual 29%% (2V/7)."
+    },
+    "data": "2026-08-21",
+    "ultima_atualizacao": "2026-08-21T22:30:00",
+    "loja": "laranjeiras"
+  },
+  "laranjeiras_2026-08-22": {
+    "ultima_atualizacao": "2026-08-22T22:30:00",
+    "data": "2026-08-22",
+    "loja": "laranjeiras",
+    "analise": {
+      "padrao": "Identificacao por nome (vendedoras Lidia e Ster/Ester, recorrentes em varios dias) - sem marcador visual claro nesta folha especifica, confianca media. AP anotado 16%% bate bem com contagem manual (1V/7=14%%), o que reforca a metodologia de leitura usada.",
+      "recomendacoes": "Dia muito fraco (14%% conversao); investigar com a loja o motivo da alta taxa de 'sem entrada' e juros altos reportados pelos clientes.",
+      "total_clientes": "7",
+      "motivos_nv": {
+        "outros": "4",
+        "entrada_alta": "2"
+      },
+      "total_vendas": "1",
+      "taxa_conversao": 0.1429
+    }
+  },
+  "laranjeiras_2026-08-24": {
+    "loja": "laranjeiras",
+    "analise": {
+      "recomendacoes": "Reforcar fechamento com clientes que ficaram 'pesquisando' ou pediram desconto; taxa do dia (67%) acima da media, manter abordagem.",
+      "total_clientes": "15",
+      "padrao": "Folha das 18:11 (clipe preto, rodape 'Bom dia com Jesus', vendedores Mayane/Fabiano/Sophia). Marcacoes V/NV pouco nitidas; contagem apoiada na semantica do motivo (cartao/credito/boleto/pix=venda; pesquisando/sem entrada/adiar=nao-venda).",
+      "total_vendas": "10",
+      "taxa_conversao": 0.6667,
+      "motivos_nv": {
+        "entrada_alta": "1",
+        "outros": "4"
+      }
+    },
+    "data": "2026-08-24",
+    "ultima_atualizacao": "2026-08-24T22:30:00"
+  },
+  "laranjeiras_mensal_2026_08": {
+    "mes": "2026-08",
+    "total_clientes": "89",
+    "dias_com_dado": [
+      "2026-08-06",
+      "2026-08-11",
+      "2026-08-15",
+      "2026-08-24",
+      "2026-08-22",
+      "2026-08-21",
+      "2026-08-20",
+      "2026-08-18",
+      "2026-08-17",
+      "2026-08-14"
+    ],
+    "total_vendas": "36",
+    "taxa_conversao": 0.4762,
+    "loja": "laranjeiras",
+    "dias": "10",
+    "motivos_nv": {
+      "outros": "33",
+      "pesquisando": "4",
+      "credito": "2",
+      "entrada_alta": "11",
+      "sem_limite": "1",
+      "payjoy": "2"
+    }
+  },
+  "linhares_2026-07-08": {
+    "data": "2026-07-08",
+    "ultima_atualizacao": "18:52",
+    "analise": {
+      "total_vendas": "1",
+      "recomendacoes": "1. Para clientes com orçamento limitado a R$600, ter opções de aparelhos dentro dessa faixa de preço prontas para oferta (entrada menor via Odres). 2. A venda de acessórios no mesmo atendimento é uma prática eficiente — manter essa abordagem para elevar o ticket. 3. Com apenas 2 atendimentos registrados, verificar se o fluxo do dia foi realmente baixo ou se a folha de controle não capturou todos os clientes.",
+      "padrao": "Dia de baixo volume (apenas 2 clientes registrados). O único NV foi por restrição financeira explícita — cliente declarou orçamento máximo de R$600, abaixo do ticket médio necessário. A venda realizada foi viabilizada via Odres com acessórios complementares (película 3D + TPU) agregados à venda.",
+      "total_clientes": "2",
+      "taxa_conversao": 50,
+      "motivos_nv": {
+        "Restrição de valor (máx R$600)": "1"
+      }
+    },
+    "loja": "linhares"
+  },
+  "linhares_2026-07-09": {
+    "loja": "linhares",
+    "analise": {
+      "recomendacoes": "1. Para clientes que buscam tablet infantil, apresentar tablets do portfólio CDC como alternativa viável, ou redirecionar para celular com tela maior para uso infantil. 2. Para clientes que prometem retornar, registrar contato e fazer follow-up no dia seguinte. 3. Investigar com Juliana/Wesley os critérios de aprovação Odres para melhorar a assertividade na qualificação do crédito.",
+      "total_clientes": "4",
+      "taxa_conversao": 50,
+      "total_vendas": "2",
+      "motivos_nv": {
+        "Queria tablet infantil": "1",
+        "Voltará amanhã": "1"
+      },
+      "padrao": "Dia de baixo volume com 4 clientes registrados. 2 vendas fechadas via Odres (Realme C71). Os 2 NVs mostram perfis distintos: um cliente que procura especificamente tablet infantil (fora do portfólio de celulares) e outro que prometeu retornar. Juliana e Wesley tiveram tentativas de financiamento negadas."
+    },
+    "ultima_atualizacao": "18:52",
+    "data": "2026-07-09"
+  },
+  "linhares_2026-07-10": {
+    "ultima_atualizacao": "18:04",
+    "loja": "linhares",
+    "data": "2026-07-10",
+    "analise": {
+      "motivos_nv": {
+        "Credito/Boleto negado": "2"
+      },
+      "total_vendas": "8",
+      "taxa_conversao": 80,
+      "recomendacoes": "1. Manter o padrao de atendimento que gerou 80% de conversao — compartilhar praticas com equipe. 2. Explorar alternativas de credito para os casos de boleto negado. 3. Registrar tecnicas utilizadas pela equipe (Naty/Juliana/Kayea) para replicar em outras lojas.",
+      "padrao": "Linhares teve excelente desempenho em 10/07 com 80% de conversao e R$7.383 em receita. As unicas 2 NVs foram credito/boleto negado — bloqueio externo, nao falha de atendimento.",
+      "total_clientes": "10"
+    }
+  },
+  "linhares_2026-07-11": {
+    "loja": "linhares",
+    "ultima_atualizacao": "13:18",
+    "analise": {
+      "total_vendas": "8",
+      "motivos_nv": {
+        "Crédito/Odres": "1",
+        "Dinheiro": "1"
+      },
+      "padrao": "Linhares manteve 80% de aproveitamento (AP 80%), com equipe composta por Naty, Rayea/Kayea, Arthur e Julicmar. Os poucos NVs estão relacionados a limitação de entrada e tentativas de crédito não aprovadas.",
+      "taxa_conversao": 80,
+      "recomendacoes": "1. Continuar abordagem de crédito Odres que mantém a loja em alta conversão. 2. Fortalecer sondagem financeira inicial para filtrar clientes sem capacidade de entrada. 3. Explorar o parcelamento alternativo (boleto/Payjoy) nos casos de restrição ao Odres.",
+      "total_clientes": "10"
+    },
+    "data": "2026-07-11"
+  },
+  "linhares_2026-07-13": {
+    "loja": "linhares",
+    "analise": {
+      "recomendacoes": "1. Trabalhar alternativas ao iPhone para clientes que buscam premium. 2. Treinar abordagem de entrada mínima e opções de permuta. 3. Verificar se houve problema operacional no dia que explique o baixo volume.",
+      "motivos_nv": {
+        "Boleto iPhone negado / sem entrada": "2",
+        "Voltou depois": "1"
+      },
+      "taxa_conversao": 0,
+      "padrao": "Dia muito fraco — apenas 3 atendimentos registrados, sem nenhuma venda. Dois clientes tentaram financiamento de iPhone pelo boleto e foram negados por falta de entrada. Um cliente retornou mas não fechou.",
+      "total_vendas": "0",
+      "total_clientes": "3"
+    },
+    "data": "2026-07-13",
+    "ultima_atualizacao": "22:30"
+  },
+  "linhares_2026-07-22": {
+    "data": "2026-07-22",
+    "loja": "linhares",
+    "ultima_atualizacao": "18:14",
+    "analise": {
+      "motivos_nv": {
+        "Sem entrada": "1",
+        "Quer Poco X8 Pro": "1"
+      },
+      "padrao": "Taxa de 60% (AP 60%) em 5 atendimentos — Rafla e Ruyan venderam no turno tarde. Arthur teve 2 NV por questão de entrada. Valor de vendas R$5.390.",
+      "recomendacoes": "1. Trabalhar opções de financiamento com clientes sem entrada — avaliar PayJoy. 2. Para clientes que querem Poco X8 Pro, apresentar alternativas com custo similar. 3. Manter ritmo de atendimento para manter taxa acima de 60%.",
+      "total_vendas": "3",
+      "total_clientes": "5",
+      "taxa_conversao": 60
+    }
+  },
+  "linhares_2026-07-27": {
+    "data": "2026-07-27",
+    "analise": {
+      "padrao": "AP 90% — equipe com alto desempenho. Vendas por ODRES e PayJoy. Rayca fez 2 vendas no dia.",
+      "total_vendas": "6",
+      "taxa_conversao": 85.7,
+      "motivos_nv": {
+        "sem_entrada": "1"
+      },
+      "total_clientes": "7",
+      "recomendacoes": "Manter ritmo. Explorar captação de clientes sem entrada via PayJoy."
+    },
+    "loja": "linhares",
+    "ultima_atualizacao": "2026-07-27T22:02:00"
+  },
+  "linhares_2026-08-03": {
+    "data": "2026-08-03",
+    "ultima_atualizacao": "2026-08-03T23:59:00",
+    "analise": {
+      "total_vendas": "3",
+      "taxa_conversao": 0.75,
+      "motivos_nv": {
+        "volta_depois": "1"
+      },
+      "total_clientes": "4",
+      "padrao": "AP 75% — excelente conversão. 3 vendas via Odres (Kaysen Note90, Gu 60X, Hayra OOX). Equipe reduzida.",
+      "recomendacoes": "Manter ritmo. Acompanhar cliente que prometeu voltar (Arthur 14Pro)."
+    },
+    "loja": "linhares"
+  },
+  "linhares_2026-08-05": {
+    "ultima_atualizacao": "2026-08-05T18:53:00",
+    "loja": "linhares",
+    "data": "2026-08-05",
+    "analise": {
+      "total_clientes": "9",
+      "motivos_nv": {
+        "Queria mais barato": "2",
+        "Pesquisando": "2",
+        "Volta outro dia": "2",
+        "Crédito": "1"
+      },
+      "taxa_conversao": 0.22,
+      "recomendacoes": "Trabalhar ancoragem de valor e senso de urgência.",
+      "padrao": "AP 22% baixo. Alta taxa de retorno e objeção de preço.",
+      "total_vendas": "2"
+    }
+  },
+  "linhares_2026-08-06": {
+    "ultima_atualizacao": "2026-08-06T22:30:00",
+    "analise": {
+      "padrao": "Conversão média (50%). Lincoln Sub Linhares. 3 clientes compraram via Pix e PayJoy.",
+      "total_vendas": "3",
+      "taxa_conversao": 0.5,
+      "recomendacoes": "Trabalhar argumentação de entrada e condições de financiamento.",
+      "motivos_nv": {
+        "nao_quis": "1",
+        "sem_entrada": "1",
+        "volta_subindo": "1"
+      },
+      "total_clientes": "6"
+    },
+    "data": "2026-08-06",
+    "loja": "linhares"
+  },
+  "linhares_2026-08-10": {
+    "data": "2026-08-10",
+    "analise": {
+      "total_vendas": "7",
+      "recomendacoes": "Manter ritmo. Replicar técnicas de abordagem para toda a equipe.",
+      "motivos_nv": {
+        "outros": "1",
+        "pesquisando": "2"
+      },
+      "taxa_conversao": 70,
+      "total_clientes": "10",
+      "padrao": "AP 70% — excelente dia. Vendedor Layca com alto aproveitamento."
+    },
+    "ultima_atualizacao": "2026-08-10T22:56:00",
+    "loja": "linhares"
+  },
+  "linhares_2026-08-15": {
+    "analise": {
+      "taxa_conversao": 0.8333,
+      "total_clientes": "6",
+      "padrao": "AP 95% — desempenho excepcional, acima da meta CDC (80%). Apenas 1 NV por crédito negado (rodapé — rejeição de financiamento), o que indica que o único atendimento não convertido foi por restrição financeira do cliente, não por falha no processo de vendas. Kayza, Zia e Kes.lin demonstraram domínio completo de abordagem, sondagem, criação de conexão e fechamento positivo.",
+      "motivos_nv": {
+        "credito_negado": "1"
+      },
+      "recomendacoes": "1. REFERÊNCIA MÁXIMA DA REDE: AP 95% é o melhor resultado registrado no sistema. Mapear o processo completo da equipe: como fazem a abordagem? Qual pergunta de sondagem usam? Como conduzem para o balcão (território favorável)? Documentar e replicar.\n\n2. ÚNICA NV — CRÉDITO NEGADO: A única perda foi financiamento negado — fora do controle do vendedor após a decisão do cliente de parcelar. Próximo passo: treinar ofertas alternativas (PayJoy, planos) antes de tentar ODRES, para converter até esse perfil.\n\n3. TICKET MÉDIO vs. AP ALTO: R$9.674 com 5 vendas = média de R$1.935 por venda. Com AP tão alto, o próximo desafio é elevar o ticket médio — trabalhar upsell de acessórios (capa + película + fone) em todo fechamento e apresentar modelos intermediários para clientes que chegam buscando aparelhos de entrada.\n\n4. CONSISTÊNCIA: Resultado de 95% precisa ser validado ao longo da semana — é consistente ou foi um dia atípico? Acompanhar AP diário de Kayza, Zia e Kes.lin individualmente para identificar se há variação por vendedor.\n\n5. COMPARTILHAR NA REDE: Apresentar Linhares 15/08 como benchmark nas matinais — técnica de manejo de objeção que resultou em 95%. Convidar a equipe para simular atendimento ao vivo para outras lojas aprenderem o processo.",
+      "total_vendas": "5"
+    },
+    "data": "2026-08-15",
+    "nota": "Folha com AP 95% anotado pela equipe. Vendedores: Kayza, Zia, Kes.lin. Receita R$9.674. Rodapé: Juliana, Juliarom, Wanderson (rejeições)",
+    "ultima_atualizacao": "2026-08-16T16:53:54",
+    "loja": "linhares"
+  },
+  "linhares_2026-08-17": {
+    "ultima_atualizacao": "2026-08-17T22:30:00",
+    "data": "2026-08-17",
+    "analise": {
+      "total_vendas": "7",
+      "taxa_conversao": 0.5,
+      "motivos_nv": {
+        "sem_limite": "2",
+        "outros": "4",
+        "entrada_alta": "1"
+      },
+      "total_clientes": "14",
+      "recomendacoes": "Taxa de 50%%, na media; 2 recusas por credito negado.",
+      "padrao": "Rodape com frase 'Que Deus abencoe nosso dia' confirma Linhares (mesma equipe de nomes de Cariacica na folha - possivel rotacao de vendedores entre lojas). Nota manuscrita '7/14' no rodape da folha bate exatamente com a contagem manual (7V/14=50%%)."
+    },
+    "loja": "linhares"
+  },
+  "linhares_mensal_2026_08": {
+    "taxa_conversao": 0.5484,
+    "total_clientes": "45",
+    "total_vendas": "24",
+    "dias_com_dado": [
+      "2026-08-05",
+      "2026-08-06",
+      "2026-08-10",
+      "2026-08-15",
+      "2026-08-17"
+    ],
+    "motivos_nv": {
+      "Volta outro dia": "2",
+      "sem_entrada": "1",
+      "Queria mais barato": "2",
+      "volta_subindo": "1",
+      "Crédito": "1",
+      "credito_negado": "1",
+      "pesquisando": "2",
+      "Pesquisando": "2",
+      "outros": "5",
+      "entrada_alta": "1",
+      "nao_quis": "1",
+      "sem_limite": "2"
+    },
+    "dias": "5",
+    "mes": "2026-08",
+    "loja": "linhares"
+  },
+  "montserrat_2026-07-08": {
+    "data": "2026-07-08",
+    "loja": "montserrat",
+    "analise": {
+      "taxa_conversao": 0,
+      "total_vendas": "0",
+      "total_clientes": "0",
+      "padrao": "Montserrat nao enviou folha de controle de atendimento no dia 08/07. Apenas receita reportada via texto: R$8.639,00 as 21:56.",
+      "motivos_nv": {},
+      "recomendacoes": "1. Cobrar envio da folha de controle diariamente para permitir analise de conversao. 2. Sem dados de atendimento nao e possivel identificar pontos de melhoria."
+    },
+    "ultima_atualizacao": "21:56"
+  },
+  "montserrat_2026-07-09": {
+    "data": "2026-07-09",
+    "ultima_atualizacao": "22:00",
+    "analise": {
+      "total_vendas": "4",
+      "padrao": "Montserrat enfrenta concorrencia direta — um cliente ja havia comprado em outra loja antes de chegar. Combinado com restricoes de entrada, o padrao indica necessidade de acao mais rapida no primeiro contato e diferenciais claros vs. concorrentes.",
+      "recomendacoes": "1. Abordar o cliente com urgencia: se ele esta pesquisando, mostrar imediatamente o diferencial da CDC (garantia, suporte, financiamento). 2. Criar proposta de valor clara vs. concorrentes: preco, financiamento, acessorios incluso. 3. Para clientes que ja compraram em outro lugar, convidar para cadastro e ofertar acessorios ou proxima compra.",
+      "total_clientes": "6",
+      "taxa_conversao": 66,
+      "motivos_nv": {
+        "Comprou em outra loja": "1",
+        "Sem entrada/negado": "2"
+      }
+    },
+    "loja": "montserrat"
+  },
+  "montserrat_2026-07-10": {
+    "data": "2026-07-10",
+    "loja": "montserrat",
+    "analise": {
+      "padrao": "Montserrat nao enviou folha de controle de atendimento no dia 10/07. Receita reportada via texto: R$7.950,00 as 22:00.",
+      "total_vendas": "0",
+      "motivos_nv": {},
+      "taxa_conversao": 0,
+      "total_clientes": "0",
+      "recomendacoes": "1. Cobrar envio diario da folha para analise de conversao."
+    },
+    "ultima_atualizacao": "22:00"
+  },
+  "montserrat_2026-07-11": {
+    "data": "2026-07-11",
+    "ultima_atualizacao": "21:59",
+    "analise": {
+      "taxa_conversao": 0,
+      "total_clientes": "0",
+      "padrao": "Montserrat nao enviou folha de controle de atendimento no dia 11/07. Receita reportada via texto: R$8.420,00 as 21:59.",
+      "motivos_nv": {},
+      "total_vendas": "0",
+      "recomendacoes": "1. Cobrar envio diario da folha para analise de conversao. Montserrat nao enviou folha em nenhum dos 4 dias analisados."
+    },
+    "loja": "montserrat"
+  },
+  "montserrat_2026-07-13": {
+    "data": "2026-07-13",
+    "analise": {
+      "motivos_nv": {},
+      "total_vendas": "0",
+      "taxa_conversao": 0,
+      "recomendacoes": "1. Cobrar envio diario da folha de atendimento. 2. Verificar com o gerente o motivo da ausencia do registro.",
+      "padrao": "Sem dados — loja nao enviou folha de atendimento no dia 13/07/2026.",
+      "total_clientes": "0"
+    },
+    "loja": "montserrat",
+    "ultima_atualizacao": "22:30"
+  },
+  "montserrat_2026-07-22": {
+    "analise": {
+      "padrao": "Taxa de conversão de 44% (AP 45% anotado). Vendedoras Nycolly, Mayana e Lidia. Clientes com dificuldade de entrada e perfil de compra acima da capacidade de crédito. Lidia realizou 2 vendas (Itel A300C e C71). Mayana realizou 1 venda (Nota 70).",
+      "taxa_conversao": 44.4,
+      "total_clientes": "9",
+      "motivos_nv": {
+        "Queria aparelho de maior valor / crédito insuficiente": "1",
+        "Atendimento não finalizado": "1",
+        "Sem entrada / Sem valor de entrada": "2",
+        "Apenas acessório — sem interesse em celular": "1"
+      },
+      "recomendacoes": "1. Focar em produtos de entrada menor (C11, Itel) para clientes com restrição de crédito. 2. Trabalhar técnica de parcelamento parcial com Payjoy para clientes sem entrada. 3. Converter atendimentos de acessório em oportunidade de apresentar celular de menor custo.",
+      "total_vendas": "4"
+    },
+    "data": "2026-07-22",
+    "ultima_atualizacao": "22:00",
+    "loja": "montserrat"
+  },
+  "montserrat_2026-07-31": {
+    "loja": "montserrat",
+    "ultima_atualizacao": "2026-07-31T23:59:00",
+    "data": "2026-07-31",
+    "analise": {
+      "padrao": "AP 60% — conversão positiva.",
+      "recomendacoes": "Aumentar volume de atendimentos. Reforçar abordagem na entrada da loja.",
+      "motivos_nv": {
+        "negado_financiamento": "1",
+        "pesquisando": "1"
+      },
+      "taxa_conversao": 0.6,
+      "total_vendas": "3",
+      "total_clientes": "5"
+    }
+  },
+  "montserrat_2026-08-02": {
+    "analise": {
+      "padrao": "AP 66% — fluxo muito baixo (3 atendimentos). Apenas Joaquin operando. 2 vendas via Dinheiro e Boleto.",
+      "taxa_conversao": 0.6667,
+      "total_clientes": "3",
+      "recomendacoes": "Investigar baixo fluxo. Estimular prospecção ativa com equipe completa.",
+      "motivos_nv": {
+        "pesquisando": "1"
+      },
+      "total_vendas": "2"
+    },
+    "ultima_atualizacao": "2026-08-02T23:59:00",
+    "loja": "montserrat",
+    "data": "2026-08-02"
+  },
+  "montserrat_2026-08-05": {
+    "data": "2026-08-05",
+    "analise": {
+      "total_vendas": "5",
+      "motivos_nv": {
+        "PayJoy/Prazo": "1"
+      },
+      "total_clientes": "6",
+      "padrao": "AP 83% excelente! Equipe convertendo bem.",
+      "taxa_conversao": 0.83,
+      "recomendacoes": "Manter o padrão. Explorar acessórios para aumentar ticket."
+    },
+    "loja": "montserrat",
+    "ultima_atualizacao": "2026-08-05T22:02:00"
+  },
+  "montserrat_2026-08-06": {
+    "data": "2026-08-06",
+    "analise": {
+      "taxa_conversao": 0.67,
+      "total_vendas": "2",
+      "total_clientes": "3",
+      "recomendacoes": "Aumentar volume de atendimentos. Loja com boa técnica mas poucos clientes.",
+      "padrao": "Boa conversão (67%) mas volume baixo. Joaquin e Tainá fecharam NOTE 70. Jaquine com 1 NV.",
+      "motivos_nv": {
+        "pesquisando": "1"
+      }
+    },
+    "ultima_atualizacao": "2026-08-06T22:30:00",
+    "loja": "montserrat"
+  },
+  "montserrat_2026-08-09": {
+    "loja": "montserrat",
+    "analise": {
+      "total_vendas": "3",
+      "recomendacoes": "Focar em técnicas de fechamento. Explorar mais acessórios.",
+      "motivos_nv": {
+        "sem_entrada": "1",
+        "outros": "1",
+        "pesquisando": "2"
+      },
+      "padrao": "AP 43% — desempenho médio. Adriano e Huully em campo.",
+      "total_clientes": "7",
+      "taxa_conversao": 43
+    },
+    "ultima_atualizacao": "2026-08-09T22:07:00",
+    "data": "2026-08-09"
+  },
+  "montserrat_2026-08-10": {
+    "loja": "montserrat",
+    "ultima_atualizacao": "2026-08-10T22:56:00",
+    "analise": {
+      "total_vendas": "1",
+      "padrao": "AP 25% — dia fraco. Só Vinicius converteu de 4 atendimentos.",
+      "taxa_conversao": 25,
+      "total_clientes": "4",
+      "recomendacoes": "Trabalhar urgência de compra. Explorar financiamento para sem entrada.",
+      "motivos_nv": {
+        "pesquisando": "2",
+        "sem_entrada": "1"
+      }
+    },
+    "data": "2026-08-10"
+  },
+  "montserrat_2026-08-11": {
+    "loja": "montserrat",
+    "ultima_atualizacao": "2026-08-16T17:00:15",
+    "analise": {
+      "total_clientes": "6",
+      "motivos_nv": {
+        "credito": "1",
+        "pesquisando": "1"
+      },
+      "taxa_conversao": 67,
+      "recomendacoes": "1. FECHAR O CLIENTE PESQUISANDO: O 1 NV por pesquisando é a diferença entre 67% e 83% de AP. Antes de deixar o cliente sair, aplicar: 'O senhor já decidiu o modelo ou ainda está em dúvida entre dois?' — se dúvida entre modelos, fazer comparativo na hora usando características+benefícios. Se for preço, criar urgência real.\n\n2. QUALIFICAÇÃO ANTES DO CRÉDITO: 1 NV por crédito indica tentativa sem qualificação precoce. Inserir pergunta de perfil na sondagem: 'O senhor prefere à vista, cartão ou parcelado?' — direcionar para PayJoy ou planos antes de tentar ODRES se o cliente precisar de parcelamento sem entrada.\n\n3. META 80%: Com 6 atendimentos, apenas 1 venda a mais coloca a loja na meta. Isso é 1 cliente retido que ia sair 'pesquisando' — altamente atingível com a equipe atual.\n\n4. UPSELL DE ACESSÓRIOS NO FECHAMENTO: Após cada venda, Joaquin e Beatriz devem oferecer imediatamente: 'Vamos escolher a capinha e a película agora?' — aumenta o ticket médio sem novo esforço de fechamento. Meta: 100% das vendas com pelo menos 1 acessório.\n\n5. CONSISTÊNCIA SEMANAL: 67% num dia bom — verificar se é consistente ao longo da semana. Mapear AP diário por vendedor: quem tem variação grande entre dias precisa de revisão de processo; quem é consistente acima de 70% está pronto para subir de nível.",
+      "total_vendas": "4",
+      "padrao": "AP 67% (meta CDC: 80%) — Joaquin e Beatriz com bom desempenho, próximos da meta. Apenas 2 NVs: 1 por pesquisando (cliente saiu sem fechar) e 1 por crédito negado. Dia consistente — a equipe demonstra domínio do processo de vendas CDC, com falhas pontuais no manejo de objeção de pesquisando e na qualificação financeira antes do crédito."
+    },
+    "data": "2026-08-11"
+  },
+  "montserrat_2026-08-13": {
+    "ultima_atualizacao": "2026-08-13T22:30:00",
+    "data": "2026-08-13",
+    "analise": {
+      "padrao": "Vendedores Joaquin/Vinicius/Jeremias/Beatriz confirmam Montserrat. AP anotado 50%% vs contagem manual 29%% (2V/7).",
+      "motivos_nv": {
+        "outros": "5"
+      },
+      "recomendacoes": "3 recusas por falta de entrada no financiamento; dia fraco.",
+      "total_vendas": "2",
+      "total_clientes": "7",
+      "taxa_conversao": 0.2857
+    },
+    "loja": "montserrat"
+  },
+  "montserrat_2026-08-14": {
+    "data": "2026-08-14",
+    "ultima_atualizacao": "2026-08-14T22:30:00",
+    "loja": "montserrat",
+    "analise": {
+      "total_clientes": "3",
+      "total_vendas": "3",
+      "taxa_conversao": 1,
+      "padrao": "Vendedores Beatriz/Jeremias/Vinicius/Joaquin confirmam Montserrat. Volume baixo no dia mas 100%% de conversao nas linhas registradas (3V/3).",
+      "recomendacoes": "Excelente conversao, ainda que volume baixo.",
+      "motivos_nv": {}
+    }
+  },
+  "montserrat_2026-08-15": {
+    "loja": "montserrat",
+    "analise": {
+      "taxa_conversao": 0.8333,
+      "total_clientes": "6",
+      "motivos_nv": {
+        "pesquisando": "1"
+      },
+      "recomendacoes": "1. CONVERSÃO DO CLIENTE PESQUISANDO: O único NV foi 'pesquisando' — significa que o cliente saiu antes de fechar. Técnica CDC: na fase de sondagem, perguntar 'Qual aparelho o senhor está comparando com esse?' — identificar a concorrência e usar características+benefícios para mostrar por que o modelo da CDC atende melhor a necessidade real.\n\n2. MANEJO DO RODAPÉ (ODRES negados): Vinicius e Joaquin com rejeições de crédito no rodapé — antes de tentar ODRES, qualificar: 'O senhor tem entrada de R$X ou prefere uma forma sem entrada?' Oferecer PayJoy como primeira alternativa ao parcelamento.\n\n3. MANUTENÇÃO ACIMA DE 80%: Com 83%, a loja está na zona de excelência CDC. Meta para a semana: manter AP ≥ 80% por 5 dias consecutivos. Cada vendedor deve acompanhar seu próprio AP diário e acionar o gerente quando cair abaixo de 70%.\n\n4. TICKET MÉDIO (R$8.329 em 5 vendas = R$1.666/venda): Trabalhar upsell de acessórios no fechamento positivo — após confirmar a venda do aparelho, perguntar: 'Vamos escolher a capinha e a película para proteger o aparelho do senhor?' Cada acessório adicionado eleva o ticket sem exigir novo esforço de fechamento.\n\n5. JEREMIAS EM DESTAQUE: Identificado como vendedor de alta performance no dia — usar como padrinho para os vendedores com AP mais baixo. Fazer simulação de vendas com ele demonstrando o processo de sondagem + fechamento positivo.",
+      "padrao": "AP 83% (meta CDC: 80%) — Montserrat acima da meta! Joaquin, Vinicius e Beatriz com bom ritmo. Apenas 1 NV por pesquisando — cliente que ainda não tinha necessidade real definida ou saiu na fase de conexão antes de ir para negociação. Rodapé com rejeições de ODRES (sem entrada) indicam tentativas de crédito que não comprometem o AP principal.",
+      "total_vendas": "5"
+    },
+    "nota": "Folha enviada por Arthur GTs às 22:33. Vendedores: Joaquin, Vinicius, Beatriz, Jeremias. Receita R$8.329. Rodapé: Vinicius (sem entrada/odres), Joaquin (odres/hesabado).",
+    "data": "2026-08-15",
+    "ultima_atualizacao": "2026-08-16T16:53:56"
+  },
+  "montserrat_2026-08-16": {
+    "loja": "montserrat",
+    "analise": {
+      "motivos_nv": {
+        "outros": "6"
+      },
+      "total_vendas": "1",
+      "padrao": "Vendedores Joaquin/Vinicius confirmam Montserrat. AP anotado 25%% proximo da contagem manual (14%%, 1V/7).",
+      "taxa_conversao": 0.1429,
+      "recomendacoes": "Dia fraco; 3 recusas por falta de entrada no financiamento Odres/PayJoy.",
+      "total_clientes": "7"
+    },
+    "ultima_atualizacao": "2026-08-16T22:30:00",
+    "data": "2026-08-16"
+  },
+  "montserrat_2026-08-17": {
+    "loja": "montserrat",
+    "data": "2026-08-17",
+    "ultima_atualizacao": "2026-08-17T22:30:00",
+    "analise": {
+      "motivos_nv": {
+        "outros": "2"
+      },
+      "taxa_conversao": 0.7143,
+      "total_clientes": "7",
+      "padrao": "Vendedores Renan/Joaquin/Beatriz/Vinicius confirmam Montserrat. AP anotado ~95%% nao bate com a contagem manual (71%%, 5V/7); contagem manual mantida por ter motivos claros linha a linha.",
+      "recomendacoes": "Bom dia de conversao (71%%).",
+      "total_vendas": "5"
+    }
+  },
+  "montserrat_2026-08-18": {
+    "loja": "montserrat",
+    "data": "2026-08-18",
+    "ultima_atualizacao": "2026-08-18T22:30:00",
+    "analise": {
+      "motivos_nv": {
+        "outros": "1"
+      },
+      "padrao": "Vendedores Adriano/Joaquin/Vinicius/Beatriz confirmam Montserrat. Volume baixo no dia (maioria das linhas eram acessorios, excluidos da contagem de celular).",
+      "total_vendas": "2",
+      "recomendacoes": "Volume baixo de celulares vendidos; maior parte do movimento foi em acessorios.",
+      "total_clientes": "3",
+      "taxa_conversao": 0.6667
+    }
+  },
+  "montserrat_2026-08-20": {
+    "loja": "montserrat",
+    "ultima_atualizacao": "2026-08-20T22:30:00",
+    "data": "2026-08-20",
+    "analise": {
+      "total_vendas": "1",
+      "motivos_nv": {},
+      "recomendacoes": "Volume muito baixo - confirmar com a loja se a folha esta completa ou se faltou registrar atendimentos.",
+      "padrao": "Vendedores Joaquin/Jeremias/Vinicius confirmam Montserrat. Volume muito baixo no dia (so 1 linha com marcacao clara de celular, resto acessorios).",
+      "total_clientes": "1",
+      "taxa_conversao": 1
+    }
+  },
+  "montserrat_2026-08-21": {
+    "loja": "montserrat",
+    "analise": {
+      "taxa_conversao": 0.7143,
+      "total_vendas": "5",
+      "padrao": "Rodape da folha traz escrito explicito 'Shopping Montserrat', confirmacao maxima. Vendedores Jeremias/Beatriz/Joaquin/Vinicius. Excelente dia.",
+      "total_clientes": "7",
+      "motivos_nv": {
+        "outros": "2"
+      },
+      "recomendacoes": "Taxa de conversao muito boa (71%%); usar como referencia de dia bom para replicar abordagem com outras lojas."
+    },
+    "ultima_atualizacao": "2026-08-21T22:30:00",
+    "data": "2026-08-21"
+  },
+  "montserrat_2026-08-22": {
+    "ultima_atualizacao": "2026-08-22T22:30:00",
+    "loja": "montserrat",
+    "analise": {
+      "recomendacoes": "Reforcar fechamento - varios clientes ficaram so pesquisando ou pediram para voltar depois.",
+      "total_clientes": "6",
+      "taxa_conversao": 0.3333,
+      "total_vendas": "2",
+      "padrao": "Vendedores Joaquin/Jeremias/Vinicius/Beatriz confirmam Montserrat. Duas fotos quase identicas da mesma folha (camera zoom diferente); usada a versao mais completa (com recusa Odres/Negado extra). AP anotado 50%% vs contagem manual 33%%.",
+      "motivos_nv": {
+        "outros": "4"
+      }
+    },
+    "data": "2026-08-22"
+  },
+  "montserrat_2026-08-23": {
+    "ultima_atualizacao": "2026-08-23T22:30:00",
+    "data": "2026-08-23",
+    "loja": "montserrat",
+    "analise": {
+      "recomendacoes": "Dia fraco (25%% conversao), 3 clientes ficaram so 'pesquisando'; reforcar abordagem de fechamento.",
+      "padrao": "Vendedor Adriano (Montserrat), folha com coluna DATA por linha. AP anotado ~25%% bate com contagem manual (1V/4=25%%).",
+      "total_vendas": "1",
+      "motivos_nv": {
+        "outros": "3"
+      },
+      "total_clientes": "4",
+      "taxa_conversao": 0.25
+    }
+  },
+  "montserrat_2026-08-24": {
+    "analise": {
+      "taxa_conversao": 0.7143,
+      "total_vendas": "5",
+      "total_clientes": "7",
+      "motivos_nv": {
+        "sem_limite": "2"
+      },
+      "padrao": "Usada a folha final (fotografada as 22:04 e reconfirmada as 22:19), que supera a parcial das 18:35. AP anotado na folha foi 83%; contagem manual deu 71% (5V/7 total) - divergencia moderada.",
+      "recomendacoes": "2 recusas por credito negado (Odres); considerar oferecer opcao de entrada menor ou parcelamento alternativo."
+    },
+    "data": "2026-08-24",
+    "loja": "montserrat",
+    "ultima_atualizacao": "2026-08-24T22:30:00"
+  },
+  "montserrat_mensal_2026_08": {
+    "total_vendas": "47",
+    "dias": "16",
+    "loja": "montserrat",
+    "mes": "2026-08",
+    "dias_com_dado": [
+      "2026-08-05",
+      "2026-08-06",
+      "2026-08-09",
+      "2026-08-10",
+      "2026-08-11",
+      "2026-08-15",
+      "2026-08-24",
+      "2026-08-23",
+      "2026-08-22",
+      "2026-08-21",
+      "2026-08-20",
+      "2026-08-18",
+      "2026-08-17",
+      "2026-08-16",
+      "2026-08-13",
+      "2026-08-14"
+    ],
+    "motivos_nv": {
+      "pesquisando": "7",
+      "sem_limite": "2",
+      "PayJoy/Prazo": "1",
+      "credito": "1",
+      "outros": "24",
+      "sem_entrada": "2"
+    },
+    "total_clientes": "84",
+    "taxa_conversao": 0.625
+  },
+  "moxuara_2026-07-08": {
+    "data": "2026-07-08",
+    "loja": "moxuara",
+    "analise": {
+      "total_vendas": "5",
+      "recomendacoes": "1. Manter o padrao de 100% de conversao — replicar abordagem da equipe como referencia para a rede. 2. Investigar por que 4 financiamentos foram recusados (sem entrada) — treinamento em pre-qualificacao de credito pode evitar tentativas frustradas. 3. Explorar estrategia de abordagem de Luccas como modelo para outros vendedores.",
+      "padrao": "100% de aproveitamento — todos os 5 clientes compraram (Luccas: 4 vendas, Almeida: 1 venda). Equipe excelente na conversao de compra via PayJoy. Houve 4 tentativas de financiamento recusadas (sem entrada, financiamento negado) mas as vendas foram concluidas por outros meios.",
+      "motivos_nv": {
+        "Financiamento rejeitado": "4"
+      },
+      "total_clientes": "5",
+      "taxa_conversao": 100
+    },
+    "ultima_atualizacao": "22:20"
+  },
+  "moxuara_2026-07-09": {
+    "ultima_atualizacao": "00:00",
+    "data": "2026-07-09",
+    "analise": {
+      "total_vendas": "0",
+      "recomendacoes": "",
+      "padrao": "Sem dados — a loja não enviou a folha de controle de atendimento neste dia.",
+      "motivos_nv": {},
+      "total_clientes": "0",
+      "taxa_conversao": 0
+    },
+    "loja": "moxuara"
+  },
+  "moxuara_2026-07-10": {
+    "data": "2026-07-10",
+    "ultima_atualizacao": "00:00",
+    "analise": {
+      "taxa_conversao": 0,
+      "padrao": "Sem dados — a loja não enviou a folha de controle de atendimento neste dia.",
+      "total_clientes": "0",
+      "motivos_nv": {},
+      "recomendacoes": "",
+      "total_vendas": "0"
+    },
+    "loja": "moxuara"
+  },
+  "moxuara_2026-07-11": {
+    "loja": "moxuara",
+    "ultima_atualizacao": "22:07",
+    "data": "2026-07-11",
+    "analise": {
+      "recomendacoes": "1. Manter a cadência de ofertar crédito Odres desde o início do atendimento, prática que viabilizou a maior parte das vendas. 2. Investigar o caso de NV por motivo desconhecido para refinar scripts. 3. Treinar para ampliar ticket com acessórios: Fabiano e Jasmin demonstraram boa complementação.",
+      "padrao": "A loja apresentou excelente aproveitamento com 80% de conversão. A maioria das vendas foi viabilizada via Odres/PayJoy, indicando boa habilidade da equipe em ofertar financiamento. As 2 perdas pontuais não representam padrão identificado.",
+      "total_vendas": "8",
+      "motivos_nv": {
+        "Odres negado": "1",
+        "Sem info": "1"
+      },
+      "total_clientes": "10",
+      "taxa_conversao": 80
+    }
+  },
+  "moxuara_2026-07-12": {
+    "loja": "moxuara",
+    "ultima_atualizacao": "21:03",
+    "analise": {
+      "total_vendas": "7",
+      "padrao": "70% de aproveitamento. Bom desempenho com Jasmim e Gabriel. 1 NV por modelo indisponivel (Galaxy S Ultra), 1 por politica de credito suspeita e 1 por condicoes de financiamento (entrada/juros).",
+      "recomendacoes": "1. Preparar argumentacao para redirecionar cliente que busca Galaxy S Ultra para modelos equivalentes do portfolio CDC. 2. Verificar se rejeicao por politica suspeita e problema sistemico. 3. Usar simuladores de entrada menor para clientes sensiveis a financiamento.",
+      "total_clientes": "10",
+      "taxa_conversao": 70,
+      "motivos_nv": {
+        "Entrada alta / Juros altos": "1",
+        "Queria modelo nao disponivel": "1",
+        "Politica suspeita": "1"
+      }
+    },
+    "data": "2026-07-12"
+  },
+  "moxuara_2026-07-13": {
+    "ultima_atualizacao": "22:30",
+    "analise": {
+      "taxa_conversao": 0,
+      "total_clientes": "0",
+      "total_vendas": "0",
+      "recomendacoes": "1. Cobrar envio diario da folha de atendimento. 2. Verificar com o gerente o motivo da ausencia do registro.",
+      "padrao": "Sem dados — loja nao enviou folha de atendimento no dia 13/07/2026.",
+      "motivos_nv": {}
+    },
+    "loja": "moxuara",
+    "data": "2026-07-13"
+  },
+  "moxuara_2026-07-22": {
+    "loja": "moxuara",
+    "ultima_atualizacao": "—",
+    "analise": {
+      "recomendacoes": "1. Cobrar envio da folha de controle de atendimento diariamente. 2. Confirmar com o responsável da loja se a folha foi preenchida. 3. Acompanhar pela manhã o cumprimento do protocolo de envio.",
+      "total_clientes": "0",
+      "total_vendas": "0",
+      "taxa_conversao": 0,
+      "motivos_nv": {},
+      "padrao": "Sem folha de fechamento recebida. Gabriel enviou imagem às 09:47-09:48 (não baixadas). Sem dados suficientes para análise."
+    },
+    "data": "2026-07-22"
+  },
+  "moxuara_2026-07-25": {
+    "ultima_atualizacao": "22:00",
+    "data": "2026-07-25",
+    "loja": "moxuara",
+    "analise": {
+      "total_vendas": "9",
+      "recomendacoes": "1. Focar na reducao do NV por preco — tecnica de comparacao de parcela mensal versus o custo de nao ter o produto. 2. Manter ritmo de volume alto — mais atendimentos = mais vendas absolutas. 3. Identificar o ticket medio preferido da praca para adaptar mix.",
+      "padrao": "Maior volume de atendimentos da rede (14). AP 64% com 9 vendas — forte producao. Objecao de preco presente mas equipe converte bem. Almeida e Luccas com multiplas vendas.",
+      "total_clientes": "14",
+      "taxa_conversao": 64.3,
+      "motivos_nv": {
+        "preco muito alto": "1",
+        "pesquisando": "2",
+        "queria mais barato": "2"
+      }
+    }
+  },
+  "moxuara_2026-07-27": {
+    "loja": "moxuara",
+    "ultima_atualizacao": "2026-07-27T22:02:00",
+    "analise": {
+      "total_vendas": "6",
+      "motivos_nv": {
+        "modelo_especifico": "2",
+        "vai_voltar": "1",
+        "entrada_alta": "1"
+      },
+      "taxa_conversao": 60,
+      "padrao": "AP 60% — Almeida fez múltiplas vendas. 2 NVs por querer iPhone especificamente.",
+      "recomendacoes": "Reforçar diferenciais em relação ao iPhone; explorar PayJoy para entrada insuficiente.",
+      "total_clientes": "10"
+    },
+    "data": "2026-07-27"
+  },
+  "moxuara_2026-07-28": {
+    "ultima_atualizacao": "2026-07-28T22:00:00",
+    "loja": "moxuara",
+    "data": "2026-07-28",
+    "analise": {
+      "taxa_conversao": 70,
+      "total_clientes": "10",
+      "padrao": "AP 70% — Almeida com múltiplas vendas via PayJoy. Jasmim e Luccas venderam. Apenas 3 NVs no dia.",
+      "motivos_nv": {
+        "preco_alto": "1",
+        "vai_voltar": "1",
+        "cartao_negado": "1"
+      },
+      "recomendacoes": "Manter padrão. Explorar alternativas de preço para clientes que querem aparelho abaixo de R$1000.",
+      "total_vendas": "7"
+    }
+  },
+  "moxuara_2026-07-29": {
+    "loja": "moxuara",
+    "ultima_atualizacao": "2026-07-29T19:12:00",
+    "analise": {
+      "total_clientes": "3",
+      "recomendacoes": "Volume muito baixo (3 clientes). Verificar se fluxo da loja estava reduzido ou se há oportunidade de ampliar captação de clientes.",
+      "padrao": "AP 67% — Taina vendeu C75 via ODRES. Lucas com venda no dia. Apenas 1 NV (Taina, Note60x, juros alto). Dia com pouquíssimo movimento.",
+      "taxa_conversao": 66.7,
+      "total_vendas": "2",
+      "motivos_nv": {
+        "juros_alto": "1"
+      }
+    },
+    "data": "2026-07-29"
+  },
+  "moxuara_2026-07-31": {
+    "loja": "moxuara",
+    "analise": {
+      "total_clientes": "5",
+      "motivos_nv": {
+        "negado_financiamento": "1",
+        "volta_depois": "1"
+      },
+      "recomendacoes": "Incentivar follow-up dos clientes que disseram voltar.",
+      "taxa_conversao": 0.6,
+      "padrao": "AP 60% — boa conversão, mas fluxo reduzido.",
+      "total_vendas": "3"
+    },
+    "data": "2026-07-31",
+    "ultima_atualizacao": "2026-07-31T23:59:00"
+  },
+  "moxuara_2026-08-01": {
+    "data": "2026-08-01",
+    "analise": {
+      "recomendacoes": "Acompanhar clientes que prometeram voltar. Criar senso de urgência na abordagem.",
+      "total_clientes": "10",
+      "taxa_conversao": 0.4,
+      "total_vendas": "4",
+      "padrao": "AP 40% — queda em relação ao dia anterior (60%). Muitos retornos agendados.",
+      "motivos_nv": {
+        "pesquisando": "1",
+        "volta_depois": "3",
+        "sem_entrada": "2"
+      }
+    },
+    "ultima_atualizacao": "2026-08-01T23:59:00",
+    "loja": "moxuara"
+  },
+  "moxuara_2026-08-06": {
+    "ultima_atualizacao": "2026-08-06T22:30:00",
+    "data": "2026-08-06",
+    "loja": "moxuara",
+    "analise": {
+      "padrao": "Dia muito fraco (20%). Luccas fez 3 vendas (C71, C71, 60x). Almeida/Khayllane com alta taxa de NV. Múltiplos negados de PayJoy.",
+      "taxa_conversao": 0.2,
+      "total_vendas": "3",
+      "total_clientes": "15",
+      "recomendacoes": "Revisar abordagem de Almeida. Treinar contorno de objeção de preço. Avaliar se aprovação de crédito está bloqueando conversão.",
+      "motivos_nv": {
+        "payjoy_negado": "3",
+        "outros": "3",
+        "entrada_alta": "3",
+        "pesquisando": "2",
+        "achou_caro": "1"
+      }
+    }
+  },
+  "moxuara_2026-08-08": {
+    "data": "2026-08-08",
+    "analise": {
+      "total_vendas": "4",
+      "padrao": "AP 40% — dia difícil. Apenas Jasmim vendeu.",
+      "recomendacoes": "Trabalhar qualificação de clientes. Explorar alternativas de crédito.",
+      "total_clientes": "10",
+      "motivos_nv": {
+        "sem_entrada": "2",
+        "pesquisando": "3",
+        "outros": "1"
+      },
+      "taxa_conversao": 40
+    },
+    "loja": "moxuara",
+    "ultima_atualizacao": "2026-08-08T22:00:00"
+  },
+  "moxuara_2026-08-09": {
+    "ultima_atualizacao": "2026-08-09T22:07:00",
+    "data": "2026-08-09",
+    "analise": {
+      "total_vendas": "4",
+      "recomendacoes": "Aumentar equipe atuante. Focar em abordagem proativa.",
+      "total_clientes": "8",
+      "padrao": "AP 50% — dia médio. Só Jasmim operando.",
+      "taxa_conversao": 50,
+      "motivos_nv": {
+        "outros": "1",
+        "sem_entrada": "1",
+        "pesquisando": "2"
+      }
+    },
+    "loja": "moxuara"
+  },
+  "moxuara_2026-08-11": {
+    "loja": "moxuara",
+    "analise": {
+      "total_clientes": "7",
+      "padrao": "AP 71% (meta CDC: 80%) — excelente dia para Moxuara, muito próximo da meta. Luccas em destaque com múltiplas vendas. Apenas 2 NVs classificadas como 'outros' — motivo não identificado precisamente, mas o volume baixo de NVs indica que o processo de vendas está funcionando bem. Jasmim e equipe com boa sincronia no dia.",
+      "recomendacoes": "1. IDENTIFICAR OS 2 NVs 'OUTROS': Motivos genéricos dificultam o aprendizado. A partir de agora, treinar a equipe para registrar o motivo real de cada NV na folha: 'pesquisando', 'preço alto', 'sem entrada', 'crédito negado' — não 'outros'. Informação específica = treinamento específico.\n\n2. FECHAR A DIFERENÇA PARA 80%: Com 7 atendimentos e 5 vendas, faltou apenas 1 venda para atingir a meta CDC. Identificar qual dos 2 NVs 'outros' era recuperável — se pelo menos 1 deles tinha perfil de compra, o manejo de objeção teria fechado o dia em 86%.\n\n3. LUCCAS COMO REFERÊNCIA: Identificado com múltiplas vendas no dia — usar como modelo para a equipe. Fazer simulação de atendimento com ele demonstrando o processo de sondagem e fechamento positivo. Perguntar ao Luccas: 'O que você pergunta para o cliente antes de mostrar o aparelho?' — documentar e replicar.\n\n4. UPSELL DE ACESSÓRIOS: AP 71% com bom volume — o próximo passo é elevar o ticket médio. Treinar oferta de acessórios no fechamento positivo: após confirmar a venda do aparelho, imediatamente conduzir: 'Já separei as melhores capinhas para esse modelo — qual o senhor prefere?' Não perguntar se quer, mas qual prefere.\n\n5. MANTER ACIMA DE 70%: Moxuara tem histórico de variação grande entre dias (40% em outros). Meta: manter AP ≥ 70% por 5 dias consecutivos. Gerente acompanha AP diário e intervém com simulação quando qualquer vendedor cai abaixo de 50% por 2 dias seguidos.",
+      "taxa_conversao": 71,
+      "motivos_nv": {
+        "outros": "2"
+      },
+      "total_vendas": "5"
+    },
+    "ultima_atualizacao": "2026-08-16T17:00:17",
+    "data": "2026-08-11"
+  },
+  "moxuara_2026-08-14": {
+    "data": "2026-08-14",
+    "ultima_atualizacao": "2026-08-14T22:30:00",
+    "analise": {
+      "total_vendas": "4",
+      "recomendacoes": "Varios clientes pesquisando preco de iPhone (achou caro) - considerar linha de entrada mais acessivel.",
+      "motivos_nv": {
+        "outros": "7"
+      },
+      "total_clientes": "11",
+      "taxa_conversao": 0.3636,
+      "padrao": "Clipe 'Ana Te Adoramos' confirma Moxuara. AP anotado 50%% proximo da contagem manual (36%%, 4V/11)."
+    },
+    "loja": "moxuara"
+  },
+  "moxuara_2026-08-15": {
+    "loja": "moxuara",
+    "analise": {
+      "motivos_nv": {
+        "sem_entrada": "2",
+        "credito_negado": "2",
+        "payjoy": "2",
+        "outros": "2",
+        "pesquisando": "2"
+      },
+      "taxa_conversao": 0.4,
+      "total_clientes": "10",
+      "padrao": "AP 40% (meta CDC: 80%) — Moxuara muito abaixo da meta, com 10 atendimentos e apenas 4 conversões. Jasmim fechou 2 (C75 e C71) e Almeida fechou 2 (Hot 60i via PayJoy e Pix), mas Almeida acumulou múltiplas NVs por crédito e sem entrada — padrão de insistência no mesmo caminho de pagamento sem transitar para alternativas. Alta concentração de NVs por restrição financeira indica perfil de público da região com baixo acesso a crédito.",
+      "total_vendas": "4",
+      "recomendacoes": "1. QUALIFICAÇÃO FINANCEIRA PRECOCE (Almeida): Com múltiplas NVs por crédito negado + sem entrada, Almeida precisa qualificar o perfil financeiro no início da sondagem: 'O senhor prefere pagar à vista, no cartão, ou precisa de uma forma parcelada?' Se parcelado, ir direto para PayJoy antes de tentar ODRES/Brasiland — economiza tempo e evita a frustração de múltiplas negativas.\n\n2. ROTA ALTERNATIVA AO CRÉDITO (público da loja): Moxuara parece ter público com restrição de crédito recorrente. Treinar equipe em 3 rotas de fechamento: (a) à vista com desconto; (b) cartão de crédito do cliente; (c) planos pós-pagos sem análise de crédito. PayJoy é rota 4, não rota 1.\n\n3. MANEJO DE OBJEÇÃO DE PESQUISANDO (2 NVs): Dois clientes saíram pesquisando — usar técnica de 'território favorável': conduzir ao balcão antes de mostrar preço. No balcão, perguntar: 'Qual o aparelho que o senhor viu em outro lugar?' — identificar a concorrência e usar comparativo de características+benefícios para justificar a escolha pela CDC.\n\n4. SIMULAÇÃO DE VENDAS SEMANAL: AP 40% por 2 dias consecutivos é sinal de alerta no treinamento CDC. Gerente deve fazer simulação de atendimento com Almeida e Luccas para identificar em qual etapa do processo (sondagem, negociação, fechamento positivo) estão perdendo os clientes.\n\n5. JASMIM COMO REFERÊNCIA: Com 2 vendas e o melhor AP do dia na loja, Jasmim deve ser o padrinho/referência para os vendedores com NV alta. Pedir que ela demonstre seu processo de sondagem e fechamento para a equipe — especialmente como transita do território do cliente para o balcão antes de fechar."
+    },
+    "nota": "Folha Ana Sub Cariacica 22:19 (Moxuara). Data 15/08. Vendedores: Jasmim, Almeida, Luccas. Receita R$9.999. AP 40% anotado. Rodapé boleto: Luccas e Jasmim (sem arranjo).",
+    "data": "2026-08-15",
+    "ultima_atualizacao": "2026-08-16T16:53:58"
+  },
+  "moxuara_2026-08-16": {
+    "data": "2026-08-16",
+    "analise": {
+      "recomendacoes": "Dia muito fraco (12.5%%) - alertar gerencia da loja.",
+      "total_clientes": "8",
+      "padrao": "Clipe 'Ana Te Adoramos' confirma Moxuara. AP anotado 50%% diverge muito da contagem manual (12.5%%, 1V/8) - todos os motivos de recusa sao claramente negativos (quis pesquisar mais, nao aprovado, so tinha 300 de entrada), contagem manual priorizada.",
+      "total_vendas": "1",
+      "motivos_nv": {
+        "outros": "7"
+      },
+      "taxa_conversao": 0.125
+    },
+    "ultima_atualizacao": "2026-08-16T22:30:00",
+    "loja": "moxuara"
+  },
+  "moxuara_2026-08-17": {
+    "ultima_atualizacao": "2026-08-17T22:30:00",
+    "loja": "moxuara",
+    "analise": {
+      "total_vendas": "3",
+      "taxa_conversao": 0.5,
+      "total_clientes": "6",
+      "motivos_nv": {
+        "outros": "3"
+      },
+      "recomendacoes": "2 clientes queriam Xiaomi/iPhone especificamente fora do estoque padrao.",
+      "padrao": "Clipe 'Ana Te Adoramos' confirma Moxuara. AP anotado 33%% vs contagem manual 50%% (3V/6)."
+    },
+    "data": "2026-08-17"
+  },
+  "moxuara_2026-08-18": {
+    "data": "2026-08-18",
+    "ultima_atualizacao": "2026-08-18T22:30:00",
+    "loja": "moxuara",
+    "analise": {
+      "recomendacoes": "Excelente taxa de conversao (83%%); usar como referencia de dia bom.",
+      "total_clientes": "6",
+      "taxa_conversao": 0.8333,
+      "total_vendas": "5",
+      "motivos_nv": {
+        "outros": "1"
+      },
+      "padrao": "Clipe 'Ana Te Adoramos' confirma Moxuara. Vendedores Almeida/Jasmim/Luccas. Otimo dia."
+    }
+  },
+  "moxuara_2026-08-20": {
+    "data": "2026-08-20",
+    "ultima_atualizacao": "2026-08-20T22:30:00",
+    "analise": {
+      "motivos_nv": {
+        "entrada_alta": "2",
+        "outros": "1"
+      },
+      "taxa_conversao": 0.5,
+      "recomendacoes": "Dois clientes pediram entrada de R$600 e R$630 no C75 e nao fecharam - revisar politica de entrada minima para esse modelo.",
+      "total_clientes": "6",
+      "padrao": "Clipe 'Ana Te Adoramos' confirma Moxuara. Vendedores Almeida e Luccas. AP anotado 100%% na folha refere-se provavelmente so as vendas de celular (acessorios a parte); considerando os pedidos de entrada nao atendidos nas linhas finais como NV, taxa manual ficou em 50%%.",
+      "total_vendas": "3"
+    },
+    "loja": "moxuara"
+  },
+  "moxuara_2026-08-22": {
+    "loja": "moxuara",
+    "data": "2026-08-22",
+    "analise": {
+      "taxa_conversao": 0.3636,
+      "padrao": "Clipe 'Ana Te Adoramos' confirma Moxuara. Vendedores Almeida, Jasmim, Luccas. Duas fotos da mesma folha (angulos diferentes). AP anotado 50%% vs contagem manual 36%%.",
+      "total_vendas": "4",
+      "motivos_nv": {
+        "entrada_alta": "2",
+        "outros": "5"
+      },
+      "total_clientes": "11",
+      "recomendacoes": "Perda recorrente por entrada alta e clientes achando os celulares caros; considerar revisar politica de entrada minima."
+    },
+    "ultima_atualizacao": "2026-08-22T22:30:00"
+  },
+  "moxuara_2026-08-23": {
+    "ultima_atualizacao": "2026-08-23T22:30:00",
+    "loja": "moxuara",
+    "analise": {
+      "recomendacoes": "Revisar taxa com gerente da loja dado divergencia com AP anotado; folha dificil de ler, pedir letra mais legivel.",
+      "padrao": "Clipe 'Ana Te Adoramos' confirma Moxuara. Vendedores Roberta e Jasmim. AP anotado na folha foi 80%%, contagem manual deu 56%% (5V/9) - divergencia consideravel, letra cursiva dificultou leitura de varias linhas.",
+      "total_vendas": "5",
+      "total_clientes": "9",
+      "motivos_nv": {
+        "outros": "4"
+      },
+      "taxa_conversao": 0.5556
+    },
+    "data": "2026-08-23"
+  },
+  "moxuara_mensal_2026_08": {
+    "loja": "moxuara",
+    "mes": "2026-08",
+    "dias": "12",
+    "dias_com_dado": [
+      "2026-08-06",
+      "2026-08-08",
+      "2026-08-09",
+      "2026-08-11",
+      "2026-08-15",
+      "2026-08-23",
+      "2026-08-22",
+      "2026-08-20",
+      "2026-08-18",
+      "2026-08-17",
+      "2026-08-16",
+      "2026-08-14"
+    ],
+    "total_vendas": "45",
+    "motivos_nv": {
+      "pesquisando": "9",
+      "achou_caro": "1",
+      "entrada_alta": "7",
+      "payjoy": "2",
+      "payjoy_negado": "3",
+      "outros": "37",
+      "sem_entrada": "5",
+      "credito_negado": "2"
+    },
+    "total_clientes": "107",
+    "taxa_conversao": 0.4
+  },
+  "praiadacosta_2026-07-08": {
+    "analise": {
+      "recomendacoes": "1. Aplicar sondagem de urgência logo no início: 'Você precisa do aparelho para quando?' para filtrar clientes pesquisadores. 2. Usar técnica de ancoragem: mostrar o aparelho desejado e depois apresentar opções dentro do orçamento disponível. 3. Criar oferta-âncora no momento da despedida: 'Hoje tem condição especial de entrada, amanhã pode mudar' para reduzir 'volto depois'.",
+      "total_clientes": "10",
+      "total_vendas": "3",
+      "taxa_conversao": 30,
+      "padrao": "70% dos clientes saiu sem comprar. O motivo mais frequente foi 'pesquisando' (cliente sem intenção imediata de compra), seguido de 'volta depois'. Isso indica abordagem inicial fraca — os vendedores não estão identificando o grau de urgência do cliente nem gerando senso de oportunidade.",
+      "motivos_nv": {
+        "Produto específico (iPhone)": "1",
+        "Negado financiamento": "1",
+        "Volta amanhã / sábado": "2",
+        "Pesquisando / sem decisão": "3"
+      }
+    },
+    "ultima_atualizacao": "18:16",
+    "data": "2026-07-08",
+    "loja": "praiadacosta"
+  },
+  "praiadacosta_2026-07-09": {
+    "data": "2026-07-09",
+    "analise": {
+      "taxa_conversao": 75,
+      "total_vendas": "9",
+      "recomendacoes": "1. Para clientes sem entrada, explorar opções Odres com parcela menor e sem entrada mínima. 2. Para quem quer modelo mais barato, apresentar linha Hot60i/C63 como alternativa de entrada. 3. Manter o nível atual de conversão — 75% é referência positiva na rede.",
+      "total_clientes": "12",
+      "padrao": "Excelente aproveitamento de 75%. A equipe converteu bem. Os 3 NVs têm perfil financeiro: falta de dinheiro/entrada e busca por preço menor — obstáculos de poder aquisitivo, não de interesse.",
+      "motivos_nv": {
+        "Queria modelo mais barato": "1",
+        "Sem entrada": "1",
+        "Cliente sem dinheiro": "1"
+      }
+    },
+    "ultima_atualizacao": "18:29",
+    "loja": "praiadacosta"
+  },
+  "praiadacosta_2026-07-10": {
+    "loja": "praiadacosta",
+    "analise": {
+      "taxa_conversao": 62.5,
+      "recomendacoes": "1. Para crédito negado no financiamento, oferecer alternativa via Pix/débito com desconto ou parcelamento menor. 2. Para quem adia a compra, criar urgência com promoção do dia ou estoque limitado. 3. Investir em sondagem financeira logo no início para direcionamento correto do produto.",
+      "total_clientes": "8",
+      "total_vendas": "5",
+      "padrao": "62,5% de aproveitamento. Leve queda em relação ao dia anterior (75%). 1 NV por crédito negado — limitação sistêmica. 1 NV por adiamento (volta depois). Mantém padrão razoável mas há oportunidade de melhora.",
+      "motivos_nv": {
+        "Financiamento negado": "1",
+        "Sem motivo registrado": "1",
+        "Volta depois": "1"
+      }
+    },
+    "ultima_atualizacao": "18:16",
+    "data": "2026-07-10"
+  },
+  "praiadacosta_2026-07-11": {
+    "loja": "praiadacosta",
+    "analise": {
+      "motivos_nv": {
+        "Pesquisando / sem decisão": "3",
+        "Não gostou do parcelamento": "1",
+        "Queria produto específico (iPhone 16)": "1",
+        "Sem entrada Odres": "1"
+      },
+      "padrao": "62.5% de conversão, com 3 dos 6 clientes classificados como 'pesquisando' — indicando busca de preço sem decisão imediata. Um cliente saiu por 'não gostou do parcelamento', sugerindo que o crediário não foi apresentado de forma convincente ou não correspondeu à expectativa do cliente.",
+      "total_vendas": "10",
+      "total_clientes": "16",
+      "recomendacoes": "1. Identificar o cliente pesquisador logo na abordagem perguntando 'você está comparando com outra loja ou já decidiu o produto?' para ajustar o pitch. 2. Apresentar o parcelamento de forma proativa com cálculos claros (ex: 'R$X por mês no Odres'), antes que o cliente forme objeção. 3. Capturar o contato do cliente pesquisador para follow-up no mesmo dia: 'Se você encontrar mais barato em outra loja, me manda mensagem antes de fechar'.",
+      "taxa_conversao": 62.5
+    },
+    "ultima_atualizacao": "13:48",
+    "data": "2026-07-11"
+  },
+  "praiadacosta_2026-07-13": {
+    "analise": {
+      "recomendacoes": "1. Investigar perfil de clientes de Carol — 4 NV seguidos com crédito negado é padrão crítico a revisar. 2. Trabalhar opções para clientes sem entrada (entrada simbólica, permuta, PayJoy). 3. O volume de atendimentos é bom — foco total na conversão.",
+      "padrao": "Volume alto de atendimentos mas conversão muito baixa (33%). Alta incidência de crédito negado pelo Adris/pix e sem entrada. Carol/Elisa teve 4 NV consecutivos — possível problema de perfil de clientes ou abordagem. Clay e Stefany foram os destaques do dia.",
+      "total_vendas": "5",
+      "taxa_conversao": 33.3,
+      "total_clientes": "15",
+      "motivos_nv": {
+        "Volta na quarta": "1",
+        "Produto sem entrada": "2",
+        "Sem entrada": "2",
+        "Crédito negado / Adris": "5"
+      }
+    },
+    "data": "2026-07-13",
+    "loja": "praiadacosta",
+    "ultima_atualizacao": "22:30"
+  },
+  "praiadacosta_2026-07-22": {
+    "analise": {
+      "padrao": "Conversão parcial de 40% até às 14h30. Clientes buscam aparelhos de entrada (CH 256, Note 70, G71). Principal gargalo: falta de entrada e crédito negado.",
+      "recomendacoes": "1. Trabalhar alternativas de entrada parcial com Payjoy/ODRES para clientes sem entrada. 2. Oferecer aparelhos de menor valor quando o crédito não aprova o modelo desejado. 3. Registrar cliente pesquisando e fazer acompanhamento via agendamento.",
+      "total_vendas": "2",
+      "taxa_conversao": 40,
+      "motivos_nv": {
+        "Crédito não aprovado": "1",
+        "Sem entrada": "1",
+        "Pesquisando / Só olhando": "1"
+      },
+      "total_clientes": "5"
+    },
+    "data": "2026-07-22",
+    "loja": "praiadacosta",
+    "ultima_atualizacao": "22:00"
+  },
+  "praiadacosta_2026-07-25": {
+    "loja": "praiadacosta",
+    "analise": {
+      "motivos_nv": {
+        "pesquisando": "2",
+        "credito negado": "1",
+        "volta depois": "1"
+      },
+      "taxa_conversao": 55.6,
+      "padrao": "AP 55% com bom volume de atendimentos. Pesquisando e retorno posterior sao os principais freios. Vendas ocorrem via debito, credito, PIX e PayJoy — mix diversificado.",
+      "total_clientes": "9",
+      "recomendacoes": "1. Criar senso de urgencia para clientes em pesquisa — promoao limitada ou ultimo estoque do modelo. 2. Para quem volta depois, coletar contato e fazer follow-up ativo. 3. Explorar opcoes de financiamento alternativo quando credito e negado.",
+      "total_vendas": "5"
+    },
+    "ultima_atualizacao": "22:00",
+    "data": "2026-07-25"
+  },
+  "praiadacosta_2026-07-27": {
+    "analise": {
+      "motivos_nv": {
+        "vai_voltar": "1",
+        "pesquisando": "1"
+      },
+      "recomendacoes": "Manter padrão. Tentar capturar os clientes que saíram pesquisando com follow-up.",
+      "total_clientes": "12",
+      "taxa_conversao": 83.3,
+      "total_vendas": "10",
+      "padrao": "AP 83% — excelente desempenho. Carla liderou com múltiplas vendas. Equipe completa."
+    },
+    "loja": "praiadacosta",
+    "data": "2026-07-27",
+    "ultima_atualizacao": "2026-07-27T19:04:00"
+  },
+  "praiadacosta_2026-07-28": {
+    "loja": "praiadacosta",
+    "data": "2026-07-28",
+    "ultima_atualizacao": "2026-07-28T18:30:00",
+    "analise": {
+      "total_clientes": "9",
+      "padrao": "AP 67% — Carla-Heloá, Sorel, Eleny venderam. 3 NVs por sem entrada, pesquisa e vai voltar.",
+      "recomendacoes": "Explorar PayJoy para clientes sem entrada. Identificar intenção de compra mais cedo.",
+      "total_vendas": "6",
+      "taxa_conversao": 66.7,
+      "motivos_nv": {
+        "pesquisando": "1",
+        "vai_voltar": "1",
+        "sem_entrada": "1"
+      }
+    }
+  },
+  "praiadacosta_2026-07-29": {
+    "loja": "praiadacosta",
+    "data": "2026-07-29",
+    "ultima_atualizacao": "2026-07-29T18:53:00",
+    "analise": {
+      "taxa_conversao": 63.6,
+      "total_clientes": "11",
+      "padrao": "AP 63% — Carla liderou com múltiplas vendas (C71, D1000, cartão/débito). Stefany e Eliza venderam via PayJoy. Kyst Clara com Pix. 4 NVs espalhados.",
+      "recomendacoes": "Manter padrão. Explorar follow-up para clientes que foram 'pesquisar' e quem voltará no sábado.",
+      "total_vendas": "7",
+      "motivos_nv": {
+        "pesquisando": "1",
+        "sem_familia": "1",
+        "vai_voltar": "1",
+        "modelo_especifico": "1"
+      }
+    }
+  },
+  "praiadacosta_2026-07-31": {
+    "data": "2026-07-31",
+    "analise": {
+      "padrao": "AP 33% — folha parcial (14h). Alta taxa de negação de crédito e sem entrada.",
+      "total_vendas": "3",
+      "recomendacoes": "Trabalhar opções de menor valor de entrada. Reforçar PAYJOY como alternativa de crédito.",
+      "total_clientes": "9",
+      "motivos_nv": {
+        "sem_entrada": "2",
+        "pesquisando": "1",
+        "volta_depois": "1",
+        "negado_financiamento": "2"
+      },
+      "taxa_conversao": 0.3333
+    },
+    "ultima_atualizacao": "2026-07-31T14:30:00",
+    "loja": "praiadacosta"
+  },
+  "praiadacosta_2026-08-05": {
+    "analise": {
+      "taxa_conversao": 0.2,
+      "recomendacoes": "Trabalhar opções de entrada menor e parcelamento.",
+      "motivos_nv": {
+        "Sem entrada": "1",
+        "Pesquisando": "1",
+        "Sem a renda": "1",
+        "Outro": "1"
+      },
+      "total_clientes": "5",
+      "total_vendas": "1",
+      "padrao": "AP 20% baixo. Objeções financeiras predominam."
+    },
+    "loja": "praiadacosta",
+    "data": "2026-08-05",
+    "ultima_atualizacao": "2026-08-05T~18:15:00"
+  },
+  "praiadacosta_2026-08-06": {
+    "ultima_atualizacao": "2026-08-06T22:30:00",
+    "loja": "praiadacosta",
+    "data": "2026-08-06",
+    "analise": {
+      "motivos_nv": {
+        "queria_premium": "1",
+        "outro": "1"
+      },
+      "recomendacoes": "Consistência boa para loja em recuperação. Manter apoio do GTS.",
+      "total_vendas": "4",
+      "padrao": "Boa conversão (67%). Adriel GTs e Nycally. R$5.100 receita. 1 cliente queria iPhone 17 Pro.",
+      "total_clientes": "6",
+      "taxa_conversao": 0.67
+    }
+  },
+  "praiadacosta_2026-08-10": {
+    "loja": "praiadacosta",
+    "analise": {
+      "padrao": "AP 17% — dia muito fraco. Maioria sem crédito ou entrada.",
+      "motivos_nv": {
+        "credito": "3",
+        "sem_entrada": "3",
+        "outros": "1",
+        "pesquisando": "2",
+        "sem_limite": "1"
+      },
+      "total_vendas": "2",
+      "total_clientes": "12",
+      "taxa_conversao": 17,
+      "recomendacoes": "Trabalhar perfil de cliente. Explorar PayJoy e ODRES para clientes sem entrada."
+    },
+    "data": "2026-08-10",
+    "ultima_atualizacao": "2026-08-10T22:56:00"
+  },
+  "praiadacosta_2026-08-14": {
+    "data": "2026-08-14",
+    "analise": {
+      "total_clientes": "7",
+      "motivos_nv": {
+        "entrada_alta": "1",
+        "outros": "3"
+      },
+      "taxa_conversao": 0.4286,
+      "recomendacoes": "Taxa razoavel (43%%).",
+      "total_vendas": "3",
+      "padrao": "Fita/cordao azul no clipe enferrujado confirma Praia da Costa."
+    },
+    "ultima_atualizacao": "2026-08-14T22:30:00",
+    "loja": "praiadacosta"
+  },
+  "praiadacosta_2026-08-15": {
+    "analise": {
+      "motivos_nv": {
+        "outros": "2"
+      },
+      "taxa_conversao": 0.8333,
+      "total_vendas": "10",
+      "total_clientes": "12",
+      "padrao": "Vendedores Eliza/Stefany/Ramyis/Yolo/Clay/Heloa confirmam Praia da Costa (nomes batem com a tabela). AP anotado 80%% bate bem com a contagem manual (83%%, 10V/12) - alta confianca. Esta era a unica loja ainda sem dado em 15/08 (as outras 10 lojas ja tinham sido lancadas anteriormente).",
+      "recomendacoes": "Excelente dia de conversao (83%%); usar como referencia."
+    },
+    "data": "2026-08-15",
+    "loja": "praiadacosta",
+    "ultima_atualizacao": "2026-08-15T22:30:00"
+  },
+  "praiadacosta_2026-08-17": {
+    "data": "2026-08-17",
+    "analise": {
+      "padrao": "Fita/cordao azul no clipe enferrujado confirma Praia da Costa. AP anotado 60%% bate exatamente com contagem manual (3V/5).",
+      "motivos_nv": {
+        "outros": "2"
+      },
+      "recomendacoes": "Bom dia de conversao.",
+      "total_clientes": "5",
+      "total_vendas": "3",
+      "taxa_conversao": 0.6
+    },
+    "ultima_atualizacao": "2026-08-17T22:30:00",
+    "loja": "praiadacosta"
+  },
+  "praiadacosta_2026-08-18": {
+    "loja": "praiadacosta",
+    "analise": {
+      "taxa_conversao": 0.1667,
+      "motivos_nv": {
+        "sem_limite": "1",
+        "outros": "4"
+      },
+      "total_clientes": "6",
+      "total_vendas": "1",
+      "recomendacoes": "Dia fraco (17%%); atencao a recusas por limite de credito.",
+      "padrao": "Fita azul no clipe confirma Praia da Costa. Vendedores Eliza/Ste/Clay/Leo/Stefany."
+    },
+    "ultima_atualizacao": "2026-08-18T22:30:00",
+    "data": "2026-08-18"
+  },
+  "praiadacosta_2026-08-20": {
+    "analise": {
+      "recomendacoes": "Boa taxa de conversao; padrao de recusa por pesquisa e financiamento nao aprovado.",
+      "total_clientes": "12",
+      "total_vendas": "6",
+      "motivos_nv": {
+        "outros": "6"
+      },
+      "taxa_conversao": 0.5,
+      "padrao": "Fita azul no clipe enferrujado confirma Praia da Costa. Vendedores Jr/Clay/Eliza/Stefany/Yolo/Heloci. AP anotado 50%% bate exatamente com contagem manual (6V/12) apos reinterpretar motivos de pagamento (Brasil card/Credito como venda concluida)."
+    },
+    "loja": "praiadacosta",
+    "ultima_atualizacao": "2026-08-20T22:30:00",
+    "data": "2026-08-20"
+  },
+  "praiadacosta_2026-08-24": {
+    "analise": {
+      "recomendacoes": "Maior motivo de perda foi falta de entrada (3 casos); avaliar parceria com mais opcoes de financiamento.",
+      "padrao": "Folha com fita azul e coluna DATA por linha (marcador confirmado). Varias marcacoes V/NV eram pontos em vez de X, contagem tem incerteza moderada (+-2 no total).",
+      "total_vendas": "9",
+      "total_clientes": "16",
+      "motivos_nv": {
+        "entrada_alta": "3",
+        "sem_limite": "1",
+        "outros": "3"
+      },
+      "taxa_conversao": 0.5625
+    },
+    "data": "2026-08-24",
+    "loja": "praiadacosta",
+    "ultima_atualizacao": "2026-08-24T22:30:00"
+  },
+  "praiadacosta_mensal_2026_08": {
+    "taxa_conversao": 30.4,
+    "motivos_nv": {
+      "Outro": "1",
+      "sem_limite": "3",
+      "credito": "3",
+      "Sem entrada": "1",
+      "queria_premium": "1",
+      "outros": "21",
+      "entrada_alta": "4",
+      "sem_entrada": "3",
+      "outro": "1",
+      "pesquisando": "2",
+      "Sem a renda": "1",
+      "Pesquisando": "1"
+    },
+    "dias": "9",
+    "total_clientes": "81",
+    "dias_com_dado": [
+      "2026-08-05",
+      "2026-08-06",
+      "2026-08-10",
+      "2026-08-24",
+      "2026-08-20",
+      "2026-08-18",
+      "2026-08-17",
+      "2026-08-14",
+      "2026-08-15"
+    ],
+    "mes": "2026_08",
+    "loja": "praiadacosta",
+    "ultima_atualizacao": "2026-08-10T22:56:00",
+    "total_vendas": "39"
+  },
+  "saomateus_2026-07-08": {
+    "data": "2026-07-08",
+    "analise": {
+      "total_clientes": "9",
+      "recomendacoes": "1. Registrar contato dos clientes que prometem voltar no sabado para abordagem ativa no dia. 2. Verificar mix de cores em estoque para modelos populares (iPhone 13 especificamente). 3. Aplicar tecnica de sondagem de urgencia logo no inicio do atendimento para identificar intencao real de compra.",
+      "taxa_conversao": 55.6,
+      "motivos_nv": {
+        "Pesquisando": "2",
+        "Volta sabado": "1",
+        "Queria cor especifica nao disponivel": "1"
+      },
+      "total_vendas": "5",
+      "padrao": "Metade dos clientes NV adiou a compra para pesquisar ou retornar no sabado. Um caso de cor indisponivel indica gap de estoque. Perfil geral de cliente indeciso sem urgencia de compra."
+    },
+    "loja": "saomateus",
+    "ultima_atualizacao": "18:16"
+  },
+  "saomateus_2026-07-09": {
+    "loja": "saomateus",
+    "ultima_atualizacao": "18:29",
+    "analise": {
+      "motivos_nv": {
+        "Sem entrada": "1",
+        "Cliente nao tinha o valor": "1",
+        "So queria (indecisao)": "1"
+      },
+      "padrao": "Sao Mateus teve excelente desempenho no dia 09/07 (75% de conversao, R$12.569). Os 3 clientes NV tinham restricoes financeiras pontuais ou indecisao. Equipe bem alinhada com tecnica de fechamento eficiente.",
+      "taxa_conversao": 75,
+      "recomendacoes": "1. Manter ritmo e tecnicas que geraram taxa de 75% — compartilhar boas praticas com demais lojas. 2. Para os 3 NV, tentar opcoes de parcelamento alternativo antes de deixar o cliente ir. 3. Registrar e replicar o script de abordagem usado no dia.",
+      "total_clientes": "12",
+      "total_vendas": "9"
+    },
+    "data": "2026-07-09"
+  },
+  "saomateus_2026-07-10": {
+    "loja": "saomateus",
+    "ultima_atualizacao": "11:10",
+    "data": "2026-07-10",
+    "analise": {
+      "taxa_conversao": 66.7,
+      "motivos_nv": {
+        "Financeira negada": "1"
+      },
+      "padrao": "Bom inicio de dia para Sao Mateus com 67% de conversao — 2 vendas de C75 nos primeiros atendimentos. O unico NV foi recusa da financeira, situacao que requer alternativas de pagamento imediatas.",
+      "total_clientes": "3",
+      "total_vendas": "2",
+      "recomendacoes": "1. Quando a financeira negar, oferecer imediatamente Pix a vista com desconto ou entrada maior para reduzir parcela. 2. Manter o excelente padrao de atendimento da manha no restante do dia. 3. Acompanhar cliente da financeira negada — pode ter condicao de pagar a vista com negociacao."
+    }
+  },
+  "saomateus_2026-07-11": {
+    "loja": "saomateus",
+    "data": "2026-07-11",
+    "analise": {
+      "padrao": "São Mateus alcançou 63% de aproveitamento com equipe de Carlo, Stefany, Jolo, GianCarlo e Eliza. A maior causa de NV foi cliente em fase de pesquisa e insatisfação com as condições de parcelamento, indicando necessidade de trabalhar melhor a percepção de custo-benefício.",
+      "motivos_nv": {
+        "Pesquisando": "2",
+        "Não gostou do parcelamento": "1"
+      },
+      "taxa_conversao": 63,
+      "total_clientes": "8",
+      "recomendacoes": "1. Para clientes pesquisando, usar comparativo de preço e condição da CDC vs concorrência para gerar fechamento imediato. 2. Apresentar múltiplas opções de parcelamento (Odres, Pix, cartão) antes que o cliente objete as condições. 3. Reforçar o fechamento com Stefany e Jolo que demonstraram bom volume.",
+      "total_vendas": "5"
+    },
+    "ultima_atualizacao": "13:48"
+  },
+  "saomateus_2026-07-13": {
+    "loja": "saomateus",
+    "ultima_atualizacao": "22:30",
+    "data": "2026-07-13",
+    "analise": {
+      "recomendacoes": "1. Cobrar envio diario da folha de atendimento. 2. Verificar com o gerente o motivo da ausencia do registro.",
+      "motivos_nv": {},
+      "total_clientes": "0",
+      "padrao": "Sem dados — loja nao enviou folha de atendimento no dia 13/07/2026.",
+      "total_vendas": "0",
+      "taxa_conversao": 0
+    }
+  },
+  "saomateus_2026-07-22": {
+    "ultima_atualizacao": "14:25",
+    "analise": {
+      "total_vendas": "2",
+      "padrao": "Taxa de 40% em 5 atendimentos no período da manhã (até 14:25). Valor total às 18:09 foi R$11.769, indicando boa performance de vendas no turno tarde.",
+      "taxa_conversao": 40,
+      "motivos_nv": {
+        "Sem documentação": "1",
+        "Outros": "2"
+      },
+      "recomendacoes": "1. Consolidar o desempenho da tarde replicando a abordagem que gerou as vendas. 2. Registrar motivos de NV com mais detalhes para análise futura. 3. Meta de manter acima de 40% diariamente.",
+      "total_clientes": "5"
+    },
+    "loja": "saomateus",
+    "data": "2026-07-22"
+  },
+  "saomateus_2026-07-25": {
+    "analise": {
+      "padrao": "Apenas 1 venda em 4 atendimentos. Clientes nao encontraram o produto que buscavam ou nao ficaram convencidos pelo mix disponivel. AP 25%.",
+      "recomendacoes": "1. Mapear os produtos mais pedidos e nao disponibilizados para reportar ao gestor. 2. Trabalhar objecao de produto — mostrar beneficios do modelo disponivel versus o desejado. 3. Registrar melhor os motivos de NV para identificar padrao de demanda reprimida.",
+      "total_clientes": "4",
+      "motivos_nv": {
+        "outros nao achou produto": "3"
+      },
+      "total_vendas": "1",
+      "taxa_conversao": 25
+    },
+    "ultima_atualizacao": "22:00",
+    "data": "2026-07-25",
+    "loja": "saomateus"
+  },
+  "saomateus_2026-07-29": {
+    "data": "2026-07-29",
+    "loja": "saomateus",
+    "analise": {
+      "motivos_nv": {
+        "pesquisando": "2",
+        "outros": "1",
+        "alerta_samsung": "1",
+        "sem_entrada": "1",
+        "negado": "1"
+      },
+      "taxa_conversao": 45.5,
+      "total_clientes": "11",
+      "padrao": "AP 45% — Juliana, Arthur e Wesley. Juliana vendeu Note70 via Crédito e Samsung via financiamento. 6 NVs: sem entrada, negado, pesquisa, queria Samsung específico. Primeiro diagnóstico da loja.",
+      "recomendacoes": "PRIMEIRA FOLHA REGISTRADA. AP 45% já como base. Priorizar objeções de entrada (PayJoy) e trabalhar alternativas ao Samsung para reduzir NVs.",
+      "total_vendas": "5"
+    },
+    "ultima_atualizacao": "2026-07-29T18:16:00"
+  },
+  "saomateus_2026-07-30": {
+    "data": "2026-07-30",
+    "loja": "saomateus",
+    "ultima_atualizacao": "2026-07-30T14:00:00",
+    "analise": {
+      "total_vendas": "1",
+      "padrao": "AP 17% — folha parcial (11h). Pesquisa de preço dominante entre NVs, Arthur sem conversão.",
+      "motivos_nv": {
+        "pesquisando": "3",
+        "volta_depois": "1",
+        "sem_entrada": "1"
+      },
+      "taxa_conversao": 0.1667,
+      "recomendacoes": "Treinar Arthur em argumentação de valor e técnicas de fechamento. Explorar modelos de entrada para clientes sem crédito.",
+      "total_clientes": "6"
+    }
+  },
+  "saomateus_2026-08-05": {
+    "data": "2026-08-05",
+    "analise": {
+      "padrao": "AP 20% muito baixo. Fluxo reduzido.",
+      "taxa_conversao": 0.2,
+      "motivos_nv": {
+        "Sem a vender": "1",
+        "Sem entrada": "1",
+        "Pesquisando": "2"
+      },
+      "total_clientes": "5",
+      "recomendacoes": "Aumentar abordagem ativa na loja e atendimento de saída.",
+      "total_vendas": "1"
+    },
+    "ultima_atualizacao": "2026-08-05T18:50:00",
+    "loja": "saomateus"
+  },
+  "saomateus_2026-08-06": {
+    "analise": {
+      "motivos_nv": {
+        "entrada_alta": "1",
+        "outro": "2"
+      },
+      "total_vendas": "3",
+      "taxa_conversao": 0.5,
+      "total_clientes": "6",
+      "padrao": "Conversão média (50%). Equipe equilibrada com Wesley, Arthur e Randeclay.",
+      "recomendacoes": "Trabalhar argumentação nos atendimentos perdidos."
+    },
+    "ultima_atualizacao": "2026-08-06T22:30:00",
+    "data": "2026-08-06",
+    "loja": "saomateus"
+  },
+  "saomateus_2026-08-11": {
+    "loja": "saomateus",
+    "ultima_atualizacao": "2026-08-16T17:00:19",
+    "data": "2026-08-11",
+    "analise": {
+      "total_clientes": "22",
+      "motivos_nv": {
+        "sem_entrada": "14",
+        "sem_limite": "2",
+        "pesquisando": "3"
+      },
+      "recomendacoes": "1. ROTA ALTERNATIVA OBRIGATÓRIA PARA SEM_ENTRADA (14 NVs): Quando cliente não tem entrada, a equipe deve transitar imediatamente para 3 alternativas antes de encerrar: (a) PayJoy sem entrada — apresentar como opção principal, não como último recurso; (b) plano pós-pago vinculado ao aparelho — sem análise de crédito; (c) aparelho de entrada com valor menor que caiba no budget à vista do cliente. Nenhum atendimento deve encerrar com apenas 'sem entrada'.\n\n2. QUALIFICAÇÃO DE PERFIL NO INÍCIO (evitar 22 atendimentos sem retorno): Com o perfil de público identificado, inserir triagem rápida: 'O senhor tem um valor em mente para investir hoje?' — clientes com menos de R$500 vão direto para aparelhos de entrada; clientes com budget maior seguem o processo completo.\n\n3. PAYJOY COMO FERRAMENTA PRINCIPAL: 14 NVs por sem entrada em 1 dia indica que a equipe não está usando PayJoy proativamente. PayJoy não exige entrada e aprova perfis que ODRES/Brasiland recusa. Treinar toda a equipe no processo de aprovação PayJoy: quem pode solicitar, como é rápido, qual aparelho está disponível.\n\n4. VOLUME × CONVERSÃO — REFLEXÃO: 22 atendimentos com 14% de AP = a equipe trabalhou muito e vendeu pouco. Apresentar na matinal: 'Com 22 clientes e 3 vendas, quanto tempo médio foi gasto por venda? E por NV?' Tornar o custo do NV visível para motivar a busca por alternativas de fechamento.\n\n5. PESQUISANDO (3 NVs): 3 clientes saíram pesquisando além dos com restrição financeira — esses são os mais recuperáveis. Antes de sair: 'O que o senhor vai pesquisar?' + pegar WhatsApp para follow-up no dia seguinte. Cliente que pesquisa mas tem capacidade de compra é oportunidade perdida sem follow-up.",
+      "taxa_conversao": 14,
+      "total_vendas": "3",
+      "padrao": "AP 14% (meta CDC: 80%) — dia crítico para São Mateus com volume altíssimo (22 atendimentos) e baixíssima conversão. Dominado por restrição financeira: 14 NVs por sem_entrada e 2 por sem_limite — 16 de 19 NVs são clientes sem acesso a financiamento. Padrão claro: o público da loja no dia tinha perfil de baixo acesso a crédito, e a equipe não acionou rotas alternativas (PayJoy, planos, à vista com desconto) de forma sistemática."
+    }
+  },
+  "saomateus_2026-08-14": {
+    "loja": "saomateus",
+    "analise": {
+      "padrao": "AP 33% (meta CDC: 80%) — folha parcial do dia, apenas 3 atendimentos registrados (possivelmente mais atendimentos aconteceram). Clay/Randeclay com 1 NV por pesquisando e 1 NV por sem entrada. Leo fechou o único aparelho do dia (Hot60i). Receita R$4.300 com apenas 1 venda indica aparelho de ticket médio-alto. Dados insuficientes para análise completa — folha parcial limita as conclusões.",
+      "total_clientes": "3",
+      "total_vendas": "1",
+      "motivos_nv": {
+        "pesquisando": "1",
+        "sem_entrada": "1"
+      },
+      "taxa_conversao": 0.3333,
+      "recomendacoes": "1. ENVIO COMPLETO DA FOLHA: Dado crítico — São Mateus enviou folha retroativa parcial com apenas 3 atendimentos. Reforçar com o gerente que a folha deve refletir TODOS os atendimentos do dia, não só os últimos. Diagnóstico incompleto = recomendação imprecisa.\n\n2. SEM ENTRADA — PAYJOY (1 NV): Clay/Randeclay perdeu venda por sem entrada. PayJoy é a solução direta: 'Temos uma opção sem entrada, aprovação em minutos. Posso verificar para o senhor?' Aplicar antes de ODRES/Brasiland em todo cliente que demonstrar restrição de entrada.\n\n3. PESQUISANDO — RETENÇÃO ANTES DE SAIR (1 NV): Antes de deixar o cliente pesquisar, perguntar: 'Qual aparelho o senhor vai comparar com esse?' + fazer o comparativo ali. Se insistir em sair, pegar WhatsApp e fazer follow-up no dia seguinte.\n\n4. LEO COM BOA PERFORMANCE (1 venda em 1 atendimento = 100% pessoal): Verificar quantos atendimentos Leo teve no dia completo — se consistente, usar como referência de técnica de fechamento para Clay e Eliza.\n\n5. TICKET MÉDIO (R$4.300 em 1 venda = R$4.300): Venda de ticket alto confirma que São Mateus tem público com capacidade de investimento quando o processo é aplicado corretamente. Treinar equipe para sempre apresentar o aparelho de maior qualidade que o cliente pode comprar — não o mais barato que resolve o problema imediato."
+    },
+    "ultima_atualizacao": "2026-08-16T17:00:31",
+    "nota": "Retroativo parcial enviado em 15/08. Vendedores: Clay(Randeclay), Leo, Eliza. Receita R$4.300",
+    "data": "2026-08-14"
+  },
+  "saomateus_2026-08-15": {
+    "nota": "Folha com AP 80% anotado. Vendedores: Stefony, Carol, Randeclay, Eliza, Dave. Receita R$20.620",
+    "ultima_atualizacao": "2026-08-16T16:53:52",
+    "data": "2026-08-15",
+    "analise": {
+      "total_clientes": "10",
+      "recomendacoes": "1. REFERÊNCIA DE BOAS PRÁTICAS: São Mateus atingiu 80% (meta CDC) — reunião de boas práticas com a equipe para documentar o que fizeram diferente nesse dia: abordagem, sondagem, manejo de objeções. Compartilhar com lojas que estão abaixo de 60%.\n\n2. ROTA PARA AS 2 NVs RESTANTES (sem entrada + crédito negado): Os únicos 2 NVs foram por restrição de crédito — sinal de que o processo de vendas está correto mas o perfil de alguns clientes não permite financiamento. Treinar identificação precoce desse perfil e oferta imediata de PayJoy ou planos antes de tentar ODRES/Brasiland.\n\n3. MANUTENÇÃO DO AP 80%: Resultado excelente mas pontual — verificar se é padrão ou exceção. Acompanhar AP diário por vendedor na semana seguinte para identificar consistência. Vendedor que cai abaixo de 60% por 2 dias seguidos entra em simulação de vendas com o gerente.\n\n4. TICKET MÉDIO: AP 80% com R$20.620 de receita = média de R$2.577 por venda. Próximo passo: manter AP e aumentar ticket médio trabalhando upsell (caso vendedor esteja fechando só aparelhos de entrada, apresentar modelos intermediários via características+benefícios antes de apresentar o preço).\n\n5. MODELO PARA A REDE: Apresentar São Mateus 15/08 como benchmark nas próximas matinais — quais técnicas CDC foram aplicadas que resultaram em 8 de 10 conversões?",
+      "padrao": "AP 80% — São Mateus atingiu exatamente a meta CDC no dia! Melhor performance registrada da loja. Stefony, Carol, Randeclay e Eliza em sincronia. Apenas 2 NVs: sem entrada e crédito negado — ambos no rodapé de financiamento, não no processo de vendas em si. Equipe demonstrou domínio de sondagem, negociação e fechamento positivo.",
+      "taxa_conversao": 0.8,
+      "motivos_nv": {
+        "sem_entrada": "1",
+        "credito_negado": "1"
+      },
+      "total_vendas": "8"
+    },
+    "loja": "saomateus"
+  },
+  "saomateus_2026-08-17": {
+    "analise": {
+      "padrao": "Coracoezinhos no topo confirmam Sao Mateus. AP anotado 60%% bate bem com contagem manual (63%%, 5V/8).",
+      "total_vendas": "5",
+      "taxa_conversao": 0.625,
+      "total_clientes": "8",
+      "motivos_nv": {
+        "sem_limite": "3"
+      },
+      "recomendacoes": "3 recusas Odres negadas; padrao consistente."
+    },
+    "data": "2026-08-17",
+    "loja": "saomateus",
+    "ultima_atualizacao": "2026-08-17T22:30:00"
+  },
+  "saomateus_2026-08-20": {
+    "data": "2026-08-20",
+    "ultima_atualizacao": "2026-08-20T22:30:00",
+    "loja": "saomateus",
+    "analise": {
+      "recomendacoes": "Volume baixo no dia; acompanhar.",
+      "padrao": "Coracoezinhos rosas no topo da folha confirmam Sao Mateus. AP anotado 40%% vs contagem manual 25%% (1V/4).",
+      "total_vendas": "1",
+      "total_clientes": "4",
+      "motivos_nv": {
+        "outros": "3"
+      },
+      "taxa_conversao": 0.25
+    }
+  },
+  "saomateus_mensal_2026_08": {
+    "motivos_nv": {
+      "credito_negado": "1",
+      "outro": "2",
+      "Pesquisando": "2",
+      "pesquisando": "4",
+      "Sem a vender": "1",
+      "sem_entrada": "16",
+      "sem_limite": "5",
+      "Sem entrada": "1",
+      "entrada_alta": "1",
+      "outros": "3"
+    },
+    "dias_com_dado": [
+      "2026-08-05",
+      "2026-08-06",
+      "2026-08-11",
+      "2026-08-14",
+      "2026-08-15",
+      "2026-08-20",
+      "2026-08-17"
+    ],
+    "loja": "saomateus",
+    "dias": "7",
+    "total_clientes": "58",
+    "mes": "2026-08",
+    "total_vendas": "22",
+    "taxa_conversao": 0.3478
+  },
+  "serra_2026-07-08": {
+    "loja": "serra",
+    "ultima_atualizacao": "22:15",
+    "analise": {
+      "motivos_nv": {
+        "Pesquisando": "3",
+        "Vai voltar": "1"
+      },
+      "taxa_conversao": 63.6,
+      "total_vendas": "7",
+      "total_clientes": "11",
+      "recomendacoes": "1. Aplicar criacao de urgencia: oferta por tempo limitado ou ultimo item disponivel no estoque. 2. Capturar contato do cliente que vai pesquisar para follow-up via WhatsApp no mesmo dia. 3. Ancorar o preco comparando com modelos de maior valor para tornar o produto escolhido mais atrativo.",
+      "padrao": "Serra teve o melhor desempenho do dia (64%), mas todos os clientes NV alegaram estar pesquisando ou prometeram voltar. Isso indica funil de pre-compra ativo com falha no fechamento e ausencia de senso de urgencia."
+    },
+    "data": "2026-07-08"
+  },
+  "serra_2026-07-09": {
+    "data": "2026-07-09",
+    "loja": "serra",
+    "analise": {
+      "total_clientes": "9",
+      "motivos_nv": {
+        "Pesquisando": "2",
+        "Compra cancelada": "1"
+      },
+      "recomendacoes": "1. Manter a divisao de turnos que esta funcionando bem. 2. Trabalhar tecnica de urgencia para converter pesquisadores — 2 de 3 NV estavam na fase de pesquisa. 3. Investigar motivo da compra cancelada para evitar reincidencia.",
+      "taxa_conversao": 66.7,
+      "padrao": "Serra manteve desempenho consistente no dia 09/07 (67%). Os 3 clientes NV estavam pesquisando ou cancelaram. Dois turnos bem organizados com equipes distintas atingiram resultado equivalente.",
+      "total_vendas": "6"
+    },
+    "ultima_atualizacao": "22:10"
+  },
+  "serra_2026-07-10": {
+    "data": "2026-07-10",
+    "ultima_atualizacao": "22:05",
+    "loja": "serra",
+    "analise": {
+      "taxa_conversao": 77.8,
+      "padrao": "Serra manteve desempenho alto em 10/07 (78%), com vendas via Odres, Payjoy e credito. Os 2 NV estavam pesquisando ou prometeram voltar amanha — funil positivo de clientes quase-compra.",
+      "total_clientes": "9",
+      "recomendacoes": "1. Anotar contato de quem prometeu voltar amanha para follow-up matutino. 2. Manter urgencia de oferta para os pesquisadores — perguntar o que falta para fechar agora. 3. Serra esta com padrao de desempenho consistente — documentar e replicar abordagem.",
+      "motivos_nv": {
+        "Volta amanha": "1",
+        "Pesquisando": "1"
+      },
+      "total_vendas": "7"
+    }
+  },
+  "serra_2026-07-11": {
+    "loja": "serra",
+    "ultima_atualizacao": "22:11",
+    "analise": {
+      "total_clientes": "10",
+      "taxa_conversao": 40,
+      "padrao": "Serra caiu de 78% (dia 10) para 40% no dia 11/07, sugerindo menor fluxo de clientes qualificados ou aumento de restricoes de credito via boleto. 4 dos 6 NV foram por restricao financeira direta.",
+      "motivos_nv": {
+        "Pesquisando": "2",
+        "Sem dinheiro": "2",
+        "Boleto nao aprovado": "2"
+      },
+      "total_vendas": "4",
+      "recomendacoes": "1. Investigar a queda de conversao em relacao ao dia anterior — pode ser perfil de cliente diferente ou turno diferente. 2. Para boleto negado, ter alternativas de credito prontas (Odres, Payjoy, credito proprio). 3. Para pesquisadores, capturar contato e propor prazo de retorno."
+    },
+    "data": "2026-07-11"
+  },
+  "serra_2026-07-12": {
+    "analise": {
+      "taxa_conversao": 0,
+      "recomendacoes": "1. Treinar equipe em técnicas de fechamento imediato para clientes 'pesquisando' — criar senso de urgência ou oferta exclusiva do dia. 2. Para quem disse que volta amanhã, anotar contato para follow-up ativo. 3. Revisar abordagem inicial: se todos saem pesquisando, pode indicar que o pitch não está criando desejo de compra imediata.",
+      "total_clientes": "3",
+      "total_vendas": "0",
+      "padrao": "0% de aproveitamento — todos os clientes saíram sem comprar. Dois pesquisando preços e um voltaria no dia seguinte. Possivelmente loja com tráfego de pesquisa, não de compra. Equipe precisou de mais ferramentas de fechamento.",
+      "motivos_nv": {
+        "Pesquisando": "2",
+        "Volta amanha": "1"
+      }
+    },
+    "data": "2026-07-12",
+    "ultima_atualizacao": "21:16",
+    "loja": "serra"
+  },
+  "serra_2026-07-13": {
+    "data": "2026-07-13",
+    "loja": "serra",
+    "analise": {
+      "padrao": "Conversao razoavel (AP 60%). Gabriel e Joaqim foram os destaques com 2 vendas cada. As duas perdas registradas foram para clientes em fase de pesquisa, sem decisao de compra no momento. Equipe compensou bem com venda de acessorios no rodape.",
+      "total_vendas": "4",
+      "taxa_conversao": 57.1,
+      "total_clientes": "7",
+      "motivos_nv": {
+        "Pesquisando / comparando precos": "2",
+        "Sem motivo anotado": "1"
+      },
+      "recomendacoes": "1. Desenvolver tecnicas de urgencia e ancoragem de preco para clientes em fase de pesquisa. 2. Manter o bom desempenho de acessorios — rodape mostra 5 vendas adicionais. 3. Registrar melhor os motivos de NV para facilitar analise de padrao."
+    },
+    "ultima_atualizacao": "22:30"
+  },
+  "serra_2026-07-22": {
+    "ultima_atualizacao": "—",
+    "loja": "serra",
+    "data": "2026-07-22",
+    "analise": {
+      "total_vendas": "0",
+      "recomendacoes": "1. Cobrar envio da folha de controle de atendimento diariamente. 2. Confirmar com o responsável da loja se a folha foi preenchida. 3. Acompanhar pela manhã o cumprimento do protocolo de envio.",
+      "motivos_nv": {},
+      "padrao": "Sem folha de fechamento recebida no grupo GERENTES REDE TITÃS (ABERTURA). Luiz CDC Serra enviou imagem às 09:44 (não baixada). Sem dados suficientes para análise.",
+      "total_clientes": "0",
+      "taxa_conversao": 0
+    }
+  },
+  "serra_2026-07-25": {
+    "loja": "serra",
+    "ultima_atualizacao": "22:01",
+    "analise": {
+      "recomendacoes": "1. Identificar e replicar a tecnica do time principal para o sub-time. 2. Para clientes pesquisando, criar ancoras de urgencia e valor percebido. 3. Separar as metricas dos dois times para coaching individualizado.",
+      "total_clientes": "7",
+      "total_vendas": "4",
+      "taxa_conversao": 57.1,
+      "motivos_nv": {
+        "pesquisando": "2",
+        "nao quis": "1"
+      },
+      "padrao": "Time principal com AP 100% (Jeremias e Joaquin — 3V sem NV). Sub-time com AP 25% (Luiz G e Tailame — 1V em 4). Resultado combinado: AP 57%."
+    },
+    "data": "2026-07-25"
+  },
+  "serra_2026-07-26": {
+    "loja": "serra",
+    "ultima_atualizacao": "21:14",
+    "data": "2026-07-26",
+    "analise": {
+      "taxa_conversao": 85.7,
+      "total_vendas": "12",
+      "total_clientes": "14",
+      "padrao": "Domingao historico para Serra: 12 vendas em 14 atendimentos. AP 86%. Time Joaquin/Luccas com 6V e 0NV (AP 100%). Sub-time Luiz G/Beatriz com 6V e 2NV (AP 80%).",
+      "recomendacoes": "1. Documentar as tecnicas usadas neste dia como referencia para a equipe. 2. Manter o padrao de abordagem que gerou este resultado. 3. Replicar dinamica de dupla de vendedores com perfis complementares.",
+      "motivos_nv": {
+        "volta amanha": "1",
+        "outro motivo": "1"
+      }
+    }
+  },
+  "serra_2026-07-27": {
+    "data": "2026-07-27",
+    "ultima_atualizacao": "2026-07-27T22:19:00",
+    "loja": "serra",
+    "analise": {
+      "padrao": "AP 60% — sub-equipe (KARELI) com AP 80%; equipe principal com AP 40%. Vendas via ODRES e PayJoy.",
+      "total_vendas": "6",
+      "taxa_conversao": 60,
+      "total_clientes": "10",
+      "recomendacoes": "Equipe principal precisa de atenção. Reduzir NVs por pesquisa com abordagem mais consultiva.",
+      "motivos_nv": {
+        "manutencao": "1",
+        "outros": "1",
+        "pesquisando": "2"
+      }
+    }
+  }
+}

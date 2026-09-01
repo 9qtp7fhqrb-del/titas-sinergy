@@ -97,24 +97,18 @@ with open(HTML, encoding='utf-8') as f:
 lojas_snap = {}
 meta_rede  = 0
 
+# Bloco D360.lojas no HTML (entre a primeira ocorrência de "lojas:" dentro do objeto D360)
+bloco_match = re.search(r'D360\s*=\s*\{.*?lojas\s*:\s*\{(.*?)\},\s*subredes', html, re.DOTALL)
+bloco = bloco_match.group(1) if bloco_match else html
+
 for loja_key, (label, sigla, sub) in LOJA_INFO.items():
-    # total
-    m = re.search(
-        rf'["\']?{loja_key}["\']?\s*:\s*\{{[^}}]*?total\s*:\s*([\d.]+)',
-        html, re.DOTALL)
-    total = float(m.group(1)) if m else 0.0
+    m_total = re.search(rf'{loja_key}\s*:\s*\{{[^}}]*?total\s*:\s*([\d.]+)', bloco)
+    m_meta  = re.search(rf'{loja_key}\s*:\s*\{{[^}}]*?meta\s*:\s*([\d.]+)',  bloco)
+    m_agend = re.search(rf'{loja_key}\s*:\s*\{{[^}}]*?agend\s*:\s*([\d.]+)', bloco)
 
-    # meta
-    m2 = re.search(
-        rf'["\']?{loja_key}["\']?\s*:\s*\{{[^}}]*?meta\s*:\s*([\d.]+)',
-        html, re.DOTALL)
-    meta = float(m2.group(1)) if m2 else 0.0
-
-    # agend
-    m3 = re.search(
-        rf'["\']?{loja_key}["\']?\s*:\s*\{{[^}}]*?agend\s*:\s*([\d.]+)',
-        html, re.DOTALL)
-    agend = float(m3.group(1)) if m3 else 0.0
+    total = float(m_total.group(1)) if m_total else 0.0
+    meta  = float(m_meta.group(1))  if m_meta  else 0.0
+    agend = float(m_agend.group(1)) if m_agend else 0.0
 
     lojas_snap[loja_key] = {
         'label': label, 'sigla': sigla, 'sub': sub,
@@ -127,46 +121,78 @@ for loja_key, (label, sigla, sub) in LOJA_INFO.items():
 total_rede = sum(v['total'] for v in lojas_snap.values())
 print(f'\n   TOTAL REDE: R$ {total_rede:,.2f}  |  META: R$ {meta_rede:,.0f}')
 
+# Se totais vieram zerados, verifica Firestore — se já tiver dados reais, não sobrescreve
+usar_firestore_direto = False
+if total_rede == 0:
+    print('\n   ⚠️  Totais zerados no HTML — verificando Firestore...')
+    fs_chk = fs_get(f'ts_d360_historico/{chave}')
+    if '_erro' not in fs_chk and fs_chk.get('fields'):
+        fs_lojas = fs_chk['fields'].get('lojas', {}).get('mapValue', {}).get('fields', {})
+        def _fval(f, key):
+            v = f.get(key, {})
+            return float(v.get('doubleValue', v.get('integerValue', 0)) or 0)
+        fs_total = sum(_fval(v.get('mapValue',{}).get('fields',{}), 'total') for v in fs_lojas.values())
+        if fs_total > 0:
+            print(f'   Firestore já tem dados reais (R$ {fs_total:,.2f}) — NÃO sobrescreve.')
+            usar_firestore_direto = True
+            for loja_key in lojas_snap:
+                if loja_key in fs_lojas:
+                    f = fs_lojas[loja_key].get('mapValue', {}).get('fields', {})
+                    lojas_snap[loja_key]['total'] = _fval(f, 'total')
+                    lojas_snap[loja_key]['meta']  = _fval(f, 'meta')
+            total_rede = sum(v['total'] for v in lojas_snap.values())
+            meta_rede  = sum(v['meta']  for v in lojas_snap.values())
+            print(f'   TOTAL REDE: R$ {total_rede:,.2f}  |  META: R$ {meta_rede:,.0f}')
+        else:
+            print('   ❌ Firestore também sem dados — abortando.')
+            sys.exit(1)
+    else:
+        print('   ❌ Firestore sem documento — abortando.')
+        sys.exit(1)
+
 
 # ── 2. Verifica se já existe no Firestore ─────────────────────────────────
 print(f'\n2. Verificando Firestore ts_d360_historico/{chave}...')
 existing = fs_get(f'ts_d360_historico/{chave}')
 if '_erro' not in existing and existing.get('fields'):
-    print(f'   Já existe — atualizando com dados finais.')
+    print(f'   Já existe — {"mantendo dados reais" if usar_firestore_direto else "atualizando com dados finais"}.')
 else:
     print(f'   Não encontrado — criando entrada.')
 
 
-# ── 3. Salva no Firestore ─────────────────────────────────────────────────
-print(f'\n3. Salvando {chave} no Firestore...')
-payload = {
-    'fields': {
-        'periodo':        to_fs(periodo),
-        'diasDecorridos': to_fs(dias_mes),
-        'diasMes':        to_fs(dias_mes),
-        'meta_rede':      to_fs(int(meta_rede)),
-        'savedAt':        to_fs(int(datetime.utcnow().timestamp() * 1000)),
-        'lojas': {'mapValue': {'fields': {
-            k: {'mapValue': {'fields': {
-                'label':  to_fs(v['label']),
-                'sigla':  to_fs(v['sigla']),
-                'sub':    to_fs(v['sub']),
-                'meta':   to_fs(float(v['meta'])),
-                'total':  to_fs(float(v['total'])),
-                'ped':    to_fs(0),
-                'cancel': to_fs(0),
-                'agend':  to_fs(float(v['agend'])),
-            }}}
-            for k, v in lojas_snap.items()
-        }}}
-    }
-}
-try:
-    fs_patch(f'ts_d360_historico/{chave}', payload)
-    print(f'   ✅ ts_d360_historico/{chave} salvo com sucesso')
-except Exception as e:
-    print(f'   ❌ Erro ao salvar no Firestore: {e}')
-    sys.exit(1)
+# ── 3. Salva no Firestore (só se os dados vieram do HTML — não sobrescreve dados reais já existentes) ──
+print(f'\n3. {"Pulando gravação no Firestore (dados reais já existem)." if usar_firestore_direto else f"Salvando {chave} no Firestore..."}')
+if usar_firestore_direto:
+    pass
+else:
+  payload = {
+      'fields': {
+          'periodo':        to_fs(periodo),
+          'diasDecorridos': to_fs(dias_mes),
+          'diasMes':        to_fs(dias_mes),
+          'meta_rede':      to_fs(int(meta_rede)),
+          'savedAt':        to_fs(int(datetime.utcnow().timestamp() * 1000)),
+          'lojas': {'mapValue': {'fields': {
+              k: {'mapValue': {'fields': {
+                  'label':  to_fs(v['label']),
+                  'sigla':  to_fs(v['sigla']),
+                  'sub':    to_fs(v['sub']),
+                  'meta':   to_fs(float(v['meta'])),
+                  'total':  to_fs(float(v['total'])),
+                  'ped':    to_fs(0),
+                  'cancel': to_fs(0),
+                  'agend':  to_fs(float(v['agend'])),
+              }}}
+              for k, v in lojas_snap.items()
+          }}}
+      }
+  }
+  try:
+      fs_patch(f'ts_d360_historico/{chave}', payload)
+      print(f'   ✅ ts_d360_historico/{chave} salvo com sucesso')
+  except Exception as e:
+      print(f'   ❌ Erro ao salvar no Firestore: {e}')
+      sys.exit(1)
 
 
 # ── 4. Atualiza historico_360.json ────────────────────────────────────────

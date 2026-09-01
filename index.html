@@ -7,7 +7,7 @@
     <script>
     // Cache-buster: força reload se a versão mudou
     (function(){
-      var BUILD = '20260901001129';
+      var BUILD = '20260901002006';
       var stored = localStorage.getItem('d360_build');
       if (stored && stored !== BUILD) {
         localStorage.setItem('d360_build', BUILD);
@@ -7276,8 +7276,8 @@ const D360 = {
                 {n:'Vinicius de Almeida Medeiros Vargas',i:'VA',t:2030,ds:12,ult:'12/06'}
             ], dias:[{d:'01/06',ac:590,cel:3198},{d:'06/06',ac:3670,cel:20308},{d:'07/06',ac:490,cel:7100},{d:'08/06',ac:150,cel:1699}]},
             top:[{n:'JOAQUIN EMILIANO RODRIGO',i:'JE',p:136,t:114781.0,ds:29,ult:'01/09'},
-                {n:'ADRIANO JEREMIAS CARDOSO MONTEIRO',i:'AJ',p:60,t:67788.0,ds:41,ult:'01/09'},
-                {n:'vinicius de almeida medeiros vargas',i:'VD',p:48,t:35288.0,ds:48,ult:'01/09'}]},
+                {n:'ADRIANO JEREMIAS CARDOSO MONTEIRO',i:'AJ',p:66,t:68303.0,ds:41,ult:'01/09'},
+                {n:'vinicius de almeida medeiros vargas',i:'VD',p:42,t:34773.0,ds:48,ult:'01/09'}]},
         praiadacosta:{ label:'Praia da Costa',     sigla:'PC', sub:'t2', meta:100000,  total:79648.0,  ped:65,  cancel:0, agend:0, agendCount:0, agendFat:57496.0,  fat_dia:4500.0, acess_dia:0, dia_a_dia:{"1":1810.0,"2":1810.0,"3":3699.0,"4":3699.0,"5":10039.0,"6":10039.0,"7":15139.0,"8":17009.0,"9":19334.0,"10":19334.0,"11":25048.0,"12":25148.0,"13":25148.0,"14":25505.0,"15":29094.0,"16":30599.0,"17":30599.0,"18":34099.0,"19":36699.0,"20":38424.0,"21":50639.0,"22":54264.0,"23":54264.0,"24":54364.0,"25":61764.0,"26":61924.0,"27":61924.0,"28":68669.0,"29":71819.0,"30":75148.0,"31":79648.0}, acess_dia_top:[], top_dia:[{n:'Nycolly Calazans Paulo',i:'NC',t:4500.0}], fin_dia:4500.0, fin_mes:59793.0, top_fin_mes:[{n:'Nycolly Calazans Paulo',i:'NC',t:58328.0,bd:[{nm:'PayJoy',t:29585.0},{nm:'OdresCred',t:28743.0},{nm:'Outras',t:0}]},{n:'LÍDIA DA PENHA DIOGO',i:'LD',t:1465.0,bd:[{nm:'PayJoy',t:1465.0},{nm:'OdresCred',t:0},{nm:'Outras',t:0}]}], fin_bd:[{nm:'PayJoy',t:31050.0},{nm:'OdresCred',t:28743.0},{nm:'Outras',t:0}], top_fin:[{n:'Nycolly Calazans Paulo',i:'NC',t:4500.0}], metaAcess:2500,
             agendamentos:{total:57496.0, fin:57496.0, fin_bd:[{nm:'PayJoy',t:31350.0},{nm:'OdresCred',t:26326.0},{nm:'Outras',t:0}], top:[{n:'Nycolly Calazans Paulo',i:'NC',t:44733.0}, {n:'stefany santiago rocha',i:'SS',t:11298.0}, {n:'LÍDIA DA PENHA DIOGO',i:'LD',t:1465.0}]},
             acessorios:{total:2477.0, top:[], dias:[]},
@@ -8453,7 +8453,7 @@ var _ERP_ESTOQUE = {
       'ZENFONE MAX PLUS':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:0},
       'ZENFONE MAX SHOT':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:0},
     };
-    var _ERP_ESTOQUE_TS = '31/08/2026 21:11';
+    var _ERP_ESTOQUE_TS = '31/08/2026 21:19';
 // Preços por produto — populado pelo update_d360.py a cada 30 min
 var _ERP_PRECOS = {
       'ALCATEL A2 XL': {custo:0.00,venda:0.00},
@@ -8820,7 +8820,7 @@ var _ERP_PRECOS = {
       'ZENFONE MAX PLUS': {custo:0.00,venda:0.00},
       'ZENFONE MAX SHOT': {custo:0.00,venda:0.00},
     };
-    var _ERP_PRECOS_TS = '31/08/2026 21:11';
+    var _ERP_PRECOS_TS = '31/08/2026 21:20';
 // Flag de sessão: true = fetch já tentado (sucesso ou falha), não tentar de novo
 var _erpPrecosCarregados = false;
 var _SUG_SPECS = {
@@ -11198,46 +11198,46 @@ let _metasOverride = {}; // { lojaKey: { vendKey: meta_cel } }
    Este DB é o fallback para o primeiro render — sobrescrito por _metasOverride após 2,5s. */
 const VEND_METAS_DB = {
     barreiras: [
-        {k:'nanda',      meta:                              78000},   // Ago/26: 78.000
-        {k:'isabela',    meta:                              40500},   // Ago/26: 40.500
-        {k:'larisse',    meta:                              40500},   // Ago/26: 40.500
-        {k:'matheus',    meta:                              40500},   // Ago/26: 40.500
-        {k:'victor',     meta:                              40500},   // Ago/26: 40.500
-        {k:'gustavo',    meta:                              44000},   // sem meta lançada
+        {k:'nanda',      meta:                               78000},   // Ago/26: 78.000
+        {k:'isabela',    meta:                               40500},   // Ago/26: 40.500
+        {k:'larisse',    meta:                               40500},   // Ago/26: 40.500
+        {k:'matheus',    meta:                               40500},   // Ago/26: 40.500
+        {k:'victor',     meta:                               40500},   // Ago/26: 40.500
+        {k:'gustavo',    meta:                               44000},   // sem meta lançada
     ],
     cariacica: [
-        {k:'mayara',     meta:                              70000},   // Ago/26: 70.000
-        {k:'fabiano',    meta:                             100000},   // Ago/26: 100.000
-        {k:'roberta',    meta:                             100000},   // Ago/26: 100.000
-        {k:'bruno',      meta:                              80000},   // Ago/26: 80.000
-        {k:'liz',        meta:                             100000},   // Ago/26: 100.000
+        {k:'mayara',     meta:                               70000},   // Ago/26: 70.000
+        {k:'fabiano',    meta:                              100000},   // Ago/26: 100.000
+        {k:'roberta',    meta:                              100000},   // Ago/26: 100.000
+        {k:'bruno',      meta:                               80000},   // Ago/26: 80.000
+        {k:'liz',        meta:                              100000},   // Ago/26: 100.000
         {k:'sophia',     meta: 100000},   // alias liz sophia
         {k:'nicolas',    meta:  50000},   // sem meta lançada
         {k:'glaupierre', meta:  50000},   // sem meta lançada
-        {k:'gabriel',    meta:                              92000},   // sem meta lançada
+        {k:'gabriel',    meta:                               92000},   // sem meta lançada
     ],
     itabuna: [
-        {k:'mikaelle',   meta:                              91000},   // Ago/26: 91.000
+        {k:'mikaelle',   meta:                               91000},   // Ago/26: 91.000
         {k:'jhonatas',   meta:  60000},   // Ago/26: 60.000
-        {k:'keifit',     meta:                              60000},   // Ago/26: 60.000
-        {k:'andreza',    meta:                              60000},   // Ago/26: 60.000
-        {k:'hericles',   meta:                              40000},   // Ago/26: 40.000
+        {k:'keifit',     meta:                               60000},   // Ago/26: 60.000
+        {k:'andreza',    meta:                               60000},   // Ago/26: 60.000
+        {k:'hericles',   meta:                               40000},   // Ago/26: 40.000
         {k:'evelyn',     meta:  25000},   // sem meta lançada
         {k:'sandy',      meta:  50000},   // sem meta lançada
         {k:'maikelly',   meta:  25000},   // sem meta lançada
     ],
     laranjeiras: [
-        {k:'lidia',      meta:                              60376},   // ref jul/26 — aguardando lançamento ago/26
+        {k:'lidia',      meta:                               60376},   // ref jul/26 — aguardando lançamento ago/26
         {k:'lídia',      meta:  52500},   // alias
         {k:'mayara',     meta:  52500},   // ref jul/26 — aguardando lançamento ago/26
-        {k:'nycolly',    meta:                                                          60376},   // ref jul/26 — aguardando lançamento ago/26
+        {k:'nycolly',    meta:                                                            50000},   // ref jul/26 — aguardando lançamento ago/26
         {k:'joyce',      meta:  50000},   // sem meta lançada
         {k:'marcus',     meta:  50000},   // sem meta lançada
         {k:'jhennyfer',  meta:  50000},   // sem meta lançada
     ],
     linhares: [
-        {k:'rayca',      meta:                             129500},   // ref jul/26 — aguardando lançamento ago/26
-        {k:'juliana',    meta:                              71500},   // ref jul/26 — aguardando lançamento ago/26
+        {k:'rayca',      meta:                              129500},   // ref jul/26 — aguardando lançamento ago/26
+        {k:'juliana',    meta:                               71500},   // ref jul/26 — aguardando lançamento ago/26
         {k:'natalia',    meta:  71500},   // alias natália
         {k:'natália',    meta:  71500},   // alias
         {k:'krystian',   meta:  50000},   // sem meta lançada
@@ -11245,17 +11245,17 @@ const VEND_METAS_DB = {
         {k:'kauan',      meta:  50000},   // sem meta lançada
     ],
     montserrat: [
-        {k:'vinicius',   meta:                             100000},   // Ago/26: 100.000
-        {k:'joaquin',    meta:                              60000},   // Ago/26: 60.000
-        {k:'adriano',    meta:                              60000},   // Ago/26: 60.000
+        {k:'vinicius',   meta:                              100000},   // Ago/26: 100.000
+        {k:'joaquin',    meta:                               60000},   // Ago/26: 60.000
+        {k:'adriano',    meta:                               60000},   // Ago/26: 60.000
         {k:'jhenifer',   meta:  50000},   // sem meta lançada
         {k:'vitor',      meta:  50000},   // sem meta lançada
         {k:'arthur',     meta:  50000},   // sem meta lançada
     ],
     moxuara: [
-        {k:'luccas',     meta:                              91000},   // Ago/26: 91.000
-        {k:'khayllane',  meta:                              90000},   // Ago/26: 90.000
-        {k:'iasmim',     meta:                              90000},   // Ago/26: 90.000
+        {k:'luccas',     meta:                               91000},   // Ago/26: 91.000
+        {k:'khayllane',  meta:                               90000},   // Ago/26: 90.000
+        {k:'iasmim',     meta:                               90000},   // Ago/26: 90.000
         {k:'almeida',    meta:  90000},   // alias khayllane
         {k:'nicolas',    meta:  50000},   // sem meta lançada
         {k:'thauany',    meta:  50000},   // sem meta lançada
@@ -11264,17 +11264,17 @@ const VEND_METAS_DB = {
     ],
     praiadacosta: [
         {k:'nycolly',    meta:  50000},   // Ago/26: 50.000
-        {k:'stefany',    meta:                                                                                      37500},   // Ago/26: 50.000
+        {k:'stefany',    meta:                                                                                         50000},   // Ago/26: 50.000
         {k:'filipe',     meta:  50000},   // sem meta lançada
         {k:'deborah',    meta:  50000},   // sem meta lançada
         {k:'thaymmon',   meta:  50000},   // sem meta lançada
         {k:'nicolas',    meta:  50000},   // sem meta lançada
     ],
     saomateus: [
-        {k:'ana',        meta:                             108200},   // Ago/26: 108.200
-        {k:'eliza',      meta:                              57000},   // Ago/26: 57.000
-        {k:'randeclay',  meta:                              57000},   // Ago/26: 57.000
-        {k:'leandro',    meta:                              57000},   // Ago/26: 57.000
+        {k:'ana',        meta:                              108200},   // Ago/26: 108.200
+        {k:'eliza',      meta:                               57000},   // Ago/26: 57.000
+        {k:'randeclay',  meta:                               57000},   // Ago/26: 57.000
+        {k:'leandro',    meta:                               57000},   // Ago/26: 57.000
         {k:'stefany',    meta:  57000},   // Ago/26: 57.000
         {k:'alice',      meta:  57000},   // sem meta lançada
         {k:'daniele',    meta:  57000},   // sem meta lançada
@@ -11283,8 +11283,8 @@ const VEND_METAS_DB = {
     ],
     serra: [
         {k:'gabriel',    meta:  92000},   // Ago/26: 92.000
-        {k:'carlos',     meta:                              59000},   // Ago/26: 59.000
-        {k:'hiully',     meta:                              59000},   // Ago/26: 59.000
+        {k:'carlos',     meta:                               59000},   // Ago/26: 59.000
+        {k:'hiully',     meta:                               59000},   // Ago/26: 59.000
         {k:'felipe',     meta:  50000},   // sem meta lançada
         {k:'karen',      meta:  50000},   // sem meta lançada
         {k:'marcela',    meta:  50000},   // sem meta lançada
@@ -11293,11 +11293,11 @@ const VEND_METAS_DB = {
         {k:'hismenia',   meta:  50000},   // sem meta lançada
     ],
     teixeira: [
-        {k:'amanda',     meta:                              58000},   // Ago/26: 58.000
-        {k:'carine',     meta:                              44000},   // Ago/26: 44.000
-        {k:'carla',      meta:                              44000},   // Ago/26: 44.000
+        {k:'amanda',     meta:                               58000},   // Ago/26: 58.000
+        {k:'carine',     meta:                               44000},   // Ago/26: 44.000
+        {k:'carla',      meta:                               44000},   // Ago/26: 44.000
         {k:'gustavo',    meta:  44000},   // Ago/26: 44.000
-        {k:'paloma',     meta:                              44000},   // Ago/26: 44.000
+        {k:'paloma',     meta:                               44000},   // Ago/26: 44.000
         {k:'beatriz',    meta:  50000},   // sem meta lançada
         {k:'wilghyner',  meta:  50000},   // sem meta lançada
     ],

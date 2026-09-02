@@ -2778,21 +2778,41 @@
           };
           var _x1WinMsg = [
             'Máquina! Não dê chance pro adversário respirar 🔥',
-            'Líder absoluto! Continue dominando, não relaxe 💪',
+            'Líder absoluto! Continue dominando, sem dar moleza 💪',
             'Isso é o que separa os grandes — continue assim! 👑',
-            'Tá em chamas! O adversário está te olhando com inveja ⚡',
+            'Tá em chamas! O adversário te olha com inveja ⚡',
             'Elite! Seu adversário mal consegue te acompanhar 🏆',
             'Dominação total! Não tire o pé do acelerador 🚀',
+            'Quem manda sabe fazer — e você está fazendo! ⚔️',
+            'Inatingível! Que o adversário tente ao menos se aproximar 🎯',
+            'Você não veio pra empatar. Está aqui pra vencer! 💥',
+            'Resultado que fala mais alto que qualquer desculpa 🏅',
+            'Seu nível não é de competição — é de referência! ✨',
+            'Setembro já tem dono. Não deixe o troféu escapar! 🔱',
+            'Enquanto o adversário pensa, você executa. Diferença de classe! 🥊',
+            'Quem está na frente não olha pra trás. Acelera! 💨',
           ];
           var _x1LoseMsg = [
             'Acorda! Você está tomando uma surra e dormindo! 😤',
             'O adversário tá te ensinando o que é trabalhar! 📉',
             'Com esse ritmo você vai ser lembrado como quem perdeu. Muda! ⚰️',
             'Silêncio de quem não tem resultado. O mês não volta! 🔕',
-            'Seu adversário tá correndo — você tá caminhando. Cadê a urgência?! 😤',
-            'Tá esperando cair do céu? Corre, o mês tá passando! ⏳',
+            'Seu adversário corre — você caminha. Cadê a urgência?! 😤',
+            'Tá esperando cair do céu? O mês tá passando! ⏳',
+            'Isso dói ver. O adversário foi — você ainda tá parado! 😳',
+            'Setembro não vai te esperar. Acorda ou perde de vez! 🚨',
+            'O que você vai dizer na reunião? Que deixou barato?! 😬',
+            'Número pequeno pra quem tem equipe boa. Onde está a liderança?! 🔴',
+            'Enquanto você explica, o adversário vende. Para de falar e faz! ⚡',
+            'Cada dia perdido não volta. Sua equipe precisa de você AGORA! ⏰',
+            'O placar tá gritando. Você tá ouvindo ou com fone? 📣',
+            'Vergonha alheia. Seu adversário tá dando show lá! 🤦',
           ];
-          function _x1Pick(arr, idx){ return arr[idx % arr.length]; }
+          function _x1Pick(arr, idx){
+            // semente diária — frases mudam a cada dia automaticamente
+            var d = new Date(), seed = d.getDate() + d.getMonth()*31 + d.getFullYear()*366;
+            return arr[(idx + seed) % arr.length];
+          }
           function _brl2(v){ return 'R$ ' + Math.round(v).toLocaleString('pt-BR'); }
 
           function _x1Nome(loja, key){

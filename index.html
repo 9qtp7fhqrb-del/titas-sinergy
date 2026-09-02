@@ -2502,7 +2502,17 @@
                     </button>
                     <div class="h-5 w-px bg-gray-700 hidden sm:block"></div>
                     <span class="text-[9px] text-gray-600 hidden sm:inline">clique em qualquer loja no ranking para acessá-la</span>
-                    <button onclick="_f360TogglePeriodo()" style="margin-left:auto;display:flex;align-items:center;gap:.35rem;padding:.25rem .7rem;border-radius:.6rem;font-size:.65rem;font-weight:600;background:rgba(124,58,237,.1);border:1px solid rgba(139,92,246,.25);color:#a78bfa;cursor:pointer;transition:all .2s;"
+                    <!-- Botão X1 — Campo de Batalha -->
+                    <button onclick="_x1AbrirDuelo()" class="_x1-war-btn"
+                            style="margin-left:auto;position:relative;display:flex;align-items:center;gap:.35rem;padding:.3rem 1rem;border-radius:.45rem;font-size:.75rem;font-weight:900;letter-spacing:.06em;background:linear-gradient(135deg,#1a0005,#3d0000,#1a0005);border:1.5px solid #dc2626;color:#fca5a5;cursor:pointer;overflow:hidden;text-shadow:0 0 10px rgba(255,80,80,.9);box-shadow:0 0 16px rgba(220,38,38,.55),inset 0 0 12px rgba(220,38,38,.08);animation:_x1GlowPulse 1.6s ease-in-out infinite;white-space:nowrap;">
+                        <span style="font-size:.7rem;filter:drop-shadow(0 0 4px #f87171);">⚡</span>
+                        <span style="font-size:.62rem;letter-spacing:.02em;opacity:.7;font-weight:700;">✦</span>
+                        <span>X1</span>
+                        <span style="font-size:.62rem;letter-spacing:.02em;opacity:.7;font-weight:700;">✦</span>
+                        <span style="font-size:.7rem;filter:drop-shadow(0 0 4px #f87171);">⚡</span>
+                        <span class="_x1-scanline"></span>
+                    </button>
+                    <button onclick="_f360TogglePeriodo()" style="display:flex;align-items:center;gap:.35rem;padding:.25rem .7rem;border-radius:.6rem;font-size:.65rem;font-weight:600;background:rgba(124,58,237,.1);border:1px solid rgba(139,92,246,.25);color:#a78bfa;cursor:pointer;transition:all .2s;"
                             onmouseover="this.style.background='rgba(124,58,237,.2)'" onmouseout="this.style.background='rgba(124,58,237,.1)'">
                         <i id="f360-toggle-icon" class="fas fa-chevron-down" style="font-size:.55rem;"></i>
                         <span id="f360-toggle-label">Consultar período</span>
@@ -2691,6 +2701,175 @@
                 <div id="hist-acess-abr26-wrap"></div>
             </div>
         </div>
+
+        <!-- ══════════ X1 DUELO MODAL ══════════ -->
+        <style>
+        @keyframes _x1GlowPulse{0%,100%{box-shadow:0 0 14px rgba(220,38,38,.5),inset 0 0 10px rgba(220,38,38,.08)}50%{box-shadow:0 0 26px rgba(220,38,38,.85),inset 0 0 16px rgba(220,38,38,.15)}}
+        @keyframes _x1Flicker{0%,100%{opacity:1}45%{opacity:.9}47%{opacity:.4}49%{opacity:.95}90%{opacity:.85}92%{opacity:.5}94%{opacity:1}}
+        @keyframes _x1Shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-2px)}40%{transform:translateX(2px)}60%{transform:translateX(-1px)}80%{transform:translateX(1px)}}
+        @keyframes _x1WinPulse{0%,100%{box-shadow:0 0 12px rgba(201,168,76,.3)}50%{box-shadow:0 0 28px rgba(201,168,76,.7)}}
+        @keyframes _x1LosePulse{0%,100%{box-shadow:0 0 8px rgba(220,38,38,.25)}50%{box-shadow:0 0 22px rgba(220,38,38,.6)}}
+        @keyframes _x1VsBeat{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+        @keyframes _x1BgScroll{0%{background-position:0 0}100%{background-position:60px 60px}}
+        ._x1-war-btn:hover{box-shadow:0 0 30px rgba(220,38,38,.9),inset 0 0 20px rgba(220,38,38,.2)!important;color:#fff!important;letter-spacing:.1em!important}
+        ._x1-scanline{position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(255,255,255,.025) 3px,rgba(255,255,255,.025) 4px);pointer-events:none}
+        #_x1-modal-bg{position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,.92);backdrop-filter:blur(6px);display:flex;align-items:flex-start;justify-content:center;padding:1.5rem 1rem 3rem;overflow-y:auto}
+        #_x1-modal{width:100%;max-width:860px;margin:auto;position:relative}
+        ._x1-arena{background:linear-gradient(160deg,#0A0005,#130008,#0A0005);border:1.5px solid rgba(220,38,38,.35);border-radius:1.2rem;padding:1.5rem 1.25rem 2rem;position:relative;overflow:hidden}
+        ._x1-arena::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(45deg,transparent,transparent 28px,rgba(220,38,38,.025) 28px,rgba(220,38,38,.025) 30px);animation:_x1BgScroll 6s linear infinite;pointer-events:none}
+        ._x1-title{text-align:center;margin-bottom:1.4rem;position:relative}
+        ._x1-title h2{font-size:1.55rem;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:#fca5a5;text-shadow:0 0 20px rgba(220,38,38,.9),0 0 40px rgba(220,38,38,.5);line-height:1.1}
+        ._x1-title .sub{font-size:.62rem;color:rgba(248,113,113,.6);letter-spacing:.18em;text-transform:uppercase;margin-top:.35rem}
+        ._x1-wire{display:flex;align-items:center;gap:.4rem;justify-content:center;font-size:.65rem;color:rgba(220,38,38,.5);letter-spacing:.12em;margin:.2rem 0 1.2rem;user-select:none}
+        ._x1-matchups{display:flex;flex-direction:column;gap:.9rem;position:relative}
+        ._x1-card{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:.6rem}
+        ._x1-loja{border-radius:.85rem;padding:.85rem 1rem;display:flex;flex-direction:column;gap:.3rem;position:relative;overflow:hidden;transition:all .2s}
+        ._x1-loja-win{background:linear-gradient(135deg,rgba(20,10,0,.9),rgba(30,20,0,.95));border:1.5px solid rgba(201,168,76,.55);animation:_x1WinPulse 2.4s ease-in-out infinite}
+        ._x1-loja-lose{background:linear-gradient(135deg,rgba(25,0,0,.9),rgba(35,5,5,.95));border:1.5px solid rgba(220,38,38,.4);animation:_x1LosePulse 1.8s ease-in-out infinite}
+        ._x1-loja-tie{background:linear-gradient(135deg,rgba(10,8,20,.9),rgba(15,12,28,.95));border:1.5px solid rgba(139,92,246,.4)}
+        ._x1-lname{font-size:.65rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase}
+        ._x1-lname-win{color:#C9A84C}
+        ._x1-lname-lose{color:#f87171;animation:_x1Flicker 4s ease-in-out infinite}
+        ._x1-lname-tie{color:#a78bfa}
+        ._x1-pct{font-size:1.6rem;font-weight:900;letter-spacing:-.03em;font-variant-numeric:tabular-nums;line-height:1}
+        ._x1-pct-win{color:#e8c56a;text-shadow:0 0 12px rgba(201,168,76,.6)}
+        ._x1-pct-lose{color:#f87171}
+        ._x1-pct-tie{color:#a78bfa}
+        ._x1-fat{font-size:.6rem;font-variant-numeric:tabular-nums}
+        ._x1-fat-win{color:rgba(201,168,76,.6)}
+        ._x1-fat-lose{color:rgba(248,113,113,.5)}
+        ._x1-msg{font-size:.62rem;line-height:1.45;margin-top:.15rem;font-style:italic}
+        ._x1-msg-win{color:rgba(232,197,106,.8)}
+        ._x1-msg-lose{color:rgba(248,113,113,.75)}
+        ._x1-badge-win{position:absolute;top:.5rem;right:.5rem;font-size:.48rem;font-weight:900;letter-spacing:.08em;background:rgba(201,168,76,.15);border:1px solid rgba(201,168,76,.4);color:#C9A84C;padding:.15rem .45rem;border-radius:999px;text-transform:uppercase}
+        ._x1-badge-lose{position:absolute;top:.5rem;right:.5rem;font-size:.48rem;font-weight:900;letter-spacing:.08em;background:rgba(220,38,38,.12);border:1px solid rgba(220,38,38,.35);color:#f87171;padding:.15rem .45rem;border-radius:999px;text-transform:uppercase}
+        ._x1-vs{display:flex;flex-direction:column;align-items:center;gap:.2rem;flex-shrink:0}
+        ._x1-vs-badge{width:44px;height:44px;border-radius:50%;background:radial-gradient(circle,#7f1d1d,#3d0000);border:2px solid #dc2626;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:900;color:#fca5a5;box-shadow:0 0 18px rgba(220,38,38,.6);animation:_x1VsBeat 1.2s ease-in-out infinite;text-shadow:0 0 8px rgba(255,100,100,.9);letter-spacing:.02em}
+        ._x1-vs-ger{font-size:.45rem;font-weight:700;letter-spacing:.1em;color:rgba(220,38,38,.55);text-transform:uppercase;white-space:nowrap}
+        ._x1-bar{height:3px;border-radius:99px;margin-top:.4rem;background:rgba(255,255,255,.06)}
+        ._x1-bar-fill-win{height:100%;border-radius:99px;background:linear-gradient(90deg,#a07c18,#C9A84C)}
+        ._x1-bar-fill-lose{height:100%;border-radius:99px;background:linear-gradient(90deg,#7f1d1d,#dc2626)}
+        ._x1-close{position:absolute;top:.85rem;right:.85rem;background:rgba(220,38,38,.12);border:1px solid rgba(220,38,38,.3);border-radius:.5rem;color:#f87171;padding:.25rem .65rem;cursor:pointer;font-size:.75rem;font-weight:700;z-index:1;transition:all .2s}
+        ._x1-close:hover{background:rgba(220,38,38,.25);color:#fff}
+        ._x1-divider{height:1px;background:linear-gradient(90deg,transparent,rgba(220,38,38,.2),transparent);margin:.1rem 0}
+        @media(max-width:580px){._x1-card{grid-template-columns:1fr auto 1fr}._x1-pct{font-size:1.2rem}._x1-msg{display:none}}
+        </style>
+        <div id="_x1-modal-bg" style="display:none;" onclick="if(event.target===this)_x1FecharDuelo()">
+          <div id="_x1-modal">
+            <div class="_x1-arena">
+              <button class="_x1-close" onclick="_x1FecharDuelo()">✕ Fechar</button>
+              <div class="_x1-title">
+                <div style="font-size:.58rem;font-weight:800;letter-spacing:.22em;color:rgba(220,38,38,.6);text-transform:uppercase;margin-bottom:.4rem;">⚔️ &nbsp; CAMPO DE BATALHA &nbsp; ⚔️</div>
+                <h2>⚡ X1 ⚡</h2>
+                <div class="sub">Setembro 2026 · Disputa por % de meta alcançada</div>
+              </div>
+              <div class="_x1-wire">— ✦ — ✦ — ✦ — ✦ — ✦ — ✦ — ✦ — ✦ — ✦ — ✦ —</div>
+              <div class="_x1-matchups" id="_x1-matchups-body"></div>
+            </div>
+          </div>
+        </div>
+
+        <script>
+        (function(){
+          var _x1Gers = {
+            barreiras:'Gustavo', itabuna:'Arthur', moxuara:'Ana Carolina',
+            serra:'Karen', montserrat:'Adriano', laranjeiras:'Jorge',
+            cariacica:'Wilghyner', saomateus:'Ramos', teixeira:'Wilghyner', linhares:'Krystian'
+          };
+          var _x1WinMsg = [
+            'Máquina! Não dê chance pro adversário respirar 🔥',
+            'Líder absoluto! Continue dominando, não relaxe 💪',
+            'Isso é o que separa os grandes — continue assim! 👑',
+            'Tá em chamas! O adversário está te olhando com inveja ⚡',
+            'Elite! Seu adversário mal consegue te acompanhar 🏆',
+            'Dominação total! Não tire o pé do acelerador 🚀',
+          ];
+          var _x1LoseMsg = [
+            'Acorda! Você está tomando uma surra e dormindo! 😤',
+            'O adversário tá te ensinando o que é trabalhar! 📉',
+            'Com esse ritmo você vai ser lembrado como quem perdeu. Muda! ⚰️',
+            'Silêncio de quem não tem resultado. O mês não volta! 🔕',
+            'Seu adversário tá correndo — você tá caminhando. Cadê a urgência?! 😤',
+            'Tá esperando cair do céu? Corre, o mês tá passando! ⏳',
+          ];
+          function _x1Pick(arr, idx){ return arr[idx % arr.length]; }
+          function _brl2(v){ return 'R$ ' + Math.round(v).toLocaleString('pt-BR'); }
+
+          window._x1AbrirDuelo = function(){
+            var lojas = (window.D360 && window.D360.lojas) || {};
+            var matchups = [
+              {a:'barreiras',  b:'itabuna'},
+              {a:'moxuara',    b:'serra'},
+              {a:'montserrat', b:'laranjeiras'},
+              {a:'cariacica',  b:'saomateus'},
+              {a:'teixeira',   b:'linhares'},
+            ];
+            var html = '';
+            matchups.forEach(function(m, idx){
+              var la = lojas[m.a] || {}, lb = lojas[m.b] || {};
+              var ta = la.total||0, ma = la.meta||1;
+              var tb = lb.total||0, mb = lb.meta||1;
+              var pa = (ta/ma*100), pb = (tb/mb*100);
+              var aWin = pa > pb, tie = Math.abs(pa-pb) < 0.5;
+              var nameA = (la.nome||m.a).replace('Teixeira de Freitas','Teixeira').replace('São Mateus','S. Mateus').replace('Praia da Costa','P.Costa');
+              var nameB = (lb.nome||m.b).replace('Teixeira de Freitas','Teixeira').replace('São Mateus','S. Mateus').replace('Praia da Costa','P.Costa');
+              var gerA = _x1Gers[m.a]||'Gerente', gerB = _x1Gers[m.b]||'Gerente';
+              var clsA = tie?'_x1-loja-tie':(aWin?'_x1-loja-win':'_x1-loja-lose');
+              var clsB = tie?'_x1-loja-tie':(!aWin?'_x1-loja-win':'_x1-loja-lose');
+              var clsNA = tie?'_x1-lname-tie':(aWin?'_x1-lname-win':'_x1-lname-lose');
+              var clsNB = tie?'_x1-lname-tie':(!aWin?'_x1-lname-win':'_x1-lname-lose');
+              var clsPA = tie?'_x1-pct-tie':(aWin?'_x1-pct-win':'_x1-pct-lose');
+              var clsPB = tie?'_x1-pct-tie':(!aWin?'_x1-pct-win':'_x1-pct-lose');
+              var clsFA = aWin?'_x1-fat-win':'_x1-fat-lose';
+              var clsFB = !aWin?'_x1-fat-win':'_x1-fat-lose';
+              var msgA = aWin ? _x1Pick(_x1WinMsg, idx) : _x1Pick(_x1LoseMsg, idx+1);
+              var msgB = !aWin ? _x1Pick(_x1WinMsg, idx+2) : _x1Pick(_x1LoseMsg, idx+2);
+              var msgClsA = aWin?'_x1-msg-win':'_x1-msg-lose';
+              var msgClsB = !aWin?'_x1-msg-win':'_x1-msg-lose';
+              var bdgA = aWin?'<span class="_x1-badge-win">🏆 Vencendo</span>':'<span class="_x1-badge-lose">💀 Perdendo</span>';
+              var bdgB = !aWin?'<span class="_x1-badge-win">🏆 Vencendo</span>':'<span class="_x1-badge-lose">💀 Perdendo</span>';
+              if(tie){bdgA='<span class="_x1-badge-win" style="background:rgba(139,92,246,.12);border-color:rgba(139,92,246,.4);color:#a78bfa;">⚖️ Empate</span>';bdgB='';}
+              var barA = Math.min(100,pa);
+              var barB = Math.min(100,pb);
+              if(idx>0) html += '<div class="_x1-divider"></div>';
+              html += '<div class="_x1-card">'
+                + '<div class="_x1-loja '+clsA+'">'
+                  + bdgA
+                  + '<div class="_x1-lname '+clsNA+'">'+nameA+'</div>'
+                  + '<div class="_x1-pct '+clsPA+'">'+pa.toFixed(1)+'<span style="font-size:.65rem;font-weight:600;opacity:.7;">%</span></div>'
+                  + '<div class="_x1-fat '+clsFA+'">'+_brl2(ta)+' / meta '+_brl2(ma)+'</div>'
+                  + '<div class="_x1-bar"><div class="_x1-bar-fill-'+(aWin?'win':'lose')+'" style="width:'+barA+'%"></div></div>'
+                  + '<div class="_x1-msg '+msgClsA+'">'+gerA+': '+msgA+'</div>'
+                + '</div>'
+                + '<div class="_x1-vs">'
+                  + '<div class="_x1-vs-badge">X1</div>'
+                  + '<div class="_x1-vs-ger">⚔️ duelo</div>'
+                + '</div>'
+                + '<div class="_x1-loja '+clsB+'" style="text-align:right;">'
+                  + bdgB
+                  + '<div class="_x1-lname '+clsNB+'">'+nameB+'</div>'
+                  + '<div class="_x1-pct '+clsPB+'">'+pb.toFixed(1)+'<span style="font-size:.65rem;font-weight:600;opacity:.7;">%</span></div>'
+                  + '<div class="_x1-fat '+clsFB+'">'+_brl2(tb)+' / meta '+_brl2(mb)+'</div>'
+                  + '<div class="_x1-bar"><div class="_x1-bar-fill-'+(!aWin?'win':'lose')+'" style="width:'+barB+'%;margin-left:auto;"></div></div>'
+                  + '<div class="_x1-msg '+msgClsB+'">'+gerB+': '+msgB+'</div>'
+                + '</div>'
+              + '</div>';
+            });
+            document.getElementById('_x1-matchups-body').innerHTML = html;
+            var modal = document.getElementById('_x1-modal-bg');
+            modal.style.display = 'flex';
+          };
+
+          window._x1FecharDuelo = function(){
+            document.getElementById('_x1-modal-bg').style.display = 'none';
+          };
+
+          // ESC fecha
+          document.addEventListener('keydown', function(e){
+            if(e.key==='Escape') _x1FecharDuelo();
+          });
+        })();
+        </script>
 
         <!-- ══════════ OLHA ISSO TAB ══════════ -->
         <div id="tab-olhaisso" class="hidden">

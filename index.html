@@ -5168,6 +5168,12 @@ async function doLogin() {
                     const fsDoc = await window._acadDB.collection('ts_usuarios').doc(userKey(cargo, name)).get();
                     if (fsDoc.exists) {
                         const fsData = fsDoc.data();
+                        // Bloqueio sempre verificado no Firestore (autoridade máxima)
+                        if (fsData.bloqueado === true) {
+                            localStorage.removeItem(userKey(cargo, name));
+                            toast('Acesso bloqueado. Entre em contato com a Diretoria.', 'error');
+                            return;
+                        }
                         if (fsData.resetSenha === true) {
                             localStorage.removeItem(userKey(cargo, name));
                             await fsDoc.ref.update({ resetSenha: false }).catch(()=>{});

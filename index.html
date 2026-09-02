@@ -27417,18 +27417,39 @@ function _aplicarPaletaRav() {
         [/#7c3aed/gi,                   '#996020'],
         [/#6d28d9/gi,                   '#885018'],
     ];
-    document.querySelectorAll('[style]').forEach(el => {
-        let s = el.getAttribute('style');
-        let changed = false;
-        mapa.forEach(([from, to]) => {
-            const ns = s.replace(from, to);
-            if (ns !== s) { s = ns; changed = true; }
+    function _varrer(root) {
+        (root || document).querySelectorAll('[style]').forEach(el => {
+            let s = el.getAttribute('style');
+            let changed = false;
+            mapa.forEach(([from, to]) => {
+                const ns = s.replace(from, to);
+                if (ns !== s) { s = ns; changed = true; }
+            });
+            if (changed) el.setAttribute('style', s);
         });
-        if (changed) el.setAttribute('style', s);
-    });
-    // Reaplicar após renders dinâmicos (360, rankings etc.)
-    setTimeout(_aplicarPaletaRav, 1800);
-    setTimeout(_aplicarPaletaRav, 4000);
+    }
+    _varrer();
+    // Roda mais 3 vezes para pegar renders dinâmicos iniciais, depois para
+    setTimeout(_varrer, 800);
+    setTimeout(_varrer, 2500);
+    setTimeout(_varrer, 5000);
+    // MutationObserver: aplica só nos nós novos inseridos depois do boot
+    if (!window._ravObserver) {
+        let _ravPending = false;
+        window._ravObserver = new MutationObserver(mutations => {
+            if (_ravPending) return;
+            _ravPending = true;
+            requestAnimationFrame(() => {
+                mutations.forEach(m => m.addedNodes.forEach(n => {
+                    if (n.nodeType !== 1) return;
+                    if (n.getAttribute && n.getAttribute('style')) _varrer(n.parentElement || document);
+                    else if (n.querySelectorAll) _varrer(n);
+                }));
+                _ravPending = false;
+            });
+        });
+        window._ravObserver.observe(document.body, { childList: true, subtree: true });
+    }
 }
 
 function _isMeloUser() {

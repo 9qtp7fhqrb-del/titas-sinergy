@@ -2055,7 +2055,7 @@
 
             </div>
 
-            <!-- ── Card: Treinamento Presencial 06-07/08 (ativo) ── -->
+            <!-- ── Card: Treinamento Presencial 09-10/09 (ativo) ── -->
             <div style="max-width:1100px;margin:1.25rem auto 0;border-radius:1.4rem;background:linear-gradient(135deg,#06050f,#0a0820,#070514);border:2px solid rgba(201,162,39,.4);position:relative;overflow:hidden;display:flex;flex-direction:column;padding:1.75rem 1.5rem;">
                 <div style="position:absolute;top:-60px;right:-60px;width:240px;height:240px;border-radius:50%;background:rgba(201,162,39,.06);pointer-events:none;"></div>
                 <div style="position:absolute;bottom:-40px;left:-40px;width:160px;height:160px;border-radius:50%;background:rgba(29,78,216,.05);pointer-events:none;"></div>
@@ -2068,11 +2068,12 @@
                     </div>
                 </div>
                 <div style="display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:1rem;position:relative;">
-                    <span style="font-size:.6rem;padding:.25rem .7rem;border-radius:999px;background:rgba(201,162,39,.12);color:#C9A227;border:1px solid rgba(201,162,39,.3);font-weight:700;">📅 06 e 07/08/2026</span>
+                    <span style="font-size:.6rem;padding:.25rem .7rem;border-radius:999px;background:rgba(201,162,39,.12);color:#C9A227;border:1px solid rgba(201,162,39,.3);font-weight:700;">📅 09 e 10/09/2026</span>
                     <span style="font-size:.6rem;padding:.25rem .7rem;border-radius:999px;background:rgba(201,162,39,.12);color:#C9A227;border:1px solid rgba(201,162,39,.3);font-weight:700;">⏱️ 20 horas</span>
                     <span style="font-size:.6rem;padding:.25rem .7rem;border-radius:999px;background:rgba(29,78,216,.15);color:#93c5fd;border:1px solid rgba(29,78,216,.3);font-weight:700;">🏆 Certificado Incluso</span>
+                    <span style="font-size:.6rem;padding:.25rem .7rem;border-radius:999px;background:rgba(16,185,129,.1);color:#34d399;border:1px solid rgba(16,185,129,.3);font-weight:700;">📍 Grande Vitória</span>
                 </div>
-                <p style="font-size:.72rem;color:#9ca3af;line-height:1.55;margin-bottom:1.25rem;position:relative;">Treinamento intensivo de vendas e desenvolvimento profissional. Inscreva-se para garantir sua vaga e, ao concluir, solicite seu certificado de participação.</p>
+                <p style="font-size:.72rem;color:#9ca3af;line-height:1.55;margin-bottom:1.25rem;position:relative;">Treinamento intensivo de vendas e desenvolvimento profissional para as lojas da Grande Vitória (Cariacica, Moxuara, Serra, Montserrat e Praia da Costa). Inscreva-se para garantir sua vaga e, ao concluir, solicite seu certificado de participação.</p>
                 <div style="display:flex;gap:.75rem;flex-wrap:wrap;position:relative;" id="trm-card-btns">
                     <button onclick="trmAbrirInscricao()" style="flex:1;min-width:160px;display:flex;align-items:center;justify-content:center;gap:.5rem;background:linear-gradient(135deg,#C9A227,#a07c18);color:#0a0800;font-weight:900;font-size:.78rem;padding:.75rem 1rem;border-radius:.8rem;border:none;cursor:pointer;letter-spacing:.02em;">
                         <i class="fas fa-user-plus" style="font-size:.75rem;"></i> Inscrever-se
@@ -2105,6 +2106,22 @@
                     <i class="fas fa-chevron-down" style="font-size:.55rem;transition:transform .25s;"></i>
                 </button>
                 <div id="trm-arquivo-wrap" style="display:none;flex-direction:column;border:1px solid rgba(255,255,255,.07);border-top:none;border-radius:0 0 .75rem .75rem;background:linear-gradient(135deg,#06050f,#0a0820,#070514);padding:1.5rem;gap:1rem;">
+                    <!-- Agosto -->
+                    <div style="display:flex;align-items:center;justify-content:space-between;gap:.75rem;">
+                        <div style="display:flex;align-items:center;gap:.75rem;">
+                            <div style="font-size:1.6rem;opacity:.5;line-height:1;">🎓</div>
+                            <div>
+                                <p style="font-size:.72rem;font-weight:800;color:#9ca3af;margin:0;">Treinamento Presencial — Arquivado</p>
+                                <p style="font-size:.58rem;color:#4b5563;margin:0;">06 e 07/08/2026 · 20 horas</p>
+                            </div>
+                        </div>
+                        <div id="trm-arquivo-ago-dir" class="hidden">
+                            <button onclick="trmDiretorAbrirTurma('turma_2026_08')" style="display:flex;align-items:center;gap:.4rem;background:rgba(168,85,247,.1);color:#c084fc;font-weight:800;font-size:.65rem;padding:.45rem .7rem;border-radius:.6rem;border:1px solid rgba(168,85,247,.25);cursor:pointer;">
+                                <i class="fas fa-shield-halved" style="font-size:.6rem;"></i> Inscrições (Ago)
+                            </button>
+                        </div>
+                    </div>
+                    <div style="height:1px;background:rgba(255,255,255,.05);"></div>
                     <!-- Julho -->
                     <div style="display:flex;align-items:center;justify-content:space-between;gap:.75rem;">
                         <div style="display:flex;align-items:center;gap:.75rem;">
@@ -32648,7 +32665,7 @@ window._dirDirUpdateTimestamp = _dirDirUpdateTimestamp;
    TREINAMENTO PRESENCIAL — lógica completa
 ══════════════════════════════════════════════════════ */
 (function(){
-  const TRM_DOC = 'turma_2026_08';
+  const TRM_DOC = 'turma_2026_09';
   const TRM_COL = 'ts_treinamentos';
 
   function _db(){ return window._acadDB || (window._acadFBOk && firebase.firestore()); }
@@ -32684,7 +32701,7 @@ window._dirDirUpdateTimestamp = _dirDirUpdateTimestamp;
       if(wrap) wrap.classList.remove('hidden');
     }
     if(_canViewArchive()){
-      ['trm-arquivo-jun-dir','trm-arquivo-jul-dir'].forEach(id=>{
+      ['trm-arquivo-jun-dir','trm-arquivo-jul-dir','trm-arquivo-ago-dir'].forEach(id=>{
         const el = document.getElementById(id); if(el) el.classList.remove('hidden');
       });
     }
@@ -32968,7 +32985,7 @@ window._dirDirUpdateTimestamp = _dirDirUpdateTimestamp;
   window.trmDiretorAbrir = async function(){
     if(!_isDiretor()){ return; }
     const modal = document.getElementById('modal-trm-diretor');
-    const _trmLabel = {turma_2026_06:'18–19/06/2026', turma_2026_07:'06–07/07/2026', turma_2026_08:'06–07/08/2026'};
+    const _trmLabel = {turma_2026_06:'18–19/06/2026', turma_2026_07:'06–07/07/2026', turma_2026_08:'06–07/08/2026', turma_2026_09:'09–10/09/2026'};
     modal.querySelector('p[style*="65rem"]').textContent = 'Treinamento ' + (_trmLabel[TRM_DOC] || TRM_DOC) + ' · 20h';
     modal.classList.remove('hidden');
     await trmDiretorCarregar();
@@ -32977,7 +32994,7 @@ window._dirDirUpdateTimestamp = _dirDirUpdateTimestamp;
   window.trmDiretorAbrirTurma = async function(docId){
     if(!_canViewArchive()){ return; }
     const modal = document.getElementById('modal-trm-diretor');
-    const _trmLabel = {turma_2026_06:'18–19/06/2026', turma_2026_07:'06–07/07/2026', turma_2026_08:'06–07/08/2026'};
+    const _trmLabel = {turma_2026_06:'18–19/06/2026', turma_2026_07:'06–07/07/2026', turma_2026_08:'06–07/08/2026', turma_2026_09:'09–10/09/2026'};
     modal.querySelector('p[style*="65rem"]').textContent = 'Treinamento ' + (_trmLabel[docId] || docId) + ' · 20h';
     modal.classList.remove('hidden');
     const lista = document.getElementById('trm-dir-lista');
@@ -33005,7 +33022,7 @@ window._dirDirUpdateTimestamp = _dirDirUpdateTimestamp;
     const db = _db();
     if(!db){ lista.innerHTML='<p style="color:#f87171;font-size:.75rem;">Sem conexão.</p>'; return; }
     try {
-      const allDocs = ['turma_2026_06','turma_2026_07','turma_2026_08'];
+      const allDocs = ['turma_2026_06','turma_2026_07','turma_2026_08','turma_2026_09'];
       const snaps = await Promise.all(allDocs.map(d => db.collection(TRM_COL).doc(d).get()));
       const merged = {}, cpfDocMap = {};
       snaps.forEach((snap, i) => {

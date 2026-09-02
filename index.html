@@ -11497,7 +11497,7 @@ function _metasNK(nome) {
 }
 
 /* Gera HTML de uma linha de vendedor */
-function _metasVendRowHtml(lojaKey, idx, nome, cel, acess, dlId) {
+function _metasVendRowHtml(lojaKey, idx, nome, cel, acess, dlId, cat) {
     const safeNome = (nome||'').replace(/"/g,'&quot;');
     return `<div id="mvrow_${lojaKey}_${idx}" style="display:flex;align-items:center;gap:.4rem;padding:.32rem 0;border-bottom:1px solid rgba(255,255,255,.032);">
         <input type="text" list="${dlId}" value="${safeNome}" placeholder="Digite o nome…"
@@ -11507,10 +11507,13 @@ function _metasVendRowHtml(lojaKey, idx, nome, cel, acess, dlId) {
             style="flex:1;min-width:0;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:7px;padding:.3rem .5rem;color:#f9fafb;font-size:.67rem;">
         <input type="number" value="${cel||''}" placeholder="Meta cel."
             id="mv_${lojaKey}_${idx}_cel"
-            style="width:92px;background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.28);border-radius:7px;padding:.3rem .4rem;color:#e0e7ff;font-size:.65rem;text-align:right;flex-shrink:0;">
+            style="width:88px;background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.28);border-radius:7px;padding:.3rem .4rem;color:#e0e7ff;font-size:.65rem;text-align:right;flex-shrink:0;">
         <input type="number" value="${acess||''}" placeholder="Acess."
             id="mv_${lojaKey}_${idx}_acess"
-            style="width:80px;background:rgba(168,85,247,.06);border:1px solid rgba(168,85,247,.22);border-radius:7px;padding:.3rem .4rem;color:#e9d5ff;font-size:.65rem;text-align:right;flex-shrink:0;">
+            style="width:76px;background:rgba(168,85,247,.06);border:1px solid rgba(168,85,247,.22);border-radius:7px;padding:.3rem .4rem;color:#e9d5ff;font-size:.65rem;text-align:right;flex-shrink:0;">
+        <input type="number" value="${cat||''}" placeholder="C.AG"
+            id="mv_${lojaKey}_${idx}_cat"
+            style="width:76px;background:rgba(20,184,166,.06);border:1px solid rgba(20,184,166,.25);border-radius:7px;padding:.3rem .4rem;color:#99f6e4;font-size:.65rem;text-align:right;flex-shrink:0;">
         <button onclick="document.getElementById('mvrow_${lojaKey}_${idx}').remove()"
             title="Remover"
             style="width:22px;height:22px;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.22);border-radius:5px;color:#f87171;font-size:.72rem;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;padding:0;line-height:1;">×</button>
@@ -11639,6 +11642,7 @@ function _metasRenderLojas(subKey, existing) {
                     <div style="display:flex;align-items:center;gap:.5rem;flex-shrink:0;margin-left:.5rem;">
                         <span style="font-size:.63rem;color:#818cf8;white-space:nowrap;">📱 ${_b2(v.meta_cel||0)}</span>
                         ${(v.meta_acess||0)>0?`<span style="font-size:.63rem;color:#c084fc;white-space:nowrap;">🛍️ ${_b2(v.meta_acess||0)}</span>`:''}
+                        ${(v.meta_cat||0)>0?`<span style="font-size:.63rem;color:#14b8a6;white-space:nowrap;">📅 ${_b2(v.meta_cat||0)}</span>`:''}
                     </div>
                 </div>`).join('')}
             </div>
@@ -11668,8 +11672,9 @@ function _metasRenderLojas(subKey, existing) {
             </div>
             <div style="display:flex;align-items:center;gap:.4rem;padding:.3rem 1rem;background:rgba(0,0,0,.1);">
                 <span style="flex:1;font-size:.52rem;color:#6b7280;text-transform:uppercase;letter-spacing:.06em;">Colaborador</span>
-                <span style="width:92px;font-size:.52rem;color:#818cf8;text-align:center;flex-shrink:0;">📱 Celulares</span>
-                <span style="width:80px;font-size:.52rem;color:#c084fc;text-align:center;flex-shrink:0;">🛍️ Acess.</span>
+                <span style="width:88px;font-size:.52rem;color:#818cf8;text-align:center;flex-shrink:0;">📱 Celulares</span>
+                <span style="width:76px;font-size:.52rem;color:#c084fc;text-align:center;flex-shrink:0;">🛍️ Acess.</span>
+                <span style="width:76px;font-size:.52rem;color:#14b8a6;text-align:center;flex-shrink:0;">📅 C.AG</span>
                 <span style="width:22px;"></span>
             </div>
             <div id="mvrows_${lojaKey}" style="padding:.28rem 1rem .05rem;">
@@ -11726,7 +11731,8 @@ async function salvarMetas() {
                 const nome = (document.getElementById('mv_'+lojaKey+'_'+sfx+'_nome')?.value||'').trim();
                 const vc   = parseFloat(document.getElementById('mv_'+lojaKey+'_'+sfx+'_cel')?.value||0);
                 const va   = parseFloat(document.getElementById('mv_'+lojaKey+'_'+sfx+'_acess')?.value||0);
-                if (nome && (vc>0||va>0)) base[_metasNK(nome)] = { meta_cel:vc, meta_acess:va, nome };
+                const vcat = parseFloat(document.getElementById('mv_'+lojaKey+'_'+sfx+'_cat')?.value||0);
+                if (nome && (vc>0||va>0||vcat>0)) base[_metasNK(nome)] = { meta_cel:vc, meta_acess:va, meta_cat:vcat, nome };
             });
             // Período e dias de funcionamento
             const pIni = document.getElementById('mv_'+lojaKey+'_per_ini')?.value || existLoja.periodo_inicio || '';

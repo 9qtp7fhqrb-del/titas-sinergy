@@ -2741,8 +2741,8 @@
         ._x1-msg{font-size:.62rem;line-height:1.45;margin-top:.15rem;font-style:italic}
         ._x1-msg-win{color:rgba(232,197,106,.8)}
         ._x1-msg-lose{color:rgba(248,113,113,.75)}
-        ._x1-badge-win{position:absolute;top:.5rem;right:.5rem;font-size:.48rem;font-weight:900;letter-spacing:.08em;background:rgba(201,168,76,.15);border:1px solid rgba(201,168,76,.4);color:#C9A84C;padding:.15rem .45rem;border-radius:999px;text-transform:uppercase}
-        ._x1-badge-lose{position:absolute;top:.5rem;right:.5rem;font-size:.48rem;font-weight:900;letter-spacing:.08em;background:rgba(220,38,38,.12);border:1px solid rgba(220,38,38,.35);color:#f87171;padding:.15rem .45rem;border-radius:999px;text-transform:uppercase}
+        ._x1-badge-win{display:inline-flex;align-items:center;font-size:.48rem;font-weight:900;letter-spacing:.08em;background:rgba(201,168,76,.15);border:1px solid rgba(201,168,76,.4);color:#C9A84C;padding:.15rem .45rem;border-radius:999px;text-transform:uppercase;flex-shrink:0}
+        ._x1-badge-lose{display:inline-flex;align-items:center;font-size:.48rem;font-weight:900;letter-spacing:.08em;background:rgba(220,38,38,.12);border:1px solid rgba(220,38,38,.35);color:#f87171;padding:.15rem .45rem;border-radius:999px;text-transform:uppercase;flex-shrink:0}
         ._x1-vs{display:flex;flex-direction:column;align-items:center;gap:.2rem;flex-shrink:0}
         ._x1-vs-badge{width:44px;height:44px;border-radius:50%;background:radial-gradient(circle,#7f1d1d,#3d0000);border:2px solid #dc2626;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:900;color:#fca5a5;box-shadow:0 0 18px rgba(220,38,38,.6);animation:_x1VsBeat 1.2s ease-in-out infinite;text-shadow:0 0 8px rgba(255,100,100,.9);letter-spacing:.02em}
         ._x1-vs-ger{font-size:.45rem;font-weight:700;letter-spacing:.1em;color:rgba(220,38,38,.55);text-transform:uppercase;white-space:nowrap}
@@ -2795,6 +2795,52 @@
           function _x1Pick(arr, idx){ return arr[idx % arr.length]; }
           function _brl2(v){ return 'R$ ' + Math.round(v).toLocaleString('pt-BR'); }
 
+          function _x1Nome(loja, key){
+            return (loja.nome||key)
+              .replace('Teixeira de Freitas','Teixeira')
+              .replace('São Mateus','S. Mateus')
+              .replace('Praia da Costa','P. Costa');
+          }
+          function _x1CardWin(nome, pct, total, meta, ger, idx){
+            var bar = Math.min(100, pct);
+            return '<div class="_x1-loja _x1-loja-win">'
+              + '<div style="display:flex;align-items:center;justify-content:space-between;gap:.4rem;margin-bottom:.25rem;">'
+                + '<div class="_x1-lname _x1-lname-win">'+nome+'</div>'
+                + '<span class="_x1-badge-win">🏆 Vencendo</span>'
+              + '</div>'
+              + '<div class="_x1-pct _x1-pct-win">'+pct.toFixed(1)+'<span style="font-size:.65rem;font-weight:600;opacity:.7;">%</span></div>'
+              + '<div class="_x1-fat _x1-fat-win">'+_brl2(total)+' / meta '+_brl2(meta)+'</div>'
+              + '<div class="_x1-bar"><div class="_x1-bar-fill-win" style="width:'+bar+'%"></div></div>'
+              + '<div class="_x1-msg _x1-msg-win">'+ger+': '+_x1Pick(_x1WinMsg, idx)+'</div>'
+            + '</div>';
+          }
+          function _x1CardLose(nome, pct, total, meta, ger, idx){
+            var bar = Math.min(100, pct);
+            return '<div class="_x1-loja _x1-loja-lose" style="text-align:right;">'
+              + '<div style="display:flex;align-items:center;justify-content:flex-end;gap:.4rem;margin-bottom:.25rem;">'
+                + '<span class="_x1-badge-lose">💀 Perdendo</span>'
+                + '<div class="_x1-lname _x1-lname-lose">'+nome+'</div>'
+              + '</div>'
+              + '<div class="_x1-pct _x1-pct-lose">'+pct.toFixed(1)+'<span style="font-size:.65rem;font-weight:600;opacity:.7;">%</span></div>'
+              + '<div class="_x1-fat _x1-fat-lose">'+_brl2(total)+' / meta '+_brl2(meta)+'</div>'
+              + '<div class="_x1-bar"><div class="_x1-bar-fill-lose" style="width:'+bar+'%;margin-left:auto;"></div></div>'
+              + '<div class="_x1-msg _x1-msg-lose">'+ger+': '+_x1Pick(_x1LoseMsg, idx)+'</div>'
+            + '</div>';
+          }
+          function _x1CardTie(nome, pct, total, meta, isLeft){
+            var bar = Math.min(100, pct);
+            var align = isLeft ? 'flex-start' : 'flex-end';
+            var bdg = '<span class="_x1-badge-win" style="background:rgba(139,92,246,.12);border-color:rgba(139,92,246,.4);color:#a78bfa;">⚖️ Empate</span>';
+            return '<div class="_x1-loja _x1-loja-tie"'+(isLeft?'':' style="text-align:right;"')+'>'
+              + '<div style="display:flex;align-items:center;justify-content:'+align+';gap:.4rem;margin-bottom:.25rem;">'
+                + (isLeft ? '<div class="_x1-lname _x1-lname-tie">'+nome+'</div>'+bdg : bdg+'<div class="_x1-lname _x1-lname-tie">'+nome+'</div>')
+              + '</div>'
+              + '<div class="_x1-pct _x1-pct-tie">'+pct.toFixed(1)+'<span style="font-size:.65rem;font-weight:600;opacity:.7;">%</span></div>'
+              + '<div class="_x1-fat" style="color:rgba(167,139,250,.5);">'+_brl2(total)+' / meta '+_brl2(meta)+'</div>'
+              + '<div class="_x1-bar"><div style="height:100%;border-radius:99px;background:rgba(139,92,246,.5);width:'+bar+'%'+(isLeft?'':';margin-left:auto;')+'"></div></div>'
+            + '</div>';
+          }
+
           window._x1AbrirDuelo = function(){
             var lojas = (typeof D360 !== 'undefined' && D360.lojas) || {};
             var matchups = [
@@ -2806,58 +2852,32 @@
             ];
             var html = '';
             matchups.forEach(function(m, idx){
-              var la = lojas[m.a] || {}, lb = lojas[m.b] || {};
-              var ta = la.total||0, ma = la.meta||1;
-              var tb = lb.total||0, mb = lb.meta||1;
-              var pa = (ta/ma*100), pb = (tb/mb*100);
-              var aWin = pa > pb, tie = Math.abs(pa-pb) < 0.5;
-              var nameA = (la.nome||m.a).replace('Teixeira de Freitas','Teixeira').replace('São Mateus','S. Mateus').replace('Praia da Costa','P.Costa');
-              var nameB = (lb.nome||m.b).replace('Teixeira de Freitas','Teixeira').replace('São Mateus','S. Mateus').replace('Praia da Costa','P.Costa');
+              var la = lojas[m.a]||{}, lb = lojas[m.b]||{};
+              var ta = la.total||0, ma_ = la.meta||1;
+              var tb = lb.total||0, mb_ = lb.meta||1;
+              var pa = ta/ma_*100, pb = tb/mb_*100;
+              var tie = Math.abs(pa-pb) < 0.5;
+              var nomeA = _x1Nome(la, m.a), nomeB = _x1Nome(lb, m.b);
               var gerA = _x1Gers[m.a]||'Gerente', gerB = _x1Gers[m.b]||'Gerente';
-              var clsA = tie?'_x1-loja-tie':(aWin?'_x1-loja-win':'_x1-loja-lose');
-              var clsB = tie?'_x1-loja-tie':(!aWin?'_x1-loja-win':'_x1-loja-lose');
-              var clsNA = tie?'_x1-lname-tie':(aWin?'_x1-lname-win':'_x1-lname-lose');
-              var clsNB = tie?'_x1-lname-tie':(!aWin?'_x1-lname-win':'_x1-lname-lose');
-              var clsPA = tie?'_x1-pct-tie':(aWin?'_x1-pct-win':'_x1-pct-lose');
-              var clsPB = tie?'_x1-pct-tie':(!aWin?'_x1-pct-win':'_x1-pct-lose');
-              var clsFA = aWin?'_x1-fat-win':'_x1-fat-lose';
-              var clsFB = !aWin?'_x1-fat-win':'_x1-fat-lose';
-              var msgA = aWin ? _x1Pick(_x1WinMsg, idx) : _x1Pick(_x1LoseMsg, idx+1);
-              var msgB = !aWin ? _x1Pick(_x1WinMsg, idx+2) : _x1Pick(_x1LoseMsg, idx+2);
-              var msgClsA = aWin?'_x1-msg-win':'_x1-msg-lose';
-              var msgClsB = !aWin?'_x1-msg-win':'_x1-msg-lose';
-              var bdgA = aWin?'<span class="_x1-badge-win">🏆 Vencendo</span>':'<span class="_x1-badge-lose">💀 Perdendo</span>';
-              var bdgB = !aWin?'<span class="_x1-badge-win">🏆 Vencendo</span>':'<span class="_x1-badge-lose">💀 Perdendo</span>';
-              if(tie){bdgA='<span class="_x1-badge-win" style="background:rgba(139,92,246,.12);border-color:rgba(139,92,246,.4);color:#a78bfa;">⚖️ Empate</span>';bdgB='';}
-              var barA = Math.min(100,pa);
-              var barB = Math.min(100,pb);
+              // winner sempre à esquerda
+              var leftCard, rightCard;
+              if(tie){
+                leftCard  = _x1CardTie(nomeA, pa, ta, ma_, true);
+                rightCard = _x1CardTie(nomeB, pb, tb, mb_, false);
+              } else if(pa >= pb){
+                leftCard  = _x1CardWin(nomeA, pa, ta, ma_, gerA, idx);
+                rightCard = _x1CardLose(nomeB, pb, tb, mb_, gerB, idx+1);
+              } else {
+                leftCard  = _x1CardWin(nomeB, pb, tb, mb_, gerB, idx);
+                rightCard = _x1CardLose(nomeA, pa, ta, ma_, gerA, idx+1);
+              }
               if(idx>0) html += '<div class="_x1-divider"></div>';
-              html += '<div class="_x1-card">'
-                + '<div class="_x1-loja '+clsA+'">'
-                  + bdgA
-                  + '<div class="_x1-lname '+clsNA+'">'+nameA+'</div>'
-                  + '<div class="_x1-pct '+clsPA+'">'+pa.toFixed(1)+'<span style="font-size:.65rem;font-weight:600;opacity:.7;">%</span></div>'
-                  + '<div class="_x1-fat '+clsFA+'">'+_brl2(ta)+' / meta '+_brl2(ma)+'</div>'
-                  + '<div class="_x1-bar"><div class="_x1-bar-fill-'+(aWin?'win':'lose')+'" style="width:'+barA+'%"></div></div>'
-                  + '<div class="_x1-msg '+msgClsA+'">'+gerA+': '+msgA+'</div>'
-                + '</div>'
-                + '<div class="_x1-vs">'
-                  + '<div class="_x1-vs-badge">X1</div>'
-                  + '<div class="_x1-vs-ger">⚔️ duelo</div>'
-                + '</div>'
-                + '<div class="_x1-loja '+clsB+'" style="text-align:right;">'
-                  + bdgB
-                  + '<div class="_x1-lname '+clsNB+'">'+nameB+'</div>'
-                  + '<div class="_x1-pct '+clsPB+'">'+pb.toFixed(1)+'<span style="font-size:.65rem;font-weight:600;opacity:.7;">%</span></div>'
-                  + '<div class="_x1-fat '+clsFB+'">'+_brl2(tb)+' / meta '+_brl2(mb)+'</div>'
-                  + '<div class="_x1-bar"><div class="_x1-bar-fill-'+(!aWin?'win':'lose')+'" style="width:'+barB+'%;margin-left:auto;"></div></div>'
-                  + '<div class="_x1-msg '+msgClsB+'">'+gerB+': '+msgB+'</div>'
-                + '</div>'
-              + '</div>';
+              html += '<div class="_x1-card">'+leftCard
+                + '<div class="_x1-vs"><div class="_x1-vs-badge">X1</div><div class="_x1-vs-ger">⚔️ duelo</div></div>'
+                + rightCard+'</div>';
             });
             document.getElementById('_x1-matchups-body').innerHTML = html;
-            var modal = document.getElementById('_x1-modal-bg');
-            modal.style.display = 'flex';
+            document.getElementById('_x1-modal-bg').style.display = 'flex';
           };
 
           window._x1FecharDuelo = function(){

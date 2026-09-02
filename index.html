@@ -9831,6 +9831,22 @@ function abrirDetalhesFat(tipo, val) {
     html += '<div style="display:flex;flex-direction:column;gap:.2rem;">';
     html += '<span style="font-size:1.6rem;font-weight:900;color:#fff;line-height:1.1;">' + brl(d.total||0) + '</span>';
     if (d.projVal) html += '<span style="font-size:.7rem;color:#9ca3af;">↗ Projeção fim do mês: <strong style="color:#c4b5fd;">' + brl(d.projVal) + '</strong></span>';
+    if (d.numLojas > 0 && d.total > 0) {
+        var _mediaAcum = Math.round(d.total / d.numLojas);
+        var _mediaProj = d.projVal ? Math.round(d.projVal / d.numLojas) : 0;
+        html += '<div style="display:flex;gap:.5rem;margin-top:.15rem;">';
+        html += '<div style="flex:1;display:flex;justify-content:space-between;align-items:center;padding:.2rem .5rem;border-radius:.4rem;background:rgba(201,168,76,.07);border:1px solid rgba(201,168,76,.2);">'
+            + '<span style="font-size:.58rem;color:#9ca3af;font-weight:600;">🏪 Média/loja acum.</span>'
+            + '<span style="font-size:.65rem;font-weight:800;color:#C9A84C;">' + brl(_mediaAcum) + '</span>'
+            + '</div>';
+        if (_mediaProj) {
+            html += '<div style="flex:1;display:flex;justify-content:space-between;align-items:center;padding:.2rem .5rem;border-radius:.4rem;background:rgba(201,168,76,.04);border:1px solid rgba(201,168,76,.13);">'
+                + '<span style="font-size:.58rem;color:#9ca3af;font-weight:600;">📈 Média/loja proj.</span>'
+                + '<span style="font-size:.65rem;font-weight:800;color:#a8883a;">' + brl(_mediaProj) + '</span>'
+                + '</div>';
+        }
+        html += '</div>';
+    }
     html += '</div>';
     // Barra de meta
     html += '<div style="display:flex;flex-direction:column;gap:.3rem;">';
@@ -14542,7 +14558,7 @@ function render360(tipo, val) {
     const _fatProjVal = _d.diasDecorridos ? Math.round(total / _d.diasDecorridos * _d.diasMes) : 0;
     const _fatMetaDiaria = _metaDiariaSubrede(lojaKeysDeScope(), lojas, meta);
     // Salva dados para o popup
-    window._fatCardDetalhe = { total, meta, barPct: _fatBarPct, nota: _fatNota, antLine: _antLine, margLine: _margLine, projVal: _fatProjVal, periodo: _d.periodo, tipo, val, ticketGeral: _ticketGeral, ticketCel: _ticketCel, ticketAcess: _ticketAcess, pedidos, pedCel: _pedCel, pedAcess: _pedAcess };
+    window._fatCardDetalhe = { total, meta, barPct: _fatBarPct, nota: _fatNota, antLine: _antLine, margLine: _margLine, projVal: _fatProjVal, periodo: _d.periodo, tipo, val, ticketGeral: _ticketGeral, ticketCel: _ticketCel, ticketAcess: _ticketAcess, pedidos, pedCel: _pedCel, pedAcess: _pedAcess, numLojas: scope.length };
     const _fatCard = (() => {
         const _mediaDia = _d.diasDecorridos > 0 ? Math.round(total / _d.diasDecorridos) : 0;
         return `<div class="glass-360 rounded-2xl p-4 card-lift" style="display:flex;flex-direction:column;justify-content:space-between;gap:.3rem;cursor:pointer;" onclick="abrirDetalhesFat('${tipo}','${val}')">

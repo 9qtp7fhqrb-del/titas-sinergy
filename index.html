@@ -14831,6 +14831,16 @@ function render360(tipo, val) {
                         <span style="font-size:.58rem;color:#9ca3af;font-weight:600;">📈 Projeção mês</span>
                         <span style="font-size:.72rem;font-weight:800;color:${_C4};">${brl(agProj)}</span>
                     </div>
+                    ${scope.length > 1 ? `<div style="display:flex;gap:.25rem;margin-bottom:.25rem;">
+                        <div style="flex:1;display:flex;justify-content:space-between;align-items:center;padding:.2rem .5rem;border-radius:.4rem;background:rgba(201,168,76,.07);border:1px solid rgba(201,168,76,.2);">
+                            <span style="font-size:.52rem;color:#9ca3af;font-weight:600;">🏪 Méd/loja dia</span>
+                            <span style="font-size:.62rem;font-weight:800;color:#C9A84C;">${brl(Math.round(agFat / (_d.diasDecorridos||1) / scope.length))}</span>
+                        </div>
+                        <div style="flex:1;display:flex;justify-content:space-between;align-items:center;padding:.2rem .5rem;border-radius:.4rem;background:rgba(201,168,76,.04);border:1px solid rgba(201,168,76,.13);">
+                            <span style="font-size:.52rem;color:#9ca3af;font-weight:600;">📅 Méd/loja mês</span>
+                            <span style="font-size:.62rem;font-weight:800;color:#a8883a;">${brl(Math.round(agFat / scope.length))}</span>
+                        </div>
+                    </div>` : ''}
                     <div style="display:flex;justify-content:space-between;align-items:center;padding:.22rem .6rem;border-radius:.45rem;background:${agBarCor}12;border:1px solid ${agBarCor}28;">
                         <span style="font-size:.58rem;color:#9ca3af;font-weight:600;">🎯 Meta</span>
                         <span style="font-size:.72rem;font-weight:800;color:${agBarCor};">${agPctMeta}% · ${brl(agMeta)}</span>

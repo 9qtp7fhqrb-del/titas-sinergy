@@ -2796,7 +2796,7 @@
           function _brl2(v){ return 'R$ ' + Math.round(v).toLocaleString('pt-BR'); }
 
           window._x1AbrirDuelo = function(){
-            var lojas = (window.D360 && window.D360.lojas) || {};
+            var lojas = (typeof D360 !== 'undefined' && D360.lojas) || {};
             var matchups = [
               {a:'barreiras',  b:'itabuna'},
               {a:'moxuara',    b:'serra'},

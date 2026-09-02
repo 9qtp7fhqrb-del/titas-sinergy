@@ -13870,7 +13870,7 @@ async function _360RenderChart(tipo, val) {
         }
     };
 
-    /* Plugin: desenha número de lojas dentro de cada barra */
+    /* Plugin: desenha número de lojas e média por loja dentro de cada barra */
     const lojaCountPlugin = {
         id: '_360lojaCount',
         afterDatasetsDraw(chart) {
@@ -13885,16 +13885,29 @@ async function _360RenderChart(tipo, val) {
                 const barTop    = y.getPixelForValue(values[i]);
                 const barBottom = y.getPixelForValue(0);
                 const barH = barBottom - barTop;
-                if (barH < 14) return; // barra muito pequena
+                if (barH < 14) return;
                 const isLoja = tipo === 'loja';
                 const label  = isLoja ? '' : count + (count === 1 ? ' loja' : ' lojas');
                 if (!label) return;
-                // Fonte adaptativa
                 const fSize = barH < 28 ? 7 : barH < 44 ? 8 : 9;
+                const alpha = barH < 20 ? '.55' : '.82';
+                // Linha 1 — nº de lojas
                 c.font = `600 ${fSize}px Inter,sans-serif`;
-                // Cor: branco quando barra escura, cinza claro para barras pequenas
-                c.fillStyle = barH < 20 ? 'rgba(255,255,255,.55)' : 'rgba(255,255,255,.82)';
-                c.fillText(label, bar.x, barBottom - 3);
+                c.fillStyle = `rgba(255,255,255,${alpha})`;
+                // Se barra alta o suficiente, desenha média na segunda linha
+                if (barH >= 32 && values[i] && count > 0) {
+                    const media = values[i] / count;
+                    const mediaFmt = media >= 1e6 ? (media/1e6).toFixed(1)+'M'
+                                   : media >= 1e3 ? Math.round(media/1e3)+'K'
+                                   : Math.round(media);
+                    const lineH = fSize + 2;
+                    c.fillText(label, bar.x, barBottom - lineH - 2);
+                    c.font = `500 ${fSize - 1}px Inter,sans-serif`;
+                    c.fillStyle = 'rgba(201,168,76,.9)';
+                    c.fillText('~' + mediaFmt, bar.x, barBottom - 3);
+                } else {
+                    c.fillText(label, bar.x, barBottom - 3);
+                }
             });
             c.restore();
         }
@@ -13956,6 +13969,12 @@ async function _360RenderChart(tipo, val) {
                             const cnt = lojaCounts[i];
                             const cntTxt = (tipo !== 'loja' && cnt) ? `  ·  ${cnt} loja${cnt>1?'s':''}` : '';
                             return '  ' + brl(ctx.raw) + cntTxt + (medalIdx.includes(i) ? '  🥇 Recorde' : '');
+                        },
+                        afterLabel: ctx => {
+                            const i = ctx.dataIndex;
+                            const cnt = lojaCounts[i];
+                            if (tipo === 'loja' || !cnt || !ctx.raw) return '';
+                            return '  🏪 Média/loja: ' + brl(Math.round(ctx.raw / cnt));
                         }
                     }
                 }

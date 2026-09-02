@@ -2764,7 +2764,11 @@
                 <div class="sub">Setembro 2026 · Disputa por % de meta alcançada</div>
               </div>
               <div class="_x1-wire">— ✦ — ✦ — ✦ — ✦ — ✦ — ✦ — ✦ — ✦ — ✦ — ✦ —</div>
-              <div class="_x1-matchups" id="_x1-matchups-body"></div>
+              <!-- fire canvases — posicionados dentro da arena -->
+              <canvas id="_x1-fc-l" style="position:absolute;left:0;top:0;width:80px;height:100%;pointer-events:none;z-index:0;"></canvas>
+              <canvas id="_x1-fc-r" style="position:absolute;right:0;top:0;width:80px;height:100%;pointer-events:none;z-index:0;"></canvas>
+              <canvas id="_x1-fc-b" style="position:absolute;bottom:0;left:0;width:100%;height:110px;pointer-events:none;z-index:0;"></canvas>
+              <div class="_x1-matchups" id="_x1-matchups-body" style="position:relative;z-index:1;"></div>
             </div>
           </div>
         </div>
@@ -2898,9 +2902,112 @@
             });
             document.getElementById('_x1-matchups-body').innerHTML = html;
             document.getElementById('_x1-modal-bg').style.display = 'flex';
+            // inicia fogo após um frame (garante que o DOM já está visível e tem dimensões)
+            requestAnimationFrame(function(){ requestAnimationFrame(_x1StartFire); });
           };
 
+          // ── Fire engine ──────────────────────────────────────────
+          var _x1FireActive = false, _x1FireRaf = null;
+          var _x1FireParts = {l:[], r:[], b:[]};
+
+          function _x1NewParticle(x, y, dirX, dirY, spread) {
+            var angle = Math.atan2(dirY, dirX) + (Math.random()-.5)*.7;
+            var spd = Math.random()*2.8 + 1.2;
+            return {
+              x: x + (Math.random()-.5)*spread,
+              y: y + (Math.random()-.5)*spread,
+              vx: Math.cos(angle)*spd,
+              vy: Math.sin(angle)*spd,
+              life: 1,
+              decay: Math.random()*.02 + .011,
+              size: Math.random()*16 + 7
+            };
+          }
+
+          function _x1DrawCanvas(id, parts, emitters) {
+            var cv = document.getElementById(id); if(!cv) return;
+            var W = cv.offsetWidth, H = cv.offsetHeight;
+            if(cv.width !== W) cv.width = W;
+            if(cv.height !== H) cv.height = H;
+            var ctx = cv.getContext('2d');
+            ctx.clearRect(0,0,W,H);
+            // emit
+            emitters.forEach(function(e){
+              for(var i=0;i<3;i++)
+                parts.push(_x1NewParticle(e.x,e.y,e.dx,e.dy,e.spread));
+            });
+            // cap
+            if(parts.length > 320) parts.splice(0, parts.length-320);
+            // draw
+            for(var i=parts.length-1;i>=0;i--){
+              var p=parts[i];
+              p.x+=p.vx; p.y+=p.vy;
+              p.vx+=(Math.random()-.5)*.22;
+              p.vy-=.04; // slight upward drift
+              p.size*=.984;
+              p.life-=p.decay;
+              if(p.life<=0||p.size<1){parts.splice(i,1);continue;}
+              var g=Math.round(Math.max(0,p.life*200-30));
+              ctx.save();
+              ctx.globalAlpha=p.life*.72;
+              var gr=ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,p.size);
+              gr.addColorStop(0,'rgba(255,'+g+',0,1)');
+              gr.addColorStop(.45,'rgba(255,60,0,.55)');
+              gr.addColorStop(1,'rgba(180,0,0,0)');
+              ctx.fillStyle=gr;
+              ctx.beginPath();ctx.arc(p.x,p.y,p.size,0,Math.PI*2);ctx.fill();
+              ctx.restore();
+            }
+          }
+
+          function _x1FireLoop() {
+            if(!_x1FireActive) return;
+            var cl=document.getElementById('_x1-fc-l');
+            var cr=document.getElementById('_x1-fc-r');
+            var cb=document.getElementById('_x1-fc-b');
+            var lH=cl?cl.offsetHeight:400, rH=cr?cr.offsetHeight:400;
+            var bW=cb?cb.offsetWidth:800;
+            // left column: particles go right and up
+            _x1DrawCanvas('_x1-fc-l', _x1FireParts.l, [
+              {x:60,y:lH,dx:1,dy:-2,spread:18},
+              {x:40,y:lH*.75,dx:1,dy:-2,spread:14},
+              {x:65,y:lH*.5,dx:1,dy:-2,spread:10},
+            ]);
+            // right column: particles go left and up
+            _x1DrawCanvas('_x1-fc-r', _x1FireParts.r, [
+              {x:20,y:rH,dx:-1,dy:-2,spread:18},
+              {x:35,y:rH*.75,dx:-1,dy:-2,spread:14},
+              {x:15,y:rH*.5,dx:-1,dy:-2,spread:10},
+            ]);
+            // bottom: particles go up
+            _x1DrawCanvas('_x1-fc-b', _x1FireParts.b, [
+              {x:bW*.15,y:108,dx:0,dy:-1,spread:22},
+              {x:bW*.35,y:108,dx:0,dy:-1,spread:22},
+              {x:bW*.5, y:108,dx:0,dy:-1,spread:25},
+              {x:bW*.65,y:108,dx:0,dy:-1,spread:22},
+              {x:bW*.85,y:108,dx:0,dy:-1,spread:22},
+            ]);
+            _x1FireRaf = requestAnimationFrame(_x1FireLoop);
+          }
+
+          function _x1StartFire() {
+            _x1FireParts = {l:[],r:[],b:[]};
+            _x1FireActive = true;
+            if(_x1FireRaf) cancelAnimationFrame(_x1FireRaf);
+            _x1FireLoop();
+          }
+          function _x1StopFire() {
+            _x1FireActive = false;
+            if(_x1FireRaf){ cancelAnimationFrame(_x1FireRaf); _x1FireRaf=null; }
+            ['_x1-fc-l','_x1-fc-r','_x1-fc-b'].forEach(function(id){
+              var cv=document.getElementById(id);
+              if(cv) cv.getContext('2d').clearRect(0,0,cv.width,cv.height);
+            });
+          }
+          // ─────────────────────────────────────────────────────────
+
           window._x1FecharDuelo = function(){
+            _x1StopFire();
             document.getElementById('_x1-modal-bg').style.display = 'none';
           };
 

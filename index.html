@@ -2754,6 +2754,10 @@
         ._x1-divider{height:1px;background:linear-gradient(90deg,transparent,rgba(220,38,38,.2),transparent);margin:.1rem 0}
         @media(max-width:580px){._x1-card{grid-template-columns:1fr auto 1fr}._x1-pct{font-size:1.2rem}._x1-msg{display:none}}
         </style>
+        <!-- fire canvases fixos sobre o modal, acima de tudo -->
+        <canvas id="_x1-fc-l" style="display:none;position:fixed;left:0;top:0;width:110px;height:100vh;pointer-events:none;z-index:10002;"></canvas>
+        <canvas id="_x1-fc-r" style="display:none;position:fixed;right:0;top:0;width:110px;height:100vh;pointer-events:none;z-index:10002;"></canvas>
+        <canvas id="_x1-fc-b" style="display:none;position:fixed;bottom:0;left:0;width:100vw;height:130px;pointer-events:none;z-index:10002;"></canvas>
         <div id="_x1-modal-bg" style="display:none;" onclick="if(event.target===this)_x1FecharDuelo()">
           <div id="_x1-modal">
             <div class="_x1-arena">
@@ -2764,10 +2768,6 @@
                 <div class="sub">Setembro 2026 · Disputa por % de meta alcançada</div>
               </div>
               <div class="_x1-wire">— ✦ — ✦ — ✦ — ✦ — ✦ — ✦ — ✦ — ✦ — ✦ — ✦ —</div>
-              <!-- fire canvases — posicionados dentro da arena -->
-              <canvas id="_x1-fc-l" style="position:absolute;left:0;top:0;width:80px;height:100%;pointer-events:none;z-index:0;"></canvas>
-              <canvas id="_x1-fc-r" style="position:absolute;right:0;top:0;width:80px;height:100%;pointer-events:none;z-index:0;"></canvas>
-              <canvas id="_x1-fc-b" style="position:absolute;bottom:0;left:0;width:100%;height:110px;pointer-events:none;z-index:0;"></canvas>
               <div class="_x1-matchups" id="_x1-matchups-body" style="position:relative;z-index:1;"></div>
             </div>
           </div>
@@ -2902,7 +2902,9 @@
             });
             document.getElementById('_x1-matchups-body').innerHTML = html;
             document.getElementById('_x1-modal-bg').style.display = 'flex';
-            // inicia fogo após um frame (garante que o DOM já está visível e tem dimensões)
+            ['_x1-fc-l','_x1-fc-r','_x1-fc-b'].forEach(function(id){
+              var cv=document.getElementById(id); if(cv) cv.style.display='block';
+            });
             requestAnimationFrame(function(){ requestAnimationFrame(_x1StartFire); });
           };
 
@@ -2926,7 +2928,9 @@
 
           function _x1DrawCanvas(id, parts, emitters) {
             var cv = document.getElementById(id); if(!cv) return;
-            var W = cv.offsetWidth, H = cv.offsetHeight;
+            // canvases são position:fixed — usar innerWidth/innerHeight
+            var W = id==='_x1-fc-b' ? window.innerWidth : (id==='_x1-fc-l'||id==='_x1-fc-r' ? 110 : cv.offsetWidth);
+            var H = id==='_x1-fc-l'||id==='_x1-fc-r' ? window.innerHeight : (id==='_x1-fc-b' ? 130 : cv.offsetHeight);
             if(cv.width !== W) cv.width = W;
             if(cv.height !== H) cv.height = H;
             var ctx = cv.getContext('2d');
@@ -2962,30 +2966,30 @@
 
           function _x1FireLoop() {
             if(!_x1FireActive) return;
-            var cl=document.getElementById('_x1-fc-l');
-            var cr=document.getElementById('_x1-fc-r');
-            var cb=document.getElementById('_x1-fc-b');
-            var lH=cl?cl.offsetHeight:400, rH=cr?cr.offsetHeight:400;
-            var bW=cb?cb.offsetWidth:800;
-            // left column: particles go right and up
+            var vH=window.innerHeight, vW=window.innerWidth;
+            // left column — full viewport height, partículas vão para direita e cima
             _x1DrawCanvas('_x1-fc-l', _x1FireParts.l, [
-              {x:60,y:lH,dx:1,dy:-2,spread:18},
-              {x:40,y:lH*.75,dx:1,dy:-2,spread:14},
-              {x:65,y:lH*.5,dx:1,dy:-2,spread:10},
+              {x:90,y:vH,    dx:.8,dy:-2,spread:20},
+              {x:75,y:vH*.8, dx:.8,dy:-2,spread:16},
+              {x:95,y:vH*.6, dx:.8,dy:-2,spread:14},
+              {x:70,y:vH*.4, dx:.8,dy:-2,spread:12},
             ]);
-            // right column: particles go left and up
+            // right column — partículas vão para esquerda e cima
             _x1DrawCanvas('_x1-fc-r', _x1FireParts.r, [
-              {x:20,y:rH,dx:-1,dy:-2,spread:18},
-              {x:35,y:rH*.75,dx:-1,dy:-2,spread:14},
-              {x:15,y:rH*.5,dx:-1,dy:-2,spread:10},
+              {x:20,y:vH,    dx:-.8,dy:-2,spread:20},
+              {x:35,y:vH*.8, dx:-.8,dy:-2,spread:16},
+              {x:15,y:vH*.6, dx:-.8,dy:-2,spread:14},
+              {x:40,y:vH*.4, dx:-.8,dy:-2,spread:12},
             ]);
-            // bottom: particles go up
+            // bottom — faixa horizontal completa
             _x1DrawCanvas('_x1-fc-b', _x1FireParts.b, [
-              {x:bW*.15,y:108,dx:0,dy:-1,spread:22},
-              {x:bW*.35,y:108,dx:0,dy:-1,spread:22},
-              {x:bW*.5, y:108,dx:0,dy:-1,spread:25},
-              {x:bW*.65,y:108,dx:0,dy:-1,spread:22},
-              {x:bW*.85,y:108,dx:0,dy:-1,spread:22},
+              {x:vW*.08, y:128,dx:0,dy:-1,spread:24},
+              {x:vW*.22, y:128,dx:0,dy:-1,spread:24},
+              {x:vW*.37, y:128,dx:0,dy:-1,spread:26},
+              {x:vW*.5,  y:128,dx:0,dy:-1,spread:28},
+              {x:vW*.63, y:128,dx:0,dy:-1,spread:26},
+              {x:vW*.78, y:128,dx:0,dy:-1,spread:24},
+              {x:vW*.92, y:128,dx:0,dy:-1,spread:24},
             ]);
             _x1FireRaf = requestAnimationFrame(_x1FireLoop);
           }
@@ -3001,7 +3005,7 @@
             if(_x1FireRaf){ cancelAnimationFrame(_x1FireRaf); _x1FireRaf=null; }
             ['_x1-fc-l','_x1-fc-r','_x1-fc-b'].forEach(function(id){
               var cv=document.getElementById(id);
-              if(cv) cv.getContext('2d').clearRect(0,0,cv.width,cv.height);
+              if(cv){ cv.getContext('2d').clearRect(0,0,cv.width,cv.height); cv.style.display='none'; }
             });
           }
           // ─────────────────────────────────────────────────────────

@@ -25,7 +25,7 @@ except ImportError:
     os.system(f"{sys.executable} -m pip install requests -q")
     import requests
 
-ERP_BASE        = 'https://apicdc.casadocelular.com.br/api/v1'
+ERP_BASE        = 'https://api.erp.odrestech.com.br/api/v1'
 FIREBASE_KEY    = 'AIzaSyDFrLshzqf8Ct9U1SkM9MSveDNPuy_2--8'
 FIREBASE_PROJ   = 'titas-sinergy'
 THRESHOLD       = float(os.environ.get('UPDATE_THRESHOLD', '10000'))
@@ -35,17 +35,17 @@ LAST_TS         = os.environ.get('LAST_UPDATE_TS', '')
 GH_OUTPUT_FILE  = os.environ.get('GITHUB_OUTPUT', '')
 
 STORE_MAP = {
-    'CDC BARREIRAS':              'barreiras',
-    'CDC CARIACICA':              'cariacica',
-    'CDC ITABUNA':                'itabuna',
-    'CDC LINHARES':               'linhares',
-    'CDC LARANJEIRAS':            'laranjeiras',
-    'CDC MONTSERRAT':             'montserrat',
+    'BARREIRAS':                  'barreiras',
+    'CARIACICA':                  'cariacica',
+    'ITABUNA':                    'itabuna',
+    'LINHARES':                   'linhares',
+    'LARANJEIRAS':                'laranjeiras',
+    'MONTSERRAT':                 'montserrat',
     'SHOPPING MOXUARA':           'moxuara',
-    'CDC PRAIA DA COSTA':         'praiadacosta',
-    'CDC SAO MATEUS':             'saomateus',
-    'CDC SERRA':                  'serra',
-    'CDC TEIXEIRA DE FREITAS NOVO': 'teixeira',
+    'PRAIA DA COSTA':             'praiadacosta',
+    'SAO MATEUS':                 'saomateus',
+    'SERRA':                      'serra',
+    'TEIXEIRA DE FREITAS NOVO':   'teixeira',
 }
 
 

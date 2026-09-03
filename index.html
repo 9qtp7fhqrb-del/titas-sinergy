@@ -12282,6 +12282,72 @@ function _d360LoadRankMap(key) {
     try { return JSON.parse(localStorage.getItem(key) || 'null'); } catch(e) { return null; }
 }
 
+/* ─── Comparativo período a período vs mês anterior ──────────── */
+window._d360PrevLojasComp = null;
+window._d360PrevCompChave = null;
+function _fsToJsVal(v) {
+    if (!v) return null;
+    if ('stringValue'  in v) return v.stringValue;
+    if ('integerValue' in v) return Number(v.integerValue);
+    if ('doubleValue'  in v) return v.doubleValue;
+    if ('booleanValue' in v) return v.booleanValue;
+    if ('mapValue'     in v) return _fsToJsMap(v.mapValue.fields || {});
+    if ('arrayValue'   in v) return (v.arrayValue.values||[]).map(_fsToJsVal);
+    return null;
+}
+function _fsToJsMap(fields) {
+    if (!fields) return null;
+    const obj = {};
+    for (const [k,v] of Object.entries(fields)) obj[k] = _fsToJsVal(v);
+    return obj;
+}
+async function _d360PrevCompInit() {
+    const _d = _360D();
+    const diasD = _d.diasDecorridos || new Date().getDate();
+    const now = new Date();
+    const prevMes = now.getMonth() === 0 ? 12 : now.getMonth();
+    const prevAno = now.getMonth() === 0 ? now.getFullYear()-1 : now.getFullYear();
+    const prevChave = prevAno + '_' + String(prevMes).padStart(2,'0');
+    if (window._d360PrevCompChave === prevChave && window._d360PrevLojasComp) return;
+    const cacheKey = '_360prevcomp_' + prevChave;
+    let prevData = null;
+    try { const lc = localStorage.getItem(cacheKey); if (lc) prevData = JSON.parse(lc); } catch(e) {}
+    if (!prevData && window._acadFBOk && window._acadDB) {
+        try { const doc = await window._acadDB.collection('ts_d360_historico').doc(prevChave).get(); if (doc.exists) prevData = doc.data(); } catch(e) {}
+    }
+    if (!prevData) {
+        try {
+            const r = await fetch('https://firestore.googleapis.com/v1/projects/titas-sinergy/databases/(default)/documents/ts_d360_historico/' + prevChave + '?key=AIzaSyDFrLshzqf8Ct9U1SkM9MSveDNPuy_2--8');
+            if (r.ok) { const rw = await r.json(); if (rw.fields) { prevData = _fsToJsMap(rw.fields); try { localStorage.setItem(cacheKey, JSON.stringify(prevData)); } catch(e) {} } }
+        } catch(e) {}
+    }
+    if (!prevData?.lojas) return;
+    const prevDiasMes = new Date(prevAno, prevMes, 0).getDate();
+    const comp = {};
+    const lojas = _d.lojas || {};
+    Object.keys(lojas).forEach(k => {
+        const loja = prevData.lojas[k];
+        if (!loja) return;
+        const prevVal = (loja.dia_a_dia && loja.dia_a_dia[diasD])
+            ? loja.dia_a_dia[diasD]
+            : (loja.total || 0) * diasD / prevDiasMes;
+        if (prevVal > 0) {
+            const curVal = lojas[k]?.total || 0;
+            comp[k] = Math.round((curVal - prevVal) / prevVal * 100);
+        }
+    });
+    window._d360PrevLojasComp = comp;
+    window._d360PrevCompChave = prevChave;
+    const el = document.getElementById('360-output');
+    if (el && el.innerHTML) {
+        try { const p=document.querySelector('#d360-pills .pill-360.active'); render360(p?p.dataset.tipo:'geral',p?p.dataset.val:''); } catch(e) {}
+    }
+}
+function _d360GetComp(lojaKey) {
+    const c = window._d360PrevLojasComp;
+    return (c && lojaKey && lojaKey in c) ? c[lojaKey] : null;
+}
+
 function rankRow(pos, sigla, label, sublabel, rawTotal, lojaMeta, first, metaOk, lojaKey, activeDays, ped, acessPct, delta) {
     const colors    = ['#a855f7','#9ca3af','#06b6d4','#6b7280','#6b7280'];
     const bgFirst   = first ? 'background:rgba(168,85,247,.08);border:1px solid rgba(168,85,247,.2);' : 'border:1px solid rgba(55,65,81,.4);';
@@ -12290,6 +12356,15 @@ function rankRow(pos, sigla, label, sublabel, rawTotal, lojaMeta, first, metaOk,
         : (pos===3 ? 'background:rgba(6,182,212,.15);color:#06b6d4;' : 'background:#1f2937;color:#9ca3af;');
     const metaBadge = metaOk ? '<span style="font-size:.55rem;color:#4ade80;font-weight:700;margin-left:.3rem;">😊</span>' : '';
     const clickAttr = lojaKey ? `onclick="abrirPopupLoja('${lojaKey}')" title="Detalhes — ${label}"` : '';
+    const _comp = _d360GetComp(lojaKey);
+    const labelColor = (_comp !== null && _comp < 0) ? '#f87171' : (pos<=3 ? '#ffffff' : '#9ca3af');
+    const compBadge = _comp !== null
+        ? (_comp < 0
+            ? `<span style="font-size:.5rem;color:#f87171;font-weight:800;margin-left:.3rem;vertical-align:middle;">▼${Math.abs(_comp)}%</span>`
+            : (_comp > 0
+                ? `<span style="font-size:.5rem;color:#4ade80;font-weight:800;margin-left:.3rem;vertical-align:middle;">▲${_comp}%</span>`
+                : ''))
+        : '';
 
     const pReal = lojaMeta ? Math.round(rawTotal / lojaMeta * 100) : 0;
     const p     = Math.min(100, pReal);
@@ -12312,7 +12387,7 @@ function rankRow(pos, sigla, label, sublabel, rawTotal, lojaMeta, first, metaOk,
         </div>
         <div class="w-8 h-8 rounded-lg flex items-center justify-center text-[10px] font-bold flex-shrink-0" style="${avatarStyle}">${sigla}</div>
         <div class="flex-1 min-w-0">
-            <p class="text-xs ${pos<=3?'text-white font-semibold':'text-gray-400'} truncate">${label}${metaBadge}${sublabel ? `<span class="text-gray-500 font-normal"> · ${sublabel}</span>` : ''}</p>
+            <p class="text-xs truncate" style="font-weight:${pos<=3?'600':'400'};color:${labelColor};">${label}${compBadge}${metaBadge}${sublabel ? `<span class="text-gray-500 font-normal"> · ${sublabel}</span>` : ''}</p>
             <div class="flex items-center gap-1.5 mt-1">
                 <div class="flex-1 h-1.5 bg-gray-800 rounded-full">
                     <div class="h-full rounded-full" style="width:${p}%;background:${barGr};"></div>
@@ -14711,6 +14786,7 @@ function render360(tipo, val) {
         val  = _vk;
     }
 
+    _d360PrevCompInit();
     const _d   = _360D();
     const lojas = _d.lojas;
     const subs  = _d.subredes;

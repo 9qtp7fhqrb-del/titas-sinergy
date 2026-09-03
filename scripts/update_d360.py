@@ -230,7 +230,9 @@ def fetch_financeiras_ids(token, retries=3, wait=10):
             r.raise_for_status()
             pms = r.json().get('payment_methods', [])
             ids = [pm['id'] for pm in pms
-                   if pm.get('active') and (pm.get('modality') or {}).get('key') == 'finance_company']
+                   if pm.get('active')
+                   and (pm.get('modality') or {}).get('key') == 'finance_company'
+                   and 'brasilcard' not in (pm.get('name') or '').lower()]
             return ids
         except Exception as e:
             if attempt < retries:

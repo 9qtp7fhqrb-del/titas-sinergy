@@ -7,7 +7,7 @@
     <script>
     // Cache-buster: força reload se a versão mudou
     (function(){
-      var BUILD = '20260905194445';
+      var BUILD = '20260905195435';
       var stored = localStorage.getItem('d360_build');
       if (stored && stored !== BUILD) {
         localStorage.setItem('d360_build', BUILD);
@@ -7525,7 +7525,7 @@ const D360 = {
     // COMO ATUALIZAR: edite apenas margem_lojas com os valores do ERP por loja
     // ─────────────────────────────────────────────────────────────────────────────
     margem_dia: 51.27,              // rede hoje · zerado automaticamente à meia-noite
-    margem_dia_subredes: { t1: 51.55, t2: 52.30, t3: 50.30 },
+    margem_dia_subredes: { t1: 51.55, t2: 52.30, t3: 50.31 },
     margem_lojas: {
         // ── FONTE PRIMÁRIA — atualizar aqui com o Relatório Gerencial por Loja ──
         // atualizado pelo update_d360.py (por loja via API, fallback por subrede)
@@ -7542,7 +7542,7 @@ const D360 = {
         linhares:    48.64,
     },
     margem_subredes: {  // fallback quando margem_lojas estiver incompleta
-        t1: 49.38, t2: 49.57, t3: 50.52
+        t1: 49.38, t2: 49.57, t3: 50.53
     },
     // margem_mes: derivada automaticamente pelo _calcMargemPonderada (não editar)
     margem_mes: 49.83,
@@ -8848,7 +8848,7 @@ var _ERP_ESTOQUE = {
       'ZENFONE MAX PLUS':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:0},
       'ZENFONE MAX SHOT':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:0},
     };
-    var _ERP_ESTOQUE_TS = '05/09/2026 16:44';
+    var _ERP_ESTOQUE_TS = '05/09/2026 16:54';
 // Preços por produto — populado pelo update_d360.py a cada 30 min
 var _ERP_PRECOS = {
       'ALCATEL A2 XL': {custo:0.00,venda:0.00},
@@ -9213,7 +9213,7 @@ var _ERP_PRECOS = {
       'ZENFONE MAX PLUS': {custo:0.00,venda:0.00},
       'ZENFONE MAX SHOT': {custo:0.00,venda:0.00},
     };
-    var _ERP_PRECOS_TS = '05/09/2026 16:44';
+    var _ERP_PRECOS_TS = '05/09/2026 16:54';
 // Flag de sessão: true = fetch já tentado (sucesso ou falha), não tentar de novo
 var _erpPrecosCarregados = false;
 var _SUG_SPECS = {
@@ -11608,11 +11608,11 @@ let _metasOverride = {}; // { lojaKey: { vendKey: meta_cel } }
 const VEND_METAS_DB = {
     barreiras: [
         {k:'nanda',      meta:                                    78000},   // Ago/26: 78.000
-        {k:'isabela',    meta:                                              80000},   // Ago/26: 40.500
-        {k:'larisse',    meta:                                              80000},   // Ago/26: 40.500
-        {k:'matheus',    meta:                                              80000},   // Ago/26: 40.500
-        {k:'victor',     meta:                                              50000},   // Ago/26: 40.500
-        {k:'gustavo',    meta:                                              15000},   // sem meta lançada
+        {k:'isabela',    meta:                                               80000},   // Ago/26: 40.500
+        {k:'larisse',    meta:                                               80000},   // Ago/26: 40.500
+        {k:'matheus',    meta:                                               80000},   // Ago/26: 40.500
+        {k:'victor',     meta:                                               50000},   // Ago/26: 40.500
+        {k:'gustavo',    meta:                                               15000},   // sem meta lançada
     ],
     cariacica: [
         {k:'mayara',     meta:                                              125000},   // Ago/26: 70.000
@@ -11636,7 +11636,7 @@ const VEND_METAS_DB = {
         {k:'maikelly',   meta:  25000},   // sem meta lançada
     ],
     laranjeiras: [
-        {k:'lidia',      meta:                                                        90000},   // ref jul/26 — aguardando lançamento ago/26
+        {k:'lidia',      meta:                                                         90000},   // ref jul/26 — aguardando lançamento ago/26
         {k:'lídia',      meta:  52500},   // alias
         {k:'mayara',     meta:  52500},   // ref jul/26 — aguardando lançamento ago/26
         {k:'nycolly',    meta:                                                                       70000},   // ref jul/26 — aguardando lançamento ago/26
@@ -11655,8 +11655,8 @@ const VEND_METAS_DB = {
     ],
     montserrat: [
         {k:'vinicius',   meta:                                   100000},   // Ago/26: 100.000
-        {k:'joaquin',    meta:                                                    80000},   // Ago/26: 60.000
-        {k:'adriano',    meta:                                                    80000},   // Ago/26: 60.000
+        {k:'joaquin',    meta:                                                     80000},   // Ago/26: 60.000
+        {k:'adriano',    meta:                                                     80000},   // Ago/26: 60.000
         {k:'jhenifer',   meta:  50000},   // sem meta lançada
         {k:'vitor',      meta:  50000},   // sem meta lançada
         {k:'arthur',     meta:  50000},   // sem meta lançada
@@ -11673,7 +11673,7 @@ const VEND_METAS_DB = {
     ],
     praiadacosta: [
         {k:'nycolly',    meta:  50000},   // Ago/26: 50.000
-        {k:'stefany',    meta:                                                                                                                              75000},   // Ago/26: 50.000
+        {k:'stefany',    meta:                                                                                                                               75000},   // Ago/26: 50.000
         {k:'filipe',     meta:  50000},   // sem meta lançada
         {k:'deborah',    meta:  50000},   // sem meta lançada
         {k:'thaymmon',   meta:  50000},   // sem meta lançada
@@ -11692,7 +11692,7 @@ const VEND_METAS_DB = {
     ],
     serra: [
         {k:'gabriel',    meta:  92000},   // Ago/26: 92.000
-        {k:'carlos',     meta:                                                     60000},   // Ago/26: 59.000
+        {k:'carlos',     meta:                                                      60000},   // Ago/26: 59.000
         {k:'hiully',     meta:                                    59000},   // Ago/26: 59.000
         {k:'felipe',     meta:  50000},   // sem meta lançada
         {k:'karen',      meta:  50000},   // sem meta lançada

@@ -76,5 +76,9 @@ service cloud.firestore {
     match /ts_rastros_roberto/{docId} {
       allow read, write: if true;
     }
+
+    match /ts_audiencias/{docId} {
+      allow read, write: if true;
+    }
   }
 }

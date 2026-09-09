@@ -96,19 +96,49 @@ def erp_token_valid(token):
     except Exception:
         return False
 
+def get_token_from_firestore():
+    """Lê token salvo no Firestore (erp_session). Retorna (token, saved_at_ms) ou (None, 0)."""
+    try:
+        url = (f'https://firestore.googleapis.com/v1/projects/{FIREBASE_PROJ}'
+               f'/databases/(default)/documents/ts_d360_config/erp_session?key={FIREBASE_KEY}')
+        r = requests.get(url, timeout=10)
+        if r.status_code != 200:
+            return None, 0
+        fields = r.json().get('fields', {})
+        token    = fields.get('token', {}).get('stringValue', '')
+        saved_at = int(fields.get('savedAt', {}).get('integerValue', 0))
+        return token or None, saved_at
+    except Exception as e:
+        print(f"  AVISO: erro ao ler token do Firestore: {e}")
+        return None, 0
+
 def get_or_refresh_token(user, password):
-    """Reutiliza token cacheado se ainda válido; caso contrário faz novo login."""
+    """Reutiliza token existente (Firestore ou env) se válido; só faz login se necessário."""
+    import time as _t
+
+    # 1) Checar variável de ambiente (GitHub Actions matrix pode passar via output)
     cached = os.environ.get('ERP_TOKEN_CACHE', '').strip()
     if cached:
-        print("Verificando token cacheado...")
+        print("Verificando token cacheado (env)...")
         if erp_token_valid(cached):
-            print("Token cacheado ainda válido — sem novo login")
-            return cached, False   # (token, is_new)
-        print("Token expirado, fazendo novo login...")
-    else:
-        print("Sem token cacheado, fazendo login...")
+            print("Token env ainda válido — sem novo login")
+            return cached, False
+        print("Token env expirado.")
+
+    # 2) Checar token salvo no Firestore — evita deslogar sessão ativa do usuário
+    fs_token, saved_at = get_token_from_firestore()
+    if fs_token:
+        age_h = (_t.time() * 1000 - saved_at) / 3_600_000
+        print(f"  Token Firestore com {age_h:.1f}h de idade — verificando...")
+        if age_h < 18 and erp_token_valid(fs_token):
+            print("  Token Firestore válido — reutilizando sem novo login")
+            return fs_token, False
+        print("  Token Firestore expirado ou inválido.")
+
+    # 3) Sem token válido: novo login
+    print("Fazendo novo login no ERP...")
     token = erp_login(user, password)
-    return token, True   # (token, is_new)
+    return token, True
 
 def save_erp_token_to_firestore(token):
     """Salva o token ERP no Firestore para uso direto pelo browser (botão de atualização)."""
@@ -1524,8 +1554,9 @@ def main():
     token, is_new_token = get_or_refresh_token(erp_user, erp_password)
     print("Token OK")
 
-    # Salva token no Firestore para uso direto pelo browser (botão de atualização imediata)
-    save_erp_token_to_firestore(token)
+    # Salva token no Firestore apenas se é novo — evita criar nova sessão no ERP desnecessariamente
+    if is_new_token:
+        save_erp_token_to_firestore(token)
 
     # Se gerou token novo, salva para o workflow persistir no cache
     if is_new_token:

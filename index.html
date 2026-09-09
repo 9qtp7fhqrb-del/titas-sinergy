@@ -7,7 +7,7 @@
     <script>
     // Cache-buster: força reload se a versão mudou
     (function(){
-      var BUILD = '20260909185422';
+      var BUILD = '20260909190838';
       var stored = localStorage.getItem('d360_build');
       if (stored && stored !== BUILD) {
         localStorage.setItem('d360_build', BUILD);
@@ -7524,12 +7524,12 @@ const D360 = {
     // O sistema deriva automaticamente: margem por loja → subrede → rede
     // COMO ATUALIZAR: edite apenas margem_lojas com os valores do ERP por loja
     // ─────────────────────────────────────────────────────────────────────────────
-    margem_dia: 51.88,              // rede hoje · zerado automaticamente à meia-noite
-    margem_dia_subredes: { t1: 51.69, t2: 49.07, t3: 54.79 },
+    margem_dia: 51.43,              // rede hoje · zerado automaticamente à meia-noite
+    margem_dia_subredes: { t1: 50.79, t2: 49.07, t3: 54.79 },
     margem_lojas: {
         // ── FONTE PRIMÁRIA — atualizar aqui com o Relatório Gerencial por Loja ──
         // atualizado pelo update_d360.py (por loja via API, fallback por subrede)
-        cariacica:   50.96,
+        cariacica:   50.78,
         itabuna:     48.55,
         moxuara:     47.71,
         praiadacosta:47.18,
@@ -7542,10 +7542,10 @@ const D360 = {
         linhares:    49.36,
     },
     margem_subredes: {  // fallback quando margem_lojas estiver incompleta
-        t1: 49.29, t2: 49.36, t3: 50.99
+        t1: 49.23, t2: 49.36, t3: 50.99
     },
     // margem_mes: derivada automaticamente pelo _calcMargemPonderada (não editar)
-    margem_mes: 49.96,
+    margem_mes: 49.94,
 
     subredes: {
         t1: { nome:'Titãs 1', gestor:'Talysson', meta:0,
@@ -7571,8 +7571,8 @@ const D360 = {
                 {n:'STEFANY SPEROTTO BARCELOS',i:'SS',p:25,t:31785.97,ds:20,ult:'09/09'},
                 {n:'LEANDRO DA CRUZ SILVA',i:'LD',p:19,t:24900.97,ds:8,ult:'09/09'},
                 {n:'ELIZA QUEIROZ DE SOUZA',i:'EQ',p:2,t:3800.0,ds:15,ult:'04/09'}]},
-        cariacica:   { label:'Cariacica',          sigla:'CC', sub:'t1', meta:380000,  total:140014.37, ped:99,  cancel:0, agend:0, agendCount:0, agendFat:41685.98,  fat_dia:16309.99, acess_dia:280.0, dia_a_dia:{"1":22020.0,"2":31050.0,"3":57180.0,"4":82489.41,"5":106084.4,"6":106084.4,"7":106084.4,"8":125404.38,"9":140014.37}, acess_dia_top:[{n:'Liz Sophia Andrade Pereira',i:'LS',t:140.0}, {n:'Fabiano Francisco Fontes',i:'FF',t:100.0}, {n:'MAYARA KULL RODRIGUES',i:'MK',t:40.0}], top_dia:[{n:'Liz Sophia Andrade Pereira',i:'LS',t:7739.99}, {n:'MAYARA KULL RODRIGUES',i:'MK',t:4570.0}, {n:'Fabiano Francisco Fontes',i:'FF',t:4000.0}], fin_dia:8039.99, fin_mes:82801.94, top_fin_mes:[{n:'Liz Sophia Andrade Pereira',i:'LS',t:31318.98,bd:[{nm:'PayJoy',t:24620.0},{nm:'OdresCred',t:6698.98},{nm:'Outras',t:4200.0}]},{n:'MAYARA KULL RODRIGUES',i:'MK',t:21698.99,bd:[{nm:'PayJoy',t:16600.0},{nm:'OdresCred',t:5098.99},{nm:'Outras',t:4070.0}]},{n:'ROBERTA FELIPE MALAQUIAS',i:'RF',t:14974.98,bd:[{nm:'PayJoy',t:7565.0},{nm:'OdresCred',t:7409.98},{nm:'Outras',t:3100.0}]},{n:'Fabiano Francisco Fontes',i:'FF',t:14808.99,bd:[{nm:'PayJoy',t:9151.0},{nm:'OdresCred',t:5657.99},{nm:'Outras',t:2300.0}]}], fin_bd:[{nm:'PayJoy',t:57936.0},{nm:'OdresCred',t:24865.94},{nm:'Outras',t:13670.0}], top_fin:[{n:'Liz Sophia Andrade Pereira',i:'LS',t:4139.99}, {n:'MAYARA KULL RODRIGUES',i:'MK',t:2000.0}, {n:'Fabiano Francisco Fontes',i:'FF',t:1900.0}], metaAcess:13500,
-            agendamentos:{total:41685.98, fin:41685.98, fin_bd:[{nm:'PayJoy',t:26721.0},{nm:'OdresCred',t:12075.98},{nm:'Outras',t:3500.0}], top:[{n:'ANA CAROLINA DA SILVA',i:'AC',t:19138.99}, {n:'Fabiano Francisco Fontes',i:'FF',t:9248.0}, {n:'Liz Sophia Andrade Pereira',i:'LS',t:7598.99}, {n:'MAYARA KULL RODRIGUES',i:'MK',t:3900.0}, {n:'ROBERTA FELIPE MALAQUIAS',i:'RF',t:1800.0}]},
+        cariacica:   { label:'Cariacica',          sigla:'CC', sub:'t1', meta:380000,  total:143014.37, ped:101,  cancel:0, agend:0, agendCount:0, agendFat:41685.98,  fat_dia:19309.99, acess_dia:280.0, dia_a_dia:{"1":22020.0,"2":31050.0,"3":57180.0,"4":82489.41,"5":106084.4,"6":106084.4,"7":106084.4,"8":125404.38,"9":143014.37}, acess_dia_top:[{n:'Liz Sophia Andrade Pereira',i:'LS',t:140.0}, {n:'Fabiano Francisco Fontes',i:'FF',t:100.0}, {n:'MAYARA KULL RODRIGUES',i:'MK',t:40.0}], top_dia:[{n:'Liz Sophia Andrade Pereira',i:'LS',t:7739.99}, {n:'Fabiano Francisco Fontes',i:'FF',t:7000.0}, {n:'MAYARA KULL RODRIGUES',i:'MK',t:4570.0}], fin_dia:11039.99, fin_mes:85801.94, top_fin_mes:[{n:'Liz Sophia Andrade Pereira',i:'LS',t:31318.98,bd:[{nm:'PayJoy',t:24620.0},{nm:'OdresCred',t:6698.98},{nm:'Outras',t:4200.0}]},{n:'MAYARA KULL RODRIGUES',i:'MK',t:21698.99,bd:[{nm:'PayJoy',t:16600.0},{nm:'OdresCred',t:5098.99},{nm:'Outras',t:4070.0}]},{n:'Fabiano Francisco Fontes',i:'FF',t:17808.99,bd:[{nm:'PayJoy',t:12151.0},{nm:'OdresCred',t:5657.99},{nm:'Outras',t:2300.0}]},{n:'ROBERTA FELIPE MALAQUIAS',i:'RF',t:14974.98,bd:[{nm:'PayJoy',t:7565.0},{nm:'OdresCred',t:7409.98},{nm:'Outras',t:3100.0}]}], fin_bd:[{nm:'PayJoy',t:60936.0},{nm:'OdresCred',t:24865.94},{nm:'Outras',t:13670.0}], top_fin:[{n:'Fabiano Francisco Fontes',i:'FF',t:4900.0}, {n:'Liz Sophia Andrade Pereira',i:'LS',t:4139.99}, {n:'MAYARA KULL RODRIGUES',i:'MK',t:2000.0}], metaAcess:13500,
+            agendamentos:{total:41685.98, fin:41685.98, fin_bd:[{nm:'PayJoy',t:29721.0},{nm:'OdresCred',t:12075.98},{nm:'Outras',t:3500.0}], top:[{n:'ANA CAROLINA DA SILVA',i:'AC',t:19138.99}, {n:'Fabiano Francisco Fontes',i:'FF',t:9248.0}, {n:'Liz Sophia Andrade Pereira',i:'LS',t:7598.99}, {n:'MAYARA KULL RODRIGUES',i:'MK',t:3900.0}, {n:'ROBERTA FELIPE MALAQUIAS',i:'RF',t:1800.0}]},
             acessorios:{total:5038.44, top:[
                 {n:'Roberta Felipe Malaquias',i:'RF',t:3580,ds:12,ult:'12/06'},
                 {n:'Liz Sophia Andrade Pereira',i:'LS',t:1380,ds:12,ult:'12/06'},
@@ -7582,8 +7582,8 @@ const D360 = {
             top:[{n:'Liz Sophia Andrade Pereira',i:'LS',p:22,t:38698.98,ds:20,ult:'09/09'},
                 {n:'ROBERTA FELIPE MALAQUIAS',i:'RF',p:18,t:27599.98,ds:7,ult:'09/09'},
                 {n:'MAYARA KULL RODRIGUES',i:'MK',p:21,t:26459.99,ds:7,ult:'09/09'},
+                {n:'Fabiano Francisco Fontes',i:'FF',p:16,t:24318.99,ds:8,ult:'09/09'},
                 {n:'ANA CAROLINA DA SILVA',i:'AC',p:19,t:22096.43,ds:8,ult:'09/09'},
-                {n:'Fabiano Francisco Fontes',i:'FF',p:14,t:21318.99,ds:8,ult:'09/09'},
                 {n:'mirelly vieira portugal',i:'MV',p:5,t:3840.0,ds:6,ult:'09/09'}]},
         itabuna:     { label:'Itabuna',            sigla:'IT', sub:'t1', meta:270000,  total:102736.89,  ped:96,  cancel:0, agend:0, agendCount:0, agendFat:41931.95,  fat_dia:7157.98, acess_dia:460.0, dia_a_dia:{"1":14493.0,"2":28178.0,"3":34499.0,"4":64783.97,"5":79265.94,"6":79265.94,"7":79265.94,"8":95578.91,"9":102736.89}, acess_dia_top:[{n:'MIKAELLE SANTOS VIRGENS',i:'MS',t:280.0}, {n:'HERICLES LISBOA DE FREITAS',i:'HL',t:95.0}, {n:'KEIFIT MOREIRA DOS SANTOS',i:'KM',t:55.0}, {n:'REINAN DOS SANTOS PACHECO',i:'RD',t:30.0}], top_dia:[{n:'MIKAELLE SANTOS VIRGENS',i:'MS',t:3978.99}, {n:'KEIFIT MOREIRA DOS SANTOS',i:'KM',t:1554.0}, {n:'ANDREZA DE JESUS SOUZA',i:'AD',t:1499.99}, {n:'HERICLES LISBOA DE FREITAS',i:'HL',t:95.0}, {n:'REINAN DOS SANTOS PACHECO',i:'RD',t:30.0}], fin_dia:6947.98, fin_mes:59991.89, top_fin_mes:[{n:'MIKAELLE SANTOS VIRGENS',i:'MS',t:42679.93,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:42679.93},{nm:'Outras',t:13113.0}]},{n:'ANDREZA DE JESUS SOUZA',i:'AD',t:7586.97,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:7586.97},{nm:'Outras',t:8479.99}]},{n:'KEIFIT MOREIRA DOS SANTOS',i:'KM',t:4897.0,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:4897.0},{nm:'Outras',t:0}]},{n:'jhonatas lucas machado pereira',i:'JL',t:4827.99,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:4827.99},{nm:'Outras',t:1759.0}]}], fin_bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:59991.89},{nm:'Outras',t:23351.99}], top_fin:[{n:'MIKAELLE SANTOS VIRGENS',i:'MS',t:3948.99}, {n:'ANDREZA DE JESUS SOUZA',i:'AD',t:1499.99}, {n:'KEIFIT MOREIRA DOS SANTOS',i:'KM',t:1499.0}], metaAcess:10000,
             agendamentos:{total:41931.95, fin:41931.95, fin_bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:36986.94},{nm:'Outras',t:10948.0}], top:[{n:'MIKAELLE SANTOS VIRGENS',i:'MS',t:41931.95}]},
@@ -8848,7 +8848,7 @@ var _ERP_ESTOQUE = {
       'ZENFONE MAX PLUS':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:0},
       'ZENFONE MAX SHOT':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:0},
     };
-    var _ERP_ESTOQUE_TS = '09/09/2026 15:54';
+    var _ERP_ESTOQUE_TS = '09/09/2026 16:08';
 // Preços por produto — populado pelo update_d360.py a cada 30 min
 var _ERP_PRECOS = {
       'ALCATEL A2 XL': {custo:0.00,venda:0.00},
@@ -9213,7 +9213,7 @@ var _ERP_PRECOS = {
       'ZENFONE MAX PLUS': {custo:0.00,venda:0.00},
       'ZENFONE MAX SHOT': {custo:0.00,venda:0.00},
     };
-    var _ERP_PRECOS_TS = '09/09/2026 15:54';
+    var _ERP_PRECOS_TS = '09/09/2026 16:08';
 // Flag de sessão: true = fetch já tentado (sucesso ou falha), não tentar de novo
 var _erpPrecosCarregados = false;
 var _SUG_SPECS = {
@@ -11626,11 +11626,11 @@ const VEND_METAS_DB = {
         {k:'gabriel',    meta:                                    92000},   // sem meta lançada
     ],
     itabuna: [
-        {k:'mikaelle',   meta:                                                                   91000},   // Ago/26: 91.000
-        {k:'jhonatas',   meta:                                 84000},   // Ago/26: 60.000
-        {k:'keifit',     meta:                                                                   84000},   // Ago/26: 60.000
-        {k:'andreza',    meta:                                                                   84000},   // Ago/26: 60.000
-        {k:'hericles',   meta:                                                                   84000},   // Ago/26: 40.000
+        {k:'mikaelle',   meta:                                                                    91000},   // Ago/26: 91.000
+        {k:'jhonatas',   meta:                                  84000},   // Ago/26: 60.000
+        {k:'keifit',     meta:                                                                    84000},   // Ago/26: 60.000
+        {k:'andreza',    meta:                                                                    84000},   // Ago/26: 60.000
+        {k:'hericles',   meta:                                                                    84000},   // Ago/26: 40.000
         {k:'evelyn',     meta:  25000},   // sem meta lançada
         {k:'sandy',      meta:  50000},   // sem meta lançada
         {k:'maikelly',   meta:  25000},   // sem meta lançada
@@ -11673,7 +11673,7 @@ const VEND_METAS_DB = {
     ],
     praiadacosta: [
         {k:'nycolly',    meta:  50000},   // Ago/26: 50.000
-        {k:'stefany',    meta:                                                                                                                                                                                                                            112833},   // Ago/26: 50.000
+        {k:'stefany',    meta:                                                                                                                                                                                                                             112833},   // Ago/26: 50.000
         {k:'filipe',     meta:  50000},   // sem meta lançada
         {k:'deborah',    meta:  50000},   // sem meta lançada
         {k:'thaymmon',   meta:  50000},   // sem meta lançada
@@ -11682,8 +11682,8 @@ const VEND_METAS_DB = {
     saomateus: [
         {k:'ana',        meta:                                   108200},   // Ago/26: 108.200
         {k:'eliza',      meta:                                    57000},   // Ago/26: 57.000
-        {k:'randeclay',  meta:                                                                  112833},   // Ago/26: 57.000
-        {k:'leandro',    meta:                                                                  112833},   // Ago/26: 57.000
+        {k:'randeclay',  meta:                                                                   112833},   // Ago/26: 57.000
+        {k:'leandro',    meta:                                                                   112833},   // Ago/26: 57.000
         {k:'stefany',    meta:  57000},   // Ago/26: 57.000
         {k:'alice',      meta:  57000},   // sem meta lançada
         {k:'daniele',    meta:  57000},   // sem meta lançada

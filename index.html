@@ -7,7 +7,7 @@
     <script>
     // Cache-buster: força reload se a versão mudou
     (function(){
-      var BUILD = '20260912201723';
+      var BUILD = '20260912210734';
       var stored = localStorage.getItem('d360_build');
       if (stored && stored !== BUILD) {
         localStorage.setItem('d360_build', BUILD);
@@ -8053,28 +8053,28 @@ const D360 = {
     // O sistema deriva automaticamente: margem por loja → subrede → rede
     // COMO ATUALIZAR: edite apenas margem_lojas com os valores do ERP por loja
     // ─────────────────────────────────────────────────────────────────────────────
-    margem_dia: 50.20,              // rede hoje · zerado automaticamente à meia-noite
-    margem_dia_subredes: { t1: 50.37, t2: 49.88, t3: 50.22 },
+    margem_dia: 50.29,              // rede hoje · zerado automaticamente à meia-noite
+    margem_dia_subredes: { t1: 50.59, t2: 49.88, t3: 50.24 },
     margem_lojas: {
         // ── FONTE PRIMÁRIA — atualizar aqui com o Relatório Gerencial por Loja ──
         // atualizado pelo update_d360.py (por loja via API, fallback por subrede)
         cariacica:   50.05,
         itabuna:     49.12,
-        moxuara:     48.14,
+        moxuara:     48.24,
         praiadacosta:46.92,
         barreiras:   50.94,
         teixeira:    50.69,
         laranjeiras: 48.55,
         saomateus:   52.42,
-        serra:       49.98,
+        serra:       49.99,
         montserrat:  51.44,
         linhares:    49.72,
     },
     margem_subredes: {  // fallback quando margem_lojas estiver incompleta
-        t1: 49.25, t2: 49.74, t3: 50.95
+        t1: 49.27, t2: 49.74, t3: 50.96
     },
     // margem_mes: derivada automaticamente pelo _calcMargemPonderada (não editar)
-    margem_mes: 50.03,
+    margem_mes: 50.04,
 
     subredes: {
         t1: { nome:'Titãs 1', gestor:'Talysson', meta:0,
@@ -8144,9 +8144,9 @@ const D360 = {
                 {n:'DANIELA MILENA GOMES MARES',i:'DM',p:12,t:21799.95,ds:6,ult:'12/09'},
                 {n:'MATEUS DA SILVA MATOS',i:'MD',p:11,t:16986.98,ds:6,ult:'12/09'},
                 {n:'VICTOR ROBERTO DE OLIVEIRA NASCIMENTO',i:'VR',p:13,t:15289.99,ds:5,ult:'11/09'}]},
-        moxuara:     { label:'Moxuara',            sigla:'MX', sub:'t1', meta:270000,  total:124194.98,  ped:132, cancel:0, agend:0, agendCount:0, agendFat:34427.0,  fat_dia:3849.99, acess_dia:0, dia_a_dia:{"1":4680.0,"2":8485.0,"3":10055.0,"5":51272.0,"6":51272.0,"8":87116.99,"9":99456.99,"10":106986.99,"11":117924.99,"12":124194.98}, acess_dia_top:[], top_dia:[{n:'LUCCAS DA SILVA MEDEIROS MARTINS',i:'LD',t:1950.0}, {n:'Iasmim vitoria medeiros gaio',i:'IV',t:1899.99}], fin_dia:3849.99, fin_mes:88525.98, top_fin_mes:[{n:'Iasmim vitoria medeiros gaio',i:'IV',t:30715.98,bd:[{nm:'PayJoy',t:20120.0},{nm:'OdresCred',t:10595.98},{nm:'Outras',t:0}]},{n:'LUCCAS DA SILVA MEDEIROS MARTINS',i:'LD',t:26970.0,bd:[{nm:'PayJoy',t:23860.0},{nm:'OdresCred',t:3110.0},{nm:'Outras',t:0}]},{n:'KHAYLLANE DE ALMEIDA FERREIRA',i:'KD',t:25880.0,bd:[{nm:'PayJoy',t:21500.0},{nm:'OdresCred',t:4380.0},{nm:'Outras',t:0}]},{n:'Fabiano Francisco Fontes',i:'FF',t:4960.0,bd:[{nm:'PayJoy',t:3600.0},{nm:'OdresCred',t:1360.0},{nm:'Outras',t:0}]}], fin_bd:[{nm:'PayJoy',t:69080.0},{nm:'OdresCred',t:19445.98},{nm:'Outras',t:0}], top_fin:[{n:'LUCCAS DA SILVA MEDEIROS MARTINS',i:'LD',t:1950.0}, {n:'Iasmim vitoria medeiros gaio',i:'IV',t:1899.99}], metaAcess:12000,
-            agendamentos:{total:34427.0, fin:34427.0, fin_bd:[{nm:'PayJoy',t:29160.0},{nm:'OdresCred',t:10827.0},{nm:'Outras',t:0}], top:[{n:'LUCCAS DA SILVA MEDEIROS MARTINS',i:'LD',t:22930.0}, {n:'KHAYLLANE DE ALMEIDA FERREIRA',i:'KD',t:5900.0}, {n:'Iasmim vitoria medeiros gaio',i:'IV',t:5597.0}]},
-            acessorios:{total:6929.0, top:[
+        moxuara:     { label:'Moxuara',            sigla:'MX', sub:'t1', meta:270000,  total:126114.98,  ped:135, cancel:0, agend:0, agendCount:0, agendFat:36127.0,  fat_dia:5769.99, acess_dia:220.0, dia_a_dia:{"1":4680.0,"2":8485.0,"3":10055.0,"5":51272.0,"6":51272.0,"8":87116.99,"9":99456.99,"10":106986.99,"11":117924.99,"12":126114.98}, acess_dia_top:[{n:'LUCCAS DA SILVA MEDEIROS MARTINS',i:'LD',t:220.0}], top_dia:[{n:'LUCCAS DA SILVA MEDEIROS MARTINS',i:'LD',t:3870.0}, {n:'Iasmim vitoria medeiros gaio',i:'IV',t:1899.99}], fin_dia:5549.99, fin_mes:90225.98, top_fin_mes:[{n:'Iasmim vitoria medeiros gaio',i:'IV',t:30715.98,bd:[{nm:'PayJoy',t:20120.0},{nm:'OdresCred',t:10595.98},{nm:'Outras',t:0}]},{n:'LUCCAS DA SILVA MEDEIROS MARTINS',i:'LD',t:28670.0,bd:[{nm:'PayJoy',t:25560.0},{nm:'OdresCred',t:3110.0},{nm:'Outras',t:0}]},{n:'KHAYLLANE DE ALMEIDA FERREIRA',i:'KD',t:25880.0,bd:[{nm:'PayJoy',t:21500.0},{nm:'OdresCred',t:4380.0},{nm:'Outras',t:0}]},{n:'Fabiano Francisco Fontes',i:'FF',t:4960.0,bd:[{nm:'PayJoy',t:3600.0},{nm:'OdresCred',t:1360.0},{nm:'Outras',t:0}]}], fin_bd:[{nm:'PayJoy',t:70780.0},{nm:'OdresCred',t:19445.98},{nm:'Outras',t:0}], top_fin:[{n:'LUCCAS DA SILVA MEDEIROS MARTINS',i:'LD',t:3650.0}, {n:'Iasmim vitoria medeiros gaio',i:'IV',t:1899.99}], metaAcess:12000,
+            agendamentos:{total:36127.0, fin:36127.0, fin_bd:[{nm:'PayJoy',t:30860.0},{nm:'OdresCred',t:10827.0},{nm:'Outras',t:0}], top:[{n:'LUCCAS DA SILVA MEDEIROS MARTINS',i:'LD',t:24630.0}, {n:'KHAYLLANE DE ALMEIDA FERREIRA',i:'KD',t:5900.0}, {n:'Iasmim vitoria medeiros gaio',i:'IV',t:5597.0}]},
+            acessorios:{total:7149.0, top:[
                 {n:'Khayllane de Almeida Ferreira',i:'KF',t:3495,ds:12,ult:'12/06'},
                 {n:'Gabriel Barreto Pereira',i:'GB',t:1140,ds:12,ult:'12/06'},
                 {n:'Luccas da Silva Medeiros Martins',i:'LS',t:1280,ds:12,ult:'12/06'},
@@ -8154,7 +8154,7 @@ const D360 = {
             ], dias:[{d:'01/06',ac:380,cel:14400},{d:'06/06',ac:2860,cel:70428},{d:'07/06',ac:1520,cel:14100},{d:'08/06',ac:40,cel:6449}]},
             top:[{n:'Iasmim vitoria medeiros gaio',i:'IV',p:51,t:46621.98,ds:9,ult:'12/09'},
                 {n:'KHAYLLANE DE ALMEIDA FERREIRA',i:'KD',p:35,t:36040.0,ds:6,ult:'11/09'},
-                {n:'LUCCAS DA SILVA MEDEIROS MARTINS',i:'LD',p:33,t:33295.0,ds:20,ult:'12/09'},
+                {n:'LUCCAS DA SILVA MEDEIROS MARTINS',i:'LD',p:36,t:35215.0,ds:20,ult:'12/09'},
                 {n:'Fabiano Francisco Fontes',i:'FF',p:7,t:7338.0},
                 {n:'GABRIEL BARRETO PEREIRA',i:'GB',p:6,t:900.0,ds:3,ult:'11/09'}]},
         teixeira:    { label:'Teixeira de Freitas',sigla:'TF', sub:'t2', meta:200000,  total:84116.93,  ped:58,  cancel:0, agend:0, agendCount:0, agendFat:40410.97,  fat_dia:3679.99, acess_dia:100.0, dia_a_dia:{"1":5110.0,"2":13040.0,"3":13273.0,"5":51402.95,"6":51402.95,"8":59072.95,"9":67996.94,"10":75286.94,"11":80436.94,"12":84116.93}, acess_dia_top:[{n:'CARLA SANTOS LUIZ',i:'CS',t:100.0}], top_dia:[{n:'AMANDA GOULART ANDRADE',i:'AG',t:1880.0}, {n:'CARLA SANTOS LUIZ',i:'CS',t:1799.99}], fin_dia:3679.99, fin_mes:71479.93, top_fin_mes:[{n:'CARLA SANTOS LUIZ',i:'CS',t:21296.98,bd:[{nm:'PayJoy',t:8400.0},{nm:'OdresCred',t:12896.98},{nm:'Outras',t:0}]},{n:'CARINE FERREIRA FRANCO',i:'CF',t:20228.98,bd:[{nm:'PayJoy',t:8780.0},{nm:'OdresCred',t:11448.98},{nm:'Outras',t:0}]},{n:'AMANDA GOULART ANDRADE',i:'AG',t:17796.0,bd:[{nm:'PayJoy',t:15798.0},{nm:'OdresCred',t:1998.0},{nm:'Outras',t:0}]},{n:'PALOMA DE JESUS SANTOS',i:'PD',t:12157.97,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:12157.97},{nm:'Outras',t:0}]}], fin_bd:[{nm:'PayJoy',t:32978.0},{nm:'OdresCred',t:38501.93},{nm:'Outras',t:0}], top_fin:[{n:'AMANDA GOULART ANDRADE',i:'AG',t:1880.0}, {n:'CARLA SANTOS LUIZ',i:'CS',t:1799.99}], metaAcess:6500,
@@ -8183,15 +8183,15 @@ const D360 = {
                 {n:'Steffany Oliveira França',i:'SO',p:22,t:19743.12,ds:5,ult:'10/09'},
                 {n:'stefany santiago rocha',i:'SS',p:16,t:18853.99,ds:6,ult:'11/09'},
                 {n:'jhennyfer eduarda rodrigues dos santos',i:'JE',p:2,t:3409.15,ds:2,ult:'02/09'}]},
-        serra:       { label:'Serra',              sigla:'SR', sub:'t3', meta:230000,  total:137770.9, ped:127,  cancel:0, agend:0, agendCount:0, agendFat:31057.96,  fat_dia:10410.0, acess_dia:960.0, dia_a_dia:{"1":3880.0,"2":8159.0,"3":16299.0,"5":51119.98,"6":51119.98,"8":93726.94,"9":101576.94,"10":115731.9,"11":127360.9,"12":137770.9}, acess_dia_top:[{n:'Gabriel Moura Dos Reis',i:'GM',t:920.0}, {n:'LUIZ GUSTAVO',i:'LG',t:40.0}], top_dia:[{n:'Gabriel Moura Dos Reis',i:'GM',t:8670.0}, {n:'LUIZ GUSTAVO',i:'LG',t:1740.0}], fin_dia:3400.0, fin_mes:44326.97, top_fin_mes:[{n:'Gabriel Moura Dos Reis',i:'GM',t:44326.97,bd:[{nm:'PayJoy',t:5650.0},{nm:'OdresCred',t:38676.97},{nm:'Outras',t:0}]}], fin_bd:[{nm:'PayJoy',t:5650.0},{nm:'OdresCred',t:38676.97},{nm:'Outras',t:0}], top_fin:[{n:'Gabriel Moura Dos Reis',i:'GM',t:3400.0}], metaAcess:15000,
+        serra:       { label:'Serra',              sigla:'SR', sub:'t3', meta:230000,  total:137800.9, ped:128,  cancel:0, agend:0, agendCount:0, agendFat:31057.96,  fat_dia:10440.0, acess_dia:990.0, dia_a_dia:{"1":3880.0,"2":8159.0,"3":16299.0,"5":51119.98,"6":51119.98,"8":93726.94,"9":101576.94,"10":115731.9,"11":127360.9,"12":137800.9}, acess_dia_top:[{n:'Gabriel Moura Dos Reis',i:'GM',t:920.0}, {n:'LUIZ GUSTAVO',i:'LG',t:40.0}, {n:'LUIZ HENRIQUE VIANA DA ROCHA',i:'LH',t:30.0}], top_dia:[{n:'Gabriel Moura Dos Reis',i:'GM',t:8670.0}, {n:'LUIZ GUSTAVO',i:'LG',t:1740.0}, {n:'LUIZ HENRIQUE VIANA DA ROCHA',i:'LH',t:30.0}], fin_dia:3400.0, fin_mes:44326.97, top_fin_mes:[{n:'Gabriel Moura Dos Reis',i:'GM',t:44326.97,bd:[{nm:'PayJoy',t:5650.0},{nm:'OdresCred',t:38676.97},{nm:'Outras',t:0}]}], fin_bd:[{nm:'PayJoy',t:5650.0},{nm:'OdresCred',t:38676.97},{nm:'Outras',t:0}], top_fin:[{n:'Gabriel Moura Dos Reis',i:'GM',t:3400.0}], metaAcess:15000,
             agendamentos:{total:31057.96, fin:31057.96, fin_bd:[{nm:'PayJoy',t:1900.0},{nm:'OdresCred',t:36477.96},{nm:'Outras',t:0}], top:[{n:'Gabriel Moura Dos Reis',i:'GM',t:14759.0}, {n:'LUIZ HENRIQUE VIANA DA ROCHA',i:'LH',t:10799.97}, {n:'LUIZ GUSTAVO',i:'LG',t:5498.99}]},
-            acessorios:{total:13595.99, top:[
+            acessorios:{total:13625.99, top:[
                 {n:'Marcela da Silva Lopes',i:'ML',t:1850,ds:12,ult:'12/06'},
                 {n:'Karen Scavelo Souza',i:'KS',t:1320,ds:12,ult:'12/06'},
                 {n:'Luiz Henrique Viana da Rocha',i:'LH',t:710,ds:12,ult:'12/06'}
             ], dias:[{d:'01/06',ac:190,cel:0},{d:'06/06',ac:1870,cel:34506.50},{d:'07/06',ac:770,cel:8399},{d:'08/06',ac:550,cel:6299}]},
             top:[{n:'Gabriel Moura Dos Reis',i:'GM',p:46,t:55981.96,ds:6,ult:'12/09'},
-                {n:'LUIZ HENRIQUE VIANA DA ROCHA',i:'LH',p:53,t:49507.95,ds:7,ult:'11/09'},
+                {n:'LUIZ HENRIQUE VIANA DA ROCHA',i:'LH',p:54,t:49537.95,ds:8,ult:'12/09'},
                 {n:'LUIZ GUSTAVO',i:'LG',p:28,t:32280.99,ds:8,ult:'12/09'}]},
         linhares:    { label:'Linhares',           sigla:'LH', sub:'t3', meta:230000,  total:106721.92,  ped:109,  cancel:0, agend:0, agendCount:0, agendFat:33248.98,  fat_dia:12296.96, acess_dia:1329.97, dia_a_dia:{"1":12137.0,"2":23963.0,"3":35911.0,"5":69329.98,"6":69329.98,"8":75079.98,"9":83507.97,"10":89176.96,"11":94424.96,"12":106721.92}, acess_dia_top:[{n:'Juliana Pereira do Nascimento',i:'JP',t:659.97}, {n:'RAYCA MENDES MORAIS',i:'RM',t:550.0}, {n:'Wenderson Pereira Rocha',i:'WP',t:120.0}], top_dia:[{n:'RAYCA MENDES MORAIS',i:'RM',t:8118.99}, {n:'Juliana Pereira do Nascimento',i:'JP',t:4057.97}, {n:'Wenderson Pereira Rocha',i:'WP',t:120.0}], fin_dia:5068.99, fin_mes:54242.98, top_fin_mes:[{n:'RAYCA MENDES MORAIS',i:'RM',t:28821.99,bd:[{nm:'PayJoy',t:7820.0},{nm:'OdresCred',t:21001.99},{nm:'Outras',t:0}]},{n:'Wenderson Pereira Rocha',i:'WP',t:25420.99,bd:[{nm:'PayJoy',t:5600.0},{nm:'OdresCred',t:19820.99},{nm:'Outras',t:0}]}], fin_bd:[{nm:'PayJoy',t:13420.0},{nm:'OdresCred',t:40822.98},{nm:'Outras',t:0}], top_fin:[{n:'RAYCA MENDES MORAIS',i:'RM',t:5068.99}], metaAcess:9000,
             agendamentos:{total:33248.98, fin:33248.98, fin_bd:[{nm:'PayJoy',t:7270.0},{nm:'OdresCred',t:29836.95},{nm:'Outras',t:0}], top:[{n:'Juliana Pereira do Nascimento',i:'JP',t:21132.98}, {n:'Wenderson Pereira Rocha',i:'WP',t:7047.0}, {n:'RAYCA MENDES MORAIS',i:'RM',t:5069.0}]},
@@ -9397,7 +9397,7 @@ var _ERP_ESTOQUE = {
       'ZENFONE MAX PLUS':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:0},
       'ZENFONE MAX SHOT':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:0},
     };
-    var _ERP_ESTOQUE_TS = '12/09/2026 17:17';
+    var _ERP_ESTOQUE_TS = '12/09/2026 18:07';
 // Preços por produto — populado pelo update_d360.py a cada 30 min
 var _ERP_PRECOS = {
       'ALCATEL A2 XL': {custo:0.00,venda:0.00},
@@ -9759,7 +9759,7 @@ var _ERP_PRECOS = {
       'ZENFONE MAX PLUS': {custo:0.00,venda:0.00},
       'ZENFONE MAX SHOT': {custo:0.00,venda:0.00},
     };
-    var _ERP_PRECOS_TS = '12/09/2026 17:17';
+    var _ERP_PRECOS_TS = '12/09/2026 18:07';
 // Flag de sessão: true = fetch já tentado (sucesso ou falha), não tentar de novo
 var _erpPrecosCarregados = false;
 var _SUG_SPECS = {
@@ -12170,7 +12170,7 @@ const VEND_METAS_DB = {
         {k:'sophia',     meta: 100000},   // alias liz sophia
         {k:'nicolas',    meta:  50000},   // sem meta lançada
         {k:'glaupierre', meta:  50000},   // sem meta lançada
-        {k:'gabriel',    meta:                                                                            50000},   // sem meta lançada
+        {k:'gabriel',    meta:                                                                             50000},   // sem meta lançada
     ],
     itabuna: [
         {k:'mikaelle',   meta:                                                          91000},   // Ago/26: 91.000
@@ -12192,8 +12192,8 @@ const VEND_METAS_DB = {
         {k:'jhennyfer',  meta:  50000},   // sem meta lançada
     ],
     linhares: [
-        {k:'rayca',      meta:                                                 68850},   // ref jul/26 — aguardando lançamento ago/26
-        {k:'juliana',    meta:                                                  86300},   // ref jul/26 — aguardando lançamento ago/26
+        {k:'rayca',      meta:                                                  68850},   // ref jul/26 — aguardando lançamento ago/26
+        {k:'juliana',    meta:                                                   86300},   // ref jul/26 — aguardando lançamento ago/26
         {k:'natalia',    meta:  71500},   // alias natália
         {k:'natália',    meta:  71500},   // alias
         {k:'krystian',   meta:  50000},   // sem meta lançada
@@ -12239,7 +12239,7 @@ const VEND_METAS_DB = {
     ],
     serra: [
         {k:'gabriel',    meta:  92000},   // Ago/26: 92.000
-        {k:'carlos',     meta:                                                                                                      140000},   // Ago/26: 59.000
+        {k:'carlos',     meta:                                                                                                       140000},   // Ago/26: 59.000
         {k:'hiully',     meta:                                    59000},   // Ago/26: 59.000
         {k:'felipe',     meta:  50000},   // sem meta lançada
         {k:'karen',      meta:  50000},   // sem meta lançada

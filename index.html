@@ -7,7 +7,7 @@
     <script>
     // Cache-buster: força reload se a versão mudou
     (function(){
-      var BUILD = '20260914040211';
+      var BUILD = '20260914120408';
       var stored = localStorage.getItem('d360_build');
       if (stored && stored !== BUILD) {
         localStorage.setItem('d360_build', BUILD);
@@ -9128,7 +9128,6 @@ var _ERP_ESTOQUE = {
       'INFINIX NOTE 12 PRO':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:0},
       'INFINIX NOTE 40':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:0},
       'INFINIX NOTE 40 PRO+':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:0},
-      'INFINIX NOTE 50 PRO':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:0},
       'INFINIX NOTE 50S':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:0},
       'INFINIX SMART 10':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:0},
       'INFINIX SMART 6':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:0},
@@ -9398,7 +9397,7 @@ var _ERP_ESTOQUE = {
       'ZENFONE MAX PLUS':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:0},
       'ZENFONE MAX SHOT':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:0},
     };
-    var _ERP_ESTOQUE_TS = '14/09/2026 01:01';
+    var _ERP_ESTOQUE_TS = '14/09/2026 09:03';
 // Preços por produto — populado pelo update_d360.py a cada 30 min
 var _ERP_PRECOS = {
       'ALCATEL A2 XL': {custo:0.00,venda:0.00},
@@ -9480,12 +9479,11 @@ var _ERP_PRECOS = {
       'INFINIX HOT 60 PRO': {custo:0.00,venda:0.00},
       'INFINIX HOT 60 PRO PLUS': {custo:0.00,venda:0.00},
       'INFINIX HOT 60 PRO+': {custo:0.00,venda:2899.99},
-      'INFINIX HOT 60I': {custo:900.00,venda:2250.00},
+      'INFINIX HOT 60I': {custo:925.00,venda:2250.00},
       'INFINIX NOTE 12': {custo:0.00,venda:0.00},
       'INFINIX NOTE 12 PRO': {custo:0.00,venda:0.00},
       'INFINIX NOTE 40': {custo:0.00,venda:0.00},
       'INFINIX NOTE 40 PRO+': {custo:0.00,venda:0.00},
-      'INFINIX NOTE 50 PRO': {custo:0.00,venda:0.00},
       'INFINIX NOTE 50S': {custo:0.00,venda:0.00},
       'INFINIX SMART 10': {custo:690.00,venda:1730.00},
       'INFINIX SMART 6': {custo:0.00,venda:0.00},
@@ -9659,6 +9657,7 @@ var _ERP_PRECOS = {
       'REALME NOTE 60S': {custo:900.00,venda:2250.00},
       'REALME NOTE 60X': {custo:670.00,venda:1700.00},
       'REALME NOTE 70': {custo:755.00,venda:1900.00},
+      'REALME P4 LITE': {custo:770.00,venda:1900.00},
       'REALME X50': {custo:0.00,venda:0.00},
       'REDMI A5': {custo:0.00,venda:0.00},
       'REDMI NOTE 14 PRO': {custo:0.00,venda:0.00},
@@ -9722,7 +9721,7 @@ var _ERP_PRECOS = {
       'TECNO SPARK 20 PRO PLUS': {custo:0.00,venda:0.00},
       'TECNO SPARK 20C': {custo:0.00,venda:0.00},
       'TECNO SPARK 30 PRO': {custo:850.00,venda:2200.00},
-      'TECNO SPARK 30C': {custo:760.00,venda:1900.00},
+      'TECNO SPARK 30C': {custo:740.00,venda:1900.00},
       'TECNO SPARK 40': {custo:0.00,venda:0.00},
       'TECNO SPARK 6': {custo:0.00,venda:0.00},
       'TECNO SPARK 6 GO': {custo:0.00,venda:0.00},
@@ -9761,7 +9760,7 @@ var _ERP_PRECOS = {
       'ZENFONE MAX PLUS': {custo:0.00,venda:0.00},
       'ZENFONE MAX SHOT': {custo:0.00,venda:0.00},
     };
-    var _ERP_PRECOS_TS = '14/09/2026 01:02';
+    var _ERP_PRECOS_TS = '14/09/2026 09:04';
 // Flag de sessão: true = fetch já tentado (sucesso ou falha), não tentar de novo
 var _erpPrecosCarregados = false;
 var _SUG_SPECS = {
@@ -12172,7 +12171,7 @@ const VEND_METAS_DB = {
         {k:'sophia',     meta: 100000},   // alias liz sophia
         {k:'nicolas',    meta:  50000},   // sem meta lançada
         {k:'glaupierre', meta:  50000},   // sem meta lançada
-        {k:'gabriel',    meta:                                                                                          50000},   // sem meta lançada
+        {k:'gabriel',    meta:                                                                                           50000},   // sem meta lançada
     ],
     itabuna: [
         {k:'mikaelle',   meta:                                                          91000},   // Ago/26: 91.000
@@ -12194,8 +12193,8 @@ const VEND_METAS_DB = {
         {k:'jhennyfer',  meta:  50000},   // sem meta lançada
     ],
     linhares: [
-        {k:'rayca',      meta:                                                               68850},   // ref jul/26 — aguardando lançamento ago/26
-        {k:'juliana',    meta:                                                                86300},   // ref jul/26 — aguardando lançamento ago/26
+        {k:'rayca',      meta:                                                                68850},   // ref jul/26 — aguardando lançamento ago/26
+        {k:'juliana',    meta:                                                                 86300},   // ref jul/26 — aguardando lançamento ago/26
         {k:'natalia',    meta:  71500},   // alias natália
         {k:'natália',    meta:  71500},   // alias
         {k:'krystian',   meta:  50000},   // sem meta lançada
@@ -12241,7 +12240,7 @@ const VEND_METAS_DB = {
     ],
     serra: [
         {k:'gabriel',    meta:  92000},   // Ago/26: 92.000
-        {k:'carlos',     meta:                                                                                                                    140000},   // Ago/26: 59.000
+        {k:'carlos',     meta:                                                                                                                     140000},   // Ago/26: 59.000
         {k:'hiully',     meta:                                    59000},   // Ago/26: 59.000
         {k:'felipe',     meta:  50000},   // sem meta lançada
         {k:'karen',      meta:  50000},   // sem meta lançada

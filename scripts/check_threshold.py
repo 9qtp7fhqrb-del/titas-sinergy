@@ -106,6 +106,8 @@ def get_today_total(token):
     collaborators = []
     if isinstance(data, list):
         collaborators = data
+    elif isinstance(data.get('data'), list):
+        collaborators = data['data']
     elif isinstance(data.get('data'), dict):
         collaborators = data['data'].get('by_collaborator', [])
     else:
@@ -218,6 +220,20 @@ def main():
                 print(f'  ↺ Virada de dia detectada (último update: {last_dt_brt.strftime("%d/%m %H:%M")}) — base resetada para 0')
         except Exception:
             pass
+
+    # Fallback por tempo: se o último update foi há mais de 2h, força atualização
+    # Garante refresh das vendas acumuladas mesmo quando ERP não tem dados do dia ainda
+    if LAST_TS:
+        try:
+            last_dt_utc = datetime.fromisoformat(LAST_TS.replace('Z', '+00:00'))
+            hours_since = (datetime.now(timezone.utc) - last_dt_utc).total_seconds() / 3600
+            if hours_since >= 2.0:
+                print(f'  ↻ Último update há {hours_since:.1f}h — forçando atualização (max-age 2h)')
+                gh_output('should_update', 'true')
+                gh_output('skip_reason',   f'max_age_{hours_since:.1f}h')
+                return
+        except Exception as e:
+            print(f'  Aviso ao verificar max-age: {e}')
 
     try:
         token, is_new = get_or_login_token()

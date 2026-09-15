@@ -85,7 +85,7 @@ def erp_login(user, password, retries=4, wait=15):
 def erp_token_valid(token):
     """Verifica se o token ainda é válido sem fazer novo login."""
     try:
-        today = date.today().strftime('%Y-%m-%d')
+        today = _now_brt.strftime('%Y-%m-%d')
         r = requests.get(f'{ERP_BASE}/reports/sales_by_collaborator',
             params={'start_date': today, 'end_date': today,
                     'report_view_mode': 'summary', 'show_insights': 'false',
@@ -738,6 +738,8 @@ def process_agend_fin_per_loja(token, start, today, store_id_map):
 def get_collaborators(data):
     if isinstance(data, list):
         return data
+    if isinstance(data.get('data'), list):
+        return data['data']
     # Estrutura correta da API CDC: data['data']['by_collaborator']
     if 'data' in data and isinstance(data['data'], dict):
         by_col = data['data'].get('by_collaborator')

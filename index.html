@@ -9130,7 +9130,6 @@ var _ERP_ESTOQUE = {
       'INFINIX NOTE 12 PRO':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:0},
       'INFINIX NOTE 40':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:0},
       'INFINIX NOTE 40 PRO+':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:0},
-      'INFINIX NOTE 50 PRO':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:0},
       'INFINIX NOTE 50S':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:0},
       'INFINIX SMART 10':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:0},
       'INFINIX SMART 6':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:0},
@@ -9487,7 +9486,6 @@ var _ERP_PRECOS = {
       'INFINIX NOTE 12 PRO': {custo:0.00,venda:0.00},
       'INFINIX NOTE 40': {custo:0.00,venda:0.00},
       'INFINIX NOTE 40 PRO+': {custo:0.00,venda:0.00},
-      'INFINIX NOTE 50 PRO': {custo:0.00,venda:0.00},
       'INFINIX NOTE 50S': {custo:0.00,venda:0.00},
       'INFINIX SMART 10': {custo:690.00,venda:1730.00},
       'INFINIX SMART 6': {custo:0.00,venda:0.00},
@@ -9724,7 +9722,7 @@ var _ERP_PRECOS = {
       'TECNO SPARK 20 PRO PLUS': {custo:0.00,venda:0.00},
       'TECNO SPARK 20C': {custo:0.00,venda:0.00},
       'TECNO SPARK 30 PRO': {custo:850.00,venda:2200.00},
-      'TECNO SPARK 30C': {custo:790.00,venda:2000.00},
+      'TECNO SPARK 30C': {custo:740.00,venda:1900.00},
       'TECNO SPARK 40': {custo:0.00,venda:0.00},
       'TECNO SPARK 6': {custo:0.00,venda:0.00},
       'TECNO SPARK 6 GO': {custo:0.00,venda:0.00},
@@ -10933,6 +10931,164 @@ function _renderFatDiario() {
         (lojas.length === 0 ? '<p style="text-align:center;font-size:11px;color:#6b7280;padding:20px 0;">Sem dados de vendas para hoje nesta subrede.</p>' : '');
 }
 
+/* ══════════════════════════════════════
+   CAUTELAR — modal de vendas por rede/loja/vendedor
+   Fonte de dados: a definir (window._cautelarData será populado pelo ERP)
+   ══════════════════════════════════════ */
+function abrirCautelar() {
+    var modal = document.getElementById('modal-cautelar');
+    if (!modal) return;
+    modal.classList.remove('hidden');
+    _renderCautelarRanking();
+}
+function fecharCautelar() {
+    var modal = document.getElementById('modal-cautelar');
+    if (modal) modal.classList.add('hidden');
+}
+
+// Estado do expand de lojas
+window._cautelarExpanded = window._cautelarExpanded || {};
+
+function _toggleCautelarLoja(key) {
+    window._cautelarExpanded[key] = !window._cautelarExpanded[key];
+    _renderCautelarRanking();
+}
+
+function _renderCautelarRanking() {
+    var wrap = document.getElementById('modal-cautelar-body');
+    if (!wrap) return;
+
+    var _d = _360D();
+    var cM = typeof METAS_CAUTELAR !== 'undefined' ? METAS_CAUTELAR : {};
+    // Fonte de dados real — será preenchida pelo ERP futuramente
+    // Estrutura esperada: { lojaKey: { total: Number, top: [{n, i, t}] } }
+    var _dados = window._cautelarData || {};
+
+    var _brl = function(v) { return 'R$ ' + (v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}); };
+    var _pct = function(v, meta) { return meta > 0 ? Math.round(v / meta * 100) : 0; };
+    var _cor = function(p) { return p >= 100 ? '#4ade80' : p >= 80 ? '#10b981' : p >= 50 ? '#c084fc' : '#a78bfa'; };
+
+    var REDES = [
+        { key: 't1', nome: 'Subrede 1 — Talysson', cor: '#4A9EE0',
+          lojas: ['cariacica','itabuna','moxuara','praiadacosta'] },
+        { key: 't2', nome: 'Subrede 2 — Adriel',   cor: '#5BC47A',
+          lojas: ['barreiras','teixeira','laranjeiras'] },
+        { key: 't3', nome: 'Subrede 3 — Arthur',   cor: '#E06B4A',
+          lojas: ['saomateus','linhares','serra','montserrat'] },
+    ];
+
+    var LOJA_LABEL = {
+        cariacica:'Cariacica', itabuna:'Itabuna', moxuara:'Moxuara', praiadacosta:'Praia da Costa',
+        barreiras:'Barreiras', teixeira:'Teixeira de Freitas', laranjeiras:'Laranjeiras',
+        saomateus:'São Mateus', linhares:'Linhares', serra:'Serra', montserrat:'Montserrat',
+    };
+
+    var _isAguardando = Object.keys(_dados).length === 0;
+
+    var html = '';
+
+    // Aviso de dados pendentes
+    if (_isAguardando) {
+        html += '<div style="background:rgba(167,139,250,.08);border:1px solid rgba(167,139,250,.2);border-radius:.65rem;padding:.75rem 1rem;margin-bottom:1rem;display:flex;align-items:center;gap:.6rem;">'
+            + '<i class="fas fa-info-circle" style="color:#a78bfa;font-size:.8rem;flex-shrink:0;"></i>'
+            + '<span style="font-size:.7rem;color:#a78bfa;font-weight:600;">Fonte de dados em configuração — valores serão exibidos assim que a integração com o ERP for ativada.</span>'
+            + '</div>';
+    }
+
+    // Totalizador geral
+    var grandTotal = Object.values(_dados).reduce(function(s,l){return s+(l.total||0);},0);
+    var grandMeta  = cM._total || 140000;
+    var grandPct   = _pct(grandTotal, grandMeta);
+    html += '<div style="background:rgba(167,139,250,.1);border:1px solid rgba(167,139,250,.25);border-radius:.75rem;padding:.75rem 1.1rem;margin-bottom:1rem;display:flex;align-items:center;justify-content:space-between;">'
+        + '<div><div style="font-size:.6rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#a78bfa;margin-bottom:.1rem;">Total Rede</div>'
+        + '<div style="font-size:1.3rem;font-weight:900;color:#fff;">' + _brl(grandTotal) + '</div></div>'
+        + '<div style="text-align:right;">'
+        + '<div style="font-size:.6rem;color:#6b7280;font-weight:600;">Meta ' + _brl(grandMeta) + '</div>'
+        + '<div style="font-size:1.1rem;font-weight:800;color:' + _cor(grandPct) + ';">' + grandPct + '%</div>'
+        + '</div></div>';
+
+    REDES.forEach(function(rede) {
+        var redeTotal = rede.lojas.reduce(function(s,k){return s+(_dados[k]?.total||0);},0);
+        var redeMeta  = cM['_'+rede.key] || 0;
+        var redePct   = _pct(redeTotal, redeMeta);
+
+        html += '<div style="margin-bottom:.8rem;">'
+            // Header da rede
+            + '<div style="display:flex;align-items:center;justify-content:space-between;padding:.5rem .75rem;border-radius:.55rem;background:' + rede.cor + '12;border:1px solid ' + rede.cor + '30;margin-bottom:.4rem;">'
+            + '<div style="display:flex;align-items:center;gap:.5rem;">'
+            + '<div style="width:1.6rem;height:1.6rem;border-radius:.35rem;background:' + rede.cor + '25;display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:900;color:' + rede.cor + ';">' + rede.key.toUpperCase() + '</div>'
+            + '<span style="font-size:.75rem;font-weight:700;color:#e5e7eb;">' + rede.nome + '</span>'
+            + '</div>'
+            + '<div style="text-align:right;">'
+            + '<span style="font-size:.85rem;font-weight:900;color:' + rede.cor + ';">' + _brl(redeTotal) + '</span>'
+            + '<span style="font-size:.62rem;color:#6b7280;margin-left:.4rem;">/ ' + _brl(redeMeta) + ' · ' + redePct + '%</span>'
+            + '</div>'
+            + '</div>';
+
+        // Lojas da rede
+        rede.lojas.forEach(function(lk) {
+            var ld = _dados[lk] || { total: 0, top: [] };
+            var lMeta = cM[lk] || 0;
+            var lPct  = _pct(ld.total, lMeta);
+            var lCor  = _cor(lPct);
+            var expanded = !!window._cautelarExpanded[lk];
+            var hasVend  = ld.top && ld.top.length > 0;
+
+            html += '<div style="margin-bottom:.3rem;border:1px solid rgba(255,255,255,.06);border-radius:.55rem;overflow:hidden;">'
+                // Row da loja
+                + '<div onclick="_toggleCautelarLoja(\'' + lk + '\')" style="display:flex;align-items:center;justify-content:space-between;padding:.55rem .75rem;cursor:pointer;background:rgba(255,255,255,.03);transition:background .15s;" onmouseover="this.style.background=\'rgba(255,255,255,.06)\'" onmouseout="this.style.background=\'rgba(255,255,255,.03)\'">'
+                + '<div style="display:flex;align-items:center;gap:.6rem;min-width:0;">'
+                + '<span style="font-size:.72rem;font-weight:700;color:#d1d5db;white-space:nowrap;">' + LOJA_LABEL[lk] + '</span>'
+                + (hasVend ? '<span style="font-size:.55rem;color:#6b7280;">' + (expanded ? '▲' : '▼') + ' ' + ld.top.length + ' vend.</span>' : '')
+                + '</div>'
+                + '<div style="display:flex;align-items:center;gap:.75rem;">'
+                + '<div style="text-align:right;">'
+                + '<div style="font-size:.75rem;font-weight:800;color:#fff;">' + _brl(ld.total) + '</div>'
+                + '<div style="font-size:.58rem;color:#6b7280;">meta ' + _brl(lMeta) + '</div>'
+                + '</div>'
+                + '<div style="width:2.5rem;text-align:right;font-size:.72rem;font-weight:800;color:' + lCor + ';">' + lPct + '%</div>'
+                + '</div>'
+                + '</div>'
+                // Barra de progresso
+                + '<div style="height:2px;background:rgba(255,255,255,.05);">'
+                + '<div style="height:100%;width:' + Math.min(100,lPct) + '%;background:' + lCor + ';transition:width .4s;"></div>'
+                + '</div>';
+
+            // Vendedores (expandido)
+            if (expanded) {
+                if (!hasVend) {
+                    html += '<div style="padding:.6rem .75rem;font-size:.65rem;color:#6b7280;font-style:italic;">Sem dados de vendedores ainda.</div>';
+                } else {
+                    html += '<table style="width:100%;border-collapse:collapse;">'
+                        + '<thead><tr style="font-size:.58rem;font-weight:700;color:#6b7280;letter-spacing:.06em;text-transform:uppercase;border-bottom:1px solid rgba(255,255,255,.05);">'
+                        + '<th style="padding:5px 10px;text-align:left;">Vendedor</th>'
+                        + '<th style="padding:5px 8px;text-align:right;">Realizado</th>'
+                        + '<th style="padding:5px 8px;text-align:right;">%&nbsp;loja</th>'
+                        + '</tr></thead><tbody>';
+                    var topSort = (ld.top||[]).slice().sort(function(a,b){return (b.t||0)-(a.t||0);});
+                    topSort.forEach(function(v, idx) {
+                        var vPct = ld.total > 0 ? Math.round((v.t||0)/ld.total*100) : 0;
+                        var bg = idx%2===0 ? 'transparent' : 'rgba(255,255,255,.02)';
+                        html += '<tr style="background:' + bg + ';font-size:.68rem;">'
+                            + '<td style="padding:5px 10px;color:#d1d5db;font-weight:600;">'
+                            + '<span style="display:inline-block;width:1.4rem;height:1.4rem;border-radius:.25rem;background:rgba(167,139,250,.15);color:#a78bfa;font-size:.6rem;font-weight:800;text-align:center;line-height:1.4rem;margin-right:.4rem;">' + (v.i||'?') + '</span>'
+                            + (v.n||'—') + '</td>'
+                            + '<td style="padding:5px 8px;text-align:right;font-weight:800;color:#fff;">' + _brl(v.t||0) + '</td>'
+                            + '<td style="padding:5px 8px;text-align:right;color:#a78bfa;font-weight:700;">' + vPct + '%</td>'
+                            + '</tr>';
+                    });
+                    html += '</tbody></table>';
+                }
+            }
+            html += '</div>'; // end loja card
+        });
+
+        html += '</div>'; // end rede section
+    });
+
+    wrap.innerHTML = html;
+}
+
 function abrirAgendamentos() {
     var modal = document.getElementById('modal-agendamentos');
     if (!modal) return;
@@ -10970,6 +11126,14 @@ function _agendViewToggleHtml() {
 function _renderAgendRanking() {
     var wrap = document.getElementById('modal-agend-body');
     if (!wrap) return;
+    _acessPrevCompInit().catch(function(){});
+    var _hasPrevAgend = !!(window._acessPrevData && window._acessPrevChave);
+    var _prevMesLabelAgend = (function() {
+        if (!window._acessPrevChave) return 'Ago';
+        var MESES = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+        var parts = window._acessPrevChave.split('_');
+        return MESES[parseInt(parts[1],10)-1] || 'Ago';
+    })();
     var _d    = _360D();
     var mes   = _d.periodo || (function(){ var n=new Date(); return ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'][n.getMonth()]+' '+n.getFullYear(); })();
     var diasD = Math.max(1, _d.diasDecorridos || 1);
@@ -11044,24 +11208,52 @@ function _renderAgendRanking() {
             : '';
         var barHtml = '<div style="height:3px;background:rgba(255,255,255,.07);border-radius:3px;margin-top:4px;"><div style="height:100%;width:'+l.pctAtual+'%;background:'+corProj+';border-radius:3px;"></div></div>';
 
+        /* Comparativo vs mês anterior */
+        var _compLoja = _hasPrevAgend ? _agendGetCompLoja(l.k) : null;
+        var _compBadgeHtml = _compLoja
+            ? ('<span style="font-size:8px;font-weight:800;margin-left:.3rem;vertical-align:middle;color:'+(_compLoja.delta>=0?'#4ade80':'#f87171')+';">'
+               +(_compLoja.delta>=0?'▲':'▼')+Math.abs(_compLoja.delta)+'%</span>')
+            : '';
+        var _antLojaHtml = _compLoja
+            ? ('<div style="font-size:8px;color:'+(_compLoja.delta>=0?'#4ade80':'#f87171')+';font-weight:700;margin-top:1px;">'
+               +(_compLoja.delta>=0?'▲':'▼')+Math.abs(_compLoja.delta)+'% vs '+_prevMesLabelAgend
+               +' <span style="color:#6b7280;font-weight:400;">('+_brl(_compLoja.prevVal)+')</span></div>')
+            : '';
+
         var vendRows = l.vendedores.map(function(v, vi) {
             var vpct = l.total > 0 ? ((v.t/l.total)*100).toFixed(0) : '0';
+            var _compVend = _hasPrevAgend ? _agendGetCompVend(l.k, v.n) : null;
+            var _compVendCell = _hasPrevAgend
+                ? ('<td style="padding:5px 8px;text-align:right;white-space:nowrap;">' +
+                    (_compVend && !_compVend.novo
+                        ? '<div style="font-size:8px;font-weight:800;color:'+(_compVend.delta>=0?'#4ade80':'#f87171')+';title="'+_prevMesLabelAgend+' completo: '+_brl(_compVend.agoBruto||_compVend.prevVal)+'">'
+                          +(_compVend.delta>=0?'▲':'▼')+Math.abs(_compVend.delta)+'%</div>'
+                          +'<div style="font-size:7px;color:#4b5563;">'+_prevMesLabelAgend+': '+_brl(_compVend.prevVal)+'</div>'
+                        : (_compVend&&_compVend.novo
+                            ? '<span style="font-size:7px;color:#06b6d4;font-weight:700;background:rgba(6,182,212,.1);padding:1px 5px;border-radius:999px;">✦ novo</span>'
+                            : '<span style="font-size:8px;color:#374151;">—</span>')) +
+                   '</td>')
+                : '';
             return '<tr style="border-bottom:1px solid rgba(255,255,255,.04);">' +
                 '<td style="padding:5px 8px;color:#9ca3af;font-size:10px;">'+(vi+1)+'º</td>' +
                 '<td style="padding:5px 8px;color:#e5e7eb;font-size:10px;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+v.n+'</td>' +
                 '<td style="padding:5px 8px;color:'+l.corBase+';font-size:10px;font-weight:700;text-align:right;white-space:nowrap;">'+_brl(v.t)+'</td>' +
                 '<td style="padding:5px 8px;text-align:right;white-space:nowrap;"><span style="color:#9ca3af;font-size:9px;">↗ '+_brl(v.proj)+'</span></td>' +
                 '<td style="padding:4px 8px;text-align:right;"><span style="font-size:8px;padding:1px 5px;border-radius:999px;background:'+l.corBase+'22;color:'+l.corBase+';">'+vpct+'%</span></td>' +
+                _compVendCell +
                 '</tr>';
         }).join('');
+
+        var _vsAgoTh = _hasPrevAgend ? '<th style="padding:6px 8px;color:#6b7280;font-size:9px;text-align:right;">vs '+_prevMesLabelAgend+'</th>' : '';
 
         return '<div style="border-radius:12px;margin-bottom:8px;overflow:hidden;border:1px solid '+corProj+'30;background:rgba(0,0,0,.22);">' +
             '<div onclick="var d=this.nextElementSibling;var i=this.querySelector(\'.agend-chev\');d.style.display=d.style.display===\'none\'?\'block\':\'none\';i.style.transform=d.style.display===\'block\'?\'rotate(180deg)\':\'\';" style="cursor:pointer;display:flex;align-items:center;gap:10px;padding:12px 14px;" onmouseover="this.style.background=\'rgba(255,255,255,.04)\'" onmouseout="this.style.background=\'\'">' +
                 '<span style="font-size:15px;min-width:26px;text-align:center;">'+medal+'</span>' +
                 '<div style="width:34px;height:34px;border-radius:8px;background:'+corProj+'22;border:1px solid '+corProj+'44;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><span style="font-size:9px;font-weight:900;color:'+corProj+';">'+l.sigla+'</span></div>' +
                 '<div style="flex:1;min-width:0;">' +
-                    '<div style="font-size:12px;font-weight:700;color:#f3f4f6;display:flex;align-items:center;gap:5px;">'+l.nome+' '+projBadge+'</div>' +
+                    '<div style="font-size:12px;font-weight:700;color:#f3f4f6;display:flex;align-items:center;gap:5px;">'+l.nome+' '+projBadge+_compBadgeHtml+'</div>' +
                     '<div style="font-size:9px;color:#6b7280;margin-top:1px;">'+l.vendedores.length+' vendedores · '+partPct+'% da rede</div>' +
+                    _antLojaHtml +
                     barHtml +
                 '</div>' +
                 '<div style="text-align:right;flex-shrink:0;margin-left:8px;">' +
@@ -11078,6 +11270,7 @@ function _renderAgendRanking() {
                 '<th style="padding:6px 8px;color:#6b7280;font-size:9px;text-align:right;">Atual</th>' +
                 '<th style="padding:6px 8px;color:#6b7280;font-size:9px;text-align:right;">Projeção</th>' +
                 '<th style="padding:6px 8px;color:#6b7280;font-size:9px;text-align:right;">Part.</th>' +
+                _vsAgoTh +
                 '</tr></thead>' +
                 '<tbody>'+vendRows+'</tbody></table></div></div>';
     }).join('');
@@ -11494,11 +11687,14 @@ function _abrirRankingVendedoresAcess(modo) {
 function _renderHistAcessAbr26() {
     var wrap = document.getElementById('hist-acess-abr26-wrap');
     if (!wrap) return;
+    /* Dispara fetch do mês anterior em background (re-renderiza quando pronto) */
+    _acessPrevCompInit().catch(function(){});
     /* Usa dados do mês atual se disponíveis (D360.lojas.acessorios),
        caso contrário cai no histórico estático de Maio 2026            */
     var _d       = _360D();
     var totalAtu = Object.values(_d.lojas||{}).reduce(function(s,l){ return s+(l.acessorios&&l.acessorios.total||0);},0);
     var d = totalAtu > 0 ? _buildAcessRankingAtual() : _HIST_ACESS_MAI26;
+    var _hasPrevAcess = !!(window._acessPrevData && window._acessPrevChave);
 
     /* ── Aplica filtro de subrede ou loja (vendedor) ── */
     var subFilter = window._acessSubFilter || 'geral';
@@ -11551,12 +11747,39 @@ function _renderHistAcessAbr26() {
     var projFiltPct   = metaFiltrado > 0 ? Math.round(projFiltrado / metaFiltrado * 100) : null;
     var corProjFilt   = projFiltPct !== null ? (projFiltPct >= 100 ? '#4ade80' : projFiltPct >= 75 ? '#f59e0b' : '#ef4444') : '#a78bfa';
 
+    /* ── Comparativo de subredes vs mês anterior ── */
+    var _subLojasAll = { t1:['cariacica','itabuna','moxuara','praiadacosta'], t2:['barreiras','teixeira','laranjeiras'], t3:['saomateus','serra','montserrat','linhares'] };
+    function _acessSubComp(tKey) {
+        if (!window._acessPrevData) return null;
+        var lojasDaSub = _subLojasAll[tKey] || [];
+        var prevTotal = 0, curTotal = 0;
+        lojasDaSub.forEach(function(k) {
+            var c = _acessGetCompLoja(k);
+            if (c) { prevTotal += c.prevVal; curTotal += c.curVal; }
+        });
+        if (prevTotal <= 0) return null;
+        return Math.round((curTotal - prevTotal) / prevTotal * 100);
+    }
+    var _prevMesLabel = (function() {
+        var MESES_PT = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+        var now = new Date();
+        var pm = now.getMonth() === 0 ? 11 : now.getMonth() - 1;
+        return MESES_PT[pm];
+    })();
+
     var lojaRows = dFiltrado.lojas.map(function(l, i) {
         var medal     = i < 3 ? rankMedal[i] : (i + 1) + 'º';
         var partPct   = dFiltrado.totalGeral > 0 ? ((l.total / dFiltrado.totalGeral) * 100).toFixed(1) : '0.0';
         var corProj   = l.cor; // usa cor calculada em _buildAcessRankingAtual (desempenho)
         var projBadge = l.projPct !== null
             ? '<span style="font-size:8px;padding:1px 5px;border-radius:999px;background:' + corProj + '22;color:' + corProj + ';font-weight:700;">' + l.projPct + '% meta</span>'
+            : '';
+
+        /* comparativo mês anterior — loja */
+        var _compLoja = _acessGetCompLoja(l.k);
+        var _compLojaBadge = _acessCompBadge(_compLoja, '8px');
+        var _compLojaTooltip = _compLoja
+            ? 'title="' + _prevMesLabel + ' (mesmo período): ' + _brl(_compLoja.prevVal) + '"'
             : '';
 
         /* barra = evolução atual (total/meta), cor = desempenho da projeção */
@@ -11575,6 +11798,13 @@ function _renderHistAcessAbr26() {
             }
         }
 
+        /* linha anterior da loja (valor projetado para mesmo dia no mês anterior) */
+        var _antLojaHtml = _compLoja
+            ? '<div ' + _compLojaTooltip + ' style="font-size:9px;color:' + (_compLoja.delta >= 0 ? '#4ade80' : '#f87171') + ';font-weight:700;margin-top:1px;">' +
+              (_compLoja.delta >= 0 ? '▲' : '▼') + Math.abs(_compLoja.delta) + '% vs ' + _prevMesLabel +
+              ' <span style="font-weight:400;color:#6b7280;">(' + _brl(_compLoja.prevVal) + ')</span></div>'
+            : '';
+
         var vendRows = l.vendedores.map(function(v, vi) {
             var vcorBase = l.corBase;
             var vcor     = v.cor || vcorBase;
@@ -11590,6 +11820,19 @@ function _renderHistAcessAbr26() {
             var alertSVAcess = diasSVAcess >= 1
                 ? '<span title="' + diasSVAcess + ' dia' + (diasSVAcess>1?'s':'') + ' sem venda de acessórios" style="display:inline-flex;align-items:center;gap:.18rem;font-size:.58rem;font-weight:800;color:#ef4444;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.35);border-radius:999px;padding:.1rem .45rem;animation:_pulseRed 1.4s ease-in-out infinite;vertical-align:middle;margin-left:3px;">👁️ ' + diasSVAcess + 'd</span>'
                 : '';
+            /* comparativo vendedor vs mês anterior */
+            var _compVend = _acessGetCompVend(l.k, v.n);
+            var _compVendCell = _hasPrevAcess
+                ? ('<td style="padding:5px 8px;text-align:right;white-space:nowrap;">' +
+                    (_compVend && !_compVend.novo
+                        ? '<div style="font-size:8px;font-weight:800;color:' + (_compVend.delta >= 0 ? '#4ade80' : '#f87171') + ';" title="' + _prevMesLabel + ' completo: ' + _brl(_compVend.agoBruto||_compVend.prevVal) + '">' +
+                          (_compVend.delta >= 0 ? '▲' : '▼') + Math.abs(_compVend.delta) + '%</div>' +
+                          '<div style="font-size:7px;color:#4b5563;">' + _prevMesLabel + ': ' + _brl(_compVend.prevVal) + '</div>'
+                        : (_compVend && _compVend.novo
+                            ? '<span style="font-size:7px;color:#6366f1;font-weight:700;background:rgba(99,102,241,.12);padding:1px 5px;border-radius:999px;">✦ novo</span>'
+                            : '<span style="font-size:8px;color:#374151;">—</span>')) +
+                   '</td>')
+                : '';
             return '<tr style="border-bottom:1px solid rgba(255,255,255,.04);">' +
                 '<td style="padding:5px 8px;color:#9ca3af;font-size:10px;">' + (vi+1) + 'º</td>' +
                 '<td style="padding:5px 8px;color:#e5e7eb;font-size:10px;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + v.n + alertSVAcess + '</td>' +
@@ -11598,6 +11841,7 @@ function _renderHistAcessAbr26() {
                     '<span style="color:#9ca3af;font-size:9px;">↗ ' + _brl(v.proj) + '</span>' +
                 '</td>' +
                 '<td style="padding:5px 8px;text-align:right;">' + vMetaCell + '</td>' +
+                _compVendCell +
                 '<td style="padding:4px 8px;text-align:right;"><span style="font-size:8px;padding:1px 5px;border-radius:999px;background:' + vcorBase + '22;color:' + vcorBase + ';">' + vpct + '%</span></td>' +
                 '</tr>';
         }).join('');
@@ -11609,7 +11853,7 @@ function _renderHistAcessAbr26() {
                     '<span style="font-size:9px;font-weight:900;color:' + corProj + ';">' + l.sigla + '</span>' +
                 '</div>' +
                 '<div style="flex:1;min-width:0;">' +
-                    '<div style="font-size:12px;font-weight:700;color:#f3f4f6;display:flex;align-items:center;gap:5px;">' + l.nome + ' ' + projBadge + '</div>' +
+                    '<div style="font-size:12px;font-weight:700;color:#f3f4f6;display:flex;align-items:center;gap:5px;">' + l.nome + ' ' + projBadge + _compLojaBadge + '</div>' +
                     '<div style="font-size:9px;color:#6b7280;margin-top:1px;">' + l.vendedores.length + ' vendedores · ' + partPct + '% da rede</div>' +
                     barHtml +
                 '</div>' +
@@ -11617,6 +11861,7 @@ function _renderHistAcessAbr26() {
                     '<div style="font-size:13px;font-weight:800;color:' + l.corBase + ';">' + _brl(l.total) + '</div>' +
                     '<div style="font-size:9px;color:' + corProj + ';font-weight:700;">↗ proj ' + _brl(l.proj) + '</div>' +
                     (l.meta > 0 ? '<div style="font-size:9px;color:#6b7280;margin-top:1px;">meta ' + _brl(l.meta) + '</div>' : '') +
+                    _antLojaHtml +
                     metaDiariaAcess +
                 '</div>' +
                 '<i class="fas fa-chevron-down" style="color:#6b7280;font-size:10px;margin-left:4px;transition:transform .22s;"></i>' +
@@ -11629,6 +11874,7 @@ function _renderHistAcessAbr26() {
                         '<th style="padding:6px 8px;color:#6b7280;font-size:9px;font-weight:600;text-align:right;">Atual</th>' +
                         '<th style="padding:6px 8px;color:#6b7280;font-size:9px;font-weight:600;text-align:right;">Projeção · Meta</th>' +
                         '<th style="padding:6px 8px;color:#6b7280;font-size:9px;font-weight:600;text-align:right;">vs Meta</th>' +
+                        (_hasPrevAcess ? '<th style="padding:6px 8px;color:#6b7280;font-size:9px;font-weight:600;text-align:right;">vs ' + _prevMesLabel + '</th>' : '') +
                         '<th style="padding:6px 8px;color:#6b7280;font-size:9px;font-weight:600;text-align:right;">Part.</th>' +
                     '</tr></thead>' +
                     '<tbody>' + vendRows + '</tbody>' +
@@ -11647,12 +11893,32 @@ function _renderHistAcessAbr26() {
     var _btnAcessStyle = function(ativo, cor) {
         return 'display:inline-flex;align-items:center;gap:.25rem;padding:.18rem .5rem;border-radius:999px;font-size:.58rem;font-weight:700;cursor:pointer;border:1px solid ' + (ativo ? cor : 'rgba(255,255,255,.12)') + ';background:' + (ativo ? cor+'22' : 'transparent') + ';color:' + (ativo ? cor : '#6b7280') + ';transition:all .15s;';
     };
+    /* badges de comparativo por subrede */
+    function _subCompBadgeHtml(tKey) {
+        var d = _acessSubComp(tKey);
+        if (d === null) return '';
+        if (d > 0) return ' <span style="font-size:8px;font-weight:800;color:#4ade80;">▲' + d + '%</span>';
+        if (d < 0) return ' <span style="font-size:8px;font-weight:800;color:#f87171;">▼' + Math.abs(d) + '%</span>';
+        return ' <span style="font-size:8px;font-weight:800;color:#6b7280;">→0%</span>';
+    }
+    /* comparativo geral da rede */
+    var _compGeralDelta = (function() {
+        if (!window._acessPrevData) return null;
+        var prevSum = 0, curSum = 0;
+        lojasExibir.forEach(function(l) {
+            var c = _acessGetCompLoja(l.k);
+            if (c) { prevSum += c.prevVal; curSum += c.curVal; }
+        });
+        if (prevSum <= 0) return null;
+        return Math.round((curSum - prevSum) / prevSum * 100);
+    })();
+
     var filterButtons = _vendLojaAcess ? '' :
         '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,.06);">' +
             '<button class="acess-filter-pill" onclick="_filtrarRankingAcess(\'geral\',this)" style="' + pillS('geral') + 'cursor:pointer;font-size:11px;font-weight:700;padding:5px 14px;border-radius:999px;border:1px solid;transition:background .15s,color .15s;">🌐 Geral</button>' +
-            '<button class="acess-filter-pill" onclick="_filtrarRankingAcess(\'t1\',this)" style="' + pillS('t1') + 'cursor:pointer;font-size:11px;font-weight:700;padding:5px 14px;border-radius:999px;border:1px solid;transition:background .15s,color .15s;">⚡ Titãs 1</button>' +
-            '<button class="acess-filter-pill" onclick="_filtrarRankingAcess(\'t2\',this)" style="' + pillS('t2') + 'cursor:pointer;font-size:11px;font-weight:700;padding:5px 14px;border-radius:999px;border:1px solid;transition:background .15s,color .15s;">⚡ Titãs 2</button>' +
-            '<button class="acess-filter-pill" onclick="_filtrarRankingAcess(\'t3\',this)" style="' + pillS('t3') + 'cursor:pointer;font-size:11px;font-weight:700;padding:5px 14px;border-radius:999px;border:1px solid;transition:background .15s,color .15s;">⚡ Titãs 3</button>' +
+            '<button class="acess-filter-pill" onclick="_filtrarRankingAcess(\'t1\',this)" style="' + pillS('t1') + 'cursor:pointer;font-size:11px;font-weight:700;padding:5px 14px;border-radius:999px;border:1px solid;transition:background .15s,color .15s;">⚡ Titãs 1' + _subCompBadgeHtml('t1') + '</button>' +
+            '<button class="acess-filter-pill" onclick="_filtrarRankingAcess(\'t2\',this)" style="' + pillS('t2') + 'cursor:pointer;font-size:11px;font-weight:700;padding:5px 14px;border-radius:999px;border:1px solid;transition:background .15s,color .15s;">⚡ Titãs 2' + _subCompBadgeHtml('t2') + '</button>' +
+            '<button class="acess-filter-pill" onclick="_filtrarRankingAcess(\'t3\',this)" style="' + pillS('t3') + 'cursor:pointer;font-size:11px;font-weight:700;padding:5px 14px;border-radius:999px;border:1px solid;transition:background .15s,color .15s;">⚡ Titãs 3' + _subCompBadgeHtml('t3') + '</button>' +
             '<div style="display:flex;gap:5px;margin-left:auto;align-items:center;">' +
                 '<button onclick="_rankModeAcess=\'fat\';_renderHistAcessAbr26()" style="' + _btnAcessStyle(_rankModeAcess==='fat','#f59e0b') + '">💲 Faturamento</button>' +
                 '<button onclick="_rankModeAcess=\'meta\';_renderHistAcessAbr26()" style="' + _btnAcessStyle(_rankModeAcess==='meta','#a855f7') + '">🎯 % Meta</button>' +
@@ -11675,8 +11941,10 @@ function _renderHistAcessAbr26() {
             '</div>' +
             '<div style="display:flex;gap:12px;flex-shrink:0;flex-wrap:wrap;">' +
                 '<div style="text-align:right;">' +
-                    '<div style="font-size:14px;font-weight:800;color:#f59e0b;">' + _brl(dFiltrado.totalGeral) + '</div>' +
-                    '<div style="font-size:9px;color:#6b7280;">receita atual</div>' +
+                    '<div style="font-size:14px;font-weight:800;color:#f59e0b;">' + _brl(dFiltrado.totalGeral) +
+                        (_compGeralDelta !== null ? (' <span style="font-size:9px;font-weight:800;color:' + (_compGeralDelta >= 0 ? '#4ade80' : '#f87171') + ';">' + (_compGeralDelta >= 0 ? '▲' : '▼') + Math.abs(_compGeralDelta) + '%</span>') : '') +
+                    '</div>' +
+                    '<div style="font-size:9px;color:#6b7280;">receita atual' + (_compGeralDelta !== null ? ' · vs ' + _prevMesLabel : '') + '</div>' +
                 '</div>' +
                 '<div style="text-align:right;">' +
                     '<div style="font-size:14px;font-weight:800;color:' + corProjFilt + ';">↗ ' + _brl(projFiltrado) + '</div>' +
@@ -11710,8 +11978,8 @@ function _renderHistAcessAbr26() {
     D360.diasDecorridos = D360.diasDecorridos || Math.min(now.getDate(), D360.diasMes);
     D360.periodo        = _MESES[mes] + ' ' + ano;
 
-    // Chave localStorage: v2 força re-fetch do Firestore (invalida cache antigo)
-    window._360storageKey = '_360data_v2_' + ano + '_' + (mes + 1);
+    // Chave localStorage: v3 força re-fetch do Firestore (invalida cache sem agendamentos correto)
+    window._360storageKey = '_360data_v3_' + ano + '_' + (mes + 1);
 })();
 
 /* ══════════════════════════════════════════════════
@@ -12111,6 +12379,26 @@ const _METAS_SUBREDE_NOME = {
     barreiras:'Barreiras', teixeira:'Teixeira de Freitas', laranjeiras:'Laranjeiras',
     saomateus:'São Mateus', serra:'Serra', linhares:'Linhares', montserrat:'Montserrat',
     'cariacica+moxuara': 'Cariacica & Moxuara',
+};
+
+/* Metas de Cautelar — Setembro 2026 */
+const METAS_CAUTELAR = {
+    cariacica:    20000,
+    itabuna:      13000,
+    moxuara:      15000,
+    praiadacosta:  7000,
+    barreiras:    10000,
+    teixeira:     10000,
+    laranjeiras:   6000,
+    saomateus:    20000,
+    linhares:     14000,
+    serra:        15000,
+    montserrat:   10000,
+    // totais por subrede
+    _t1: 55000,
+    _t2: 26000,
+    _t3: 59000,
+    _total: 140000,
 };
 
 /* Gerentes responsáveis por mais de uma loja */
@@ -12861,11 +13149,12 @@ async function _d360PrevCompInit() {
     const prevAno = now.getMonth() === 0 ? now.getFullYear()-1 : now.getFullYear();
     const prevChave = prevAno + '_' + String(prevMes).padStart(2,'0');
     if (window._d360PrevCompChave === prevChave && window._d360PrevLojasComp) return;
-    const cacheKey = '_360prevcomp_' + prevChave;
+    // v3: invalida cache antigo (que não tinha agendamentos)
+    const cacheKey = '_360prevcomp_v3_' + prevChave;
     let prevData = null;
-    try { const lc = localStorage.getItem(cacheKey); if (lc) prevData = JSON.parse(lc); } catch(e) {}
+    try { const lc = localStorage.getItem(cacheKey); if (lc) { const parsed = JSON.parse(lc); if (parsed?.lojas) prevData = parsed; } } catch(e) {}
     if (!prevData && window._acadFBOk && window._acadDB) {
-        try { const doc = await window._acadDB.collection('ts_d360_historico').doc(prevChave).get(); if (doc.exists) prevData = doc.data(); } catch(e) {}
+        try { const doc = await window._acadDB.collection('ts_d360_historico').doc(prevChave).get(); if (doc.exists) { prevData = doc.data(); try { localStorage.setItem(cacheKey, JSON.stringify(prevData)); } catch(e) {} } } catch(e) {}
     }
     if (!prevData) {
         try {
@@ -12890,6 +13179,12 @@ async function _d360PrevCompInit() {
     });
     window._d360PrevLojasComp = comp;
     window._d360PrevCompChave = prevChave;
+    /* Aproveita o mesmo prevData para o comparativo de acessórios */
+    window._acessPrevData    = prevData;
+    window._acessPrevChave   = prevChave;
+    window._acessPrevDiasMes = prevDiasMes;
+    try { _renderHistAcessAbr26(); } catch(e) {}
+    try { _renderAgendRanking(); } catch(e) {}
     const el = document.getElementById('360-output');
     if (el && el.innerHTML) {
         try { const p=document.querySelector('#d360-pills .pill-360.active'); render360(p?p.dataset.tipo:'geral',p?p.dataset.val:''); } catch(e) {}
@@ -12898,6 +13193,121 @@ async function _d360PrevCompInit() {
 function _d360GetComp(lojaKey) {
     const c = window._d360PrevLojasComp;
     return (c && lojaKey && lojaKey in c) ? c[lojaKey] : null;
+}
+
+/* ── Comparativo de ACESSÓRIOS vs mesmo período do mês anterior ── */
+window._acessPrevChave = null;
+window._acessPrevData  = null;
+window._acessPrevDiasMes = 30;
+
+/* Dispara _d360PrevCompInit se ainda não rodou, que já popula _acessPrevData */
+async function _acessPrevCompInit() {
+    if (window._acessPrevData) return;
+    await _d360PrevCompInit();
+}
+
+/* Retorna delta% de acessórios de uma loja vs mesmo período mês anterior.
+   Usa dia_a_dia se disponível, senão proração linear. Retorna null se sem dados. */
+function _acessGetCompLoja(lojaKey) {
+    const prev = window._acessPrevData;
+    if (!prev?.lojas?.[lojaKey]) return null;
+    const lPrev = prev.lojas[lojaKey];
+    const acessPrev = lPrev.acessorios?.total;
+    if (!acessPrev) return null;
+    const _d = _360D();
+    const diasD = _d.diasDecorridos || 1;
+    const prevDiasMes = window._acessPrevDiasMes || 30;
+    // proração: valor equivalente ao mesmo número de dias corridos
+    const prevVal = Math.round(acessPrev * diasD / prevDiasMes);
+    if (prevVal <= 0) return null;
+    const curVal = _d.lojas?.[lojaKey]?.acessorios?.total || 0;
+    return { delta: Math.round((curVal - prevVal) / prevVal * 100), prevVal, curVal };
+}
+
+/* Retorna delta% de acessórios de um vendedor vs mesmo período mês anterior */
+function _acessGetCompVend(lojaKey, vendNome) {
+    const prev = window._acessPrevData;
+    if (!prev?.lojas?.[lojaKey]) return null;
+    const top = prev.lojas[lojaKey]?.acessorios?.top;
+    /* se a loja existia em agosto mas sem dados de vendedor → "loja nova" */
+    if (!top || top.length === 0) return { novo: true };
+    const _normN = n => (n||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').trim();
+    const normTarget = _normN(vendNome);
+    const parts = normTarget.split(' ');
+    const firstWord = parts[0];
+    const lastWord  = parts[parts.length - 1];
+    /* match: igual completo > (primeiro + último nome) > só primeiro nome */
+    const prevVend = top.find(v => {
+        const vn = _normN(v.n);
+        const vparts = vn.split(' ');
+        return vn === normTarget
+            || (vparts[0] === firstWord && vparts[vparts.length-1] === lastWord)
+            || (vparts[0] === firstWord && parts.length === 1);
+    });
+    /* vendedor não estava na loja em agosto */
+    if (!prevVend) return { novo: true };
+    if (!prevVend.t) return null;
+    const _d = _360D();
+    const diasD = _d.diasDecorridos || 1;
+    const prevDiasMes = window._acessPrevDiasMes || 30;
+    const prevVal = Math.round(prevVend.t * diasD / prevDiasMes);
+    if (prevVal <= 0) return null;
+    const curVal = v => v.t;
+    const cur = (_d.lojas?.[lojaKey]?.acessorios?.top || []).find(v => _normN(v.n) === normTarget);
+    return { delta: Math.round(((cur?.t||0) - prevVal) / prevVal * 100), prevVal, curVal: cur?.t||0, agoBruto: prevVend.t };
+}
+
+/* ── Comparativo de AGENDAMENTOS vs mesmo período do mês anterior ── */
+function _agendGetCompLoja(lojaKey) {
+    const prev = window._acessPrevData;
+    if (!prev?.lojas?.[lojaKey]) return null;
+    const agPrev = prev.lojas[lojaKey].agendamentos?.total;
+    if (!agPrev) return null;
+    const _d = _360D();
+    const diasD = _d.diasDecorridos || 1;
+    const prevDiasMes = window._acessPrevDiasMes || 30;
+    const prevVal = Math.round(agPrev * diasD / prevDiasMes);
+    if (prevVal <= 0) return null;
+    const curVal = (_d.lojas?.[lojaKey]?.agendamentos?.total) || 0;
+    return { delta: Math.round((curVal - prevVal) / prevVal * 100), prevVal, curVal };
+}
+
+function _agendGetCompVend(lojaKey, vendNome) {
+    const prev = window._acessPrevData;
+    if (!prev?.lojas?.[lojaKey]) return null;
+    const top = prev.lojas[lojaKey]?.agendamentos?.top;
+    if (!top || top.length === 0) return { novo: true };
+    const _normN = n => (n||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').trim();
+    const normTarget = _normN(vendNome);
+    const parts = normTarget.split(' ');
+    const firstWord = parts[0];
+    const lastWord  = parts[parts.length - 1];
+    const prevVend = top.find(function(v) {
+        const vn = _normN(v.n);
+        const vp = vn.split(' ');
+        return vn === normTarget
+            || (vp[0] === firstWord && vp[vp.length-1] === lastWord)
+            || (vp[0] === firstWord && parts.length === 1);
+    });
+    if (!prevVend) return { novo: true };
+    if (!prevVend.t) return null;
+    const _d = _360D();
+    const diasD = _d.diasDecorridos || 1;
+    const prevDiasMes = window._acessPrevDiasMes || 30;
+    const prevVal = Math.round(prevVend.t * diasD / prevDiasMes);
+    if (prevVal <= 0) return null;
+    const cur = ((_d.lojas?.[lojaKey]?.agendamentos?.top) || []).find(function(v) { return _normN(v.n) === normTarget; });
+    return { delta: Math.round(((cur?.t||0) - prevVal) / prevVal * 100), prevVal, curVal: cur?.t||0, agoBruto: prevVend.t };
+}
+
+/* Badge HTML para delta% de acessórios */
+function _acessCompBadge(compObj, size) {
+    if (!compObj) return '';
+    const d = compObj.delta;
+    const sz = size || '8px';
+    if (d > 0) return '<span style="font-size:' + sz + ';color:#4ade80;font-weight:800;margin-left:.3rem;vertical-align:middle;">▲' + d + '%</span>';
+    if (d < 0) return '<span style="font-size:' + sz + ';color:#f87171;font-weight:800;margin-left:.3rem;vertical-align:middle;">▼' + Math.abs(d) + '%</span>';
+    return '<span style="font-size:' + sz + ';color:#6b7280;font-weight:800;margin-left:.3rem;vertical-align:middle;">→0%</span>';
 }
 
 function rankRow(pos, sigla, label, sublabel, rawTotal, lojaMeta, first, metaOk, lojaKey, activeDays, ped, acessPct, delta) {
@@ -14979,6 +15389,8 @@ function _abrirRankAcess() {
     if (!modal) return;
     modal.style.display = 'flex';
     _renderHistAcessAbr26();
+    // garante que o comparativo carrega mesmo se D360 ainda não renderizou
+    _d360PrevCompInit().catch(function(){});
 }
 function _fecharRankAcess() {
     const modal = document.getElementById('_modal-rank-acess-wrap');
@@ -15761,7 +16173,82 @@ function render360(tipo, val) {
                 </div>
             </div>`;
         })();
-    kpis = _fatCard + _fatDiaCard + _salaoFinCard + _agendCard;
+
+    // Card CAUTELAR — apenas Marcelo tem acesso por ora
+    const _cautelarCard = (() => {
+        const _C_COR = '#a78bfa';
+        const _isMarcelo = user && user.email === 'marcelos_lima@icloud.com';
+        if (!_isMarcelo) {
+            // Arte de obra + Em breve para demais usuários
+            return `<div class="glass-360 rounded-2xl p-4" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.6rem;min-height:160px;position:relative;overflow:hidden;">
+                <style>
+                    @keyframes _obra_bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+                    @keyframes _obra_spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+                    @keyframes _obra_blink{0%,100%{opacity:1}50%{opacity:.4}}
+                    ._obra_gear{animation:_obra_spin 3s linear infinite;display:inline-block;}
+                    ._obra_hat{animation:_obra_bounce 1.4s ease-in-out infinite;}
+                    ._obra_dot1{animation:_obra_blink 1.2s .0s infinite;}
+                    ._obra_dot2{animation:_obra_blink 1.2s .4s infinite;}
+                    ._obra_dot3{animation:_obra_blink 1.2s .8s infinite;}
+                </style>
+                <div style="position:absolute;inset:0;background:repeating-linear-gradient(45deg,#f59e0b08,#f59e0b08 6px,transparent 6px,transparent 18px);pointer-events:none;"></div>
+                <div style="display:flex;align-items:center;gap:.5rem;">
+                    <span class="_obra_hat" style="font-size:1.6rem;">🪖</span>
+                    <span class="_obra_gear" style="font-size:1.1rem;opacity:.7;">⚙️</span>
+                </div>
+                <div style="font-size:.78rem;font-weight:900;letter-spacing:.18em;text-transform:uppercase;color:#f59e0b;">
+                    CAUTELAR
+                </div>
+                <div style="font-size:.62rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#6b7280;">
+                    Em Breve<span class="_obra_dot1" style="color:#f59e0b;">.</span><span class="_obra_dot2" style="color:#f59e0b;">.</span><span class="_obra_dot3" style="color:#f59e0b;">.</span>
+                </div>
+                <div style="font-size:.55rem;color:#4b5563;text-align:center;max-width:14ch;line-height:1.5;">Novo recurso em desenvolvimento</div>
+            </div>`;
+        }
+        // Versão completa para Marcelo
+        const cM = typeof METAS_CAUTELAR !== 'undefined' ? METAS_CAUTELAR : {};
+        const lojasMeta = scope.reduce((s, l) => s + (cM[l.key || l.k] || 0), 0) || cM._total || 140000;
+        const t1Meta = cM._t1 || 55000;
+        const t2Meta = cM._t2 || 26000;
+        const t3Meta = cM._t3 || 59000;
+        return `<div class="glass-360 rounded-2xl p-4 card-lift" style="display:flex;flex-direction:column;justify-content:space-between;gap:.3rem;cursor:pointer;" onclick="abrirCautelar()">
+            <div>
+                <div style="display:flex;align-items:center;justify-content:space-between;gap:.5rem;margin-bottom:.3rem;">
+                    <div style="display:flex;align-items:center;gap:.5rem;min-width:0;">
+                        <div style="width:28px;height:28px;border-radius:8px;background:${_C_COR}18;border:1px solid ${_C_COR}35;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                            <i class="fas fa-shield-alt" style="color:${_C_COR};font-size:.7rem;"></i>
+                        </div>
+                        <span style="font-size:.72rem;font-weight:800;color:#f9fafb;letter-spacing:.03em;text-transform:uppercase;white-space:nowrap;">Cautelar</span>
+                    </div>
+                    <span style="font-size:.6rem;font-weight:700;padding:.15rem .55rem;border-radius:999px;background:${_C_COR}20;color:${_C_COR};white-space:nowrap;flex-shrink:0;">ver ranking ↗</span>
+                </div>
+                <p style="font-size:1.25rem;font-weight:900;color:#fff;line-height:1.2;margin:0 0 .15rem;">${brl(lojasMeta)}</p>
+                <p style="font-size:.6rem;color:#9ca3af;margin:0 0 .35rem;line-height:1.4;">Meta mensal · ${scope.length} loja${scope.length>1?'s':''}</p>
+            </div>
+            <div>
+                <div style="display:flex;gap:.25rem;margin-bottom:.25rem;">
+                    <div style="flex:1;display:flex;flex-direction:column;align-items:center;padding:.28rem .35rem;border-radius:.4rem;background:rgba(74,158,224,.08);border:1px solid rgba(74,158,224,.18);">
+                        <span style="font-size:.5rem;color:#6b7280;font-weight:700;letter-spacing:.06em;text-transform:uppercase;">T1</span>
+                        <span style="font-size:.68rem;font-weight:800;color:#4A9EE0;font-variant-numeric:tabular-nums;">${brl(t1Meta)}</span>
+                    </div>
+                    <div style="flex:1;display:flex;flex-direction:column;align-items:center;padding:.28rem .35rem;border-radius:.4rem;background:rgba(91,196,122,.08);border:1px solid rgba(91,196,122,.18);">
+                        <span style="font-size:.5rem;color:#6b7280;font-weight:700;letter-spacing:.06em;text-transform:uppercase;">T2</span>
+                        <span style="font-size:.68rem;font-weight:800;color:#5BC47A;font-variant-numeric:tabular-nums;">${brl(t2Meta)}</span>
+                    </div>
+                    <div style="flex:1;display:flex;flex-direction:column;align-items:center;padding:.28rem .35rem;border-radius:.4rem;background:rgba(224,107,74,.08);border:1px solid rgba(224,107,74,.18);">
+                        <span style="font-size:.5rem;color:#6b7280;font-weight:700;letter-spacing:.06em;text-transform:uppercase;">T3</span>
+                        <span style="font-size:.68rem;font-weight:800;color:#E06B4A;font-variant-numeric:tabular-nums;">${brl(t3Meta)}</span>
+                    </div>
+                </div>
+                <div style="display:flex;justify-content:space-between;align-items:center;padding:.22rem .6rem;border-radius:.45rem;background:${_C_COR}10;border:1px solid ${_C_COR}25;">
+                    <span style="font-size:.58rem;color:#9ca3af;font-weight:600;">🎯 Total rede</span>
+                    <span style="font-size:.72rem;font-weight:800;color:${_C_COR};">${brl(cM._total||140000)}</span>
+                </div>
+            </div>
+        </div>`;
+    })();
+
+    kpis = _fatCard + _fatDiaCard + _salaoFinCard + _agendCard + _cautelarCard;
 
     /* ── Rankings ── */
     if (tipo==='loja') {
@@ -16042,7 +16529,9 @@ async function _360Arquivar(anoNum, mesNum) {
             total:v.total, ped:v.ped, cancel:v.cancel,
             agend:v.agend, agendCount:v.agendCount,
             meta: v.meta||0,
-            top: JSON.parse(JSON.stringify(v.top||[]))
+            top: JSON.parse(JSON.stringify(v.top||[])),
+            acessorios: JSON.parse(JSON.stringify(v.acessorios || {total:0,top:[]})),
+            agendamentos: JSON.parse(JSON.stringify(v.agendamentos || {total:0,top:[]}))
         }])),
         subredes: Object.fromEntries(Object.entries(D360.subredes).map(([k,v])=>[k,{meta:v.meta}])),
         meta_rede: D360.meta_rede,
@@ -21989,6 +22478,35 @@ const _T20={id:20,modulo:'Fotografia',nome:"Lente Ultrawide: Como usar para vend
 ]};
 ACAD_TEMAS.push(_T20);
 
+const _T25={id:25,modulo:'Fotografia',nome:"Gravação em 4K e 8K: Quando oferecer cada uma?",questoes:[
+{q:"O que significa gravar um vídeo em '4K'?",opts:["Gravar por 4 horas sem interrupção","Resolução de aproximadamente 3840×2160 pixels — 4 vezes o Full HD","Formato exclusivo de câmeras profissionais","Velocidade de 4000 quadros por segundo"],ans:1},
+{q:"Um cliente quer gravar a festa de aniversário do filho para 'guardar de lembrança'. Qual resolução indicar?",opts:["8K, sempre o máximo disponível","4K — excelente qualidade para uso pessoal, ocupa menos espaço e é compatível com todas as TVs modernas","Full HD — 4K é desnecessário para uso pessoal","Depende apenas da cor do smartphone"],ans:1},
+{q:"O que é gravação em 8K e qual o principal obstáculo para o cliente comum usufruir?",opts:["8K é apenas marketing — não existe gravação real","Resolução de 7680×4320 pixels; o obstáculo é que pouquíssimas telas conseguem exibir 8K de verdade ainda","8K é igual ao 4K mas com áudio melhor","8K só funciona em smartphones acima de R$ 10.000"],ans:1},
+{q:"Um criador de conteúdo quer recortar e reenquadrar o vídeo na edição sem perder qualidade. Qual resolução de gravação é ideal?",opts:["Full HD — mais leve para editar","4K ou 8K — a resolução maior permite recortar a imagem na edição e ainda manter o vídeo final em Full HD com qualidade total","Sempre 30fps independente da resolução","Câmera frontal tem melhor resultado para recortes"],ans:1},
+{q:"Gravar em 8K gasta mais armazenamento que 4K?",opts:["Não, a compressão é mais eficiente no 8K","Sim — um vídeo 8K ocupa aproximadamente 4 vezes mais espaço que o mesmo vídeo em 4K","São equivalentes em tamanho de arquivo","Só gasta mais se usar HDR"],ans:1},
+{q:"Por que gravar em 4K a 60fps é mais exigente para o processador do que 4K a 30fps?",opts:["60fps usa lente diferente da câmera","O dobro de quadros por segundo exige o dobro de processamento, gerando mais calor e consumindo mais bateria","60fps reduz a resolução automaticamente","30fps e 60fps são equivalentes em processamento"],ans:1},
+{q:"Um cliente pergunta: 'Qual a diferença que eu vejo na prática entre 4K e 8K no smartphone?' O que responder honestamente?",opts:["8K é visualmente muito superior ao 4K em qualquer tela","Na maioria das situações práticas (assistir em TV 4K, postar nas redes), a diferença visual é imperceptível; o 8K brilha em produções profissionais com edição intensa","8K sempre compensa o custo extra de armazenamento","4K já é desnecessário para o usuário médio"],ans:1},
+{q:"Para qual perfil de cliente vale a pena destacar o 8K como diferencial de venda?",opts:["Cliente idoso que usa o celular para ligar","Criador de conteúdo profissional, videomaker ou produtor que edita vídeos e precisa de margem para recorte e futuro-proof","Qualquer cliente que assiste a séries no celular","Cliente que usa principalmente câmera frontal para selfies"],ans:1},
+{q:"Gravar em 4K a 30fps consome menos bateria do que 4K a 60fps. Isso afeta qual decisão de venda?",opts:["Não afeta nada, bateria é sempre suficiente","Para clientes que gravam eventos longos sem carregador (casamentos, viagens), 4K 30fps pode ser mais prático; 4K 60fps é ideal para movimentos rápidos (esportes)","60fps economiza mais bateria por ser mais eficiente","Resolução não tem nenhuma relação com duração de bateria"],ans:1},
+{q:"Um cliente tem um smartphone com gravação 4K mas pouco armazenamento interno (64GB) e sem cartão SD. Qual orientação dar?",opts:["Trocar o aparelho imediatamente","Usar 4K com critério — vídeos curtos — e fazer backups frequentes, ou considerar aparelho com mais armazenamento ou versão com cartão SD","Gravar sempre em 4K e apagar as fotos","Não há solução, 4K é incompatível com 64GB"],ans:1},
+{q:"Qual a diferença entre 4K a 30fps e 4K a 60fps para gravação de esportes ou movimentos rápidos?",opts:["30fps é melhor para movimento por ter exposição maior","60fps capta o dobro de quadros por segundo, resultando em movimentos mais fluidos e sem borrão — ideal para esportes","São idênticos para vídeos em movimento","60fps só funciona com OIS ativado"],ans:1},
+{q:"Por que o 8K ainda não é amplamente adotado nos smartphones mesmo nos top de linha?",opts:["Porque é uma tecnologia falsa, não existe 8K real","Porque arquivos enormes, processamento intenso, superaquecimento e falta de telas 8K no mercado limitam o uso prático","Porque o 8K só funciona com Android 15+","Porque as operadoras bloqueiam o upload de 8K"],ans:1},
+{q:"Um cliente que usa Instagram Reels e TikTok pergunta se vale gravar em 4K. O que responder?",opts:["Não vale — as plataformas comprimem tudo para 1080p ou menos","Vale para ter margem de recorte e qualidade na origem, mas o resultado final nas plataformas será comprimido — o diferencial é na edição antes do upload","4K é obrigatório para postar nas redes sociais","Apenas o 8K é aceito pelo TikTok"],ans:1},
+{q:"O que é 'LOG' ou 'Flat Color Profile' disponível em alguns smartphones na gravação de vídeo?",opts:["Um formato de arquivo para vídeos 8K","Perfil de cor com menos saturação e contraste que preserva mais informação para edição profissional de cor em pós-produção","Um modo de economia de bateria durante gravação","Filtro automático aplicado durante a gravação"],ans:1},
+{q:"Gravar em 4K a 120fps (slow motion) é comum em smartphones premium. Qual o benefício para o cliente?",opts:["Reduz o tamanho do arquivo de vídeo","Permite criar cenas em câmera lenta extremamente suave ao desacelerar o vídeo na edição — ideal para esportes, natureza e clipes criativos","120fps só funciona em vídeos do YouTube","Aumenta a duração da bateria durante gravação"],ans:1},
+{q:"Qual é o impacto da resolução 4K no consumo de dados ao fazer transmissão ao vivo (live streaming)?",opts:["Nenhum — o celular comprime automaticamente para 720p","Muito alto — transmissão em 4K exige conexão muito rápida e estável; a maioria das plataformas aceita até 1080p em live","4K não funciona em transmissão ao vivo","O 4K reduz o consumo de dados por ser mais eficiente"],ans:1},
+{q:"Por que alguns smartphones limitam a gravação em 4K a poucos minutos contínuos?",opts:["Limitação de software proposital para vender modelos mais caros","Superaquecimento do processador e sensor ao processar grandes volumes de dados; o sistema pausa para proteger os componentes","O armazenamento esgota rapidamente em 4K","O 4K só grava corretamente com bateria acima de 50%"],ans:1},
+{q:"O que é HDR10 na gravação de vídeo e por que é relevante para o vendedor mencionar?",opts:["Um modo de zoom óptico de 10x integrado ao vídeo","Padrão de vídeo com alta faixa dinâmica — preserva detalhes em áreas claras e escuras simultaneamente, resultando em vídeos com cores e contrastes mais naturais em TVs compatíveis","Um codec de compressão exclusivo da Apple","Um recurso que dobra a duração da bateria durante gravação"],ans:1},
+{q:"Um cliente compara dois smartphones: um grava 4K a 30fps e outro grava Full HD a 60fps. Para gravar festas, qual é melhor?",opts:["Full HD 60fps — movimento mais fluido é mais importante para festas com dança e movimento","4K 30fps — para memórias, a resolução importa mais; impressões e TVs grandes valorizarão o 4K","São equivalentes em qualquer situação","Full HD é sempre inferior ao 4K independente dos fps"],ans:0},
+{q:"Como a estabilização OIS afeta a qualidade do vídeo 4K em comparação com OIS ausente?",opts:["OIS não tem relação com qualidade de vídeo","OIS reduz microtremores físicos durante a gravação em 4K, especialmente ao caminhar, resultando em vídeos suaves sem necessidade de gimbal","OIS funciona apenas em fotos, não em vídeos","OIS reduz automaticamente a resolução de 4K para Full HD"],ans:1},
+{q:"Por que vídeos 4K gravados em smartphones parecem 'melhor' do que Full HD mesmo assistidos em telas Full HD?",opts:["É apenas percepção subjetiva sem base técnica","A maior resolução de origem reduz artefatos de compressão e suaviza bordas ao ser redimensionado para Full HD — processo chamado de 'downscaling'","O celular aplica filtros automáticos no 4K que o Full HD não tem","Telas Full HD detectam automaticamente o 4K e ajustam o hardware"],ans:1},
+{q:"O que significa '4K Cinematic' ou '4K Cinemático' presente em iPhones e Samsungs topo de linha?",opts:["Gravação em preto e branco automático","Gravação em proporção 2.39:1 (ultra-wide cinemático) com otimizações de cor e estabilização para resultados semelhantes a câmeras de cinema","Modo exclusivo para câmeras traseiras de 200MP","Filtro que imita a aparência de filmes antigos dos anos 80"],ans:1},
+{q:"Para um cliente que vai gravar a viagem de lua de mel e quer os melhores vídeos possíveis sem ser videomaker, qual configuração indicar?",opts:["8K para ter o máximo sempre","4K a 30fps com OIS ativado e modo automático — equilíbrio entre qualidade, estabilidade e facilidade sem exigir conhecimento técnico","Full HD para economizar espaço","4K a 120fps para slow motion de tudo"],ans:1},
+{q:"Qual argumento de fechamento usar quando o cliente hesita em pagar mais por um smartphone com câmera 4K?",opts:["Dizer que 4K é apenas marketing e não há diferença real","Mostrar que momentos não voltam atrás — vídeos do crescimento dos filhos, viagens e celebrações gravados em 4K poderão ser assistidos em TVs cada vez maiores com qualidade total; o investimento protege a memória","Focar apenas no preço e oferecer desconto","Mudar de assunto e falar de outras especificações"],ans:1},
+{q:"Como resumir a diferença entre 4K e 8K para um cliente leigo em menos de 30 segundos?",opts:["4K tem 4 pixels e 8K tem 8 pixels","4K já entrega qualidade excelente para qualquer uso do dia a dia e é compatível com todas as TVs modernas; 8K é para profissionais que precisam de margem extra na edição — para a maioria dos clientes, o 4K é a escolha certa","8K é sempre melhor, ponto final","Full HD é suficiente e 4K e 8K são iguais na prática"],ans:1}
+]};
+ACAD_TEMAS.push(_T25);
+
 const _T22={id:22,modulo:'Fotografia',nome:"Fotografia Computacional: O papel da IA no pós-processamento",questoes:[
 {q:"O que é 'fotografia computacional' em smartphones?",opts:["Fotos tiradas exclusivamente com tripé e computador externo","O uso de processamento algorítmico e IA para combinar múltiplos quadros e melhorar a imagem além do que o sensor captura sozinho","Um modo que só funciona em estúdios profissionais","Fotos armazenadas apenas em formato RAW"],ans:1},
 {q:"Como o modo noturno (Night Mode) de smartphones modernos consegue clarear fotos escuras sem tripé?",opts:["Aumenta o ISO ao máximo em uma única exposição longa","Captura e alinha múltiplos quadros de exposição curta, combinando-os via IA para reduzir ruído e tremor","Usa apenas o flash em potência máxima","Aplica um filtro de brilho depois que a foto já foi tirada"],ans:1},
@@ -22020,7 +22538,6 @@ ACAD_TEMAS.push(_T22);
     {id:21,nome:"Lente Macro: Vendendo para empreendedores e detalhes"},
     {id:23,nome:"Modo Retrato: Sensor de Profundidade vs. Algoritmo"},
     {id:24,nome:"HDR Dinâmico: Equilibrando luz e sombra"},
-    {id:25,nome:"Gravação em 4K e 8K: Quando oferecer cada uma?"},
     {id:26,nome:"Taxa de Quadros (FPS): 30fps vs. 60fps na fluidez do vídeo"},
     {id:27,nome:"Formatos de Imagem: JPEG vs. HEIC vs. RAW"},
     {id:28,nome:"Filtros e Edição Nativa: Otimizando a selfie do cliente"},
@@ -26455,6 +26972,26 @@ cursosInit();
     </div>
     <!-- Body -->
     <div id="modal-agend-body" style="overflow-y:auto;flex:1;padding:1.25rem;"></div>
+  </div>
+</div>
+
+<!-- ══ MODAL CAUTELAR ══ -->
+<div id="modal-cautelar" class="fixed inset-0 z-[999] hidden flex items-center justify-center bg-black/80 p-3"
+     onclick="if(event.target===this)fecharCautelar()">
+  <div style="background:#0d1117;border:1px solid rgba(167,139,250,.3);border-radius:1.25rem;width:100%;max-width:720px;max-height:90vh;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.7);">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:1rem 1.5rem;border-bottom:1px solid rgba(255,255,255,.07);flex-shrink:0;">
+      <div style="display:flex;align-items:center;gap:.75rem;">
+        <div style="width:2.2rem;height:2.2rem;border-radius:.65rem;background:linear-gradient(135deg,rgba(167,139,250,.35),rgba(167,139,250,.1));border:1px solid rgba(167,139,250,.4);display:flex;align-items:center;justify-content:center;">
+          <i class="fas fa-shield-alt" style="color:#a78bfa;font-size:.85rem;"></i>
+        </div>
+        <div>
+          <div style="color:#fff;font-weight:800;font-size:.9rem;">Cautelar</div>
+          <div style="color:#6b7280;font-size:.62rem;">Ranking por rede, loja e vendedor</div>
+        </div>
+      </div>
+      <button onclick="fecharCautelar()" style="color:#6b7280;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:.5rem;padding:.3rem .65rem;cursor:pointer;font-size:1rem;">✕</button>
+    </div>
+    <div id="modal-cautelar-body" style="overflow-y:auto;flex:1;padding:1.25rem;"></div>
   </div>
 </div>
 
@@ -34833,6 +35370,7 @@ window._dirDirUpdateTimestamp = _dirDirUpdateTimestamp;
             ['modal-editar-usuario',   () => fecharModalEditarUsuario()],
             ['modal-criar-usuario',    () => fecharModalCriarUsuario()],
             ['modal-acessorios',       () => document.getElementById('modal-acessorios').classList.add('hidden')],
+            ['modal-cautelar',         () => fecharCautelar()],
             ['modal-agendamentos',     () => fecharAgendamentos()],
             ['modal-fat-diario',       () => fecharFatDiario()],
             ['modal-detalhes-fat',     () => _fecharDetalhesFat()],

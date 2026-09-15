@@ -239,7 +239,8 @@ def fetch_sales(token, start, end, channel_id=None, retries=4, wait=15):
             return r.json()
         except requests.exceptions.HTTPError as e:
             last_err = e
-            if e.response is not None and e.response.status_code < 500:
+            # 401 pode ser falha transitória do ERP mesmo com token válido — vale retry
+            if e.response is not None and e.response.status_code < 500 and e.response.status_code != 401:
                 raise
             print(f"  fetch_sales tentativa {attempt}/{retries} falhou ({e}). Aguardando {wait}s...")
             time.sleep(wait)
@@ -354,7 +355,8 @@ def fetch_gerencial(token, start, end, payment_method_ids=None, store_ids=None, 
             return r.json()
         except requests.exceptions.HTTPError as e:
             last_err = e
-            if e.response is not None and e.response.status_code < 500:
+            # 401 pode ser falha transitória do ERP mesmo com token válido — vale retry
+            if e.response is not None and e.response.status_code < 500 and e.response.status_code != 401:
                 raise
             print(f"  fetch_gerencial tentativa {attempt}/{retries} falhou ({e}). Aguardando {wait}s...")
             time.sleep(wait)

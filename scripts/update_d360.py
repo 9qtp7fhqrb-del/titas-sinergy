@@ -160,7 +160,7 @@ def save_erp_token_to_firestore(token):
         print(f'  AVISO: erro ao salvar token ERP no Firestore: {e}')
 
 
-def save_d360_to_firestore(sales, acess, acess_dia, today_sellers_proc, fin, fin_acum, agend, top_fin_mes_bd_by_store=None, fin_bd_by_store=None):
+def save_d360_to_firestore(sales, acess, acess_dia, today_sellers_proc, fin, fin_acum, agend, top_fin_mes_bd_by_store=None, fin_bd_by_store=None, top_cautelar=None):
     """Atualiza ts_d360/dados_360_atual no Firestore — dispara onSnapshot em todos os browsers abertos."""
     import time, calendar
     MESES = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez']
@@ -190,6 +190,10 @@ def save_d360_to_firestore(sales, acess, acess_dia, today_sellers_proc, fin, fin
                 'total': round(acess.get(sk, {}).get('total', 0), 2),
                 'top':   acess.get(sk, {}).get('top', []),
             },
+            'cautelar':      (top_cautelar or {}).get('lojas', {}).get(sk, {
+                'protecao': {'total': 0, 'salao': 0, 'financeiras': 0, 'top': []},
+                'garantia': {'total': 0, 'salao': 0, 'financeiras': 0, 'top': []},
+            }),
         }
 
     snap = {
@@ -1056,27 +1060,25 @@ def update_store(content, store_key, total, acess_total, agend_total, agend_top,
 def fetch_top_produtos_por_financeira(token, start, end, top_n=7, retries=3, wait=15):
     """
     Busca /reports/sales/product_sales (todos os grupos) em chunks de 4 dias.
-    Separa por group_name: SBON → celulares, ACESSÓRIOS → acessórios.
-    Retorna (top_modelos, top_acessorios) cada um com estrutura
-    {payjoy, odrescred, salao, lojas:{<key>:{payjoy,odrescred,salao}}}
+    Separa por group_name: SBON → celulares, ACESSÓRIOS → acessórios,
+    PROTEÇÃO/GARANTIA ESTENDIDA → cautelar (por loja/vendedor/forma de pagamento).
+    Retorna (top_modelos, top_acessorios, cautelar).
+    top_modelos/top_acessorios: {payjoy, odrescred, salao, lojas:{<key>:{payjoy,odrescred,salao}}}
+    cautelar: {protecao:{total,salao,financeiras,top:[{n,i,t}]}, garantia:{...},
+               lojas:{<key>:{protecao:{...}, garantia:{...}}}}
     """
     import subprocess, json
     from collections import defaultdict
     from datetime import datetime, timedelta
 
-    STORE_MAP = {
-        'CDC BARREIRAS':                'barreiras',
-        'CDC CARIACICA':                'cariacica',
-        'CDC ITABUNA':                  'itabuna',
-        'CDC LARANJEIRAS':              'laranjeiras',
-        'CDC LINHARES':                 'linhares',
-        'CDC MONTSERRAT':               'montserrat',
-        'CDC PRAIA DA COSTA':           'praiadacosta',
-        'CDC SAO MATEUS':               'saomateus',
-        'CDC SERRA':                    'serra',
-        'CDC TEIXEIRA DE FREITAS NOVO': 'teixeira',
-        'SHOPPING MOXUARA':             'moxuara',
-    }
+    # Usa o STORE_MAP global (nomes reais do OdresTech) — o mapa local antigo
+    # com prefixo "CDC " nunca batia com item.get('store_name') e deixava o
+    # breakdown por loja de top_modelos/top_acessorios sempre vazio.
+    _FINANCEIRA_KEYWORDS = ('payjoy', 'odrescred', 'aiva pay', 'crefaz', 'parcelex', 'watu brasil')
+
+    def _is_financeira(payment_methods):
+        pms = ' '.join(payment_methods or []).lower()
+        return any(k in pms for k in _FINANCEIRA_KEYWORDS)
 
     # Coleta todos os itens em chunks de 4 dias (sem filtro de grupo)
     all_items = []
@@ -1124,6 +1126,13 @@ def fetch_top_produtos_por_financeira(token, start, end, top_n=7, retries=3, wai
     geral_aces = defaultdict(lambda: {'qt': 0, 'val': 0.0})
     lojas_aces = {k: defaultdict(lambda: {'qt': 0, 'val': 0.0}) for k in STORE_MAP.values()}
 
+    def _caut_bucket():
+        return {'protecao': {'total': 0.0, 'salao': 0.0, 'financeiras': 0.0, 'sellers': defaultdict(float)},
+                'garantia': {'total': 0.0, 'salao': 0.0, 'financeiras': 0.0, 'sellers': defaultdict(float)}}
+    geral_caut = _caut_bucket()
+    lojas_caut = {k: _caut_bucket() for k in STORE_MAP.values()}
+    _CAUT_GRUPO = {'PROTEÇÃO': 'protecao', 'GARANTIA ESTENDIDA': 'garantia'}
+
     for item in all_items:
         if item.get('item_status') == 'returned':
             continue
@@ -1146,6 +1155,19 @@ def fetch_top_produtos_por_financeira(token, start, end, top_n=7, retries=3, wai
             if store_key:
                 lojas_aces[store_key][nm]['qt'] += 1
                 lojas_aces[store_key][nm]['val'] += val
+        elif grupo in _CAUT_GRUPO:
+            cat_c  = _CAUT_GRUPO[grupo]
+            pay    = 'financeiras' if _is_financeira(item.get('payment_methods')) else 'salao'
+            seller = (item.get('seller_name') or '').strip()
+            geral_caut[cat_c]['total'] += val
+            geral_caut[cat_c][pay]     += val
+            if seller:
+                geral_caut[cat_c]['sellers'][seller] += val
+            if store_key:
+                lojas_caut[store_key][cat_c]['total'] += val
+                lojas_caut[store_key][cat_c][pay]     += val
+                if seller:
+                    lojas_caut[store_key][cat_c]['sellers'][seller] += val
 
     def _top(d):
         return [{'nm': nm, 'qt': v['qt'], 'val': round(v['val'])}
@@ -1187,12 +1209,40 @@ def fetch_top_produtos_por_financeira(token, start, end, top_n=7, retries=3, wai
             'lojas': {k: _abc(lojas[k]) for k in lojas},
         }
 
-    return _build_cel(geral_cel, lojas_cel), _build_aces(geral_aces, lojas_aces)
+    def _top_sellers(sellers):
+        out = []
+        for name, val in sorted(sellers.items(), key=lambda x: -x[1]):
+            parts = name.split()
+            initials = (parts[0][0] + parts[1][0]).upper() if len(parts) >= 2 else name[:2].upper()
+            out.append({'n': name, 'i': initials, 't': round(val, 2)})
+        return out
+
+    def _build_caut_cat(b):
+        return {
+            'total':       round(b['total'], 2),
+            'salao':       round(b['salao'], 2),
+            'financeiras': round(b['financeiras'], 2),
+            'top':         _top_sellers(b['sellers']),
+        }
+
+    def _build_caut(geral, lojas):
+        return {
+            'protecao': _build_caut_cat(geral['protecao']),
+            'garantia': _build_caut_cat(geral['garantia']),
+            'lojas': {
+                k: {'protecao': _build_caut_cat(lojas[k]['protecao']),
+                    'garantia': _build_caut_cat(lojas[k]['garantia'])}
+                for k in lojas
+            },
+        }
+
+    return (_build_cel(geral_cel, lojas_cel), _build_aces(geral_aces, lojas_aces),
+            _build_caut(geral_caut, lojas_caut))
 
 
 # mantém alias antigo caso haja referência direta
 def fetch_top_modelos_por_financeira(token, start, end, top_n=7, retries=3, wait=15):
-    tm, _ = fetch_top_produtos_por_financeira(token, start, end, top_n, retries, wait)
+    tm, _, _ = fetch_top_produtos_por_financeira(token, start, end, top_n, retries, wait)
     return tm
 
 
@@ -1671,10 +1721,11 @@ def main():
     else:
         print("  IDs de lojas não disponíveis — agend_fin não será atualizado")
 
-    print("Buscando modelos/acessórios mais vendidos por forma de pagamento...")
-    top_modelos, top_acessorios = fetch_top_produtos_por_financeira(token, start, today)
+    print("Buscando modelos/acessórios/cautelar por forma de pagamento...")
+    top_modelos, top_acessorios, top_cautelar = fetch_top_produtos_por_financeira(token, start, today)
     print(f"  Celulares — PayJoy: {len(top_modelos.get('payjoy',[]))} | OdresCred: {len(top_modelos.get('odrescred',[]))} | Salão: {len(top_modelos.get('salao',[]))}")
     print(f"  Acessórios — PayJoy: {len(top_acessorios.get('payjoy',[]))} | OdresCred: {len(top_acessorios.get('odrescred',[]))} | Salão: {len(top_acessorios.get('salao',[]))}")
+    print(f"  Cautelar — Proteção: R${top_cautelar['protecao']['total']:,.2f} | Garantia Estendida: R${top_cautelar['garantia']['total']:,.2f}")
 
     print("Buscando gerencial por grupo de produto (tickets médios)...")
     gerencial_cel   = fetch_gerencial(token, start, today, group_ids=[PRODUCT_GROUP_CEL])
@@ -1917,7 +1968,7 @@ def main():
 
     # Atualiza Firestore em tempo real — dispara onSnapshot em todos os browsers abertos
     print("\nSincronizando com Firestore...")
-    save_d360_to_firestore(sales, acess, acess_dia, today_sellers_proc, fin, fin_acum, agend, top_fin_mes_bd_by_store, fin_bd_by_store)
+    save_d360_to_firestore(sales, acess, acess_dia, today_sellers_proc, fin, fin_acum, agend, top_fin_mes_bd_by_store, fin_bd_by_store, top_cautelar)
 
 if __name__ == '__main__':
     main()

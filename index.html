@@ -16231,38 +16231,10 @@ function render360(tipo, val) {
             </div>`;
         })();
 
-    // Card CAUTELAR — apenas Marcelo tem acesso por ora
+    // Card CAUTELAR — visível para todos os usuários
     const _cautelarCard = (() => {
         const _C_COR = '#a78bfa';
-        const _isMarcelo = user && user.email === 'marcelos_lima@icloud.com';
-        if (!_isMarcelo) {
-            // Arte de obra + Em breve para demais usuários
-            return `<div class="glass-360 rounded-2xl p-4" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.6rem;min-height:160px;position:relative;overflow:hidden;">
-                <style>
-                    @keyframes _obra_bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
-                    @keyframes _obra_spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
-                    @keyframes _obra_blink{0%,100%{opacity:1}50%{opacity:.4}}
-                    ._obra_gear{animation:_obra_spin 3s linear infinite;display:inline-block;}
-                    ._obra_hat{animation:_obra_bounce 1.4s ease-in-out infinite;}
-                    ._obra_dot1{animation:_obra_blink 1.2s .0s infinite;}
-                    ._obra_dot2{animation:_obra_blink 1.2s .4s infinite;}
-                    ._obra_dot3{animation:_obra_blink 1.2s .8s infinite;}
-                </style>
-                <div style="position:absolute;inset:0;background:repeating-linear-gradient(45deg,#f59e0b08,#f59e0b08 6px,transparent 6px,transparent 18px);pointer-events:none;"></div>
-                <div style="display:flex;align-items:center;gap:.5rem;">
-                    <span class="_obra_hat" style="font-size:1.6rem;">🪖</span>
-                    <span class="_obra_gear" style="font-size:1.1rem;opacity:.7;">⚙️</span>
-                </div>
-                <div style="font-size:.78rem;font-weight:900;letter-spacing:.18em;text-transform:uppercase;color:#f59e0b;">
-                    CAUTELAR
-                </div>
-                <div style="font-size:.62rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#6b7280;">
-                    Em Breve<span class="_obra_dot1" style="color:#f59e0b;">.</span><span class="_obra_dot2" style="color:#f59e0b;">.</span><span class="_obra_dot3" style="color:#f59e0b;">.</span>
-                </div>
-                <div style="font-size:.55rem;color:#4b5563;text-align:center;max-width:14ch;line-height:1.5;">Novo recurso em desenvolvimento</div>
-            </div>`;
-        }
-        // Versão completa para Marcelo — vendas reais (Proteção + Garantia Estendida)
+        // Versão completa — vendas reais (Proteção + Garantia Estendida)
         const cM = typeof METAS_CAUTELAR !== 'undefined' ? METAS_CAUTELAR : {};
         const _cautTotalLoja = (l) => {
             const c = l.cautelar || {};

@@ -160,7 +160,7 @@ def save_erp_token_to_firestore(token):
         print(f'  AVISO: erro ao salvar token ERP no Firestore: {e}')
 
 
-def save_d360_to_firestore(sales, acess, acess_dia, today_sellers_proc, fin, fin_acum, agend, top_fin_mes_bd_by_store=None, fin_bd_by_store=None, top_cautelar=None):
+def save_d360_to_firestore(sales, acess, acess_dia, today_sellers_proc, fin, fin_acum, agend, top_fin_mes_bd_by_store=None, fin_bd_by_store=None, top_cautelar=None, cautelar_dia=None):
     """Atualiza ts_d360/dados_360_atual no Firestore — dispara onSnapshot em todos os browsers abertos."""
     import time, calendar
     MESES = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez']
@@ -194,6 +194,7 @@ def save_d360_to_firestore(sales, acess, acess_dia, today_sellers_proc, fin, fin
                 'protecao': {'total': 0, 'salao': 0, 'financeiras': 0, 'top': []},
                 'garantia': {'total': 0, 'salao': 0, 'financeiras': 0, 'top': []},
             }),
+            'cautelar_dia':  (cautelar_dia or {}).get(sk, {'total': 0, 'top': []}),
         }
 
     snap = {
@@ -804,6 +805,33 @@ def process_tickets(data, gerencial_cel=None, gerencial_acess=None):
     return dict(cel_rev=round(cel_rev,2), cel_ped=cel_ped, acess_rev=round(acess_rev,2), acess_ped=acess_ped,
                 total_rev=round(total_rev,2), total_ped=total_ped,
                 ticket_cel=ticket_cel, ticket_acess=ticket_acess, ticket_geral=ticket_geral)
+
+
+def process_cautelar_dia(today_data):
+    """Cautelar do dia (PROTEÇÃO + GARANTIA ESTENDIDA) por loja e vendedor via group_totals."""
+    stores = {}
+    for c in get_collaborators(today_data):
+        if c.get('profile_key') != 'seller':
+            continue
+        raw = (c.get('store_name') or '').upper().strip()
+        sk = STORE_MAP.get(raw)
+        if not sk:
+            continue
+        grp = c.get('group_totals') or {}
+        total = float(grp.get('PROTEÇÃO', 0) or 0) + float(grp.get('GARANTIA ESTENDIDA', 0) or 0)
+        if total <= 0:
+            continue
+        name = (c.get('collaborator_name') or '').strip()
+        parts = name.split()
+        initials = (parts[0][0] + parts[1][0]).upper() if len(parts) >= 2 else name[:2].upper()
+        if sk not in stores:
+            stores[sk] = {'total': 0.0, 'top': []}
+        stores[sk]['total'] += total
+        stores[sk]['top'].append({'n': name, 'i': initials, 't': round(total, 2)})
+    for s in stores.values():
+        s['top'].sort(key=lambda x: x['t'], reverse=True)
+        s['total'] = round(s['total'], 2)
+    return stores
 
 
 def process(data, value_fn):
@@ -1738,7 +1766,10 @@ def main():
 
     sales     = process(sales_data, lambda c: c.get('total_sold', 0))
     acess     = process(sales_data, lambda c: (c.get('group_totals') or {}).get('ACESSÓRIOS', 0))
-    acess_dia = process(today_data, lambda c: (c.get('group_totals') or {}).get('ACESSÓRIOS', 0))
+    acess_dia    = process(today_data, lambda c: (c.get('group_totals') or {}).get('ACESSÓRIOS', 0))
+    cautelar_dia = process_cautelar_dia(today_data)
+    caut_dia_total = sum(v['total'] for v in cautelar_dia.values())
+    print(f"  Cautelar hoje: R${caut_dia_total:,.2f} em {len(cautelar_dia)} lojas")
     agend     = process(agend_data, lambda c: c.get('total_sold', 0))
     fin      = process_gerencial(fin_today_data)
     fin_acum = process_gerencial(fin_mes_data)
@@ -1970,7 +2001,7 @@ def main():
 
     # Atualiza Firestore em tempo real — dispara onSnapshot em todos os browsers abertos
     print("\nSincronizando com Firestore...")
-    save_d360_to_firestore(sales, acess, acess_dia, today_sellers_proc, fin, fin_acum, agend, top_fin_mes_bd_by_store, fin_bd_by_store, top_cautelar)
+    save_d360_to_firestore(sales, acess, acess_dia, today_sellers_proc, fin, fin_acum, agend, top_fin_mes_bd_by_store, fin_bd_by_store, top_cautelar, cautelar_dia)
 
 if __name__ == '__main__':
     main()

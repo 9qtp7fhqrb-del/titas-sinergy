@@ -10849,14 +10849,19 @@ function _renderFatDiario() {
             // mapa nome→acess por vendedor
             var acessMap = {};
             (l.acess_dia_top || []).forEach(function(v){ acessMap[v.n.toLowerCase()] = v.t; });
+            // cautelar do dia
+            var caut = (l.cautelar_dia && l.cautelar_dia.total) || 0;
+            var cautMap = {};
+            ((l.cautelar_dia && l.cautelar_dia.top) || []).forEach(function(v){ cautMap[v.n.toLowerCase()] = v.t; });
             return { k:k, nome:l.label||k, sigla:l.sigla||k.slice(0,2).toUpperCase(),
-                fat:fat, acess:acess, acessMap:acessMap, cor:coresLojas[k]||'#818cf8', top:top };
+                fat:fat, acess:acess, acessMap:acessMap, caut:caut, cautMap:cautMap, cor:coresLojas[k]||'#818cf8', top:top };
         })
         .filter(function(l){ return l.fat > 0; })
         .sort(function(a,b){ return b.fat - a.fat; });
 
     var totalGeral      = lojas.reduce(function(s,l){ return s+l.fat;   }, 0);
     var totalAcessGeral = lojas.reduce(function(s,l){ return s+l.acess; }, 0);
+    var totalCautGeral  = lojas.reduce(function(s,l){ return s+l.caut;  }, 0);
     var rankMedal  = ['\u{1F947}','\u{1F948}','\u{1F949}'];
     var maxFat     = lojas.length ? lojas[0].fat : 1;
 
@@ -10882,11 +10887,13 @@ function _renderFatDiario() {
         var vendRows = l.top.map(function(v, vi) {
             var vpct  = l.fat > 0 ? ((v.t/l.fat)*100).toFixed(0) : '0';
             var vAcess = l.acessMap[v.n.toLowerCase()] || 0;
+            var vCaut  = l.cautMap[v.n.toLowerCase()] || 0;
             return '<tr style="border-bottom:1px solid rgba(255,255,255,.04);">' +
                 '<td style="padding:5px 8px;color:#9ca3af;font-size:10px;">'+(vi+1)+'\u00BA</td>' +
-                '<td style="padding:5px 8px;color:#e5e7eb;font-size:10px;max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+v.n+'</td>' +
+                '<td style="padding:5px 8px;color:#e5e7eb;font-size:10px;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+v.n+'</td>' +
                 '<td style="padding:5px 8px;color:'+l.cor+';font-size:10px;font-weight:700;text-align:right;white-space:nowrap;">'+_brl(v.t)+'</td>' +
                 '<td style="padding:5px 8px;text-align:right;white-space:nowrap;">'+(vAcess>0?'<span style="color:#10b981;font-size:10px;font-weight:700;">'+_brl(vAcess)+'</span>':'<span style="color:#4b5563;font-size:9px;">\u2014</span>')+'</td>' +
+                '<td style="padding:5px 8px;text-align:right;white-space:nowrap;">'+(vCaut>0?'<span style="color:#a78bfa;font-size:10px;font-weight:700;">'+_brl(vCaut)+'</span>':'<span style="color:#4b5563;font-size:9px;">\u2014</span>')+'</td>' +
                 '<td style="padding:4px 8px;text-align:right;"><span style="font-size:8px;padding:1px 5px;border-radius:999px;background:'+l.cor+'22;color:'+l.cor+';">'+vpct+'%</span></td>' +
                 '</tr>';
         }).join('');
@@ -10897,6 +10904,7 @@ function _renderFatDiario() {
                 '<th style="padding:6px 8px;color:#6b7280;font-size:9px;text-align:left;">Vendedor</th>' +
                 '<th style="padding:6px 8px;color:#6b7280;font-size:9px;text-align:right;">Hoje</th>' +
                 '<th style="padding:6px 8px;color:#6b7280;font-size:9px;text-align:right;">\uD83C\uDFF7\uFE0F Acess.</th>' +
+                '<th style="padding:6px 8px;color:#a78bfa;font-size:9px;text-align:right;">\uD83D\uDEE1\uFE0F Caut.</th>' +
                 '<th style="padding:6px 8px;color:#6b7280;font-size:9px;text-align:right;">Part.</th>' +
                 '</tr></thead><tbody>'+vendRows+'</tbody></table>'
             : '<p style="font-size:10px;color:#6b7280;padding:10px 14px;margin:0;">Detalhamento dispon\u00EDvel ap\u00F3s pr\u00F3xima atualiza\u00E7\u00E3o autom\u00E1tica.</p>';
@@ -10913,6 +10921,7 @@ function _renderFatDiario() {
                 '<div style="text-align:right;flex-shrink:0;margin-left:8px;">' +
                     '<div style="font-size:13px;font-weight:800;color:'+l.cor+';">'+_brl(l.fat)+'</div>' +
                     (l.acess>0?'<div style="font-size:9px;color:#10b981;font-weight:700;margin-top:1px;">\uD83C\uDFF7\uFE0F '+_brl(l.acess)+'</div>':'') +
+                    (l.caut>0?'<div style="font-size:9px;color:#a78bfa;font-weight:700;margin-top:1px;">\uD83D\uDEE1\uFE0F '+_brl(l.caut)+'</div>':'') +
                 '</div>' +
                 '<i class="fas fa-chevron-down fd-chev" style="color:#6b7280;font-size:10px;margin-left:4px;transition:transform .22s;"></i>' +
             '</div>' +
@@ -10927,6 +10936,7 @@ function _renderFatDiario() {
             '<div style="display:flex;gap:12px;flex-shrink:0;">' +
                 '<div style="text-align:right;"><div style="font-size:14px;font-weight:800;color:#f59e0b;">'+_brl(totalGeral)+'</div><div style="font-size:9px;color:#6b7280;">total hoje</div></div>' +
                 (totalAcessGeral>0?'<div style="text-align:right;"><div style="font-size:14px;font-weight:800;color:#10b981;">'+_brl(totalAcessGeral)+'</div><div style="font-size:9px;color:#6b7280;">🏷️ acessórios</div></div>':'') +
+                (totalCautGeral>0?'<div style="text-align:right;"><div style="font-size:14px;font-weight:800;color:#a78bfa;">'+_brl(totalCautGeral)+'</div><div style="font-size:9px;color:#6b7280;">🛡️ cautelar</div></div>':'') +
             '</div>' +
         '</div>' +
         filterButtons + lojaRows +
@@ -16055,6 +16065,9 @@ function render360(tipo, val) {
         // Acessórios do dia
         let _totalAcess = 0;
         scope.forEach(function(l) { _totalAcess += l.acess_dia || 0; });
+        // Cautelar do dia
+        let _totalCautelarDia = 0;
+        scope.forEach(function(l) { _totalCautelarDia += (l.cautelar_dia && l.cautelar_dia.total) || 0; });
         // Margem do dia — usa _calcMargemDia definida no escopo do render (suporta margem_lojas)
         const _META_MARGEM_DIA = 45;
         const _mDia = (() => {
@@ -16094,6 +16107,13 @@ function render360(tipo, val) {
                     <span style="font-size:.58rem;color:#9ca3af;font-weight:600;">🏷️ Acessórios Dia</span>
                     ${_totalAcess > 0
                         ? `<span style="font-size:.72rem;font-weight:800;color:#10b981;">${brl(_totalAcess)}</span>`
+                        : `<span style="font-size:.65rem;color:#4b5563;font-style:italic;">sem dados</span>`
+                    }
+                </div>
+                <div style="display:flex;justify-content:space-between;align-items:center;padding:.22rem .6rem;border-radius:.45rem;background:rgba(167,139,250,.1);border:1px solid rgba(167,139,250,.3);margin-bottom:.25rem;">
+                    <span style="font-size:.58rem;color:#9ca3af;font-weight:600;">🛡️ Cautelar Dia</span>
+                    ${_totalCautelarDia > 0
+                        ? `<span style="font-size:.72rem;font-weight:800;color:#a78bfa;">${brl(_totalCautelarDia)}</span>`
                         : `<span style="font-size:.65rem;color:#4b5563;font-style:italic;">sem dados</span>`
                     }
                 </div>

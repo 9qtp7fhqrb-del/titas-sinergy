@@ -182,6 +182,10 @@ def save_d360_to_firestore(sales, acess, acess_dia, today_sellers_proc, fin, fin
             'top_fin_mes':   (top_fin_mes_bd_by_store or {}).get(sk, []),
             'fin_bd':        (fin_bd_by_store or {}).get(sk, [{'nm': g['nm'], 't': 0} for g in FINANCEIRAS_GROUPS]),
             'agendFat':      round(agend.get(sk, {}).get('total', 0), 2),
+            'agendamentos':  {
+                'total': round(agend.get(sk, {}).get('total', 0), 2),
+                'top':   [{'n': v['n'], 'i': v['i'], 't': v['t']} for v in agend.get(sk, {}).get('top', [])],
+            },
             'acessorios':    {
                 'total': round(acess.get(sk, {}).get('total', 0), 2),
                 'top':   acess.get(sk, {}).get('top', []),
@@ -1682,7 +1686,7 @@ def main():
     sales     = process(sales_data, lambda c: c.get('total_sold', 0))
     acess     = process(sales_data, lambda c: (c.get('group_totals') or {}).get('ACESSÓRIOS', 0))
     acess_dia = process(today_data, lambda c: (c.get('group_totals') or {}).get('ACESSÓRIOS', 0))
-    agend     = process(agend_data, lambda c: (c.get('group_totals') or {}).get('SBON', 0))
+    agend     = process(agend_data, lambda c: c.get('total_sold', 0))
     fin      = process_gerencial(fin_today_data)
     fin_acum = process_gerencial(fin_mes_data)
     fin_grps = {nm: process_gerencial(d) for nm, d in fin_groups_data.items()}
@@ -1704,6 +1708,38 @@ def main():
         fn = fin.get(sk, {}).get('total', 0)
         fm = fin_acum.get(sk, {}).get('total', 0)
         print(f"  {sk:<15} total={s:>10,.2f} | acess={a:>8,.2f} | agend={ag:>10,.2f} | fat_dia={fd:>8,.2f} | fin_dia={fn:>8,.2f} | fin_mes={fm:>8,.2f}")
+
+    # ── Conferência geral: agendamentos vs total de vendas ────────────────────
+    grand_total = sum(sales.get(sk, {}).get('total', 0) for sk in STORE_MAP.values())
+    grand_agend = sum(agend.get(sk, {}).get('total', 0) for sk in STORE_MAP.values())
+    grand_outros = grand_total - grand_agend
+    print(f"\n{'─'*70}")
+    print(f"  CONFERÊNCIA — Canal 6 (Agendamentos) vs Total geral de vendas")
+    print(f"  {'LOJA':<15} {'TOTAL GERAL':>13} {'CANAL 6':>13} {'OUTROS':>13} {'%CANAL6':>8}")
+    print(f"  {'─'*15} {'─'*13} {'─'*13} {'─'*13} {'─'*8}")
+    alertas = []
+    for sk in STORE_MAP.values():
+        s  = sales.get(sk, {}).get('total', 0)
+        ag = agend.get(sk, {}).get('total', 0)
+        outros = s - ag
+        pct = (ag / s * 100) if s > 0 else 0
+        flag = ''
+        if ag > s + 0.01:          # agend maior que total — impossível
+            flag = ' ⚠️ AGEND>TOTAL'
+            alertas.append(f'{sk}: agend={ag:,.2f} > total={s:,.2f}')
+        elif s > 0 and pct < 5:    # agend muito baixo pode indicar venda em canal errado
+            flag = ' ⚠️ AGEND BAIXO'
+            alertas.append(f'{sk}: apenas {pct:.1f}% no canal 6 — verificar se há venda em canal errado')
+        print(f"  {sk:<15} {s:>13,.2f} {ag:>13,.2f} {outros:>13,.2f} {pct:>7.1f}%{flag}")
+    print(f"  {'─'*15} {'─'*13} {'─'*13} {'─'*13} {'─'*8}")
+    pct_total = (grand_agend / grand_total * 100) if grand_total > 0 else 0
+    print(f"  {'TOTAL REDE':<15} {grand_total:>13,.2f} {grand_agend:>13,.2f} {grand_outros:>13,.2f} {pct_total:>7.1f}%")
+    print(f"{'─'*70}")
+    if alertas:
+        print("  ⚠️  ALERTAS DE CONFERÊNCIA:")
+        for a in alertas:
+            print(f"     • {a}")
+        print(f"{'─'*70}")
 
     # Montar fin_bd por loja e bd por vendedor
     fin_bd_by_store = {}

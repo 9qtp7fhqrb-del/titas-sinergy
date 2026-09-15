@@ -14,8 +14,8 @@ Objeto `D360` no `index.html` contém:
 - `lojas` — 11 lojas com `total`, `ped`, `acessorios`, `top` (vendedores)
 
 ### Lojas por subrede
-- **T1:** cariacica, itabuna, moxuara, praiadacosta
-- **T2:** barreiras, teixeira, laranjeiras
+- **T1:** cariacica, itabuna, moxuara
+- **T2:** praiadacosta, barreiras, teixeira, laranjeiras
 - **T3:** saomateus, serra, montserrat, linhares
 
 ---

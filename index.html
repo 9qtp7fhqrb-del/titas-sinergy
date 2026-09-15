@@ -10976,9 +10976,9 @@ function _renderCautelarRanking() {
 
     var REDES = [
         { key: 't1', nome: 'Subrede 1 — Talysson', cor: '#4A9EE0',
-          lojas: ['cariacica','itabuna','moxuara','praiadacosta'] },
+          lojas: ['cariacica','itabuna','moxuara'] },
         { key: 't2', nome: 'Subrede 2 — Adriel',   cor: '#5BC47A',
-          lojas: ['barreiras','teixeira','laranjeiras'] },
+          lojas: ['praiadacosta','barreiras','teixeira','laranjeiras'] },
         { key: 't3', nome: 'Subrede 3 — Arthur',   cor: '#E06B4A',
           lojas: ['saomateus','linhares','serra','montserrat'] },
     ];
@@ -11805,7 +11805,7 @@ function _renderHistAcessAbr26() {
     var corProjFilt   = projFiltPct !== null ? (projFiltPct >= 100 ? '#4ade80' : projFiltPct >= 75 ? '#f59e0b' : '#ef4444') : '#a78bfa';
 
     /* ── Comparativo de subredes vs mês anterior ── */
-    var _subLojasAll = { t1:['cariacica','itabuna','moxuara','praiadacosta'], t2:['barreiras','teixeira','laranjeiras'], t3:['saomateus','serra','montserrat','linhares'] };
+    var _subLojasAll = { t1:['cariacica','itabuna','moxuara'], t2:['praiadacosta','barreiras','teixeira','laranjeiras'], t3:['saomateus','serra','montserrat','linhares'] };
     function _acessSubComp(tKey) {
         if (!window._acessPrevData) return null;
         var lojasDaSub = _subLojasAll[tKey] || [];
@@ -12412,7 +12412,7 @@ function restore360FromStorage() {
 /* ─── Override de metas vindas do Firestore (ts_d360_historico) ─── */
 const _METAS_SUBREDE_LOJAS = {
     t1:  ['cariacica','itabuna','moxuara'],
-    t2:  ['barreiras','teixeira','laranjeiras'],
+    t2:  ['praiadacosta','barreiras','teixeira','laranjeiras'],
     t3:  ['saomateus','serra','linhares','montserrat'],
     all: ['cariacica','itabuna','moxuara','praiadacosta','barreiras','teixeira','laranjeiras','saomateus','serra','linhares','montserrat'],
     // lojas individuais (gerente / subgerente)
@@ -12452,8 +12452,8 @@ const METAS_CAUTELAR = {
     serra:        15000,
     montserrat:   10000,
     // totais por subrede
-    _t1: 55000,
-    _t2: 26000,
+    _t1: 48000,
+    _t2: 33000,
     _t3: 59000,
     _total: 140000,
 };

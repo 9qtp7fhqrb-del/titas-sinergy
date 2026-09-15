@@ -16262,12 +16262,22 @@ function render360(tipo, val) {
                 <div style="font-size:.55rem;color:#4b5563;text-align:center;max-width:14ch;line-height:1.5;">Novo recurso em desenvolvimento</div>
             </div>`;
         }
-        // Versão completa para Marcelo
+        // Versão completa para Marcelo — vendas reais (Proteção + Garantia Estendida)
         const cM = typeof METAS_CAUTELAR !== 'undefined' ? METAS_CAUTELAR : {};
-        const lojasMeta = scope.reduce((s, l) => s + (cM[l.key || l.k] || 0), 0) || cM._total || 140000;
-        const t1Meta = cM._t1 || 55000;
-        const t2Meta = cM._t2 || 26000;
-        const t3Meta = cM._t3 || 59000;
+        const _cautTotalLoja = (l) => {
+            const c = l.cautelar || {};
+            return (c.protecao && c.protecao.total || 0) + (c.garantia && c.garantia.total || 0);
+        };
+        const cautTotal   = scope.reduce((s,l) => s + _cautTotalLoja(l), 0);
+        const cautMeta    = scope.reduce((s, l) => s + (cM[l.key || l.k] || 0), 0) || cM._total || 140000;
+        const cautProj    = _d.diasDecorridos > 0 ? Math.round(cautTotal / _d.diasDecorridos * _d.diasMes) : 0;
+        const cautPctMeta = cautMeta > 0 ? Math.min(100, Math.round(cautTotal / cautMeta * 100)) : 0;
+        const cautBarCor  = cautPctMeta >= 100 ? '#4ade80' : cautPctMeta >= 80 ? '#10b981' : cautPctMeta >= 60 ? '#c084fc' : _C_COR;
+
+        // Vendido de fato por subrede (não a meta — a meta já aparece na caixa "Meta" abaixo)
+        const _subTotais = {t1:0, t2:0, t3:0};
+        scope.forEach(l => { if (_subTotais[l.sub] !== undefined) _subTotais[l.sub] += _cautTotalLoja(l); });
+
         return `<div class="glass-360 rounded-2xl p-4 card-lift" style="display:flex;flex-direction:column;justify-content:space-between;gap:.3rem;cursor:pointer;" onclick="abrirCautelar()">
             <div>
                 <div style="display:flex;align-items:center;justify-content:space-between;gap:.5rem;margin-bottom:.3rem;">
@@ -16279,27 +16289,34 @@ function render360(tipo, val) {
                     </div>
                     <span style="font-size:.6rem;font-weight:700;padding:.15rem .55rem;border-radius:999px;background:${_C_COR}20;color:${_C_COR};white-space:nowrap;flex-shrink:0;">ver ranking ↗</span>
                 </div>
-                <p style="font-size:1.25rem;font-weight:900;color:#fff;line-height:1.2;margin:0 0 .15rem;">${brl(lojasMeta)}</p>
-                <p style="font-size:.6rem;color:#9ca3af;margin:0 0 .35rem;line-height:1.4;">Meta mensal · ${scope.length} loja${scope.length>1?'s':''}</p>
+                <p style="font-size:1.25rem;font-weight:900;color:#fff;line-height:1.2;margin:0 0 .25rem;"><span data-countup="${cautTotal}" data-fmt="brl">${brl(cautTotal)}</span></p>
+                <div style="height:3px;background:#1f2937;border-radius:3px;margin-bottom:.25rem;">
+                    <div style="height:100%;width:${cautPctMeta}%;background:${cautBarCor};border-radius:3px;transition:width .4s;"></div>
+                </div>
+                <p style="font-size:.6rem;color:#9ca3af;margin:0;line-height:1.4;">${cautPctMeta}% da meta · ${scope.length} loja${scope.length>1?'s':''}</p>
             </div>
             <div>
-                <div style="display:flex;gap:.25rem;margin-bottom:.25rem;">
+                <div style="display:flex;justify-content:space-between;align-items:center;padding:.22rem .6rem;border-radius:.45rem;background:${_C_COR}12;border:1px solid ${_C_COR}28;margin-bottom:.25rem;">
+                    <span style="font-size:.58rem;color:#9ca3af;font-weight:600;">📈 Projeção mês</span>
+                    <span style="font-size:.72rem;font-weight:800;color:${_C_COR};">${brl(cautProj)}</span>
+                </div>
+                ${scope.length > 1 ? `<div style="display:flex;gap:.25rem;margin-bottom:.25rem;">
                     <div style="flex:1;display:flex;flex-direction:column;align-items:center;padding:.28rem .35rem;border-radius:.4rem;background:rgba(74,158,224,.08);border:1px solid rgba(74,158,224,.18);">
                         <span style="font-size:.5rem;color:#6b7280;font-weight:700;letter-spacing:.06em;text-transform:uppercase;">T1</span>
-                        <span style="font-size:.68rem;font-weight:800;color:#4A9EE0;font-variant-numeric:tabular-nums;">${brl(t1Meta)}</span>
+                        <span style="font-size:.68rem;font-weight:800;color:#4A9EE0;font-variant-numeric:tabular-nums;">${brl(_subTotais.t1)}</span>
                     </div>
                     <div style="flex:1;display:flex;flex-direction:column;align-items:center;padding:.28rem .35rem;border-radius:.4rem;background:rgba(91,196,122,.08);border:1px solid rgba(91,196,122,.18);">
                         <span style="font-size:.5rem;color:#6b7280;font-weight:700;letter-spacing:.06em;text-transform:uppercase;">T2</span>
-                        <span style="font-size:.68rem;font-weight:800;color:#5BC47A;font-variant-numeric:tabular-nums;">${brl(t2Meta)}</span>
+                        <span style="font-size:.68rem;font-weight:800;color:#5BC47A;font-variant-numeric:tabular-nums;">${brl(_subTotais.t2)}</span>
                     </div>
                     <div style="flex:1;display:flex;flex-direction:column;align-items:center;padding:.28rem .35rem;border-radius:.4rem;background:rgba(224,107,74,.08);border:1px solid rgba(224,107,74,.18);">
                         <span style="font-size:.5rem;color:#6b7280;font-weight:700;letter-spacing:.06em;text-transform:uppercase;">T3</span>
-                        <span style="font-size:.68rem;font-weight:800;color:#E06B4A;font-variant-numeric:tabular-nums;">${brl(t3Meta)}</span>
+                        <span style="font-size:.68rem;font-weight:800;color:#E06B4A;font-variant-numeric:tabular-nums;">${brl(_subTotais.t3)}</span>
                     </div>
-                </div>
-                <div style="display:flex;justify-content:space-between;align-items:center;padding:.22rem .6rem;border-radius:.45rem;background:${_C_COR}10;border:1px solid ${_C_COR}25;">
-                    <span style="font-size:.58rem;color:#9ca3af;font-weight:600;">🎯 Total rede</span>
-                    <span style="font-size:.72rem;font-weight:800;color:${_C_COR};">${brl(cM._total||140000)}</span>
+                </div>` : ''}
+                <div style="display:flex;justify-content:space-between;align-items:center;padding:.22rem .6rem;border-radius:.45rem;background:${cautBarCor}12;border:1px solid ${cautBarCor}28;">
+                    <span style="font-size:.58rem;color:#9ca3af;font-weight:600;">🎯 Meta</span>
+                    <span style="font-size:.72rem;font-weight:800;color:${cautBarCor};">${cautPctMeta}% · ${brl(cautMeta)}</span>
                 </div>
             </div>
         </div>`;

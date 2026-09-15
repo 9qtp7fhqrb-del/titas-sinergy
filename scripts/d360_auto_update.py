@@ -36,6 +36,7 @@ def main():
     env = os.environ.copy()
     env['PATH'] = '/usr/local/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/bin:/bin:/usr/sbin:/sbin'
     env['HOME'] = os.path.expanduser('~')
+    env['PYTHONUNBUFFERED'] = '1'
 
     import tempfile
 

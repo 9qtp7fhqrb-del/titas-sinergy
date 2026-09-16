@@ -1,0 +1,73 @@
+name: Watchdog D360 — Garante disparo a cada 30 min
+
+on:
+  schedule:
+    # Tenta a cada 5 minutos — mesmo com atraso do GitHub, alguma tentativa passa
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+
+jobs:
+  watchdog:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verificar último run do D360
+        id: check
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+        run: |
+          python3 - <<'EOF'
+          import os, json, sys
+          from urllib.request import urlopen, Request
+          from datetime import datetime, timezone
+
+          token = os.environ['GH_TOKEN']
+          repo  = os.environ['GITHUB_REPOSITORY']
+
+          def api(path):
+              req = Request(f'https://api.github.com{path}')
+              req.add_header('Authorization', f'token {token}')
+              req.add_header('Accept', 'application/vnd.github.v3+json')
+              with urlopen(req, timeout=15) as r:
+                  return json.loads(r.read())
+
+          runs = api(f'/repos/{repo}/actions/runs?per_page=20').get('workflow_runs', [])
+          d360 = [r for r in runs
+                  if 'D360' in r.get('name','') and r.get('name','') != 'Watchdog D360 — Garante disparo a cada 30 min']
+
+          if not d360:
+              print('DISPATCH=true', flush=True)
+              open(os.environ['GITHUB_OUTPUT'], 'a').write('should_dispatch=true\n')
+              sys.exit(0)
+
+          last   = d360[0]
+          ts     = datetime.fromisoformat(last['created_at'].replace('Z','+00:00'))
+          ago    = (datetime.now(timezone.utc) - ts).total_seconds() / 60
+          status = last.get('status','')
+
+          print(f'Último D360: {ago:.0f} min atrás | status={status}', flush=True)
+
+          # Se em progresso há < 25 min, não disparar
+          if status == 'in_progress' and ago < 25:
+              print('D360 em andamento — skip')
+              open(os.environ['GITHUB_OUTPUT'], 'a').write('should_dispatch=false\n')
+              sys.exit(0)
+
+          if ago >= 30:
+              print(f'Sem update há {ago:.0f} min — disparando!')
+              open(os.environ['GITHUB_OUTPUT'], 'a').write('should_dispatch=true\n')
+          else:
+              print(f'Update recente ({ago:.0f} min) — ok')
+              open(os.environ['GITHUB_OUTPUT'], 'a').write('should_dispatch=false\n')
+          EOF
+
+      - name: Disparar workflow D360
+        if: steps.check.outputs.should_dispatch == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+        run: |
+          curl -s -X POST \
+            -H "Authorization: token $GH_TOKEN" \
+            -H "Accept: application/vnd.github.v3+json" \
+            "https://api.github.com/repos/$GITHUB_REPOSITORY/actions/workflows/update-d360.yml/dispatches" \
+            -d '{"ref":"main"}'
+          echo "✅ Dispatch enviado"

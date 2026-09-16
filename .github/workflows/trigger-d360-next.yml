@@ -1,0 +1,26 @@
+name: Trigger D360 — Próxima execução em 30 min
+
+# Disparado pelo próprio workflow D360 ao terminar
+on:
+  repository_dispatch:
+    types: [d360-done]
+  workflow_dispatch:
+
+jobs:
+  wait-and-trigger:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - name: Aguardar 29 minutos
+        run: sleep 1740
+
+      - name: Disparar D360
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+        run: |
+          curl -s -X POST \
+            -H "Authorization: token $GH_TOKEN" \
+            -H "Accept: application/vnd.github.v3+json" \
+            "https://api.github.com/repos/$GITHUB_REPOSITORY/actions/workflows/update-d360.yml/dispatches" \
+            -d '{"ref":"main"}'
+          echo "✅ D360 disparado"

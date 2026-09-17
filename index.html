@@ -7,7 +7,7 @@
     <script>
     // Cache-buster: força reload se a versão mudou
     (function(){
-      var BUILD = '20260917182655';
+      var BUILD = '20260917183207';
       var stored = localStorage.getItem('d360_build');
       if (stored && stored !== BUILD) {
         localStorage.setItem('d360_build', BUILD);
@@ -8053,8 +8053,8 @@ const D360 = {
     // O sistema deriva automaticamente: margem por loja → subrede → rede
     // COMO ATUALIZAR: edite apenas margem_lojas com os valores do ERP por loja
     // ─────────────────────────────────────────────────────────────────────────────
-    margem_dia: 50.61,              // rede hoje · zerado automaticamente à meia-noite
-    margem_dia_subredes: { t1: 47.66, t2: 51.26, t3: 51.69 },
+    margem_dia: 50.58,              // rede hoje · zerado automaticamente à meia-noite
+    margem_dia_subredes: { t1: 47.66, t2: 51.26, t3: 51.60 },
     margem_lojas: {
         // ── FONTE PRIMÁRIA — atualizar aqui com o Relatório Gerencial por Loja ──
         // atualizado pelo update_d360.py (por loja via API, fallback por subrede)
@@ -8068,10 +8068,10 @@ const D360 = {
         saomateus:   52.67,
         serra:       49.80,
         montserrat:  51.09,
-        linhares:    50.18,
+        linhares:    50.17,
     },
     margem_subredes: {  // fallback quando margem_lojas estiver incompleta
-        t1: 49.67, t2: 49.69, t3: 51.06
+        t1: 49.67, t2: 49.69, t3: 51.05
     },
     // margem_mes: derivada automaticamente pelo _calcMargemPonderada (não editar)
     margem_mes: 50.21,
@@ -8197,13 +8197,13 @@ const D360 = {
             top:[{n:'Gabriel Moura Dos Reis',i:'GM',p:57,t:67650.94,ds:13,ult:'17/09'},
                 {n:'LUIZ HENRIQUE VIANA DA ROCHA',i:'LH',p:72,t:65959.93,ds:15,ult:'17/09'},
                 {n:'LUIZ GUSTAVO',i:'LG',p:35,t:36880.99,ds:15,ult:'17/09'}]},
-        linhares:    { label:'Linhares',           sigla:'LH', sub:'t3', meta:230000,  total:138832.85,  ped:147,  cancel:0, agend:0, agendCount:0, agendFat:61086.89,  fat_dia:4129.0, acess_dia:530.0, dia_a_dia:{"1":12137.0,"2":23963.0,"3":35911.0,"5":69329.98,"6":69329.98,"8":75079.98,"9":83507.97,"10":89176.96,"11":94424.96,"12":106721.92,"13":106721.92,"14":112596.92,"15":125654.87,"16":134703.85,"17":138832.85}, acess_dia_top:[{n:'Wenderson Pereira Rocha',i:'WP',t:290.0}, {n:'RAYCA MENDES MORAIS',i:'RM',t:240.0}], top_dia:[{n:'RAYCA MENDES MORAIS',i:'RM',t:2140.0}, {n:'Wenderson Pereira Rocha',i:'WP',t:1989.0}], fin_dia:1799.0, fin_mes:66870.95, top_fin_mes:[{n:'RAYCA MENDES MORAIS',i:'RM',t:38200.98,bd:[{nm:'PayJoy',t:13010.0},{nm:'OdresCred',t:25190.98},{nm:'Outras',t:0}]},{n:'Wenderson Pereira Rocha',i:'WP',t:27219.99,bd:[{nm:'PayJoy',t:5600.0},{nm:'OdresCred',t:21619.99},{nm:'Outras',t:0}]},{n:'Isabely Andrade Araujo',i:'IA',t:1449.98,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:1449.98},{nm:'Outras',t:0}]}], fin_bd:[{nm:'PayJoy',t:18610.0},{nm:'OdresCred',t:48260.95},{nm:'Outras',t:0}], top_fin:[{n:'Wenderson Pereira Rocha',i:'WP',t:1799.0}], metaAcess:9000,
+        linhares:    { label:'Linhares',           sigla:'LH', sub:'t3', meta:230000,  total:139402.85,  ped:148,  cancel:0, agend:0, agendCount:0, agendFat:61086.89,  fat_dia:4699.0, acess_dia:530.0, dia_a_dia:{"1":12137.0,"2":23963.0,"3":35911.0,"5":69329.98,"6":69329.98,"8":75079.98,"9":83507.97,"10":89176.96,"11":94424.96,"12":106721.92,"13":106721.92,"14":112596.92,"15":125654.87,"16":134703.85,"17":139402.85}, acess_dia_top:[{n:'Wenderson Pereira Rocha',i:'WP',t:290.0}, {n:'RAYCA MENDES MORAIS',i:'RM',t:240.0}], top_dia:[{n:'RAYCA MENDES MORAIS',i:'RM',t:2710.0}, {n:'Wenderson Pereira Rocha',i:'WP',t:1989.0}], fin_dia:1799.0, fin_mes:66870.95, top_fin_mes:[{n:'RAYCA MENDES MORAIS',i:'RM',t:38200.98,bd:[{nm:'PayJoy',t:13010.0},{nm:'OdresCred',t:25190.98},{nm:'Outras',t:0}]},{n:'Wenderson Pereira Rocha',i:'WP',t:27219.99,bd:[{nm:'PayJoy',t:5600.0},{nm:'OdresCred',t:21619.99},{nm:'Outras',t:0}]},{n:'Isabely Andrade Araujo',i:'IA',t:1449.98,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:1449.98},{nm:'Outras',t:0}]}], fin_bd:[{nm:'PayJoy',t:18610.0},{nm:'OdresCred',t:48260.95},{nm:'Outras',t:0}], top_fin:[{n:'Wenderson Pereira Rocha',i:'WP',t:1799.0}], metaAcess:9000,
             agendamentos:{total:61086.89, fin:60901.89, fin_bd:[{nm:'PayJoy',t:13300.0},{nm:'OdresCred',t:47601.89},{nm:'Outras',t:2149.0}], top:[{n:'Juliana Pereira do Nascimento',i:'JP',t:32988.91}, {n:'RAYCA MENDES MORAIS',i:'RM',t:15736.99}, {n:'Wenderson Pereira Rocha',i:'WP',t:12360.99}]},
             acessorios:{total:7544.94, top:[
                 {n:'Rayca Mendes Morais',i:'RM',t:940,ds:12,ult:'12/06'},
                 {n:'Natalia Rocha Leonel',i:'NL',t:820,ds:12,ult:'12/06'}
             ], dias:[{d:'01/06',ac:80,cel:3150},{d:'06/06',ac:760,cel:23220},{d:'08/06',ac:260,cel:7397}]},
-            top:[{n:'RAYCA MENDES MORAIS',i:'RM',p:56,t:51300.97,ds:27,ult:'17/09'},
+            top:[{n:'RAYCA MENDES MORAIS',i:'RM',p:57,t:51870.97,ds:27,ult:'17/09'},
                 {n:'Wenderson Pereira Rocha',i:'WP',p:56,t:42084.99,ds:12,ult:'17/09'},
                 {n:'Juliana Pereira do Nascimento',i:'JP',p:32,t:40197.91,ds:16,ult:'17/09'},
                 {n:'Wesley Felipe Bezerra dos Santos',i:'WF',p:2,t:3799.0,ds:2,ult:'05/09'},
@@ -9404,7 +9404,7 @@ var _ERP_ESTOQUE = {
       'ZENFONE MAX PLUS':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:0},
       'ZENFONE MAX SHOT':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:0},
     };
-    var _ERP_ESTOQUE_TS = '17/09/2026 15:26';
+    var _ERP_ESTOQUE_TS = '17/09/2026 15:31';
 // Preços por produto — populado pelo update_d360.py a cada 30 min
 var _ERP_PRECOS = {
       'ALCATEL A2 XL': {custo:0.00,venda:0.00},
@@ -9768,7 +9768,7 @@ var _ERP_PRECOS = {
       'ZENFONE MAX PLUS': {custo:0.00,venda:0.00},
       'ZENFONE MAX SHOT': {custo:0.00,venda:0.00},
     };
-    var _ERP_PRECOS_TS = '17/09/2026 15:26';
+    var _ERP_PRECOS_TS = '17/09/2026 15:32';
 // Flag de sessão: true = fetch já tentado (sucesso ou falha), não tentar de novo
 var _erpPrecosCarregados = false;
 var _SUG_SPECS = {
@@ -12534,7 +12534,7 @@ const VEND_METAS_DB = {
         {k:'sophia',     meta: 100000},   // alias liz sophia
         {k:'nicolas',    meta:  50000},   // sem meta lançada
         {k:'glaupierre', meta:  50000},   // sem meta lançada
-        {k:'gabriel',    meta:                                                                                                                                                                                                                                                                                      50000},   // sem meta lançada
+        {k:'gabriel',    meta:                                                                                                                                                                                                                                                                                       50000},   // sem meta lançada
     ],
     itabuna: [
         {k:'mikaelle',   meta:                                                          91000},   // Ago/26: 91.000
@@ -12556,8 +12556,8 @@ const VEND_METAS_DB = {
         {k:'jhennyfer',  meta:  50000},   // sem meta lançada
     ],
     linhares: [
-        {k:'rayca',      meta:                                                                                                                                                                                                                                                           68850},   // ref jul/26 — aguardando lançamento ago/26
-        {k:'juliana',    meta:                                                                                                                                                                                                                                                            86300},   // ref jul/26 — aguardando lançamento ago/26
+        {k:'rayca',      meta:                                                                                                                                                                                                                                                            68850},   // ref jul/26 — aguardando lançamento ago/26
+        {k:'juliana',    meta:                                                                                                                                                                                                                                                             86300},   // ref jul/26 — aguardando lançamento ago/26
         {k:'natalia',    meta:  71500},   // alias natália
         {k:'natália',    meta:  71500},   // alias
         {k:'krystian',   meta:  50000},   // sem meta lançada
@@ -12584,7 +12584,7 @@ const VEND_METAS_DB = {
     ],
     praiadacosta: [
         {k:'nycolly',    meta:  50000},   // Ago/26: 50.000
-        {k:'stefany',    meta:                                                                                                                                                                                                                                                         98000},   // Ago/26: 50.000
+        {k:'stefany',    meta:                                                                                                                                                                                                                                                          98000},   // Ago/26: 50.000
         {k:'filipe',     meta:  50000},   // sem meta lançada
         {k:'deborah',    meta:  50000},   // sem meta lançada
         {k:'thaymmon',   meta:  50000},   // sem meta lançada
@@ -12593,8 +12593,8 @@ const VEND_METAS_DB = {
     saomateus: [
         {k:'ana',        meta:                                   108200},   // Ago/26: 108.200
         {k:'eliza',      meta:                                    57000},   // Ago/26: 57.000
-        {k:'randeclay',  meta:                                                                                                                                                        98000},   // Ago/26: 57.000
-        {k:'leandro',    meta:                                                                                                                                                        98000},   // Ago/26: 57.000
+        {k:'randeclay',  meta:                                                                                                                                                         98000},   // Ago/26: 57.000
+        {k:'leandro',    meta:                                                                                                                                                         98000},   // Ago/26: 57.000
         {k:'stefany',    meta:  57000},   // Ago/26: 57.000
         {k:'alice',      meta:  57000},   // sem meta lançada
         {k:'daniele',    meta:  57000},   // sem meta lançada
@@ -12603,7 +12603,7 @@ const VEND_METAS_DB = {
     ],
     serra: [
         {k:'gabriel',    meta:  92000},   // Ago/26: 92.000
-        {k:'carlos',     meta:                                                                                                                                                                                                                                                                                                                140000},   // Ago/26: 59.000
+        {k:'carlos',     meta:                                                                                                                                                                                                                                                                                                                 140000},   // Ago/26: 59.000
         {k:'hiully',     meta:                                    59000},   // Ago/26: 59.000
         {k:'felipe',     meta:  50000},   // sem meta lançada
         {k:'karen',      meta:  50000},   // sem meta lançada

@@ -30,7 +30,20 @@ def find_firebase():
     # fallback: npx
     return ['npx', '--yes', 'firebase-tools']
 
+def dentro_do_horario():
+    """Seg-Sáb 09:30-23:00 | Dom 14:00-22:00"""
+    now = datetime.now()
+    wd = now.weekday()  # 0=seg … 6=dom
+    h = now.hour + now.minute / 60
+    if wd == 6:  # domingo
+        return 14.0 <= h < 22.0
+    else:        # seg a sáb
+        return 9.5 <= h < 23.0
+
 def main():
+    if not dentro_do_horario():
+        log('fora do horário — pulando')
+        return
     log('iniciando atualização local')
 
     env = os.environ.copy()

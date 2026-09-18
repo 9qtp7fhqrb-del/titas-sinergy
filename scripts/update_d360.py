@@ -500,13 +500,15 @@ def update_margem_dia_subredes(content, margens):
     """Atualiza margem_dia_subredes no index.html. margens: {'t1': 44.77, ...}"""
     for sub, val in margens.items():
         if val is None: continue
+        exists = re.search(rf'margem_dia_subredes\s*:\s*\{{[^}}]*\b{sub}\s*:\s*\d', content)
+        if not exists:
+            print(f"  AVISO: margem_dia_subredes.{sub} não encontrado")
+            continue
         pattern = rf'(margem_dia_subredes\s*:\s*\{{[^}}]*\b{sub}\s*:\s*)\d+(?:\.\d+)?'
         new_content = re.sub(pattern, f'\\g<1>{val:.2f}', content, count=1)
         if new_content != content:
             print(f"  margem_dia_subredes.{sub} → {val:.2f}%")
             content = new_content
-        else:
-            print(f"  AVISO: margem_dia_subredes.{sub} não encontrado")
     return content
 
 
@@ -559,13 +561,15 @@ def update_margem_subredes(content, margens):
             continue
         # Encontra a chave no objeto margem_subredes: { t1: X, t2: X, t3: X }
         pattern = rf'(margem_subredes\s*:\s*\{{[^}}]*\b{sub}\s*:\s*)\d+(?:\.\d+)?'
+        exists = re.search(rf'margem_subredes\s*:\s*\{{[^}}]*\b{sub}\s*:\s*\d', content)
+        if not exists:
+            print(f"  AVISO: margem_subredes.{sub} não encontrado no HTML")
+            continue
         new = f'\\g<1>{val:.2f}'
         updated = re.sub(pattern, new, content, count=1)
         if updated != content:
             content = updated
             print(f"  margem_subredes.{sub} → {val:.2f}%")
-        else:
-            print(f"  AVISO: margem_subredes.{sub} não encontrado no HTML")
     return content
 
 
@@ -625,6 +629,100 @@ def update_vend_metas_db(content, firestore_metas):
     return content
 
 
+def update_margem_dia_lojas(content, margem_dia_por_loja):
+    """Atualiza margem_dia_lojas por loja individualmente (margem bruta do dia)."""
+    block_m = re.search(r'margem_dia_lojas\s*:\s*\{([^}]+)\}', content, re.DOTALL)
+    if not block_m:
+        print('  AVISO: bloco margem_dia_lojas não encontrado no HTML')
+        return content
+    block_start = block_m.start()
+    block_end   = block_m.end()
+    block       = block_m.group(0)
+    for lk, val in margem_dia_por_loja.items():
+        if not re.search(rf'\b{re.escape(lk)}\s*:\s*\d', block):
+            print(f"  AVISO: margem_dia_lojas.{lk} não encontrado no HTML")
+            continue
+        new_block = re.sub(
+            rf'(\b{re.escape(lk)}\s*:\s*)\d+(?:\.\d+)?',
+            f'\\g<1>{val:.2f}',
+            block, count=1
+        )
+        if new_block != block:
+            block = new_block
+            print(f"  margem_dia_lojas.{lk} → {val:.2f}%")
+    content = content[:block_start] + block + content[block_end:]
+    return content
+
+def update_cautelar_dia_lojas(content, cautelar_dia_por_loja):
+    """Atualiza cautelar_dia_lojas por loja (cautelar vendido hoje)."""
+    block_m = re.search(r'cautelar_dia_lojas\s*:\s*\{([^}]+)\}', content, re.DOTALL)
+    if not block_m:
+        print('  AVISO: bloco cautelar_dia_lojas não encontrado no HTML')
+        return content
+    block_start = block_m.start()
+    block_end   = block_m.end()
+    block       = block_m.group(0)
+    # Zera todos antes de aplicar valores do dia
+    block_zerado = re.sub(r'(\b\w+\s*:\s*)\d+(?:\.\d+)?', lambda m: m.group(1) + '0', block)
+    block = block_zerado
+    for lk, val in cautelar_dia_por_loja.items():
+        if val <= 0:
+            continue
+        new_block = re.sub(
+            rf'(\b{re.escape(lk)}\s*:\s*)\d+(?:\.\d+)?',
+            f'\\g<1>{val:.2f}',
+            block, count=1
+        )
+        if new_block != block:
+            block = new_block
+            print(f"  cautelar_dia_lojas.{lk} → R${val:,.2f}")
+    content = content[:block_start] + block + content[block_end:]
+    return content
+
+def _update_cautelar_flat_block(content, block_name, valores_por_loja):
+    """Atualiza um bloco flat de cautelar por loja (prot ou grt)."""
+    block_m = re.search(rf'{re.escape(block_name)}\s*:\s*\{{([^}}]+)\}}', content, re.DOTALL)
+    if not block_m:
+        print(f'  AVISO: bloco {block_name} não encontrado no HTML')
+        return content
+    block_start, block_end = block_m.start(), block_m.end()
+    block = block_m.group(0)
+    # Zera tudo antes de aplicar
+    block = re.sub(r'(\b\w+\s*:\s*)\d+(?:\.\d+)?', lambda m: m.group(1) + '0', block)
+    for lk, val in valores_por_loja.items():
+        if val <= 0:
+            continue
+        new_block = re.sub(rf'(\b{re.escape(lk)}\s*:\s*)\d+(?:\.\d+)?', f'\\g<1>{val:.2f}', block, count=1)
+        if new_block != block:
+            block = new_block
+            print(f'  {block_name}.{lk} → R${val:,.2f}')
+    return content[:block_start] + block + content[block_end:]
+
+
+def update_cautelar_mes_lojas(content, cautelar_por_loja):
+    """Atualiza cautelar_mes_lojas por loja (proteção + garantia estendida do mês)."""
+    block_m = re.search(r'cautelar_mes_lojas\s*:\s*\{([^}]+)\}', content, re.DOTALL)
+    if not block_m:
+        print('  AVISO: bloco cautelar_mes_lojas não encontrado no HTML')
+        return content
+    block_start = block_m.start()
+    block_end   = block_m.end()
+    block       = block_m.group(0)
+    for lk, val in cautelar_por_loja.items():
+        if not re.search(rf'\b{re.escape(lk)}\s*:\s*\d', block):
+            print(f"  AVISO: cautelar_mes_lojas.{lk} não encontrado no HTML")
+            continue
+        new_block = re.sub(
+            rf'(\b{re.escape(lk)}\s*:\s*)\d+(?:\.\d+)?',
+            f'\\g<1>{val:.2f}',
+            block, count=1
+        )
+        if new_block != block:
+            block = new_block
+            print(f"  cautelar_mes_lojas.{lk} → R${val:,.2f}")
+    content = content[:block_start] + block + content[block_end:]
+    return content
+
 def update_margem_lojas(content, margem_por_loja):
     """
     Atualiza margem_lojas por loja individualmente.
@@ -641,6 +739,9 @@ def update_margem_lojas(content, margem_por_loja):
     block       = block_m.group(0)
 
     for lk, val in margem_por_loja.items():
+        if not re.search(rf'\b{re.escape(lk)}\s*:\s*\d', block):
+            print(f"  AVISO: margem_lojas.{lk} não encontrado no HTML")
+            continue
         new_block = re.sub(
             rf'(\b{re.escape(lk)}\s*:\s*)\d+(?:\.\d+)?',
             f'\\g<1>{val:.2f}',
@@ -649,8 +750,6 @@ def update_margem_lojas(content, margem_por_loja):
         if new_block != block:
             block = new_block
             print(f"  margem_lojas.{lk} → {val:.2f}%")
-        else:
-            print(f"  AVISO: margem_lojas.{lk} não encontrado no HTML")
 
     content = content[:block_start] + block + content[block_end:]
     return content
@@ -1700,6 +1799,7 @@ def main():
     margem_subredes = {}
     margem_dia_subredes = {}
     margem_por_loja = {}
+    margem_dia_por_loja = {}
     if store_id_map:
         # Por subrede (para margem_subredes e margem_dia_subredes)
         for sub, lojas in SUBREDE_LOJAS.items():
@@ -1721,8 +1821,8 @@ def main():
                         print(f"  Margem dia  {sub}: {m_dia:.2f}%")
                 except Exception as e:
                     print(f"  AVISO: erro ao buscar margem dia {sub}: {e}")
-        # Por loja individualmente (para margem_lojas — mês corrente)
-        print("  Buscando margem por loja individual...")
+        # Por loja individualmente (mês e dia)
+        print("  Buscando margem por loja individual (mês + dia)...")
         all_lojas = [lk for lojas in SUBREDE_LOJAS.values() for lk in lojas]
         for lk in all_lojas:
             sid = store_id_map.get(lk)
@@ -1735,7 +1835,15 @@ def main():
                     margem_por_loja[lk] = m
                     print(f"  Margem mês {lk}: {m:.2f}%")
             except Exception as e:
-                print(f"  AVISO: erro ao buscar margem loja {lk}: {e}")
+                print(f"  AVISO: erro ao buscar margem mês loja {lk}: {e}")
+            try:
+                g_dia = fetch_gerencial(token, today, today, store_ids=[sid])
+                m_dia = extract_margem_bruta(g_dia)
+                if m_dia:
+                    margem_dia_por_loja[lk] = m_dia
+                    print(f"  Margem dia  {lk}: {m_dia:.2f}%")
+            except Exception as e:
+                print(f"  AVISO: erro ao buscar margem dia loja {lk}: {e}")
     else:
         print("  IDs de lojas não disponíveis — margem_subredes/margem_lojas não serão atualizadas automaticamente")
 
@@ -1928,6 +2036,27 @@ def main():
         if fallback:
             content = update_margem_lojas(content, fallback)
 
+    # Atualiza cautelar_dia_lojas (cautelar vendido hoje, por loja)
+    if cautelar_dia:
+        content = update_cautelar_dia_lojas(content, {lk: v.get('total', 0) for lk, v in cautelar_dia.items()})
+
+    # Atualiza cautelar_mes_lojas / cautelar_prot_lojas / cautelar_grt_lojas por loja
+    caut_lojas_data = (top_cautelar or {}).get('lojas', {})
+    if caut_lojas_data:
+        cautelar_mes_por_loja = {
+            lk: round((v.get('protecao', {}).get('total', 0) or 0) + (v.get('garantia', {}).get('total', 0) or 0), 2)
+            for lk, v in caut_lojas_data.items()
+        }
+        content = update_cautelar_mes_lojas(content, cautelar_mes_por_loja)
+        content = _update_cautelar_flat_block(content, 'cautelar_prot_lojas',
+            {lk: round(v.get('protecao', {}).get('total', 0) or 0, 2) for lk, v in caut_lojas_data.items()})
+        content = _update_cautelar_flat_block(content, 'cautelar_grt_lojas',
+            {lk: round(v.get('garantia', {}).get('total', 0) or 0, 2) for lk, v in caut_lojas_data.items()})
+
+    # Atualiza margem_dia_lojas com valores individuais por loja (margem do dia)
+    if margem_dia_por_loja:
+        content = update_margem_dia_lojas(content, margem_dia_por_loja)
+
     # Atualiza margem_dia_subredes — zera subredes sem vendas no dia
     for sub in SUBREDE_LOJAS:
         if sub not in margem_dia_subredes:
@@ -1979,10 +2108,10 @@ def main():
         print("  Nenhuma meta encontrada no Firestore — VEND_METAS_DB mantido")
 
     # Atualiza o timestamp de build (força browsers a recarregar após deploy)
+    # Padrão restrito: só a atribuição JS 'var BUILD = ...' — não toca regex literals ou strings em funções
     from datetime import datetime as _dt
     build_ts = _dt.now().strftime('%Y%m%d%H%M%S')
-    content = re.sub(r"'__BUILD_TS__'", f"'{build_ts}'", content)
-    content = re.sub(r"'20\d{12}'", f"'{build_ts}'", content)
+    content = re.sub(r"(var BUILD\s*=\s*)'(?:20\d{12}|__BUILD_TS__)'", r"\g<1>'" + build_ts + "'", content)
 
     with open(INDEX_HTML, 'w', encoding='utf-8') as f:
         f.write(content)

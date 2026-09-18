@@ -7,7 +7,7 @@
     <script>
     // Cache-buster: força reload se a versão mudou
     (function(){
-      var BUILD = '20260918163144';
+      var BUILD = '20260918163555';
       var stored = localStorage.getItem('d360_build');
       if (stored && stored !== BUILD) {
         localStorage.setItem('d360_build', BUILD);
@@ -8046,15 +8046,15 @@ const D360 = {
     ticket_cel: 1704,        // ticket médio celulares (SBON) — atualizado pelo bot
     ticket_acess: 104,      // ticket médio acessórios — atualizado pelo bot
     ped_cel: 864,           // pedidos celulares — atualizado pelo bot
-    ped_acess: 829,         // pedidos acessórios — atualizado pelo bot
+    ped_acess: 830,         // pedidos acessórios — atualizado pelo bot
 
     // ── Margem Bruta Mensal ──────────────────────────────────────────────────────
     // FONTE PRIMÁRIA: margem_lojas (por loja, do Relatório Gerencial ERP CDC)
     // O sistema deriva automaticamente: margem por loja → subrede → rede
     // COMO ATUALIZAR: edite apenas margem_lojas com os valores do ERP por loja
     // ─────────────────────────────────────────────────────────────────────────────
-    margem_dia: 48.79,              // rede hoje · zerado automaticamente à meia-noite
-    margem_dia_subredes: { t1: 47.77, t2: 44.32, t3: 52.76 },
+    margem_dia: 48.83,              // rede hoje · zerado automaticamente à meia-noite
+    margem_dia_subredes: { t1: 47.77, t2: 44.53, t3: 52.76 },
     margem_lojas: {
         // ── FONTE PRIMÁRIA — atualizar aqui com o Relatório Gerencial por Loja ──
         // atualizado pelo update_d360.py (por loja via API, fallback por subrede)
@@ -8064,7 +8064,7 @@ const D360 = {
         praiadacosta:46.81,
         barreiras:   50.68,
         teixeira:    50.39,
-        laranjeiras: 48.88,
+        laranjeiras: 48.90,
         saomateus:   52.64,
         serra:       49.68,
         montserrat:  51.05,
@@ -9405,7 +9405,7 @@ var _ERP_ESTOQUE = {
       'ZENFONE MAX PLUS':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:0},
       'ZENFONE MAX SHOT':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:0},
     };
-    var _ERP_ESTOQUE_TS = '18/09/2026 13:31';
+    var _ERP_ESTOQUE_TS = '18/09/2026 13:35';
 // Preços por produto — populado pelo update_d360.py a cada 30 min
 var _ERP_PRECOS = {
       'ALCATEL A2 XL': {custo:0.00,venda:0.00},
@@ -9769,7 +9769,7 @@ var _ERP_PRECOS = {
       'ZENFONE MAX PLUS': {custo:0.00,venda:0.00},
       'ZENFONE MAX SHOT': {custo:0.00,venda:0.00},
     };
-    var _ERP_PRECOS_TS = '18/09/2026 13:31';
+    var _ERP_PRECOS_TS = '18/09/2026 13:35';
 // Flag de sessão: true = fetch já tentado (sucesso ou falha), não tentar de novo
 var _erpPrecosCarregados = false;
 var _SUG_SPECS = {

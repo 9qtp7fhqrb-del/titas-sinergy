@@ -7,7 +7,7 @@
     <script>
     // Cache-buster: força reload se a versão mudou
     (function(){
-      var BUILD = '20260918204325';
+      var BUILD = '20260918204842';
       var stored = localStorage.getItem('d360_build');
       if (stored && stored !== BUILD) {
         localStorage.setItem('d360_build', BUILD);
@@ -8053,8 +8053,8 @@ const D360 = {
     // O sistema deriva automaticamente: margem por loja → subrede → rede
     // COMO ATUALIZAR: edite apenas margem_lojas com os valores do ERP por loja
     // ─────────────────────────────────────────────────────────────────────────────
-    margem_dia: 49.84,              // rede hoje · zerado automaticamente à meia-noite
-    margem_dia_subredes: { t1: 49.81, t2: 48.31, t3: 50.85 },
+    margem_dia: 49.87,              // rede hoje · zerado automaticamente à meia-noite
+    margem_dia_subredes: { t1: 49.81, t2: 48.31, t3: 50.88 },
     margem_lojas: {
         // ── FONTE PRIMÁRIA — atualizar aqui com o Relatório Gerencial por Loja ──
         // atualizado pelo update_d360.py (por loja via API, fallback por subrede)
@@ -8068,7 +8068,7 @@ const D360 = {
         saomateus:   52.54,
         serra:       49.72,
         montserrat:  50.92,
-        linhares:    50.45,
+        linhares:    50.46,
     },
     margem_subredes: {  // fallback quando margem_lojas estiver incompleta
         t1: 49.72, t2: 49.66, t3: 51.02
@@ -8198,13 +8198,13 @@ const D360 = {
                 {n:'LUIZ HENRIQUE VIANA DA ROCHA',i:'LH',p:72,t:65959.93,ds:15,ult:'17/09'},
                 {n:'LUIZ GUSTAVO',i:'LG',p:35,t:36880.99,ds:15,ult:'17/09'},
                 {n:'Carlos Augusto Silva Falcão',i:'CA',p:3,t:5630.0,ds:2,ult:'18/09'}]},
-        linhares:    { label:'Linhares',           sigla:'LH', sub:'t3', meta:230000,  total:150068.83,  ped:159,  cancel:0, agend:0, agendCount:0, agendFat:62886.89,  fat_dia:5385.98, acess_dia:810.0, dia_a_dia:{"1":12137.0,"2":23963.0,"3":35911.0,"5":69329.98,"6":69329.98,"8":75079.98,"9":83507.97,"10":89176.96,"11":94424.96,"12":106721.92,"13":106721.92,"14":112596.92,"15":125654.87,"16":134703.85,"17":144682.85,"18":150068.83}, acess_dia_top:[{n:'Isabely Andrade Araujo',i:'IA',t:770.0}, {n:'Wenderson Pereira Rocha',i:'WP',t:40.0}], top_dia:[{n:'Isabely Andrade Araujo',i:'IA',t:3369.98}, {n:'RAYCA MENDES MORAIS',i:'RM',t:1976.0}, {n:'Wenderson Pereira Rocha',i:'WP',t:40.0}], fin_dia:3299.98, fin_mes:73490.93, top_fin_mes:[{n:'RAYCA MENDES MORAIS',i:'RM',t:38200.98,bd:[{nm:'PayJoy',t:13010.0},{nm:'OdresCred',t:25190.98},{nm:'Outras',t:0}]},{n:'Wenderson Pereira Rocha',i:'WP',t:29019.99,bd:[{nm:'PayJoy',t:7400.0},{nm:'OdresCred',t:21619.99},{nm:'Outras',t:0}]},{n:'Isabely Andrade Araujo',i:'IA',t:6269.96,bd:[{nm:'PayJoy',t:1520.0},{nm:'OdresCred',t:4749.96},{nm:'Outras',t:0}]}], fin_bd:[{nm:'PayJoy',t:21930.0},{nm:'OdresCred',t:51560.93},{nm:'Outras',t:0}], top_fin:[{n:'Isabely Andrade Araujo',i:'IA',t:3299.98}], metaAcess:9000,
+        linhares:    { label:'Linhares',           sigla:'LH', sub:'t3', meta:230000,  total:151038.83,  ped:160,  cancel:0, agend:0, agendCount:0, agendFat:62886.89,  fat_dia:6355.98, acess_dia:810.0, dia_a_dia:{"1":12137.0,"2":23963.0,"3":35911.0,"5":69329.98,"6":69329.98,"8":75079.98,"9":83507.97,"10":89176.96,"11":94424.96,"12":106721.92,"13":106721.92,"14":112596.92,"15":125654.87,"16":134703.85,"17":144682.85,"18":151038.83}, acess_dia_top:[{n:'Isabely Andrade Araujo',i:'IA',t:770.0}, {n:'Wenderson Pereira Rocha',i:'WP',t:40.0}], top_dia:[{n:'Isabely Andrade Araujo',i:'IA',t:3369.98}, {n:'RAYCA MENDES MORAIS',i:'RM',t:2946.0}, {n:'Wenderson Pereira Rocha',i:'WP',t:40.0}], fin_dia:3299.98, fin_mes:73490.93, top_fin_mes:[{n:'RAYCA MENDES MORAIS',i:'RM',t:38200.98,bd:[{nm:'PayJoy',t:13010.0},{nm:'OdresCred',t:25190.98},{nm:'Outras',t:0}]},{n:'Wenderson Pereira Rocha',i:'WP',t:29019.99,bd:[{nm:'PayJoy',t:7400.0},{nm:'OdresCred',t:21619.99},{nm:'Outras',t:0}]},{n:'Isabely Andrade Araujo',i:'IA',t:6269.96,bd:[{nm:'PayJoy',t:1520.0},{nm:'OdresCred',t:4749.96},{nm:'Outras',t:0}]}], fin_bd:[{nm:'PayJoy',t:21930.0},{nm:'OdresCred',t:51560.93},{nm:'Outras',t:0}], top_fin:[{n:'Isabely Andrade Araujo',i:'IA',t:3299.98}], metaAcess:9000,
             agendamentos:{total:62886.89, fin:62701.89, fin_bd:[{nm:'PayJoy',t:15100.0},{nm:'OdresCred',t:47601.89},{nm:'Outras',t:2149.0}], top:[{n:'Juliana Pereira do Nascimento',i:'JP',t:32988.91}, {n:'RAYCA MENDES MORAIS',i:'RM',t:15736.99}, {n:'Wenderson Pereira Rocha',i:'WP',t:14160.99}]},
             acessorios:{total:8414.94, top:[
                 {n:'Rayca Mendes Morais',i:'RM',t:940,ds:12,ult:'12/06'},
                 {n:'Natalia Rocha Leonel',i:'NL',t:820,ds:12,ult:'12/06'}
             ], dias:[{d:'01/06',ac:80,cel:3150},{d:'06/06',ac:760,cel:23220},{d:'08/06',ac:260,cel:7397}]},
-            top:[{n:'RAYCA MENDES MORAIS',i:'RM',p:59,t:53846.97,ds:28,ult:'18/09'},
+            top:[{n:'RAYCA MENDES MORAIS',i:'RM',p:60,t:54816.97,ds:28,ult:'18/09'},
                 {n:'Wenderson Pereira Rocha',i:'WP',p:59,t:45824.99,ds:13,ult:'18/09'},
                 {n:'Juliana Pereira do Nascimento',i:'JP',p:32,t:40197.91,ds:16,ult:'17/09'},
                 {n:'Isabely Andrade Araujo',i:'IA',p:7,t:6399.96,ds:3,ult:'18/09'},
@@ -9404,7 +9404,7 @@ var _ERP_ESTOQUE = {
       'ZENFONE MAX PLUS':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:0},
       'ZENFONE MAX SHOT':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:0},
     };
-    var _ERP_ESTOQUE_TS = '18/09/2026 17:43';
+    var _ERP_ESTOQUE_TS = '18/09/2026 17:48';
 // Preços por produto — populado pelo update_d360.py a cada 30 min
 var _ERP_PRECOS = {
       'ALCATEL A2 XL': {custo:0.00,venda:0.00},
@@ -9767,7 +9767,7 @@ var _ERP_PRECOS = {
       'ZENFONE MAX PLUS': {custo:0.00,venda:0.00},
       'ZENFONE MAX SHOT': {custo:0.00,venda:0.00},
     };
-    var _ERP_PRECOS_TS = '18/09/2026 17:43';
+    var _ERP_PRECOS_TS = '18/09/2026 17:48';
 // Flag de sessão: true = fetch já tentado (sucesso ou falha), não tentar de novo
 var _erpPrecosCarregados = false;
 var _SUG_SPECS = {

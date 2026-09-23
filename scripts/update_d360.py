@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-D360 Titãs Sinergy — Atualização automática via API ERP CDC
+D360 Titãs Sinergy — Atualização automática via API ERP Odres
 Atualiza por loja: total, acessorios.total, agendFat, agendamentos.total, agendamentos.top, fat_dia
 """
 import re, os, sys, time
@@ -32,7 +32,7 @@ PRODUCT_GROUP_CEL   = 4   # SBON — celulares
 PRODUCT_GROUP_ACESS = 3   # ACESSÓRIOS
 
 STORE_MAP = {
-    # OdresTech (novo ERP — sem prefixo CDC)
+    # OdresTech (novo ERP — sem prefixo Odres)
     'BARREIRAS':                  'barreiras',
     'CARIACICA':                  'cariacica',
     'ITABUNA':                    'itabuna',
@@ -325,7 +325,7 @@ def fetch_store_ids(token, retries=3, wait=10):
             except Exception as e:
                 if attempt < retries:
                     time.sleep(wait)
-    # Fallback: IDs confirmados via metadata do gerencial (mesmo para CDC e OdresTech)
+    # Fallback: IDs confirmados via metadata do gerencial (mesmo para Odres e OdresTech)
     fallback = {
         'cariacica': 388, 'itabuna': 391, 'moxuara': 390, 'praiadacosta': 392,
         'barreiras': 395, 'teixeira': 396, 'laranjeiras': 397, 'linhares': 398,
@@ -449,14 +449,14 @@ def _deep_search_margem(obj, depth=0, skip_keys=('trends', 'metadata', 'employee
 
 def extract_margem_bruta(data):
     """
-    Extrai a Margem Bruta (%) do relatório gerencial da API CDC.
+    Extrai a Margem Bruta (%) do relatório gerencial da API Odres.
     Estrutura real: {summary:{financial_overview:{gross_margin:'45,47%',...},...}, revenue_breakdown:{...}, cost_breakdown:{...}}
     Faz busca profunda para lidar com mudanças de estrutura. Retorna float (ex: 45.47) ou None.
     """
     if not data:
         return None
 
-    # 1. Busca profunda em summary.financial_overview (caminho confirmado da API CDC)
+    # 1. Busca profunda em summary.financial_overview (caminho confirmado da API Odres)
     try:
         fo = data['summary']['financial_overview']
         v = _extract_from_dict(fo)
@@ -639,11 +639,11 @@ def update_margem_dia_lojas(content, margem_dia_por_loja):
     block_end   = block_m.end()
     block       = block_m.group(0)
     for lk, val in margem_dia_por_loja.items():
-        if not re.search(rf'\b{re.escape(lk)}\s*:\s*\d', block):
+        if not re.search(rf'\b{re.escape(lk)}\s*:\s*-?\d', block):
             print(f"  AVISO: margem_dia_lojas.{lk} não encontrado no HTML")
             continue
         new_block = re.sub(
-            rf'(\b{re.escape(lk)}\s*:\s*)\d+(?:\.\d+)?',
+            rf'(\b{re.escape(lk)}\s*:\s*)-?\d+(?:\.\d+)?',
             f'\\g<1>{val:.2f}',
             block, count=1
         )
@@ -840,7 +840,7 @@ def get_collaborators(data):
         return data
     if isinstance(data.get('data'), list):
         return data['data']
-    # Estrutura correta da API CDC: data['data']['by_collaborator']
+    # Estrutura correta da API Odres: data['data']['by_collaborator']
     if 'data' in data and isinstance(data['data'], dict):
         by_col = data['data'].get('by_collaborator')
         if isinstance(by_col, list):
@@ -1201,7 +1201,7 @@ def fetch_top_produtos_por_financeira(token, start, end, top_n=7, retries=3, wai
     from datetime import datetime, timedelta
 
     # Usa o STORE_MAP global (nomes reais do OdresTech) — o mapa local antigo
-    # com prefixo "CDC " nunca batia com item.get('store_name') e deixava o
+    # com prefixo "Odres " nunca batia com item.get('store_name') e deixava o
     # breakdown por loja de top_modelos/top_acessorios sempre vazio.
     _FINANCEIRA_KEYWORDS = ('payjoy', 'odrescred', 'aiva pay', 'crefaz', 'parcelex', 'watu brasil')
 
@@ -1382,17 +1382,17 @@ STORE_KEYS_ORDER = [
 
 # Mapeamento ERP loja-name → store_key (complementar ao STORE_MAP)
 STORE_NAME_TO_KEY = {
-    'CDC BARREIRAS':                'barreiras',
-    'CDC CARIACICA':                'cariacica',
-    'CDC ITABUNA':                  'itabuna',
-    'CDC LINHARES':                 'linhares',
-    'CDC LARANJEIRAS':              'laranjeiras',
-    'CDC MONTSERRAT':               'montserrat',
+    'BARREIRAS':                'barreiras',
+    'CARIACICA':                'cariacica',
+    'ITABUNA':                  'itabuna',
+    'LINHARES':                 'linhares',
+    'LARANJEIRAS':              'laranjeiras',
+    'MONTSERRAT':               'montserrat',
     'SHOPPING MOXUARA':             'moxuara',
-    'CDC PRAIA DA COSTA':           'praiadacosta',
-    'CDC SAO MATEUS':               'saomateus',
-    'CDC SERRA':                    'serra',
-    'CDC TEIXEIRA DE FREITAS NOVO': 'teixeira',
+    'PRAIA DA COSTA':           'praiadacosta',
+    'SAO MATEUS':               'saomateus',
+    'SERRA':                    'serra',
+    'TEIXEIRA DE FREITAS NOVO': 'teixeira',
 }
 
 def _normalize_model_key(nm):

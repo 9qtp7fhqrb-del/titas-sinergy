@@ -2107,6 +2107,11 @@ def main():
     else:
         print("  Nenhuma meta encontrada no Firestore — VEND_METAS_DB mantido")
 
+    # Garante constantes de negócio críticas (evita reversão por corrida com GitHub Actions)
+    content = re.sub(r'(const _META_MARGEM\s*=\s*)\d+', r'\g<1>50', content)
+    content = re.sub(r'(const _META_MARGEM_DIA\s*=\s*)\d+', r'\g<1>50', content)
+    print("  _META_MARGEM/_META_MARGEM_DIA fixados em 50%")
+
     # Atualiza o timestamp de build (força browsers a recarregar após deploy)
     # Padrão restrito: só a atribuição JS 'var BUILD = ...' — não toca regex literals ou strings em funções
     from datetime import datetime as _dt

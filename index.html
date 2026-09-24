@@ -7,7 +7,7 @@
     <script>
     // Cache-buster: força reload se a versão mudou
     (function(){
-      var BUILD = '20260924182552';
+      var BUILD = '20260924183102';
       var stored = localStorage.getItem('d360_build');
       if (stored && stored !== BUILD) {
         localStorage.setItem('d360_build', BUILD);
@@ -8053,8 +8053,8 @@ const D360 = {
     // O sistema deriva automaticamente: margem por loja → subrede → rede
     // COMO ATUALIZAR: edite apenas margem_lojas com os valores do ERP por loja
     // ─────────────────────────────────────────────────────────────────────────────
-    margem_dia: 48.78,              // rede hoje · zerado automaticamente à meia-noite
-    margem_dia_subredes: { t1: 48.25, t2: 43.68, t3: 55.61 },
+    margem_dia: 48.85,              // rede hoje · zerado automaticamente à meia-noite
+    margem_dia_subredes: { t1: 48.25, t2: 44.73, t3: 55.61 },
     margem_lojas: {
         // ── FONTE PRIMÁRIA — atualizar aqui com o Relatório Gerencial por Loja ──
         // atualizado pelo update_d360.py (por loja via API, fallback por subrede)
@@ -8162,7 +8162,7 @@ const D360 = {
                 {n:'Liz Sophia Andrade Pereira',i:'LS',p:4,t:6400.0},
                 {n:'GABRIEL BARRETO PEREIRA',i:'GB',p:16,t:6240.0,ds:13,ult:'23/09'},
                 {n:'ANA CAROLINA DA SILVA',i:'AC',p:1,t:1700.0,ds:1,ult:'24/09'}]},
-        teixeira:    { label:'Teixeira de Freitas',sigla:'TF', sub:'t2', meta:200000,  total:151475.92,  ped:109,  cancel:0, agend:0, agendCount:0, agendFat:71309.96,  fat_dia:1694.0, acess_dia:194.0, dia_a_dia:{"1":5110.0,"2":13040.0,"3":13273.0,"5":51402.95,"6":51402.95,"8":59072.95,"9":67996.94,"10":75286.94,"11":80436.94,"12":84116.93,"13":84116.93,"14":85716.93,"15":91395.93,"16":98055.93,"17":111855.93,"18":120907.93,"19":124826.93,"20":124826.93,"21":132532.93,"22":146311.92,"23":149781.92,"24":151475.92}, acess_dia_top:[{n:'AMANDA GOULART ANDRADE',i:'AG',t:194.0}], top_dia:[{n:'AMANDA GOULART ANDRADE',i:'AG',t:1694.0}], fin_dia:0, fin_mes:123391.92, top_fin_mes:[{n:'CARLA SANTOS LUIZ',i:'CS',t:41314.98,bd:[{nm:'PayJoy',t:20360.0},{nm:'OdresCred',t:20954.98},{nm:'Outras',t:0}]},{n:'AMANDA GOULART ANDRADE',i:'AG',t:34470.0,bd:[{nm:'PayJoy',t:29432.0},{nm:'OdresCred',t:5038.0},{nm:'Outras',t:0}]},{n:'CARINE FERREIRA FRANCO',i:'CF',t:33348.97,bd:[{nm:'PayJoy',t:16200.0},{nm:'OdresCred',t:18763.97},{nm:'Outras',t:0}]},{n:'PALOMA DE JESUS SANTOS',i:'PD',t:14257.97,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:14257.97},{nm:'Outras',t:0}]}], fin_bd:[{nm:'PayJoy',t:65992.0},{nm:'OdresCred',t:59014.92},{nm:'Outras',t:0}], top_fin:[], metaAcess:6500,
+        teixeira:    { label:'Teixeira de Freitas',sigla:'TF', sub:'t2', meta:200000,  total:153090.92,  ped:110,  cancel:0, agend:0, agendCount:0, agendFat:71309.96,  fat_dia:3309.0, acess_dia:194.0, dia_a_dia:{"1":5110.0,"2":13040.0,"3":13273.0,"5":51402.95,"6":51402.95,"8":59072.95,"9":67996.94,"10":75286.94,"11":80436.94,"12":84116.93,"13":84116.93,"14":85716.93,"15":91395.93,"16":98055.93,"17":111855.93,"18":120907.93,"19":124826.93,"20":124826.93,"21":132532.93,"22":146311.92,"23":149781.92,"24":153090.92}, acess_dia_top:[{n:'AMANDA GOULART ANDRADE',i:'AG',t:194.0}], top_dia:[{n:'AMANDA GOULART ANDRADE',i:'AG',t:1694.0}, {n:'CARINE FERREIRA FRANCO',i:'CF',t:1615.0}], fin_dia:1615.0, fin_mes:125006.92, top_fin_mes:[{n:'CARLA SANTOS LUIZ',i:'CS',t:41314.98,bd:[{nm:'PayJoy',t:20360.0},{nm:'OdresCred',t:20954.98},{nm:'Outras',t:0}]},{n:'CARINE FERREIRA FRANCO',i:'CF',t:34963.97,bd:[{nm:'PayJoy',t:16200.0},{nm:'OdresCred',t:18763.97},{nm:'Outras',t:0}]},{n:'AMANDA GOULART ANDRADE',i:'AG',t:34470.0,bd:[{nm:'PayJoy',t:29432.0},{nm:'OdresCred',t:5038.0},{nm:'Outras',t:0}]},{n:'PALOMA DE JESUS SANTOS',i:'PD',t:14257.97,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:14257.97},{nm:'Outras',t:0}]}], fin_bd:[{nm:'PayJoy',t:65992.0},{nm:'OdresCred',t:59014.92},{nm:'Outras',t:0}], top_fin:[{n:'CARINE FERREIRA FRANCO',i:'CF',t:1615.0}], metaAcess:6500,
             agendamentos:{total:71309.96, fin:67734.96, fin_bd:[{nm:'PayJoy',t:41102.0},{nm:'OdresCred',t:26632.96},{nm:'Outras',t:0}], top:[{n:'AMANDA GOULART ANDRADE',i:'AG',t:36120.0}, {n:'CARLA SANTOS LUIZ',i:'CS',t:20442.99}, {n:'CARINE FERREIRA FRANCO',i:'CF',t:7548.99}, {n:'PALOMA DE JESUS SANTOS',i:'PD',t:7197.98}]},
             acessorios:{total:3878.99, top:[
                 {n:'Amanda Goulart Andrade',i:'AG',t:740,ds:12,ult:'12/06'},
@@ -8173,7 +8173,7 @@ const D360 = {
                 {n:'Beatriz Hellen Fagundes',i:'BH',t:350,ds:12,ult:'12/06'}
             ], dias:[{d:'01/06',ac:200,cel:11060},{d:'06/06',ac:1331,cel:43146},{d:'08/06',ac:160,cel:10100}]},
             top:[{n:'CARLA SANTOS LUIZ',i:'CS',p:38,t:57283.98,ds:17,ult:'23/09'},
-                {n:'CARINE FERREIRA FRANCO',i:'CF',p:27,t:41068.97,ds:17,ult:'23/09'},
+                {n:'CARINE FERREIRA FRANCO',i:'CF',p:28,t:42683.97,ds:18,ult:'24/09'},
                 {n:'AMANDA GOULART ANDRADE',i:'AG',p:29,t:38276.0,ds:15,ult:'24/09'},
                 {n:'PALOMA DE JESUS SANTOS',i:'PD',p:14,t:14796.97,ds:9,ult:'22/09'},
                 {n:'WILGHYNER DE PADUA SOARES DE SOUZA',i:'WD',p:1,t:50.0,ds:3,ult:'14/09'}]},
@@ -9411,7 +9411,7 @@ var _ERP_ESTOQUE = {
       'ZENFONE MAX PLUS':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:0},
       'ZENFONE MAX SHOT':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:0},
     };
-    var _ERP_ESTOQUE_TS = '24/09/2026 15:25';
+    var _ERP_ESTOQUE_TS = '24/09/2026 15:30';
 // Preços por produto — populado pelo update_d360.py a cada 30 min
 var _ERP_PRECOS = {
       'ALCATEL A2 XL': {custo:0.00,venda:0.00},
@@ -9772,7 +9772,7 @@ var _ERP_PRECOS = {
       'ZENFONE MAX PLUS': {custo:0.00,venda:0.00},
       'ZENFONE MAX SHOT': {custo:0.00,venda:0.00},
     };
-    var _ERP_PRECOS_TS = '24/09/2026 15:25';
+    var _ERP_PRECOS_TS = '24/09/2026 15:31';
 // Flag de sessão: true = fetch já tentado (sucesso ou falha), não tentar de novo
 var _erpPrecosCarregados = false;
 var _SUG_SPECS = {
@@ -12538,7 +12538,7 @@ const VEND_METAS_DB = {
         {k:'sophia',     meta: 100000},   // alias liz sophia
         {k:'nicolas',    meta:  50000},   // sem meta lançada
         {k:'glaupierre', meta:  50000},   // sem meta lançada
-        {k:'gabriel',    meta:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            50000},   // sem meta lançada
+        {k:'gabriel',    meta:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             50000},   // sem meta lançada
     ],
     itabuna: [
         {k:'mikaelle',   meta:                                                          91000},   // Ago/26: 91.000
@@ -12560,9 +12560,9 @@ const VEND_METAS_DB = {
         {k:'jhennyfer',  meta:  50000},   // sem meta lançada
     ],
     linhares: [
-        {k:'rayca',      meta:                    68850},   // Set/26: 68.850
-        {k:'juliana',    meta:                    86300},   // Set/26: 86.300
-        {k:'wenderson',  meta:                    68850},   // Set/26: 68.850
+        {k:'rayca',      meta:                     68850},   // Set/26: 68.850
+        {k:'juliana',    meta:                     86300},   // Set/26: 86.300
+        {k:'wenderson',  meta:                     68850},   // Set/26: 68.850
         {k:'natalia',    meta:  71500},   // aguardando lançamento set/26
         {k:'natália',    meta:  71500},   // alias natalia
         {k:'krystian',   meta:  50000},   // sem meta lançada
@@ -12589,17 +12589,17 @@ const VEND_METAS_DB = {
     ],
     praiadacosta: [
         {k:'nycolly',    meta:  50000},   // Ago/26: 50.000
-        {k:'stefany',    meta:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               98000},   // Ago/26: 50.000
+        {k:'stefany',    meta:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                98000},   // Ago/26: 50.000
         {k:'filipe',     meta:  50000},   // sem meta lançada
         {k:'deborah',    meta:  50000},   // sem meta lançada
         {k:'thaymmon',   meta:  50000},   // sem meta lançada
         {k:'nicolas',    meta:  50000},   // sem meta lançada
     ],
     saomateus: [
-        {k:'randeclay',  meta:                    98000},   // Set/26: 98.000
-        {k:'leandro',    meta:                    98000},   // Set/26: 98.000
+        {k:'randeclay',  meta:                     98000},   // Set/26: 98.000
+        {k:'leandro',    meta:                     98000},   // Set/26: 98.000
         {k:'stefany',    meta:  98000},   // Set/26: 98.000
-        {k:'heloa',      meta:                    44500},   // Set/26: 44.500
+        {k:'heloa',      meta:                     44500},   // Set/26: 44.500
         {k:'ana',        meta:  57000},   // aguardando lançamento set/26
         {k:'alice',      meta:  57000},   // sem meta lançada
         {k:'daniele',    meta:  57000},   // sem meta lançada
@@ -12608,7 +12608,7 @@ const VEND_METAS_DB = {
     ],
     serra: [
         {k:'gabriel',    meta:  50000},   // Set/26: 50.000
-        {k:'carlos',     meta:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      140000},   // Ago/26: 59.000
+        {k:'carlos',     meta:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       140000},   // Ago/26: 59.000
         {k:'hiully',     meta:                                    59000},   // Ago/26: 59.000
         {k:'felipe',     meta:  50000},   // sem meta lançada
         {k:'karen',      meta:  50000},   // sem meta lançada

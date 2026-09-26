@@ -7,7 +7,7 @@
     <script>
     // Cache-buster: força reload se a versão mudou
     (function(){
-      var BUILD = '20260926165227';
+      var BUILD = '20260926165702';
       var stored = localStorage.getItem('d360_build');
       if (stored && stored !== BUILD) {
         localStorage.setItem('d360_build', BUILD);
@@ -8053,8 +8053,8 @@ const D360 = {
     // O sistema deriva automaticamente: margem por loja → subrede → rede
     // COMO ATUALIZAR: edite apenas margem_lojas com os valores do ERP por loja
     // ─────────────────────────────────────────────────────────────────────────────
-    margem_dia: 51.88,              // rede hoje · zerado automaticamente à meia-noite
-    margem_dia_subredes: { t1: 51.82, t2: 48.38, t3: 54.11 },
+    margem_dia: 51.90,              // rede hoje · zerado automaticamente à meia-noite
+    margem_dia_subredes: { t1: 51.86, t2: 48.38, t3: 54.11 },
     margem_lojas: {
         // ── FONTE PRIMÁRIA — atualizar aqui com o Relatório Gerencial por Loja ──
         // atualizado pelo update_d360.py (por loja via API, fallback por subrede)
@@ -8117,9 +8117,9 @@ const D360 = {
                 {n:'ANA CAROLINA DA SILVA',i:'AC',p:64,t:68267.9,ds:25,ult:'26/09'},
                 {n:'Fabiano Francisco Fontes',i:'FF',p:21,t:31518.99,ds:8,ult:'11/09'},
                 {n:'mirelly vieira portugal',i:'MV',p:11,t:5249.5,ds:13,ult:'25/09'}]},
-        itabuna:     { label:'Itabuna',            sigla:'IT', sub:'t1', meta:290000,  total:292228.01,  ped:328,  cancel:0, agend:0, agendCount:0, agendFat:109837.76,  fat_dia:11150.0, acess_dia:220.0, dia_a_dia:{"1":14493.0,"2":28178.0,"3":34499.0,"5":79265.94,"6":79265.94,"8":88394.92,"9":106626.87,"10":117131.85,"11":129048.82,"12":138916.81,"13":138916.81,"14":151221.77,"15":162939.75,"16":184182.24,"17":194201.23,"18":216605.21,"19":231074.04,"20":231074.04,"21":236508.02,"22":251020.01,"23":259043.01,"24":273198.01,"25":281078.01,"26":292228.01}, acess_dia_top:[{n:'REINAN DOS SANTOS PACHECO',i:'RD',t:195.0}, {n:'HERICLES LISBOA DE FREITAS',i:'HL',t:25.0}], top_dia:[{n:'MIKAELLE SANTOS VIRGENS',i:'MS',t:7245.0}, {n:'REINAN DOS SANTOS PACHECO',i:'RD',t:2380.0}, {n:'jhonatas lucas machado pereira',i:'JL',t:1500.0}, {n:'HERICLES LISBOA DE FREITAS',i:'HL',t:25.0}], fin_dia:4975.0, fin_mes:133209.65, top_fin_mes:[{n:'MIKAELLE SANTOS VIRGENS',i:'MS',t:96319.73,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:96319.73},{nm:'Outras',t:51606.6}]},{n:'ANDREZA DE JESUS SOUZA',i:'AD',t:12770.97,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:12770.97},{nm:'Outras',t:14720.0}]},{n:'KEIFIT MOREIRA DOS SANTOS',i:'KM',t:11545.97,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:11545.97},{nm:'Outras',t:5000.0}]},{n:'HERICLES LISBOA DE FREITAS',i:'HL',t:7744.99,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:7744.99},{nm:'Outras',t:5126.7}]},{n:'jhonatas lucas machado pereira',i:'JL',t:4827.99,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:4827.99},{nm:'Outras',t:5094.0}]}], fin_bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:133209.65},{nm:'Outras',t:81547.3}], top_fin:[{n:'MIKAELLE SANTOS VIRGENS',i:'MS',t:4975.0}], metaAcess:10000,
+        itabuna:     { label:'Itabuna',            sigla:'IT', sub:'t1', meta:290000,  total:292258.01,  ped:329,  cancel:0, agend:0, agendCount:0, agendFat:109837.76,  fat_dia:11180.0, acess_dia:250.0, dia_a_dia:{"1":14493.0,"2":28178.0,"3":34499.0,"5":79265.94,"6":79265.94,"8":88394.92,"9":106626.87,"10":117131.85,"11":129048.82,"12":138916.81,"13":138916.81,"14":151221.77,"15":162939.75,"16":184182.24,"17":194201.23,"18":216605.21,"19":231074.04,"20":231074.04,"21":236508.02,"22":251020.01,"23":259043.01,"24":273198.01,"25":281078.01,"26":292258.01}, acess_dia_top:[{n:'REINAN DOS SANTOS PACHECO',i:'RD',t:195.0}, {n:'MIKAELLE SANTOS VIRGENS',i:'MS',t:30.0}, {n:'HERICLES LISBOA DE FREITAS',i:'HL',t:25.0}], top_dia:[{n:'MIKAELLE SANTOS VIRGENS',i:'MS',t:7275.0}, {n:'REINAN DOS SANTOS PACHECO',i:'RD',t:2380.0}, {n:'jhonatas lucas machado pereira',i:'JL',t:1500.0}, {n:'HERICLES LISBOA DE FREITAS',i:'HL',t:25.0}], fin_dia:4975.0, fin_mes:133209.65, top_fin_mes:[{n:'MIKAELLE SANTOS VIRGENS',i:'MS',t:96319.73,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:96319.73},{nm:'Outras',t:51606.6}]},{n:'ANDREZA DE JESUS SOUZA',i:'AD',t:12770.97,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:12770.97},{nm:'Outras',t:14720.0}]},{n:'KEIFIT MOREIRA DOS SANTOS',i:'KM',t:11545.97,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:11545.97},{nm:'Outras',t:5000.0}]},{n:'HERICLES LISBOA DE FREITAS',i:'HL',t:7744.99,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:7744.99},{nm:'Outras',t:5126.7}]},{n:'jhonatas lucas machado pereira',i:'JL',t:4827.99,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:4827.99},{nm:'Outras',t:5094.0}]}], fin_bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:133209.65},{nm:'Outras',t:81547.3}], top_fin:[{n:'MIKAELLE SANTOS VIRGENS',i:'MS',t:4975.0}], metaAcess:10000,
             agendamentos:{total:109837.76, fin:105277.76, fin_bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:87827.74},{nm:'Outras',t:39696.94}], top:[{n:'MIKAELLE SANTOS VIRGENS',i:'MS',t:102557.77}, {n:'ANDREZA DE JESUS SOUZA',i:'AD',t:4525.0}, {n:'REINAN DOS SANTOS PACHECO',i:'RD',t:1405.0}, {n:'KEIFIT MOREIRA DOS SANTOS',i:'KM',t:1349.99}]},
-            acessorios:{total:13146.89, top:[
+            acessorios:{total:13176.89, top:[
                 {n:'Hericles Lisboa de Freitas',i:'HL',t:1792,ds:12,ult:'12/06'},
                 {n:'Andreza de Jesus Souza',i:'AJ',t:1365,ds:12,ult:'12/06'},
                 {n:'Mikaelle Santos Virgens',i:'MS',t:1165,ds:12,ult:'12/06'},
@@ -8127,7 +8127,7 @@ const D360 = {
                 {n:'Keifit Moreira dos Santos',i:'KM',t:385,ds:12,ult:'12/06'},
                 {n:'Sandy de Araujo Santos Lima',i:'SA',t:240,ds:12,ult:'12/06'}
             ], dias:[{d:'01/06',ac:845,cel:8090},{d:'06/06',ac:2757,cel:51905},{d:'08/06',ac:320,cel:15339}]},
-            top:[{n:'MIKAELLE SANTOS VIRGENS',i:'MS',p:123,t:128711.43,ds:37,ult:'26/09'},
+            top:[{n:'MIKAELLE SANTOS VIRGENS',i:'MS',p:124,t:128741.43,ds:37,ult:'26/09'},
                 {n:'ANDREZA DE JESUS SOUZA',i:'AD',p:52,t:50658.99,ds:33,ult:'26/09'},
                 {n:'KEIFIT MOREIRA DOS SANTOS',i:'KM',p:38,t:33526.97,ds:31,ult:'26/09'},
                 {n:'HERICLES LISBOA DE FREITAS',i:'HL',p:41,t:30014.69,ds:24,ult:'26/09'},
@@ -9412,7 +9412,7 @@ var _ERP_ESTOQUE = {
       'ZENFONE MAX PLUS':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:0},
       'ZENFONE MAX SHOT':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:0},
     };
-    var _ERP_ESTOQUE_TS = '26/09/2026 13:52';
+    var _ERP_ESTOQUE_TS = '26/09/2026 13:56';
 // Preços por produto — populado pelo update_d360.py a cada 30 min
 var _ERP_PRECOS = {
       'ALCATEL A2 XL': {custo:0.00,venda:0.00},
@@ -9773,7 +9773,7 @@ var _ERP_PRECOS = {
       'ZENFONE MAX PLUS': {custo:0.00,venda:0.00},
       'ZENFONE MAX SHOT': {custo:0.00,venda:0.00},
     };
-    var _ERP_PRECOS_TS = '26/09/2026 13:52';
+    var _ERP_PRECOS_TS = '26/09/2026 13:57';
 // Flag de sessão: true = fetch já tentado (sucesso ou falha), não tentar de novo
 var _erpPrecosCarregados = false;
 var _SUG_SPECS = {

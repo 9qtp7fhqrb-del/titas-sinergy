@@ -7,7 +7,7 @@
     <script>
     // Cache-buster: força reload se a versão mudou
     (function(){
-      var BUILD = '20261001171707';
+      var BUILD = '20261001172049';
       var stored = localStorage.getItem('d360_build');
       if (stored && stored !== BUILD) {
         localStorage.setItem('d360_build', BUILD);
@@ -8053,12 +8053,12 @@ const D360 = {
     // O sistema deriva automaticamente: margem por loja → subrede → rede
     // COMO ATUALIZAR: edite apenas margem_lojas com os valores do ERP por loja
     // ─────────────────────────────────────────────────────────────────────────────
-    margem_dia: 50.36,              // rede hoje · zerado automaticamente à meia-noite
-    margem_dia_subredes: { t1: 52.20, t2: 49.16, t3: 49.13 },
+    margem_dia: 50.39,              // rede hoje · zerado automaticamente à meia-noite
+    margem_dia_subredes: { t1: 52.28, t2: 49.16, t3: 49.13 },
     margem_lojas: {
         // ── FONTE PRIMÁRIA — atualizar aqui com o Relatório Gerencial por Loja ──
         // atualizado pelo update_d360.py (por loja via API, fallback por subrede)
-        cariacica:   48.86,
+        cariacica:   49.05,
         itabuna:     54.87,
         moxuara:     57.30,
         praiadacosta:48.78,
@@ -8071,10 +8071,10 @@ const D360 = {
         linhares:    50.82,
     },
     margem_subredes: {  // fallback quando margem_lojas estiver incompleta
-        t1: 52.20, t2: 49.16, t3: 49.13
+        t1: 52.28, t2: 49.16, t3: 49.13
     },
     // margem_mes: derivada automaticamente pelo _calcMargemPonderada (não editar)
-    margem_mes: 50.36,
+    margem_mes: 50.39,
 
     subredes: {
         t1: { nome:'Titãs 1', gestor:'Talysson', meta:0,
@@ -8099,16 +8099,17 @@ const D360 = {
             top:[{n:'Heloá Mercês Lazáro',i:'HM',p:4,t:3450.0,ds:1,ult:'01/10'},
                 {n:'ANTONIELLE SANTOS PEROBA',i:'AS',p:3,t:3299.0,ds:1,ult:'01/10'},
                 {n:'Ana Carolina Lisboa',i:'AC',p:2,t:120.0,ds:1,ult:'01/10'}]},
-        cariacica:   { label:'Cariacica',          sigla:'CC', sub:'t1', meta:410000,  total:7700.0, ped:5,  cancel:0, agend:0, agendCount:0, agendFat:1900.0,  fat_dia:7700.0, acess_dia:0, dia_a_dia:{"1":7700.0}, acess_dia_top:[], top_dia:[{n:'MAYARA KULL RODRIGUES',i:'MK',t:6300.0}, {n:'ANA CAROLINA DA SILVA',i:'AC',t:1400.0}], fin_dia:5300.0, fin_mes:5300.0, top_fin_mes:[{n:'MAYARA KULL RODRIGUES',i:'MK',t:5300.0,bd:[{nm:'PayJoy',t:5300.0},{nm:'OdresCred',t:0},{nm:'Outras',t:1000.0}]}], fin_bd:[{nm:'PayJoy',t:5300.0},{nm:'OdresCred',t:0},{nm:'Outras',t:1000.0}], top_fin:[{n:'MAYARA KULL RODRIGUES',i:'MK',t:5300.0}], metaAcess:13500,
+        cariacica:   { label:'Cariacica',          sigla:'CC', sub:'t1', meta:410000,  total:7770.0, ped:6,  cancel:0, agend:0, agendCount:0, agendFat:1900.0,  fat_dia:7770.0, acess_dia:70.0, dia_a_dia:{"1":7770.0}, acess_dia_top:[{n:'Liz Sophia Andrade Pereira',i:'LS',t:70.0}], top_dia:[{n:'MAYARA KULL RODRIGUES',i:'MK',t:6300.0}, {n:'ANA CAROLINA DA SILVA',i:'AC',t:1400.0}, {n:'Liz Sophia Andrade Pereira',i:'LS',t:70.0}], fin_dia:5300.0, fin_mes:5300.0, top_fin_mes:[{n:'MAYARA KULL RODRIGUES',i:'MK',t:5300.0,bd:[{nm:'PayJoy',t:5300.0},{nm:'OdresCred',t:0},{nm:'Outras',t:1000.0}]}], fin_bd:[{nm:'PayJoy',t:5300.0},{nm:'OdresCred',t:0},{nm:'Outras',t:1000.0}], top_fin:[{n:'MAYARA KULL RODRIGUES',i:'MK',t:5300.0}], metaAcess:13500,
             agendamentos:{total:1900.0, fin:1900.0, fin_bd:[{nm:'PayJoy',t:1900.0},{nm:'OdresCred',t:0},{nm:'Outras',t:0}], top:[{n:'MAYARA KULL RODRIGUES',i:'MK',t:1900.0}]},
-            acessorios:{total:0, top:[
+            acessorios:{total:70.0, top:[
                 {n:'Roberta Felipe Malaquias',i:'RF',t:3580,ds:12,ult:'12/06'},
                 {n:'Liz Sophia Andrade Pereira',i:'LS',t:1380,ds:12,ult:'12/06'},
                 {n:'Nicolas Santos Borges',i:'NB',t:470,ds:12,ult:'12/06'},
                 {n:'Glaupierre Oliveira da Silvaa',i:'GO',t:350,ds:12,ult:'12/06'}
             ], dias:[{d:'01/06',ac:210,cel:10749},{d:'06/06',ac:3350,cel:105393},{d:'08/06',ac:630,cel:10099}]},
             top:[{n:'MAYARA KULL RODRIGUES',i:'MK',p:4,t:6300.0,ds:1,ult:'01/10'},
-                {n:'ANA CAROLINA DA SILVA',i:'AC',p:1,t:1400.0,ds:1,ult:'01/10'}]},
+                {n:'ANA CAROLINA DA SILVA',i:'AC',p:1,t:1400.0,ds:1,ult:'01/10'},
+                {n:'Liz Sophia Andrade Pereira',i:'LS',p:1,t:70.0,ds:1,ult:'01/10'}]},
         itabuna:     { label:'Itabuna',            sigla:'IT', sub:'t1', meta:290000,  total:5839.99,  ped:5,  cancel:0, agend:0, agendCount:0, agendFat:0,  fat_dia:5839.99, acess_dia:30.0, dia_a_dia:{"1":5839.99}, acess_dia_top:[{n:'ANDREZA DE JESUS SOUZA',i:'AD',t:30.0}], top_dia:[{n:'ANDREZA DE JESUS SOUZA',i:'AD',t:3939.99}, {n:'HERICLES LISBOA DE FREITAS',i:'HL',t:1900.0}], fin_dia:5299.99, fin_mes:5299.99, top_fin_mes:[{n:'ANDREZA DE JESUS SOUZA',i:'AD',t:3399.99,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:3399.99},{nm:'Outras',t:2239.99}]},{n:'HERICLES LISBOA DE FREITAS',i:'HL',t:1900.0,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:1900.0},{nm:'Outras',t:0}]}], fin_bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:5299.99},{nm:'Outras',t:2239.99}], top_fin:[{n:'ANDREZA DE JESUS SOUZA',i:'AD',t:3399.99}, {n:'HERICLES LISBOA DE FREITAS',i:'HL',t:1900.0}], metaAcess:10000,
             agendamentos:{total:0, fin:0, fin_bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:0},{nm:'Outras',t:0}], top:[]},
             acessorios:{total:30.0, top:[
@@ -8186,10 +8187,10 @@ const D360 = {
                 {n:'Vinicius de Almeida Medeiros Vargas',i:'VA',t:2030,ds:12,ult:'12/06'}
             ], dias:[{d:'01/06',ac:590,cel:3198},{d:'06/06',ac:3670,cel:20308},{d:'07/06',ac:490,cel:7100},{d:'08/06',ac:150,cel:1699}]},
             top:[]},
-        praiadacosta:{ label:'Praia da Costa',     sigla:'PC', sub:'t2', meta:100000,  total:3379.0,  ped:3,  cancel:0, agend:0, agendCount:0, agendFat:0,  fat_dia:3379.0, acess_dia:280.0, dia_a_dia:{"1":3379.0}, acess_dia_top:[{n:'ADRIEL SILVA DE OLIVEIRA',i:'AS',t:280.0}], top_dia:[{n:'ADRIEL SILVA DE OLIVEIRA',i:'AS',t:3379.0}], fin_dia:0, fin_mes:0, top_fin_mes:[], fin_bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:0},{nm:'Outras',t:0}], top_fin:[], metaAcess:2500,
+        praiadacosta:{ label:'Praia da Costa',     sigla:'PC', sub:'t2', meta:100000,  total:3669.0,  ped:4,  cancel:0, agend:0, agendCount:0, agendFat:0,  fat_dia:3669.0, acess_dia:570.0, dia_a_dia:{"1":3669.0}, acess_dia_top:[{n:'ADRIEL SILVA DE OLIVEIRA',i:'AS',t:570.0}], top_dia:[{n:'ADRIEL SILVA DE OLIVEIRA',i:'AS',t:3669.0}], fin_dia:0, fin_mes:0, top_fin_mes:[], fin_bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:0},{nm:'Outras',t:0}], top_fin:[], metaAcess:2500,
             agendamentos:{total:0, fin:0, fin_bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:0},{nm:'Outras',t:0}], top:[]},
-            acessorios:{total:280.0, top:[], dias:[]},
-            top:[{n:'ADRIEL SILVA DE OLIVEIRA',i:'AS',p:3,t:3379.0,ds:1,ult:'01/10'}]},
+            acessorios:{total:570.0, top:[], dias:[]},
+            top:[{n:'ADRIEL SILVA DE OLIVEIRA',i:'AS',p:4,t:3669.0,ds:1,ult:'01/10'}]},
     }
 };
 
@@ -9373,7 +9374,7 @@ var _ERP_ESTOQUE = {
       'ZENFONE MAX PLUS':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:0},
       'ZENFONE MAX SHOT':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:0},
     };
-    var _ERP_ESTOQUE_TS = '01/10/2026 14:16';
+    var _ERP_ESTOQUE_TS = '01/10/2026 14:20';
 // Preços por produto — populado pelo update_d360.py a cada 30 min
 var _ERP_PRECOS = {
       'ALCATEL A2 XL': {custo:0.00,venda:0.00},
@@ -9732,7 +9733,7 @@ var _ERP_PRECOS = {
       'ZENFONE MAX PLUS': {custo:0.00,venda:0.00},
       'ZENFONE MAX SHOT': {custo:0.00,venda:0.00},
     };
-    var _ERP_PRECOS_TS = '01/10/2026 14:17';
+    var _ERP_PRECOS_TS = '01/10/2026 14:20';
 // Flag de sessão: true = fetch já tentado (sucesso ou falha), não tentar de novo
 var _erpPrecosCarregados = false;
 var _SUG_SPECS = {

@@ -7,7 +7,7 @@
     <script>
     // Cache-buster: força reload se a versão mudou
     (function(){
-      var BUILD = '20261001185619';
+      var BUILD = '20261001185952';
       var stored = localStorage.getItem('d360_build');
       if (stored && stored !== BUILD) {
         localStorage.setItem('d360_build', BUILD);
@@ -8053,8 +8053,8 @@ const D360 = {
     // O sistema deriva automaticamente: margem por loja → subrede → rede
     // COMO ATUALIZAR: edite apenas margem_lojas com os valores do ERP por loja
     // ─────────────────────────────────────────────────────────────────────────────
-    margem_dia: 50.72,              // rede hoje · zerado automaticamente à meia-noite
-    margem_dia_subredes: { t1: 52.53, t2: 49.19, t3: 49.13 },
+    margem_dia: 50.84,              // rede hoje · zerado automaticamente à meia-noite
+    margem_dia_subredes: { t1: 52.53, t2: 49.19, t3: 49.88 },
     margem_lojas: {
         // ── FONTE PRIMÁRIA — atualizar aqui com o Relatório Gerencial por Loja ──
         // atualizado pelo update_d360.py (por loja via API, fallback por subrede)
@@ -8065,16 +8065,16 @@ const D360 = {
         barreiras:   47.74,
         teixeira:    51.13,
         laranjeiras: 51.85,
-        saomateus:   48.38,
+        saomateus:   49.56,
         serra:       51.08,
         montserrat:  51.73,
         linhares:    50.82,
     },
     margem_subredes: {  // fallback quando margem_lojas estiver incompleta
-        t1: 52.53, t2: 49.19, t3: 49.13
+        t1: 52.53, t2: 49.19, t3: 49.88
     },
     // margem_mes: derivada automaticamente pelo _calcMargemPonderada (não editar)
-    margem_mes: 50.72,
+    margem_mes: 50.84,
 
     subredes: {
         t1: { nome:'Titãs 1', gestor:'Talysson', meta:0,
@@ -8086,7 +8086,7 @@ const D360 = {
     },
     lojas: {
         // ── Totais acumulados 2026-10-01 a 2026-10-01 · Atualizado automaticamente ──
-        saomateus:   { label:'São Mateus',         sigla:'SM', sub:'t3', meta:350000,  total:6869.0, ped:9,  cancel:0, agend:0, agendCount:0, agendFat:0,  fat_dia:6869.0, acess_dia:370.0, dia_a_dia:{"1":6869.0}, acess_dia_top:[{n:'Heloá Mercês Lazáro',i:'HM',t:250.0}, {n:'Ana Carolina Lisboa',i:'AC',t:120.0}], top_dia:[{n:'Heloá Mercês Lazáro',i:'HM',t:3450.0}, {n:'ANTONIELLE SANTOS PEROBA',i:'AS',t:3299.0}, {n:'Ana Carolina Lisboa',i:'AC',t:120.0}], fin_dia:2499.0, fin_mes:2499.0, top_fin_mes:[{n:'Heloá Mercês Lazáro',i:'HM',t:1400.0,bd:[{nm:'PayJoy',t:1400.0},{nm:'OdresCred',t:1750.0},{nm:'Outras',t:0}]},{n:'ANTONIELLE SANTOS PEROBA',i:'AS',t:1099.0,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:1099.0},{nm:'Outras',t:0}]}], fin_bd:[{nm:'PayJoy',t:1400.0},{nm:'OdresCred',t:2849.0},{nm:'Outras',t:0}], top_fin:[{n:'Heloá Mercês Lazáro',i:'HM',t:1400.0}, {n:'ANTONIELLE SANTOS PEROBA',i:'AS',t:1099.0}], metaAcess:11500,
+        saomateus:   { label:'São Mateus',         sigla:'SM', sub:'t3', meta:350000,  total:8619.0, ped:10,  cancel:0, agend:0, agendCount:0, agendFat:0,  fat_dia:8619.0, acess_dia:370.0, dia_a_dia:{"1":8619.0}, acess_dia_top:[{n:'Heloá Mercês Lazáro',i:'HM',t:250.0}, {n:'Ana Carolina Lisboa',i:'AC',t:120.0}], top_dia:[{n:'Heloá Mercês Lazáro',i:'HM',t:5200.0}, {n:'ANTONIELLE SANTOS PEROBA',i:'AS',t:3299.0}, {n:'Ana Carolina Lisboa',i:'AC',t:120.0}], fin_dia:4249.0, fin_mes:4249.0, top_fin_mes:[{n:'Heloá Mercês Lazáro',i:'HM',t:3150.0,bd:[{nm:'PayJoy',t:1400.0},{nm:'OdresCred',t:1750.0},{nm:'Outras',t:0}]},{n:'ANTONIELLE SANTOS PEROBA',i:'AS',t:1099.0,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:1099.0},{nm:'Outras',t:0}]}], fin_bd:[{nm:'PayJoy',t:1400.0},{nm:'OdresCred',t:2849.0},{nm:'Outras',t:0}], top_fin:[{n:'Heloá Mercês Lazáro',i:'HM',t:3150.0}, {n:'ANTONIELLE SANTOS PEROBA',i:'AS',t:1099.0}], metaAcess:11500,
             agendamentos:{total:0, fin:0, fin_bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:0},{nm:'Outras',t:0}], top:[]},
             acessorios:{total:370.0, top:[
                 {n:'Juliana Cristina dos Santos',i:'JC',t:2947,ds:12,ult:'12/06'},
@@ -8096,7 +8096,7 @@ const D360 = {
                 {n:'Leandro da Cruz Silva',i:'LC',t:755,ds:12,ult:'12/06'},
                 {n:'Randeclay Mariano Gomes',i:'RM',t:470,ds:12,ult:'12/06'}
             ], dias:[{d:'01/06',ac:2210,cel:13147},{d:'06/06',ac:1935,cel:69941},{d:'08/06',ac:495,cel:14645}]},
-            top:[{n:'Heloá Mercês Lazáro',i:'HM',p:4,t:3450.0,ds:1,ult:'01/10'},
+            top:[{n:'Heloá Mercês Lazáro',i:'HM',p:5,t:5200.0,ds:1,ult:'01/10'},
                 {n:'ANTONIELLE SANTOS PEROBA',i:'AS',p:3,t:3299.0,ds:1,ult:'01/10'},
                 {n:'Ana Carolina Lisboa',i:'AC',p:2,t:120.0,ds:1,ult:'01/10'}]},
         cariacica:   { label:'Cariacica',          sigla:'CC', sub:'t1', meta:410000,  total:8020.0, ped:7,  cancel:0, agend:0, agendCount:0, agendFat:1900.0,  fat_dia:8020.0, acess_dia:320.0, dia_a_dia:{"1":8020.0}, acess_dia_top:[{n:'Liz Sophia Andrade Pereira',i:'LS',t:320.0}], top_dia:[{n:'MAYARA KULL RODRIGUES',i:'MK',t:6300.0}, {n:'ANA CAROLINA DA SILVA',i:'AC',t:1400.0}, {n:'Liz Sophia Andrade Pereira',i:'LS',t:320.0}], fin_dia:5300.0, fin_mes:5300.0, top_fin_mes:[{n:'MAYARA KULL RODRIGUES',i:'MK',t:5300.0,bd:[{nm:'PayJoy',t:5300.0},{nm:'OdresCred',t:0},{nm:'Outras',t:1000.0}]}], fin_bd:[{nm:'PayJoy',t:5300.0},{nm:'OdresCred',t:0},{nm:'Outras',t:1000.0}], top_fin:[{n:'MAYARA KULL RODRIGUES',i:'MK',t:5300.0}], metaAcess:13500,
@@ -9380,7 +9380,7 @@ var _ERP_ESTOQUE = {
       'ZENFONE MAX PLUS':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:0},
       'ZENFONE MAX SHOT':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:0},
     };
-    var _ERP_ESTOQUE_TS = '01/10/2026 15:55';
+    var _ERP_ESTOQUE_TS = '01/10/2026 15:59';
 // Preços por produto — populado pelo update_d360.py a cada 30 min
 var _ERP_PRECOS = {
       'ALCATEL A2 XL': {custo:0.00,venda:0.00},
@@ -9740,7 +9740,7 @@ var _ERP_PRECOS = {
       'ZENFONE MAX PLUS': {custo:0.00,venda:0.00},
       'ZENFONE MAX SHOT': {custo:0.00,venda:0.00},
     };
-    var _ERP_PRECOS_TS = '01/10/2026 15:56';
+    var _ERP_PRECOS_TS = '01/10/2026 15:59';
 // Flag de sessão: true = fetch já tentado (sucesso ou falha), não tentar de novo
 var _erpPrecosCarregados = false;
 var _SUG_SPECS = {

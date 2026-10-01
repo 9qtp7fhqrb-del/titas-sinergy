@@ -7,7 +7,7 @@
     <script>
     // Cache-buster: força reload se a versão mudou
     (function(){
-      var BUILD = '20261001175910';
+      var BUILD = '20261001181112';
       var stored = localStorage.getItem('d360_build');
       if (stored && stored !== BUILD) {
         localStorage.setItem('d360_build', BUILD);
@@ -9054,6 +9054,7 @@ var _ERP_ESTOQUE = {
       'CAMON 18P':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:0},
       'CAT B30 PHONE':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:3,teixeira:0,saomateus:0,serra:3,montserrat:1,linhares:0},
       'CAT S62 PRO':  {cariacica:6,itabuna:3,moxuara:1,praiadacosta:0,barreiras:1,laranjeiras:2,teixeira:4,saomateus:2,serra:4,montserrat:0,linhares:3},
+      'CATERPILLAR CAT B30 4G':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:3,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:0},
       'CUBOT A20':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:0},
       'CUBOT ACE3':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:0},
       'CUBOT HAFURY V1':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:1,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:0},
@@ -9375,7 +9376,7 @@ var _ERP_ESTOQUE = {
       'ZENFONE MAX PLUS':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:0},
       'ZENFONE MAX SHOT':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:0},
     };
-    var _ERP_ESTOQUE_TS = '01/10/2026 14:58';
+    var _ERP_ESTOQUE_TS = '01/10/2026 15:10';
 // Preços por produto — populado pelo update_d360.py a cada 30 min
 var _ERP_PRECOS = {
       'ALCATEL A2 XL': {custo:0.00,venda:0.00},
@@ -9413,6 +9414,7 @@ var _ERP_PRECOS = {
       'CAMON 18P': {custo:0.00,venda:0.00},
       'CAT B30 PHONE': {custo:180.00,venda:380.00},
       'CAT S62 PRO': {custo:2790.00,venda:4800.00},
+      'CATERPILLAR CAT B30 4G': {custo:180.00,venda:450.00},
       'CUBOT A20': {custo:0.00,venda:0.00},
       'CUBOT ACE3': {custo:0.00,venda:3200.00},
       'CUBOT HAFURY V1': {custo:1100.00,venda:2750.00},
@@ -9734,7 +9736,7 @@ var _ERP_PRECOS = {
       'ZENFONE MAX PLUS': {custo:0.00,venda:0.00},
       'ZENFONE MAX SHOT': {custo:0.00,venda:0.00},
     };
-    var _ERP_PRECOS_TS = '01/10/2026 14:59';
+    var _ERP_PRECOS_TS = '01/10/2026 15:11';
 // Flag de sessão: true = fetch já tentado (sucesso ou falha), não tentar de novo
 var _erpPrecosCarregados = false;
 var _SUG_SPECS = {

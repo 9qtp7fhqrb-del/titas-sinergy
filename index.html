@@ -7,7 +7,7 @@
     <script>
     // Cache-buster: força reload se a versão mudou
     (function(){
-      var BUILD = '20261001131935';
+      var BUILD = '20261001132249';
       var stored = localStorage.getItem('d360_build');
       if (stored && stored !== BUILD) {
         localStorage.setItem('d360_build', BUILD);
@@ -8040,12 +8040,12 @@ const D360 = {
         }
     },
     top_acessorios:{"rede":[{"nm":"PELICULA TPU SOFT CLEAR DEVIA","qt":1,"val":100,"pct":100.0,"abc":"C"}],"lojas":{"barreiras":[],"cariacica":[],"itabuna":[],"linhares":[],"laranjeiras":[],"montserrat":[],"moxuara":[],"praiadacosta":[],"saomateus":[{"nm":"PELICULA TPU SOFT CLEAR DEVIA","qt":1,"val":100,"pct":100.0,"abc":"C"}],"serra":[],"teixeira":[]}},
-    top_modelos:{"payjoy":[],"odrescred":[{"nm":"SMARTPHONE TECNO SPARK GO 1S","qt":1,"val":1099},{"nm":"SMARTPHONE REALME C71","qt":1,"val":2000}],"salao":[{"nm":"SMARTPHONE  REALME NOTE 70","qt":1,"val":1400}],"lojas":{"barreiras":{"payjoy":[],"odrescred":[{"nm":"SMARTPHONE TECNO SPARK GO 1S","qt":1,"val":1099}],"salao":[]},"cariacica":{"payjoy":[],"odrescred":[],"salao":[{"nm":"SMARTPHONE  REALME NOTE 70","qt":1,"val":1400}]},"itabuna":{"payjoy":[],"odrescred":[],"salao":[]},"linhares":{"payjoy":[],"odrescred":[{"nm":"SMARTPHONE REALME C71","qt":1,"val":2000}],"salao":[]},"laranjeiras":{"payjoy":[],"odrescred":[],"salao":[]},"montserrat":{"payjoy":[],"odrescred":[],"salao":[]},"moxuara":{"payjoy":[],"odrescred":[],"salao":[]},"praiadacosta":{"payjoy":[],"odrescred":[],"salao":[]},"saomateus":{"payjoy":[],"odrescred":[],"salao":[]},"serra":{"payjoy":[],"odrescred":[],"salao":[]},"teixeira":{"payjoy":[],"odrescred":[],"salao":[]}}},
+    top_modelos:{"payjoy":[{"nm":"SMARTPHONE TECNO SPARK 30C","qt":1,"val":1700}],"odrescred":[{"nm":"SMARTPHONE TECNO SPARK GO 1S","qt":1,"val":1099},{"nm":"SMARTPHONE REALME C71","qt":1,"val":2000}],"salao":[{"nm":"SMARTPHONE  REALME NOTE 70","qt":1,"val":1400}],"lojas":{"barreiras":{"payjoy":[],"odrescred":[{"nm":"SMARTPHONE TECNO SPARK GO 1S","qt":1,"val":1099}],"salao":[]},"cariacica":{"payjoy":[{"nm":"SMARTPHONE TECNO SPARK 30C","qt":1,"val":1700}],"odrescred":[],"salao":[{"nm":"SMARTPHONE  REALME NOTE 70","qt":1,"val":1400}]},"itabuna":{"payjoy":[],"odrescred":[],"salao":[]},"linhares":{"payjoy":[],"odrescred":[{"nm":"SMARTPHONE REALME C71","qt":1,"val":2000}],"salao":[]},"laranjeiras":{"payjoy":[],"odrescred":[],"salao":[]},"montserrat":{"payjoy":[],"odrescred":[],"salao":[]},"moxuara":{"payjoy":[],"odrescred":[],"salao":[]},"praiadacosta":{"payjoy":[],"odrescred":[],"salao":[]},"saomateus":{"payjoy":[],"odrescred":[],"salao":[]},"serra":{"payjoy":[],"odrescred":[],"salao":[]},"teixeira":{"payjoy":[],"odrescred":[],"salao":[]}}},
     diasDecorridos: 1, // atualizado pelo script de automação — não alterar manualmente
     diasMes: 31,          // agosto tem 31 dias
-    ticket_cel: 1500,        // ticket médio celulares (SBON) — atualizado pelo bot
+    ticket_cel: 1550,        // ticket médio celulares (SBON) — atualizado pelo bot
     ticket_acess: 100,      // ticket médio acessórios — atualizado pelo bot
-    ped_cel: 3,           // pedidos celulares — atualizado pelo bot
+    ped_cel: 4,           // pedidos celulares — atualizado pelo bot
     ped_acess: 1,         // pedidos acessórios — atualizado pelo bot
 
     // ── Margem Bruta Mensal ──────────────────────────────────────────────────────
@@ -8053,12 +8053,12 @@ const D360 = {
     // O sistema deriva automaticamente: margem por loja → subrede → rede
     // COMO ATUALIZAR: edite apenas margem_lojas com os valores do ERP por loja
     // ─────────────────────────────────────────────────────────────────────────────
-    margem_dia: 47.43,              // rede hoje · zerado automaticamente à meia-noite
-    margem_dia_subredes: { t1: 36.99, t2: 46.62, t3: 52.37 },
+    margem_dia: 48.55,              // rede hoje · zerado automaticamente à meia-noite
+    margem_dia_subredes: { t1: 45.77, t2: 46.62, t3: 52.37 },
     margem_lojas: {
         // ── FONTE PRIMÁRIA — atualizar aqui com o Relatório Gerencial por Loja ──
         // atualizado pelo update_d360.py (por loja via API, fallback por subrede)
-        cariacica:   36.99,
+        cariacica:   45.77,
         itabuna:     49.85,
         moxuara:     48.17,
         praiadacosta:47.72,
@@ -8071,10 +8071,10 @@ const D360 = {
         linhares:    56.75,
     },
     margem_subredes: {  // fallback quando margem_lojas estiver incompleta
-        t1: 36.99, t2: 46.62, t3: 52.37
+        t1: 45.77, t2: 46.62, t3: 52.37
     },
     // margem_mes: derivada automaticamente pelo _calcMargemPonderada (não editar)
-    margem_mes: 47.43,
+    margem_mes: 48.55,
 
     subredes: {
         t1: { nome:'Titãs 1', gestor:'Talysson', meta:0,
@@ -8098,7 +8098,7 @@ const D360 = {
             ], dias:[{d:'01/06',ac:2210,cel:13147},{d:'06/06',ac:1935,cel:69941},{d:'08/06',ac:495,cel:14645}]},
             top:[{n:'ANTONIELLE SANTOS PEROBA',i:'AS',p:1,t:1200.0,ds:1,ult:'01/10'},
                 {n:'Heloá Mercês Lazáro',i:'HM',p:1,t:100.0,ds:1,ult:'01/10'}]},
-        cariacica:   { label:'Cariacica',          sigla:'CC', sub:'t1', meta:410000,  total:1400.0, ped:1,  cancel:0, agend:0, agendCount:0, agendFat:0,  fat_dia:1400.0, acess_dia:0, dia_a_dia:{"1":1400.0}, acess_dia_top:[], top_dia:[{n:'ANA CAROLINA DA SILVA',i:'AC',t:1400.0}], fin_dia:0, fin_mes:0, top_fin_mes:[], fin_bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:0},{nm:'Outras',t:0}], top_fin:[], metaAcess:13500,
+        cariacica:   { label:'Cariacica',          sigla:'CC', sub:'t1', meta:410000,  total:1400.0, ped:1,  cancel:0, agend:0, agendCount:0, agendFat:0,  fat_dia:1400.0, acess_dia:0, dia_a_dia:{"1":1400.0}, acess_dia_top:[], top_dia:[{n:'ANA CAROLINA DA SILVA',i:'AC',t:1400.0}], fin_dia:0, fin_mes:0, top_fin_mes:[], fin_bd:[{nm:'PayJoy',t:1700.0},{nm:'OdresCred',t:0},{nm:'Outras',t:0}], top_fin:[], metaAcess:13500,
             agendamentos:{total:0, fin:0, fin_bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:0},{nm:'Outras',t:0}], top:[]},
             acessorios:{total:0, top:[
                 {n:'Roberta Felipe Malaquias',i:'RF',t:3580,ds:12,ult:'12/06'},
@@ -9330,7 +9330,7 @@ var _ERP_ESTOQUE = {
       'TECNO SPARK 20 PRO PLUS':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:0},
       'TECNO SPARK 20C':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:0},
       'TECNO SPARK 30 PRO':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:1,saomateus:0,serra:0,montserrat:0,linhares:0},
-      'TECNO SPARK 30C':  {cariacica:31,itabuna:19,moxuara:28,praiadacosta:6,barreiras:4,laranjeiras:14,teixeira:8,saomateus:26,serra:26,montserrat:30,linhares:36},
+      'TECNO SPARK 30C':  {cariacica:30,itabuna:19,moxuara:28,praiadacosta:6,barreiras:4,laranjeiras:14,teixeira:8,saomateus:26,serra:26,montserrat:30,linhares:36},
       'TECNO SPARK 40':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:0},
       'TECNO SPARK 6':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:0},
       'TECNO SPARK 6 GO':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:0},
@@ -9369,7 +9369,7 @@ var _ERP_ESTOQUE = {
       'ZENFONE MAX PLUS':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:0},
       'ZENFONE MAX SHOT':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:0},
     };
-    var _ERP_ESTOQUE_TS = '01/10/2026 10:19';
+    var _ERP_ESTOQUE_TS = '01/10/2026 10:22';
 // Preços por produto — populado pelo update_d360.py a cada 30 min
 var _ERP_PRECOS = {
       'ALCATEL A2 XL': {custo:0.00,venda:0.00},
@@ -9729,7 +9729,7 @@ var _ERP_PRECOS = {
       'ZENFONE MAX PLUS': {custo:0.00,venda:0.00},
       'ZENFONE MAX SHOT': {custo:0.00,venda:0.00},
     };
-    var _ERP_PRECOS_TS = '01/10/2026 10:19';
+    var _ERP_PRECOS_TS = '01/10/2026 10:22';
 // Flag de sessão: true = fetch já tentado (sucesso ou falha), não tentar de novo
 var _erpPrecosCarregados = false;
 var _SUG_SPECS = {

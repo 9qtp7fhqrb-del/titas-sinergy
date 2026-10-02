@@ -7,7 +7,7 @@
     <script>
     // Cache-buster: força reload se a versão mudou
     (function(){
-      var BUILD = '20261002184244';
+      var BUILD = '20261002184729';
       var stored = localStorage.getItem('d360_build');
       if (stored && stored !== BUILD) {
         localStorage.setItem('d360_build', BUILD);
@@ -8053,8 +8053,8 @@ const D360 = {
     // O sistema deriva automaticamente: margem por loja → subrede → rede
     // COMO ATUALIZAR: edite apenas margem_lojas com os valores do ERP por loja
     // ─────────────────────────────────────────────────────────────────────────────
-    margem_dia: 52.95,              // rede hoje · zerado automaticamente à meia-noite
-    margem_dia_subredes: { t1: 51.30, t2: 52.38, t3: 55.05 },
+    margem_dia: 53.07,              // rede hoje · zerado automaticamente à meia-noite
+    margem_dia_subredes: { t1: 51.30, t2: 52.38, t3: 55.23 },
     margem_lojas: {
         // ── FONTE PRIMÁRIA — atualizar aqui com o Relatório Gerencial por Loja ──
         // atualizado pelo update_d360.py (por loja via API, fallback por subrede)
@@ -8066,15 +8066,15 @@ const D360 = {
         teixeira:    50.01,
         laranjeiras: 52.67,
         saomateus:   51.84,
-        serra:       56.81,
+        serra:       56.91,
         montserrat:  55.60,
         linhares:    52.11,
     },
     margem_subredes: {  // fallback quando margem_lojas estiver incompleta
-        t1: 51.78, t2: 50.53, t3: 53.37
+        t1: 51.78, t2: 50.53, t3: 53.52
     },
     // margem_mes: derivada automaticamente pelo _calcMargemPonderada (não editar)
-    margem_mes: 51.91,
+    margem_mes: 51.98,
 
     subredes: {
         t1: { nome:'Titãs 1', gestor:'Talysson', meta:0,
@@ -8181,7 +8181,7 @@ const D360 = {
             top:[{n:'LÍDIA DA PENHA DIOGO',i:'LD',p:4,t:4620.0,ds:14,ult:'02/10'},
                 {n:'stefany santiago rocha',i:'SS',p:2,t:2420.0,ds:1,ult:'02/10'},
                 {n:'Steffany Oliveira França',i:'SO',p:1,t:2125.0,ds:1,ult:'02/10'}]},
-        serra:       { label:'Serra',              sigla:'SR', sub:'t3', meta:230000,  total:13120.0, ped:10,  cancel:0, agend:0, agendCount:0, agendFat:6900.0,  fat_dia:10890.0, acess_dia:440.0, dia_a_dia:{"1":2230.0,"2":13120.0}, acess_dia_top:[{n:'Carlos Augusto Silva Falcão',i:'CA',t:180.0}, {n:'LUIZ HENRIQUE VIANA DA ROCHA',i:'LH',t:150.0}, {n:'Gabriel Moura Dos Reis',i:'GM',t:110.0}], top_dia:[{n:'Gabriel Moura Dos Reis',i:'GM',t:10560.0}, {n:'Carlos Augusto Silva Falcão',i:'CA',t:180.0}, {n:'LUIZ HENRIQUE VIANA DA ROCHA',i:'LH',t:150.0}], fin_dia:10450.0, fin_mes:12450.0, top_fin_mes:[{n:'Gabriel Moura Dos Reis',i:'GM',t:12450.0,bd:[{nm:'PayJoy',t:1600.0},{nm:'OdresCred',t:10850.0},{nm:'Outras',t:0}]}], fin_bd:[{nm:'PayJoy',t:1600.0},{nm:'OdresCred',t:10850.0},{nm:'Outras',t:0}], top_fin:[{n:'Gabriel Moura Dos Reis',i:'GM',t:10450.0}], metaAcess:15000,
+        serra:       { label:'Serra',              sigla:'SR', sub:'t3', meta:230000,  total:15020.0, ped:11,  cancel:0, agend:0, agendCount:0, agendFat:6900.0,  fat_dia:12790.0, acess_dia:440.0, dia_a_dia:{"1":2230.0,"2":15020.0}, acess_dia_top:[{n:'Carlos Augusto Silva Falcão',i:'CA',t:180.0}, {n:'LUIZ HENRIQUE VIANA DA ROCHA',i:'LH',t:150.0}, {n:'Gabriel Moura Dos Reis',i:'GM',t:110.0}], top_dia:[{n:'Gabriel Moura Dos Reis',i:'GM',t:10560.0}, {n:'Carlos Augusto Silva Falcão',i:'CA',t:2080.0}, {n:'LUIZ HENRIQUE VIANA DA ROCHA',i:'LH',t:150.0}], fin_dia:12350.0, fin_mes:14350.0, top_fin_mes:[{n:'Gabriel Moura Dos Reis',i:'GM',t:12450.0,bd:[{nm:'PayJoy',t:1600.0},{nm:'OdresCred',t:10850.0},{nm:'Outras',t:0}]},{n:'Carlos Augusto Silva Falcão',i:'CA',t:1900.0,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:1900.0},{nm:'Outras',t:0}]}], fin_bd:[{nm:'PayJoy',t:1600.0},{nm:'OdresCred',t:12750.0},{nm:'Outras',t:0}], top_fin:[{n:'Gabriel Moura Dos Reis',i:'GM',t:10450.0}, {n:'Carlos Augusto Silva Falcão',i:'CA',t:1900.0}], metaAcess:15000,
             agendamentos:{total:6900.0, fin:6900.0, fin_bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:6900.0},{nm:'Outras',t:0}], top:[{n:'Gabriel Moura Dos Reis',i:'GM',t:6900.0}]},
             acessorios:{total:670.0, top:[
                 {n:'Marcela da Silva Lopes',i:'ML',t:1850,ds:12,ult:'12/06'},
@@ -8189,7 +8189,7 @@ const D360 = {
                 {n:'Luiz Henrique Viana da Rocha',i:'LH',t:710,ds:12,ult:'12/06'}
             ], dias:[{d:'01/06',ac:190,cel:0},{d:'06/06',ac:1870,cel:34506.50},{d:'07/06',ac:770,cel:8399},{d:'08/06',ac:550,cel:6299}]},
             top:[{n:'Gabriel Moura Dos Reis',i:'GM',p:7,t:12560.0,ds:2,ult:'02/10'},
-                {n:'Carlos Augusto Silva Falcão',i:'CA',p:2,t:410.0,ds:1,ult:'02/10'},
+                {n:'Carlos Augusto Silva Falcão',i:'CA',p:3,t:2310.0,ds:1,ult:'02/10'},
                 {n:'LUIZ HENRIQUE VIANA DA ROCHA',i:'LH',p:1,t:150.0,ds:1,ult:'02/10'}]},
         linhares:    { label:'Linhares',           sigla:'LH', sub:'t3', meta:230000,  total:14450.0,  ped:12,  cancel:0, agend:0, agendCount:0, agendFat:8900.0,  fat_dia:4260.0, acess_dia:60.0, dia_a_dia:{"1":10190.0,"2":14450.0}, acess_dia_top:[{n:'RAYCA MENDES MORAIS',i:'RM',t:60.0}], top_dia:[{n:'RAYCA MENDES MORAIS',i:'RM',t:2260.0}, {n:'Isabely Andrade Araujo',i:'IA',t:2000.0}], fin_dia:2000.0, fin_mes:11920.0, top_fin_mes:[{n:'Isabely Andrade Araujo',i:'IA',t:4550.0,bd:[{nm:'PayJoy',t:2000.0},{nm:'OdresCred',t:2550.0},{nm:'Outras',t:0}]},{n:'Wenderson Pereira Rocha',i:'WP',t:4350.0,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:4350.0},{nm:'Outras',t:0}]},{n:'RAYCA MENDES MORAIS',i:'RM',t:3020.0,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:3020.0},{nm:'Outras',t:0}]}], fin_bd:[{nm:'PayJoy',t:2000.0},{nm:'OdresCred',t:9920.0},{nm:'Outras',t:0}], top_fin:[{n:'Isabely Andrade Araujo',i:'IA',t:2000.0}], metaAcess:9000,
             agendamentos:{total:8900.0, fin:8900.0, fin_bd:[{nm:'PayJoy',t:2000.0},{nm:'OdresCred',t:6900.0},{nm:'Outras',t:0}], top:[{n:'Isabely Andrade Araujo',i:'IA',t:4550.0}, {n:'Wenderson Pereira Rocha',i:'WP',t:4350.0}]},
@@ -9292,7 +9292,7 @@ var _ERP_ESTOQUE = {
       'REALME NOTE 60':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:1},
       'REALME NOTE 60S':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:1,serra:0,montserrat:0,linhares:0},
       'REALME NOTE 60X':  {cariacica:0,itabuna:1,moxuara:1,praiadacosta:0,barreiras:0,laranjeiras:1,teixeira:0,saomateus:1,serra:0,montserrat:2,linhares:0},
-      'REALME NOTE 70':  {cariacica:13,itabuna:16,moxuara:10,praiadacosta:21,barreiras:20,laranjeiras:17,teixeira:27,saomateus:47,serra:33,montserrat:33,linhares:19},
+      'REALME NOTE 70':  {cariacica:13,itabuna:16,moxuara:10,praiadacosta:21,barreiras:20,laranjeiras:16,teixeira:27,saomateus:47,serra:33,montserrat:33,linhares:19},
       'REALME P4 LITE':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:18,linhares:0},
       'REALME WATCH S2 RMW 2401 - NÃO ESPECIFICADO':  {cariacica:0,itabuna:0,moxuara:2,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:1,montserrat:1,linhares:0},
       'REALME X50':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:0},
@@ -9397,7 +9397,7 @@ var _ERP_ESTOQUE = {
       'ZENFONE MAX PLUS':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:0},
       'ZENFONE MAX SHOT':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:0},
     };
-    var _ERP_ESTOQUE_TS = '02/10/2026 15:42';
+    var _ERP_ESTOQUE_TS = '02/10/2026 15:47';
 // Preços por produto — populado pelo update_d360.py a cada 30 min
 var _ERP_PRECOS = {
       'ALCATEL A2 XL': {custo:0.00,venda:0.00},
@@ -9757,7 +9757,7 @@ var _ERP_PRECOS = {
       'ZENFONE MAX PLUS': {custo:0.00,venda:0.00},
       'ZENFONE MAX SHOT': {custo:0.00,venda:0.00},
     };
-    var _ERP_PRECOS_TS = '02/10/2026 15:42';
+    var _ERP_PRECOS_TS = '02/10/2026 15:47';
 // Flag de sessão: true = fetch já tentado (sucesso ou falha), não tentar de novo
 var _erpPrecosCarregados = false;
 var _SUG_SPECS = {

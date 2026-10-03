@@ -7,7 +7,7 @@
     <script>
     // Cache-buster: força reload se a versão mudou
     (function(){
-      var BUILD = '20261003115731';
+      var BUILD = '20261003120200';
       var stored = localStorage.getItem('d360_build');
       if (stored && stored !== BUILD) {
         localStorage.setItem('d360_build', BUILD);
@@ -8053,8 +8053,8 @@ const D360 = {
     // O sistema deriva automaticamente: margem por loja → subrede → rede
     // COMO ATUALIZAR: edite apenas margem_lojas com os valores do ERP por loja
     // ─────────────────────────────────────────────────────────────────────────────
-    margem_dia: 0.00,              // rede hoje · zerado automaticamente à meia-noite
-    margem_dia_subredes: { t1: 0.00, t2: 0.00, t3: 0.00 },
+    margem_dia: 47.56,              // rede hoje · zerado automaticamente à meia-noite
+    margem_dia_subredes: { t1: 0.00, t2: 47.56, t3: 0.00 },
     margem_lojas: {
         // ── FONTE PRIMÁRIA — atualizar aqui com o Relatório Gerencial por Loja ──
         // atualizado pelo update_d360.py (por loja via API, fallback por subrede)
@@ -8062,7 +8062,7 @@ const D360 = {
         itabuna:     51.79,
         moxuara:     55.81,
         praiadacosta:47.97,
-        barreiras:   51.20,
+        barreiras:   51.02,
         teixeira:    50.10,
         laranjeiras: 52.31,
         saomateus:   51.60,
@@ -8071,10 +8071,10 @@ const D360 = {
         linhares:    53.07,
     },
     margem_subredes: {  // fallback quando margem_lojas estiver incompleta
-        t1: 51.92, t2: 50.78, t3: 53.84
+        t1: 51.92, t2: 50.73, t3: 53.84
     },
     // margem_mes: derivada automaticamente pelo _calcMargemPonderada (não editar)
-    margem_mes: 52.21,
+    margem_mes: 52.18,
 
     subredes: {
         t1: { nome:'Titãs 1', gestor:'Talysson', meta:0,
@@ -8131,7 +8131,7 @@ const D360 = {
                 {n:'HERICLES LISBOA DE FREITAS',i:'HL',p:7,t:4050.0,ds:3,ult:'03/10'},
                 {n:'KEIFIT MOREIRA DOS SANTOS',i:'KM',p:6,t:3965.0,ds:3,ult:'03/10'},
                 {n:'REINAN DOS SANTOS PACHECO',i:'RD',p:3,t:230.0,ds:3,ult:'03/10'}]},
-        barreiras:   { label:'Barreiras',          sigla:'BR', sub:'t2', meta:240000,  total:22984.0,  ped:17,  cancel:0, agend:0, agendCount:0, agendFat:8415.0,   fat_dia:0, acess_dia:0, dia_a_dia:{"1":8266.0,"2":22984.0,"3":22984.0}, acess_dia_top:[], top_dia:[], fin_dia:0, fin_mes:18367.0, top_fin_mes:[{n:'MATEUS DA SILVA MATOS',i:'MD',t:6699.0,bd:[{nm:'PayJoy',t:1900.0},{nm:'OdresCred',t:4799.0},{nm:'Outras',t:0}]},{n:'VICTOR ROBERTO DE OLIVEIRA NASCIMENTO',i:'VR',t:6418.0,bd:[{nm:'PayJoy',t:1700.0},{nm:'OdresCred',t:4718.0},{nm:'Outras',t:0}]},{n:'ISABELA CHAGAS',i:'IC',t:3450.0,bd:[{nm:'PayJoy',t:3450.0},{nm:'OdresCred',t:0},{nm:'Outras',t:0}]},{n:'Larisse Ribeiro Dos Santos',i:'LR',t:1800.0,bd:[{nm:'PayJoy',t:1800.0},{nm:'OdresCred',t:0},{nm:'Outras',t:0}]}], fin_bd:[{nm:'PayJoy',t:8850.0},{nm:'OdresCred',t:9517.0},{nm:'Outras',t:0}], top_fin:[], metaAcess:6500,
+        barreiras:   { label:'Barreiras',          sigla:'BR', sub:'t2', meta:240000,  total:22984.0,  ped:17,  cancel:0, agend:0, agendCount:0, agendFat:8415.0,   fat_dia:0, acess_dia:0, dia_a_dia:{"1":8266.0,"2":22984.0,"3":22984.0}, acess_dia_top:[], top_dia:[], fin_dia:0, fin_mes:18367.0, top_fin_mes:[{n:'MATEUS DA SILVA MATOS',i:'MD',t:6699.0,bd:[{nm:'PayJoy',t:1900.0},{nm:'OdresCred',t:5999.0},{nm:'Outras',t:0}]},{n:'VICTOR ROBERTO DE OLIVEIRA NASCIMENTO',i:'VR',t:6418.0,bd:[{nm:'PayJoy',t:1700.0},{nm:'OdresCred',t:4718.0},{nm:'Outras',t:0}]},{n:'ISABELA CHAGAS',i:'IC',t:3450.0,bd:[{nm:'PayJoy',t:3450.0},{nm:'OdresCred',t:0},{nm:'Outras',t:0}]},{n:'Larisse Ribeiro Dos Santos',i:'LR',t:1800.0,bd:[{nm:'PayJoy',t:1800.0},{nm:'OdresCred',t:0},{nm:'Outras',t:0}]}], fin_bd:[{nm:'PayJoy',t:8850.0},{nm:'OdresCred',t:10717.0},{nm:'Outras',t:0}], top_fin:[], metaAcess:6500,
             agendamentos:{total:8415.0, fin:8415.0, fin_bd:[{nm:'PayJoy',t:3697.0},{nm:'OdresCred',t:4718.0},{nm:'Outras',t:0}], top:[{n:'VICTOR ROBERTO DE OLIVEIRA NASCIMENTO',i:'VR',t:6418.0}, {n:'DANIELA MILENA GOMES MARES',i:'DM',t:1997.0}]},
             acessorios:{total:120.0, top:[
                 {n:'Victor Roberto de Oliveira Nascimento',i:'VR',t:1000,ds:12,ult:'12/06'},
@@ -9131,7 +9131,7 @@ var _ERP_ESTOQUE = {
       'INFINIX SMART 6':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:0},
       'INFINIX SMART 8':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:0},
       'INFINIX SMART 8 PRO':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:0},
-      'INFINIX SMART 9':  {cariacica:0,itabuna:0,moxuara:3,praiadacosta:4,barreiras:10,laranjeiras:6,teixeira:13,saomateus:0,serra:11,montserrat:7,linhares:16},
+      'INFINIX SMART 9':  {cariacica:0,itabuna:0,moxuara:3,praiadacosta:4,barreiras:9,laranjeiras:6,teixeira:13,saomateus:0,serra:11,montserrat:7,linhares:16},
       'ITEL A05':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:0},
       'ITEL A05S':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:0},
       'ITEL A100C':  {cariacica:0,itabuna:0,moxuara:1,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:2,linhares:0},
@@ -9401,7 +9401,7 @@ var _ERP_ESTOQUE = {
       'ZENFONE MAX PLUS':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:0},
       'ZENFONE MAX SHOT':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:0},
     };
-    var _ERP_ESTOQUE_TS = '03/10/2026 08:57';
+    var _ERP_ESTOQUE_TS = '03/10/2026 09:01';
 // Preços por produto — populado pelo update_d360.py a cada 30 min
 var _ERP_PRECOS = {
       'ALCATEL A2 XL': {custo:0.00,venda:0.00},
@@ -9761,7 +9761,7 @@ var _ERP_PRECOS = {
       'ZENFONE MAX PLUS': {custo:0.00,venda:0.00},
       'ZENFONE MAX SHOT': {custo:0.00,venda:0.00},
     };
-    var _ERP_PRECOS_TS = '03/10/2026 08:57';
+    var _ERP_PRECOS_TS = '03/10/2026 09:01';
 // Flag de sessão: true = fetch já tentado (sucesso ou falha), não tentar de novo
 var _erpPrecosCarregados = false;
 var _SUG_SPECS = {

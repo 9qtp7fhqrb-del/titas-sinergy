@@ -7,7 +7,7 @@
     <script>
     // Cache-buster: força reload se a versão mudou
     (function(){
-      var BUILD = '20261003121110';
+      var BUILD = '20261003121522';
       var stored = localStorage.getItem('d360_build');
       if (stored && stored !== BUILD) {
         localStorage.setItem('d360_build', BUILD);
@@ -8053,8 +8053,8 @@ const D360 = {
     // O sistema deriva automaticamente: margem por loja → subrede → rede
     // COMO ATUALIZAR: edite apenas margem_lojas com os valores do ERP por loja
     // ─────────────────────────────────────────────────────────────────────────────
-    margem_dia: 53.74,              // rede hoje · zerado automaticamente à meia-noite
-    margem_dia_subredes: { t1: 0.00, t2: 47.56, t3: 57.45 },
+    margem_dia: 50.17,              // rede hoje · zerado automaticamente à meia-noite
+    margem_dia_subredes: { t1: 0.00, t2: 47.56, t3: 51.20 },
     margem_lojas: {
         // ── FONTE PRIMÁRIA — atualizar aqui com o Relatório Gerencial por Loja ──
         // atualizado pelo update_d360.py (por loja via API, fallback por subrede)
@@ -8068,13 +8068,13 @@ const D360 = {
         saomateus:   52.04,
         serra:       56.35,
         montserrat:  59.07,
-        linhares:    53.07,
+        linhares:    52.38,
     },
     margem_subredes: {  // fallback quando margem_lojas estiver incompleta
-        t1: 51.92, t2: 50.73, t3: 53.94
+        t1: 51.92, t2: 50.73, t3: 53.73
     },
     // margem_mes: derivada automaticamente pelo _calcMargemPonderada (não editar)
-    margem_mes: 52.23,
+    margem_mes: 52.17,
 
     subredes: {
         t1: { nome:'Titãs 1', gestor:'Talysson', meta:0,
@@ -8193,13 +8193,13 @@ const D360 = {
             top:[{n:'Gabriel Moura Dos Reis',i:'GM',p:10,t:12860.0,ds:3,ult:'03/10'},
                 {n:'Carlos Augusto Silva Falcão',i:'CA',p:6,t:8510.0,ds:2,ult:'03/10'},
                 {n:'LUIZ HENRIQUE VIANA DA ROCHA',i:'LH',p:1,t:150.0,ds:2,ult:'03/10'}]},
-        linhares:    { label:'Linhares',           sigla:'LH', sub:'t3', meta:230000,  total:19965.0,  ped:15,  cancel:0, agend:0, agendCount:0, agendFat:10800.0,  fat_dia:0, acess_dia:0, dia_a_dia:{"1":10190.0,"2":19965.0,"3":19965.0}, acess_dia_top:[], top_dia:[], fin_dia:0, fin_mes:13535.0, top_fin_mes:[{n:'RAYCA MENDES MORAIS',i:'RM',t:4635.0,bd:[{nm:'PayJoy',t:1615.0},{nm:'OdresCred',t:3020.0},{nm:'Outras',t:0}]},{n:'Isabely Andrade Araujo',i:'IA',t:4550.0,bd:[{nm:'PayJoy',t:2000.0},{nm:'OdresCred',t:2550.0},{nm:'Outras',t:0}]},{n:'Wenderson Pereira Rocha',i:'WP',t:4350.0,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:4350.0},{nm:'Outras',t:0}]}], fin_bd:[{nm:'PayJoy',t:3615.0},{nm:'OdresCred',t:9920.0},{nm:'Outras',t:0}], top_fin:[], metaAcess:9000,
+        linhares:    { label:'Linhares',           sigla:'LH', sub:'t3', meta:230000,  total:20985.0,  ped:16,  cancel:0, agend:0, agendCount:0, agendFat:10800.0,  fat_dia:1020.0, acess_dia:0, dia_a_dia:{"1":10190.0,"2":19965.0,"3":20985.0}, acess_dia_top:[], top_dia:[{n:'RAYCA MENDES MORAIS',i:'RM',t:1020.0}], fin_dia:1020.0, fin_mes:14555.0, top_fin_mes:[{n:'RAYCA MENDES MORAIS',i:'RM',t:5655.0,bd:[{nm:'PayJoy',t:1615.0},{nm:'OdresCred',t:4040.0},{nm:'Outras',t:0}]},{n:'Isabely Andrade Araujo',i:'IA',t:4550.0,bd:[{nm:'PayJoy',t:2000.0},{nm:'OdresCred',t:2550.0},{nm:'Outras',t:0}]},{n:'Wenderson Pereira Rocha',i:'WP',t:4350.0,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:4350.0},{nm:'Outras',t:0}]}], fin_bd:[{nm:'PayJoy',t:3615.0},{nm:'OdresCred',t:10940.0},{nm:'Outras',t:0}], top_fin:[{n:'RAYCA MENDES MORAIS',i:'RM',t:1020.0}], metaAcess:9000,
             agendamentos:{total:10800.0, fin:10800.0, fin_bd:[{nm:'PayJoy',t:2000.0},{nm:'OdresCred',t:8800.0},{nm:'Outras',t:0}], top:[{n:'Isabely Andrade Araujo',i:'IA',t:4550.0}, {n:'Wenderson Pereira Rocha',i:'WP',t:4350.0}, {n:'Juliana Pereira do Nascimento',i:'JP',t:1900.0}]},
             acessorios:{total:330.0, top:[
                 {n:'Rayca Mendes Morais',i:'RM',t:940,ds:12,ult:'12/06'},
                 {n:'Natalia Rocha Leonel',i:'NL',t:820,ds:12,ult:'12/06'}
             ], dias:[{d:'01/06',ac:80,cel:3150},{d:'06/06',ac:760,cel:23220},{d:'08/06',ac:260,cel:7397}]},
-            top:[{n:'RAYCA MENDES MORAIS',i:'RM',p:5,t:6895.0,ds:15,ult:'03/10'},
+            top:[{n:'RAYCA MENDES MORAIS',i:'RM',p:6,t:7915.0,ds:15,ult:'03/10'},
                 {n:'Wenderson Pereira Rocha',i:'WP',p:6,t:6540.0,ds:3,ult:'03/10'},
                 {n:'Isabely Andrade Araujo',i:'IA',p:3,t:4630.0,ds:3,ult:'03/10'},
                 {n:'Juliana Pereira do Nascimento',i:'JP',p:1,t:1900.0,ds:2,ult:'03/10'}]},
@@ -9401,7 +9401,7 @@ var _ERP_ESTOQUE = {
       'ZENFONE MAX PLUS':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:0},
       'ZENFONE MAX SHOT':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:0},
     };
-    var _ERP_ESTOQUE_TS = '03/10/2026 09:10';
+    var _ERP_ESTOQUE_TS = '03/10/2026 09:15';
 // Preços por produto — populado pelo update_d360.py a cada 30 min
 var _ERP_PRECOS = {
       'ALCATEL A2 XL': {custo:0.00,venda:0.00},
@@ -9761,7 +9761,7 @@ var _ERP_PRECOS = {
       'ZENFONE MAX PLUS': {custo:0.00,venda:0.00},
       'ZENFONE MAX SHOT': {custo:0.00,venda:0.00},
     };
-    var _ERP_PRECOS_TS = '03/10/2026 09:11';
+    var _ERP_PRECOS_TS = '03/10/2026 09:15';
 // Flag de sessão: true = fetch já tentado (sucesso ou falha), não tentar de novo
 var _erpPrecosCarregados = false;
 var _SUG_SPECS = {

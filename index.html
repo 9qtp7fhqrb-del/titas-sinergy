@@ -7,7 +7,7 @@
     <script>
     // Cache-buster: força reload se a versão mudou
     (function(){
-      var BUILD = '20261003162919';
+      var BUILD = '20261003163358';
       var stored = localStorage.getItem('d360_build');
       if (stored && stored !== BUILD) {
         localStorage.setItem('d360_build', BUILD);
@@ -8045,7 +8045,7 @@ const D360 = {
     diasMes: 31,          // agosto tem 31 dias
     ticket_cel: 1840,        // ticket médio celulares (SBON) — atualizado pelo bot
     ticket_acess: 100,      // ticket médio acessórios — atualizado pelo bot
-    ped_cel: 141,           // pedidos celulares — atualizado pelo bot
+    ped_cel: 142,           // pedidos celulares — atualizado pelo bot
     ped_acess: 119,         // pedidos acessórios — atualizado pelo bot
 
     // ── Margem Bruta Mensal ──────────────────────────────────────────────────────
@@ -9365,7 +9365,7 @@ var _ERP_ESTOQUE = {
       'TECNO SPARK 20 PRO PLUS':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:0},
       'TECNO SPARK 20C':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:0},
       'TECNO SPARK 30 PRO':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:1,saomateus:0,serra:0,montserrat:0,linhares:0},
-      'TECNO SPARK 30C':  {cariacica:25,itabuna:9,moxuara:26,praiadacosta:5,barreiras:0,laranjeiras:14,teixeira:2,saomateus:19,serra:23,montserrat:30,linhares:34},
+      'TECNO SPARK 30C':  {cariacica:25,itabuna:9,moxuara:26,praiadacosta:5,barreiras:0,laranjeiras:13,teixeira:2,saomateus:19,serra:23,montserrat:30,linhares:34},
       'TECNO SPARK 40':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:0},
       'TECNO SPARK 6':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:0},
       'TECNO SPARK 6 GO':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:0},
@@ -9404,7 +9404,7 @@ var _ERP_ESTOQUE = {
       'ZENFONE MAX PLUS':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:0},
       'ZENFONE MAX SHOT':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:0},
     };
-    var _ERP_ESTOQUE_TS = '03/10/2026 13:28';
+    var _ERP_ESTOQUE_TS = '03/10/2026 13:33';
 // Preços por produto — populado pelo update_d360.py a cada 30 min
 var _ERP_PRECOS = {
       'ALCATEL A2 XL': {custo:0.00,venda:0.00},
@@ -9764,7 +9764,7 @@ var _ERP_PRECOS = {
       'ZENFONE MAX PLUS': {custo:0.00,venda:0.00},
       'ZENFONE MAX SHOT': {custo:0.00,venda:0.00},
     };
-    var _ERP_PRECOS_TS = '03/10/2026 13:29';
+    var _ERP_PRECOS_TS = '03/10/2026 13:33';
 // Flag de sessão: true = fetch já tentado (sucesso ou falha), não tentar de novo
 var _erpPrecosCarregados = false;
 var _SUG_SPECS = {

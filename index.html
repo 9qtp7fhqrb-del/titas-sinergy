@@ -7,7 +7,7 @@
     <script>
     // Cache-buster: força reload se a versão mudou
     (function(){
-      var BUILD = '20261003161438';
+      var BUILD = '20261003161920';
       var stored = localStorage.getItem('d360_build');
       if (stored && stored !== BUILD) {
         localStorage.setItem('d360_build', BUILD);
@@ -8053,7 +8053,7 @@ const D360 = {
     // O sistema deriva automaticamente: margem por loja → subrede → rede
     // COMO ATUALIZAR: edite apenas margem_lojas com os valores do ERP por loja
     // ─────────────────────────────────────────────────────────────────────────────
-    margem_dia: 47.85,              // rede hoje · zerado automaticamente à meia-noite
+    margem_dia: 48.00,              // rede hoje · zerado automaticamente à meia-noite
     margem_dia_subredes: { t1: 51.23, t2: 38.84, t3: 52.79 },
     margem_lojas: {
         // ── FONTE PRIMÁRIA — atualizar aqui com o Relatório Gerencial por Loja ──
@@ -8074,7 +8074,7 @@ const D360 = {
         t1: 51.69, t2: 46.89, t3: 53.48
     },
     // margem_mes: derivada automaticamente pelo _calcMargemPonderada (não editar)
-    margem_mes: 50.78,
+    margem_mes: 50.80,
 
     subredes: {
         t1: { nome:'Titãs 1', gestor:'Talysson', meta:0,
@@ -8133,7 +8133,7 @@ const D360 = {
                 {n:'HERICLES LISBOA DE FREITAS',i:'HL',p:8,t:5650.0,ds:3,ult:'03/10'},
                 {n:'REINAN DOS SANTOS PACHECO',i:'RD',p:5,t:3930.0,ds:3,ult:'03/10'},
                 {n:'jhonatas lucas machado pereira',i:'JL',p:1,t:20.0,ds:1,ult:'03/10'}]},
-        barreiras:   { label:'Barreiras',          sigla:'BR', sub:'t2', meta:240000,  total:35124.0,  ped:25,  cancel:0, agend:0, agendCount:0, agendFat:16235.0,   fat_dia:13840.0, acess_dia:220.0, dia_a_dia:{"1":8266.0,"2":22984.0,"3":35124.0}, acess_dia_top:[{n:'ISABELA CHAGAS',i:'IC',t:100.0}, {n:'MATEUS DA SILVA MATOS',i:'MD',t:80.0}, {n:'VICTOR ROBERTO DE OLIVEIRA NASCIMENTO',i:'VR',t:40.0}], top_dia:[{n:'VICTOR ROBERTO DE OLIVEIRA NASCIMENTO',i:'VR',t:8540.0}, {n:'ISABELA CHAGAS',i:'IC',t:1800.0}, {n:'MATEUS DA SILVA MATOS',i:'MD',t:1280.0}, {n:'Larisse Ribeiro Dos Santos',i:'LR',t:1200.0}, {n:'DANIELA MILENA GOMES MARES',i:'DM',t:1020.0}], fin_dia:2400.0, fin_mes:19067.0, top_fin_mes:[{n:'MATEUS DA SILVA MATOS',i:'MD',t:7899.0,bd:[{nm:'PayJoy',t:1900.0},{nm:'OdresCred',t:8299.0},{nm:'Outras',t:0}]},{n:'VICTOR ROBERTO DE OLIVEIRA NASCIMENTO',i:'VR',t:4718.0,bd:[{nm:'PayJoy',t:1700.0},{nm:'OdresCred',t:3018.0},{nm:'Outras',t:0}]},{n:'ISABELA CHAGAS',i:'IC',t:3450.0,bd:[{nm:'PayJoy',t:3450.0},{nm:'OdresCred',t:0},{nm:'Outras',t:0}]},{n:'Larisse Ribeiro Dos Santos',i:'LR',t:3000.0,bd:[{nm:'PayJoy',t:1800.0},{nm:'OdresCred',t:1200.0},{nm:'Outras',t:0}]}], fin_bd:[{nm:'PayJoy',t:8850.0},{nm:'OdresCred',t:12517.0},{nm:'Outras',t:0}], top_fin:[{n:'Larisse Ribeiro Dos Santos',i:'LR',t:1200.0}, {n:'MATEUS DA SILVA MATOS',i:'MD',t:1200.0}], metaAcess:6500,
+        barreiras:   { label:'Barreiras',          sigla:'BR', sub:'t2', meta:240000,  total:37424.0,  ped:26,  cancel:0, agend:0, agendCount:0, agendFat:16235.0,   fat_dia:16140.0, acess_dia:220.0, dia_a_dia:{"1":8266.0,"2":22984.0,"3":37424.0}, acess_dia_top:[{n:'ISABELA CHAGAS',i:'IC',t:100.0}, {n:'MATEUS DA SILVA MATOS',i:'MD',t:80.0}, {n:'VICTOR ROBERTO DE OLIVEIRA NASCIMENTO',i:'VR',t:40.0}], top_dia:[{n:'VICTOR ROBERTO DE OLIVEIRA NASCIMENTO',i:'VR',t:8540.0}, {n:'MATEUS DA SILVA MATOS',i:'MD',t:3580.0}, {n:'ISABELA CHAGAS',i:'IC',t:1800.0}, {n:'Larisse Ribeiro Dos Santos',i:'LR',t:1200.0}, {n:'DANIELA MILENA GOMES MARES',i:'DM',t:1020.0}], fin_dia:4700.0, fin_mes:21367.0, top_fin_mes:[{n:'MATEUS DA SILVA MATOS',i:'MD',t:10199.0,bd:[{nm:'PayJoy',t:1900.0},{nm:'OdresCred',t:8299.0},{nm:'Outras',t:0}]},{n:'VICTOR ROBERTO DE OLIVEIRA NASCIMENTO',i:'VR',t:4718.0,bd:[{nm:'PayJoy',t:1700.0},{nm:'OdresCred',t:3018.0},{nm:'Outras',t:0}]},{n:'ISABELA CHAGAS',i:'IC',t:3450.0,bd:[{nm:'PayJoy',t:3450.0},{nm:'OdresCred',t:0},{nm:'Outras',t:0}]},{n:'Larisse Ribeiro Dos Santos',i:'LR',t:3000.0,bd:[{nm:'PayJoy',t:1800.0},{nm:'OdresCred',t:1200.0},{nm:'Outras',t:0}]}], fin_bd:[{nm:'PayJoy',t:8850.0},{nm:'OdresCred',t:12517.0},{nm:'Outras',t:0}], top_fin:[{n:'MATEUS DA SILVA MATOS',i:'MD',t:3500.0}, {n:'Larisse Ribeiro Dos Santos',i:'LR',t:1200.0}], metaAcess:6500,
             agendamentos:{total:16235.0, fin:7735.0, fin_bd:[{nm:'PayJoy',t:3697.0},{nm:'OdresCred',t:4038.0},{nm:'Outras',t:0}], top:[{n:'VICTOR ROBERTO DE OLIVEIRA NASCIMENTO',i:'VR',t:13218.0}, {n:'DANIELA MILENA GOMES MARES',i:'DM',t:3017.0}]},
             acessorios:{total:340.0, top:[
                 {n:'Victor Roberto de Oliveira Nascimento',i:'VR',t:1000,ds:12,ult:'12/06'},
@@ -8143,7 +8143,7 @@ const D360 = {
                 {n:'Isabela Chagas',i:'IC',t:180,ds:12,ult:'12/06'}
             ], dias:[{d:'01/06',ac:50,cel:5716},{d:'06/06',ac:1145,cel:57025},{d:'08/06',ac:230,cel:6300}]},
             top:[{n:'VICTOR ROBERTO DE OLIVEIRA NASCIMENTO',i:'VR',p:6,t:14808.0,ds:3,ult:'03/10'},
-                {n:'MATEUS DA SILVA MATOS',i:'MD',p:6,t:7979.0,ds:3,ult:'03/10'},
+                {n:'MATEUS DA SILVA MATOS',i:'MD',p:7,t:10279.0,ds:3,ult:'03/10'},
                 {n:'ISABELA CHAGAS',i:'IC',p:5,t:6200.0,ds:43,ult:'03/10'},
                 {n:'Larisse Ribeiro Dos Santos',i:'LR',p:5,t:3120.0,ds:2,ult:'03/10'},
                 {n:'DANIELA MILENA GOMES MARES',i:'DM',p:3,t:3017.0,ds:3,ult:'03/10'}]},
@@ -9404,7 +9404,7 @@ var _ERP_ESTOQUE = {
       'ZENFONE MAX PLUS':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:0},
       'ZENFONE MAX SHOT':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:0},
     };
-    var _ERP_ESTOQUE_TS = '03/10/2026 13:14';
+    var _ERP_ESTOQUE_TS = '03/10/2026 13:18';
 // Preços por produto — populado pelo update_d360.py a cada 30 min
 var _ERP_PRECOS = {
       'ALCATEL A2 XL': {custo:0.00,venda:0.00},
@@ -9764,7 +9764,7 @@ var _ERP_PRECOS = {
       'ZENFONE MAX PLUS': {custo:0.00,venda:0.00},
       'ZENFONE MAX SHOT': {custo:0.00,venda:0.00},
     };
-    var _ERP_PRECOS_TS = '03/10/2026 13:14';
+    var _ERP_PRECOS_TS = '03/10/2026 13:19';
 // Flag de sessão: true = fetch já tentado (sucesso ou falha), não tentar de novo
 var _erpPrecosCarregados = false;
 var _SUG_SPECS = {

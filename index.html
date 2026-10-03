@@ -7,7 +7,7 @@
     <script>
     // Cache-buster: força reload se a versão mudou
     (function(){
-      var BUILD = '20261003222108';
+      var BUILD = '20261003223001';
       var stored = localStorage.getItem('d360_build');
       if (stored && stored !== BUILD) {
         localStorage.setItem('d360_build', BUILD);
@@ -8044,24 +8044,24 @@ const D360 = {
     diasDecorridos: 3, // atualizado pelo script de automação — não alterar manualmente
     diasMes: 31,          // agosto tem 31 dias
     ticket_cel: 1853,        // ticket médio celulares (SBON) — atualizado pelo bot
-    ticket_acess: 103,      // ticket médio acessórios — atualizado pelo bot
+    ticket_acess: 102,      // ticket médio acessórios — atualizado pelo bot
     ped_cel: 171,           // pedidos celulares — atualizado pelo bot
-    ped_acess: 143,         // pedidos acessórios — atualizado pelo bot
+    ped_acess: 144,         // pedidos acessórios — atualizado pelo bot
 
     // ── Margem Bruta Mensal ──────────────────────────────────────────────────────
     // FONTE PRIMÁRIA: margem_lojas (por loja, do Relatório Gerencial ERP CDC)
     // O sistema deriva automaticamente: margem por loja → subrede → rede
     // COMO ATUALIZAR: edite apenas margem_lojas com os valores do ERP por loja
     // ─────────────────────────────────────────────────────────────────────────────
-    margem_dia: 50.03,              // rede hoje · zerado automaticamente à meia-noite
-    margem_dia_subredes: { t1: 51.29, t2: 44.09, t3: 53.60 },
+    margem_dia: 50.04,              // rede hoje · zerado automaticamente à meia-noite
+    margem_dia_subredes: { t1: 51.29, t2: 44.12, t3: 53.60 },
     margem_lojas: {
         // ── FONTE PRIMÁRIA — atualizar aqui com o Relatório Gerencial por Loja ──
         // atualizado pelo update_d360.py (por loja via API, fallback por subrede)
         cariacica:   50.78,
         itabuna:     51.22,
         moxuara:     54.32,
-        praiadacosta:48.77,
+        praiadacosta:48.86,
         barreiras:   42.24,
         teixeira:    50.03,
         laranjeiras: 52.59,
@@ -8071,7 +8071,7 @@ const D360 = {
         linhares:    52.93,
     },
     margem_subredes: {  // fallback quando margem_lojas estiver incompleta
-        t1: 51.65, t2: 47.85, t3: 53.72
+        t1: 51.65, t2: 47.86, t3: 53.72
     },
     // margem_mes: derivada automaticamente pelo _calcMargemPonderada (não editar)
     margem_mes: 51.23,
@@ -8215,11 +8215,11 @@ const D360 = {
             ], dias:[{d:'01/06',ac:590,cel:3198},{d:'06/06',ac:3670,cel:20308},{d:'07/06',ac:490,cel:7100},{d:'08/06',ac:150,cel:1699}]},
             top:[{n:'ADRIANO JEREMIAS CARDOSO MONTEIRO',i:'AJ',p:21,t:12505.0,ds:3,ult:'03/10'},
                 {n:'JOAQUIN EMILIANO RODRIGO',i:'JE',p:6,t:5210.0,ds:15,ult:'03/10'}]},
-        praiadacosta:{ label:'Praia da Costa',     sigla:'PC', sub:'t2', meta:100000,  total:16369.0,  ped:12,  cancel:0, agend:0, agendCount:0, agendFat:7650.0,  fat_dia:9050.0, acess_dia:0, dia_a_dia:{"1":5194.0,"2":7319.0,"3":16369.0}, acess_dia_top:[], top_dia:[{n:'Nycolly Calazans Paulo',i:'NC',t:6150.0}, {n:'ADRIEL SILVA DE OLIVEIRA',i:'AS',t:2900.0}], fin_dia:6150.0, fin_mes:8275.0, top_fin_mes:[{n:'Nycolly Calazans Paulo',i:'NC',t:8275.0,bd:[{nm:'PayJoy',t:5725.0},{nm:'OdresCred',t:2550.0},{nm:'Outras',t:0}]}], fin_bd:[{nm:'PayJoy',t:5725.0},{nm:'OdresCred',t:2550.0},{nm:'Outras',t:0}], top_fin:[{n:'Nycolly Calazans Paulo',i:'NC',t:6150.0}], metaAcess:2500,
+        praiadacosta:{ label:'Praia da Costa',     sigla:'PC', sub:'t2', meta:100000,  total:16409.0,  ped:13,  cancel:0, agend:0, agendCount:0, agendFat:7650.0,  fat_dia:9090.0, acess_dia:40.0, dia_a_dia:{"1":5194.0,"2":7319.0,"3":16409.0}, acess_dia_top:[{n:'ADRIEL SILVA DE OLIVEIRA',i:'AS',t:40.0}], top_dia:[{n:'Nycolly Calazans Paulo',i:'NC',t:6150.0}, {n:'ADRIEL SILVA DE OLIVEIRA',i:'AS',t:2940.0}], fin_dia:6150.0, fin_mes:8275.0, top_fin_mes:[{n:'Nycolly Calazans Paulo',i:'NC',t:8275.0,bd:[{nm:'PayJoy',t:5725.0},{nm:'OdresCred',t:2550.0},{nm:'Outras',t:0}]}], fin_bd:[{nm:'PayJoy',t:5725.0},{nm:'OdresCred',t:2550.0},{nm:'Outras',t:0}], top_fin:[{n:'Nycolly Calazans Paulo',i:'NC',t:6150.0}], metaAcess:2500,
             agendamentos:{total:7650.0, fin:6150.0, fin_bd:[{nm:'PayJoy',t:3600.0},{nm:'OdresCred',t:2550.0},{nm:'Outras',t:0}], top:[{n:'Nycolly Calazans Paulo',i:'NC',t:6150.0}, {n:'ADRIEL SILVA DE OLIVEIRA',i:'AS',t:1500.0}]},
-            acessorios:{total:610.0, top:[], dias:[]},
+            acessorios:{total:650.0, top:[], dias:[]},
             top:[{n:'Nycolly Calazans Paulo',i:'NC',p:4,t:8275.0,ds:1,ult:'03/10'},
-                {n:'ADRIEL SILVA DE OLIVEIRA',i:'AS',p:8,t:8094.0,ds:3,ult:'03/10'}]},
+                {n:'ADRIEL SILVA DE OLIVEIRA',i:'AS',p:9,t:8134.0,ds:3,ult:'03/10'}]},
     }
 };
 
@@ -9404,7 +9404,7 @@ var _ERP_ESTOQUE = {
       'ZENFONE MAX PLUS':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:0},
       'ZENFONE MAX SHOT':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:0},
     };
-    var _ERP_ESTOQUE_TS = '03/10/2026 19:20';
+    var _ERP_ESTOQUE_TS = '03/10/2026 19:29';
 // Preços por produto — populado pelo update_d360.py a cada 30 min
 var _ERP_PRECOS = {
       'ALCATEL A2 XL': {custo:0.00,venda:0.00},
@@ -9764,7 +9764,7 @@ var _ERP_PRECOS = {
       'ZENFONE MAX PLUS': {custo:0.00,venda:0.00},
       'ZENFONE MAX SHOT': {custo:0.00,venda:0.00},
     };
-    var _ERP_PRECOS_TS = '03/10/2026 19:21';
+    var _ERP_PRECOS_TS = '03/10/2026 19:30';
 // Flag de sessão: true = fetch já tentado (sucesso ou falha), não tentar de novo
 var _erpPrecosCarregados = false;
 var _SUG_SPECS = {

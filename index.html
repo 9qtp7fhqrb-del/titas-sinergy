@@ -8007,8 +8007,9 @@ function renderAcademyLive() {
 const D360 = {
     periodo: '',          // preenchido automaticamente
     meta_rede: 2850000,
-    agendFat:0, // faturamento real da central de agendamentos (atualizar mensalmente)
-    agendMetaPorLoja: 90000,   // meta mensal por loja — central de agendamentos
+    agendFat:0,
+    agendMeta: 1290000,
+    agendMetaPorLoja: 110000,
 
     // ── Dados históricos para o card Performance ──
     // mesAnterior é recarregado automaticamente em runtime por _d360CarregarMesAnterior()
@@ -11235,7 +11236,7 @@ function _renderAgendRanking() {
             var ag    = l.agendamentos || {total:0,top:[]};
             var total = ag.total || 0;
             var proj  = Math.round(total / diasD * diasM);
-            var meta  = _d.agendMetaPorLoja || 90000;
+            var meta  = (typeof METAS_AGEND !== 'undefined' && METAS_AGEND[k]) || _d.agendMetaPorLoja || 90000;
             var projPct = meta > 0 ? Math.round(proj / meta * 100) : null;
             var pctAtual = meta > 0 ? Math.min(100, Math.round(total / meta * 100)) : 0;
             var corProj  = _corD(projPct) || coresLojas[k] || '#818cf8';
@@ -12467,6 +12468,23 @@ const METAS_CAUTELAR = {
     _t2: 21000,
     _t3: 29500,
     _total: 80000,
+};
+
+/* Metas de Agendamentos — Outubro 2026 */
+const METAS_AGEND = {
+    cariacica:   130000,
+    itabuna:     130000,
+    moxuara:     130000,
+    praiadacosta: 70000,
+    barreiras:   130000,
+    teixeira:    130000,
+    laranjeiras:  90000,
+    saomateus:   130000,
+    serra:       130000,
+    linhares:    110000,
+    montserrat:  110000,
+    eunapolis:    60000,
+    _total:     1290000,
 };
 
 /* Gerentes responsáveis por mais de uma loja */
@@ -16214,7 +16232,9 @@ function render360(tipo, val) {
     // Central de Agendamentos
     const _agendCard = (() => {
             const agFat   = scope.reduce((s,l)=>s+(l.agendFat||0),0);
-            const agMeta  = scope.length * (_d.agendMetaPorLoja || 90000);
+            const agMeta  = (typeof METAS_AGEND !== 'undefined')
+                ? Object.entries(_d.lojas||{}).filter(([,l]) => scope.includes(l)).reduce((s,[k]) => s + (METAS_AGEND[k]||110000), 0)
+                : scope.length * (_d.agendMetaPorLoja || 90000);
             const agProj  = _d.diasDecorridos > 0 ? Math.round(agFat / _d.diasDecorridos * _d.diasMes) : 0;
             const agPctMeta = Math.min(100, Math.round(agFat / agMeta * 100));
             const agBarCor  = agPctMeta >= 100 ? '#4ade80' : agPctMeta >= 80 ? '#10b981' : agPctMeta >= 60 ? '#c084fc' : '#06b6d4';
@@ -29235,9 +29255,8 @@ async function _dirRotinaAnalisar(dateStr) {
     .map(([k,l]) => ({ k, l, pct: (l.metaAcess||0)*prop > 0 ? ((l.acessorios?.total||0)/((l.metaAcess||1)*prop))*100 : 0 }))
     .sort((a,b) => a.pct - b.pct);
 
-  const agendMetaLoja = D360.agendMetaPorLoja || 90000;
   const agendPorLoja  = Object.entries(D360.lojas).map(([k, l]) => {
-    const metaP = agendMetaLoja * prop;
+    const metaP = ((typeof METAS_AGEND !== 'undefined' && METAS_AGEND[k]) || D360.agendMetaPorLoja || 90000) * prop;
     const fat   = l.agendFat || 0;
     const pct   = metaP > 0 ? (fat / metaP) * 100 : 0;
     return { k, label: l.label, sigla: l.sigla, fat, metaP, pct };

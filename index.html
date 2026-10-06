@@ -7,7 +7,7 @@
     <script>
     // Cache-buster: força reload se a versão mudou
     (function(){
-      var BUILD = '20261006010825';
+      var BUILD = '20261006003411';
       var stored = localStorage.getItem('d360_build');
       if (stored && stored !== BUILD) {
         localStorage.setItem('d360_build', BUILD);
@@ -8007,8 +8007,9 @@ function renderAcademyLive() {
 const D360 = {
     periodo: '',          // preenchido automaticamente
     meta_rede: 2850000,
-    agendFat:0, // faturamento real da central de agendamentos (atualizar mensalmente)
-    agendMetaPorLoja: 90000,   // meta mensal por loja — central de agendamentos
+    agendFat:0,
+    agendMeta: 1290000,
+    agendMetaPorLoja: 110000,
 
     // ── Dados históricos para o card Performance ──
     // mesAnterior é recarregado automaticamente em runtime por _d360CarregarMesAnterior()
@@ -8016,11 +8017,14 @@ const D360 = {
     // inicial até a busca terminar, evita usar um mês desatualizado por engano.
     performance: {
         mesAnterior: {
-            nome: '—',
-            diasMes: 31,
-            rede: 0,
-            subredes: { t1:0, t2:0, t3:0 },
-            lojas: {}
+            nome: 'Set 2026',
+            diasMes: 30,
+            rede: 2815341,
+            subredes: { t1:1059294, t2:654570, t3:1056476, ind:0 },
+            lojas: { cariacica:446541, itabuna:341396, moxuara:271358,
+                     praiadacosta:89077, barreiras:240395, teixeira:206513, laranjeiras:162584,
+                     saomateus:324321, serra:318509, linhares:214901, montserrat:199746, eunapolis:0 },
+            parcial: { 30: { rede: 2815341 } }
         },
         recordHistorico: {
             nome: 'Abr 2026',   // melhor mês histórico disponível — atualizar quando superado
@@ -8043,22 +8047,22 @@ const D360 = {
             }
         }
     },
-    top_acessorios:{"rede":[{"nm":"PELICULA TPU SOFT CLEAR DEVIA","qt":57,"val":5735,"pct":44.2,"abc":"A"},{"nm":"PELICULA DEVIA PRIVACIDADE","qt":17,"val":2190,"pct":57.4,"abc":"A"},{"nm":"PELICULA TPU SOFT FOSCA DEVIA","qt":10,"val":1510,"pct":65.1,"abc":"A"},{"nm":"CARREGADOR TIPO C","qt":7,"val":470,"pct":70.5,"abc":"A"},{"nm":"CABO PD TIPO C 1,2M 60W FAM FAC-AC1C","qt":7,"val":340,"pct":76.0,"abc":"A"},{"nm":"CAPA IPHONE ORIGINAL","qt":6,"val":380,"pct":80.6,"abc":"B"},{"nm":"CABO USB IPHONE 1M FAM B510","qt":4,"val":200,"pct":83.7,"abc":"B"},{"nm":"CHIP CLARO","qt":4,"val":160,"pct":86.8,"abc":"B"},{"nm":"CABO USB TIPO C DEVIA","qt":3,"val":170,"pct":89.1,"abc":"B"},{"nm":"CABO USB TIPO C FAM 3M FAM FCA XC30","qt":3,"val":105,"pct":91.5,"abc":"B"},{"nm":"FONE REALME BUDS T200 LITE","qt":3,"val":945,"pct":93.8,"abc":"B"},{"nm":"KIT CARREGADOR KIMASTER KT602","qt":2,"val":120,"pct":95.3,"abc":"C"},{"nm":"FONE DE OUVIDO P2","qt":2,"val":105,"pct":96.9,"abc":"C"},{"nm":"FONTE CARREGADOR FAM 35 W","qt":2,"val":260,"pct":98.4,"abc":"C"},{"nm":"RELOGIO SMARTWATCH 3.8","qt":2,"val":480,"pct":100.0,"abc":"C"}],"lojas":{"barreiras":[{"nm":"PELICULA TPU SOFT CLEAR DEVIA","qt":3,"val":250,"pct":37.5,"abc":"A"},{"nm":"KIT CARREGADOR KIMASTER KT602","qt":2,"val":120,"pct":62.5,"abc":"A"},{"nm":"FONTE TIPO C GOLD","qt":1,"val":40,"pct":75.0,"abc":"A"},{"nm":"CABO TIPO C IPHONE DEVIA","qt":1,"val":50,"pct":87.5,"abc":"B"},{"nm":"CABO PD IPHONE 1,2 FAM FCA-5C16","qt":1,"val":100,"pct":100.0,"abc":"C"}],"cariacica":[{"nm":"PELICULA TPU SOFT CLEAR DEVIA","qt":9,"val":840,"pct":50.0,"abc":"A"},{"nm":"PELICULA TPU SOFT FOSCA DEVIA","qt":5,"val":680,"pct":77.8,"abc":"A"},{"nm":"CARREGADOR TIPO C","qt":1,"val":70,"pct":83.3,"abc":"B"},{"nm":"CARREGADOR DEVIA 30W COM CABO C/C","qt":1,"val":250,"pct":88.9,"abc":"B"},{"nm":"CARTAO DE MEMORIA SANDISK 128GB","qt":1,"val":100,"pct":94.4,"abc":"B"},{"nm":"CABO USB IPHONE DEVIA","qt":1,"val":70,"pct":100.0,"abc":"C"}],"itabuna":[{"nm":"PELICULA DEVIA PRIVACIDADE","qt":7,"val":600,"pct":50.0,"abc":"A"},{"nm":"PELICULA TPU SOFT CLEAR DEVIA","qt":4,"val":280,"pct":78.6,"abc":"A"},{"nm":"CABO USB TIPO C DEVIA","qt":2,"val":100,"pct":92.9,"abc":"B"},{"nm":"CABO MAGNÉTICO PD TIPO C 100W","qt":1,"val":50,"pct":100.0,"abc":"C"}],"linhares":[{"nm":"PELICULA TPU SOFT CLEAR DEVIA","qt":9,"val":780,"pct":75.0,"abc":"A"},{"nm":"CABO PD TIPO C 1,2M 60W FAM FAC-AC1C","qt":1,"val":80,"pct":83.3,"abc":"B"},{"nm":"CABO USB IPHONE 1M FAM B510","qt":1,"val":60,"pct":91.7,"abc":"B"},{"nm":"FONTE CARREGADOR FAM 35 W","qt":1,"val":130,"pct":100.0,"abc":"C"}],"laranjeiras":[{"nm":"PELICULA TPU SOFT CLEAR DEVIA","qt":2,"val":250,"pct":25.0,"abc":"A"},{"nm":"FONE DE OUVIDO P2","qt":1,"val":60,"pct":37.5,"abc":"A"},{"nm":"FONE JBL BLUETOOTH","qt":1,"val":100,"pct":50.0,"abc":"A"},{"nm":"PELICULA TPU SOFT FOSCA DEVIA","qt":1,"val":120,"pct":62.5,"abc":"A"},{"nm":"CAIXA DE SOM INOVA MHS007","qt":1,"val":300,"pct":75.0,"abc":"A"},{"nm":"CABO USB TIPO C FAM 3M FAM FCA XC30","qt":1,"val":40,"pct":87.5,"abc":"B"},{"nm":"CAPA IPHONE ORIGINAL","qt":1,"val":50,"pct":100.0,"abc":"C"}],"montserrat":[{"nm":"PELICULA TPU SOFT CLEAR DEVIA","qt":8,"val":840,"pct":25.0,"abc":"A"},{"nm":"CAPA IPHONE ORIGINAL","qt":3,"val":210,"pct":34.4,"abc":"A"},{"nm":"CABO PD TIPO C 1,2M 60W FAM FAC-AC1C","qt":3,"val":125,"pct":43.8,"abc":"A"},{"nm":"CARREGADOR TIPO C","qt":3,"val":210,"pct":53.1,"abc":"A"},{"nm":"CARREGADOR USB IPHONE FAM","qt":2,"val":140,"pct":59.4,"abc":"A"},{"nm":"PELICULA TPU SOFT FOSCA DEVIA","qt":2,"val":330,"pct":65.6,"abc":"A"},{"nm":"FONE REALME TECHLIFE BUDS","qt":2,"val":540,"pct":71.9,"abc":"A"},{"nm":"CABO USB IPHONE 1M FAM B510","qt":2,"val":80,"pct":78.1,"abc":"A"},{"nm":"RELOGIO SMARTWATCH 3.8","qt":1,"val":250,"pct":81.2,"abc":"B"},{"nm":"FONTE CARREGADOR FAM 35 W","qt":1,"val":130,"pct":84.4,"abc":"B"},{"nm":"FONE REALME BUDS T200 LITE","qt":1,"val":325,"pct":87.5,"abc":"B"},{"nm":"CABO USB V8 FAM FCA-X810","qt":1,"val":50,"pct":90.6,"abc":"B"},{"nm":"CAPA SILICONE","qt":1,"val":40,"pct":93.8,"abc":"B"},{"nm":"FONE DE OUVIDO P2","qt":1,"val":45,"pct":96.9,"abc":"C"},{"nm":"CABO USB TIPO C FAM 3M FAM FCA XC30","qt":1,"val":30,"pct":100.0,"abc":"C"}],"moxuara":[{"nm":"PELICULA TPU SOFT CLEAR DEVIA","qt":5,"val":450,"pct":33.3,"abc":"A"},{"nm":"PELICULA DEVIA PRIVACIDADE","qt":4,"val":670,"pct":60.0,"abc":"A"},{"nm":"CABO USB IPHONE 1M FAM B510","qt":1,"val":60,"pct":66.7,"abc":"A"},{"nm":"FONE DEVIA COOL SOUND WIRED","qt":1,"val":40,"pct":73.3,"abc":"A"},{"nm":"FONE REALME BUDS T200 LITE","qt":1,"val":270,"pct":80.0,"abc":"A"},{"nm":"POWER BANK KINTONE DEVIA 10000MAH EP095","qt":1,"val":110,"pct":86.7,"abc":"B"},{"nm":"CAPA IPHONE ORIGINAL","qt":1,"val":50,"pct":93.3,"abc":"B"},{"nm":"CARREGADOR VEICULAR KIMASTER 2USB 2.4A CV206","qt":1,"val":130,"pct":100.0,"abc":"C"}],"praiadacosta":[{"nm":"FONE AIR BUDS","qt":1,"val":200,"pct":50.0,"abc":"A"},{"nm":"PELICULA TPU SOFT FOSCA DEVIA","qt":1,"val":260,"pct":100.0,"abc":"C"}],"saomateus":[{"nm":"PELICULA TPU SOFT CLEAR DEVIA","qt":6,"val":655,"pct":42.9,"abc":"A"},{"nm":"CABO TIPO C TIPO C DEVIA","qt":2,"val":160,"pct":57.1,"abc":"A"},{"nm":"PELICULA TPU SOFT FOSCA DEVIA","qt":1,"val":120,"pct":64.3,"abc":"A"},{"nm":"CARREGADOR TIPO C","qt":1,"val":70,"pct":71.4,"abc":"A"},{"nm":"FONE DE OUVIDO P2 C/MIC VOL FAM FCM-OE12","qt":1,"val":60,"pct":78.6,"abc":"A"},{"nm":"CHIP CLARO","qt":1,"val":40,"pct":85.7,"abc":"B"},{"nm":"CABO USB TIPO C DEVIA","qt":1,"val":70,"pct":92.9,"abc":"B"},{"nm":"CAPA IPHONE ORIGINAL","qt":1,"val":70,"pct":100.0,"abc":"C"}],"serra":[{"nm":"PELICULA TPU SOFT CLEAR DEVIA","qt":10,"val":1290,"pct":37.0,"abc":"A"},{"nm":"PELICULA DEVIA PRIVACIDADE","qt":6,"val":920,"pct":59.3,"abc":"A"},{"nm":"CHIP CLARO","qt":3,"val":120,"pct":70.4,"abc":"A"},{"nm":"CABO PD TIPO C 1,2M 60W FAM FAC-AC1C","qt":3,"val":135,"pct":81.5,"abc":"B"},{"nm":"RELOGIO SMARTWATCH 3.8","qt":1,"val":230,"pct":85.2,"abc":"B"},{"nm":"CARREGADOR DEVIA 20W PD+QC","qt":1,"val":150,"pct":88.9,"abc":"B"},{"nm":"CABO USB IPHONE 1.2M FAM FCA -512-N","qt":1,"val":70,"pct":92.6,"abc":"B"},{"nm":"FONE REALME BUDS T200 LITE","qt":1,"val":350,"pct":96.3,"abc":"C"},{"nm":"CABO USB TIPO C FAM 3M FAM FCA XC30","qt":1,"val":35,"pct":100.0,"abc":"C"}],"teixeira":[{"nm":"CARREGADOR TIPO C","qt":2,"val":120,"pct":33.3,"abc":"A"},{"nm":"ALEXA ECHO SPOT","qt":1,"val":880,"pct":50.0,"abc":"A"},{"nm":"POWER BANK 5000MAH A'GOLD BTE03","qt":1,"val":120,"pct":66.7,"abc":"A"},{"nm":"CABO PD IPHONE 1,2 FAM FCA-5C16","qt":1,"val":48,"pct":83.3,"abc":"B"},{"nm":"PELICULA TPU SOFT CLEAR DEVIA","qt":1,"val":100,"pct":100.0,"abc":"C"}]}},
+    top_acessorios:{"rede":[{"nm":"PELICULA TPU SOFT CLEAR DEVIA","qt":55,"val":5575,"pct":43.3,"abc":"A"},{"nm":"PELICULA DEVIA PRIVACIDADE","qt":17,"val":2190,"pct":56.7,"abc":"A"},{"nm":"PELICULA TPU SOFT FOSCA DEVIA","qt":10,"val":1510,"pct":64.6,"abc":"A"},{"nm":"CARREGADOR TIPO C","qt":7,"val":470,"pct":70.1,"abc":"A"},{"nm":"CABO PD TIPO C 1,2M 60W FAM FAC-AC1C","qt":7,"val":340,"pct":75.6,"abc":"A"},{"nm":"CAPA IPHONE ORIGINAL","qt":6,"val":380,"pct":80.3,"abc":"B"},{"nm":"CABO USB IPHONE 1M FAM B510","qt":4,"val":200,"pct":83.5,"abc":"B"},{"nm":"CHIP CLARO","qt":4,"val":160,"pct":86.6,"abc":"B"},{"nm":"CABO USB TIPO C DEVIA","qt":3,"val":170,"pct":89.0,"abc":"B"},{"nm":"CABO USB TIPO C FAM 3M FAM FCA XC30","qt":3,"val":105,"pct":91.3,"abc":"B"},{"nm":"FONE REALME BUDS T200 LITE","qt":3,"val":945,"pct":93.7,"abc":"B"},{"nm":"KIT CARREGADOR KIMASTER KT602","qt":2,"val":120,"pct":95.3,"abc":"C"},{"nm":"FONE DE OUVIDO P2","qt":2,"val":105,"pct":96.9,"abc":"C"},{"nm":"FONTE CARREGADOR FAM 35 W","qt":2,"val":260,"pct":98.4,"abc":"C"},{"nm":"RELOGIO SMARTWATCH 3.8","qt":2,"val":480,"pct":100.0,"abc":"C"}],"lojas":{"barreiras":[{"nm":"PELICULA TPU SOFT CLEAR DEVIA","qt":3,"val":250,"pct":37.5,"abc":"A"},{"nm":"KIT CARREGADOR KIMASTER KT602","qt":2,"val":120,"pct":62.5,"abc":"A"},{"nm":"FONTE TIPO C GOLD","qt":1,"val":40,"pct":75.0,"abc":"A"},{"nm":"CABO TIPO C IPHONE DEVIA","qt":1,"val":50,"pct":87.5,"abc":"B"},{"nm":"CABO PD IPHONE 1,2 FAM FCA-5C16","qt":1,"val":100,"pct":100.0,"abc":"C"}],"cariacica":[{"nm":"PELICULA TPU SOFT CLEAR DEVIA","qt":9,"val":840,"pct":50.0,"abc":"A"},{"nm":"PELICULA TPU SOFT FOSCA DEVIA","qt":5,"val":680,"pct":77.8,"abc":"A"},{"nm":"CARREGADOR TIPO C","qt":1,"val":70,"pct":83.3,"abc":"B"},{"nm":"CARREGADOR DEVIA 30W COM CABO C/C","qt":1,"val":250,"pct":88.9,"abc":"B"},{"nm":"CARTAO DE MEMORIA SANDISK 128GB","qt":1,"val":100,"pct":94.4,"abc":"B"},{"nm":"CABO USB IPHONE DEVIA","qt":1,"val":70,"pct":100.0,"abc":"C"}],"itabuna":[{"nm":"PELICULA DEVIA PRIVACIDADE","qt":7,"val":600,"pct":50.0,"abc":"A"},{"nm":"PELICULA TPU SOFT CLEAR DEVIA","qt":4,"val":280,"pct":78.6,"abc":"A"},{"nm":"CABO USB TIPO C DEVIA","qt":2,"val":100,"pct":92.9,"abc":"B"},{"nm":"CABO MAGNÉTICO PD TIPO C 100W","qt":1,"val":50,"pct":100.0,"abc":"C"}],"linhares":[{"nm":"PELICULA TPU SOFT CLEAR DEVIA","qt":9,"val":780,"pct":75.0,"abc":"A"},{"nm":"CABO PD TIPO C 1,2M 60W FAM FAC-AC1C","qt":1,"val":80,"pct":83.3,"abc":"B"},{"nm":"CABO USB IPHONE 1M FAM B510","qt":1,"val":60,"pct":91.7,"abc":"B"},{"nm":"FONTE CARREGADOR FAM 35 W","qt":1,"val":130,"pct":100.0,"abc":"C"}],"laranjeiras":[{"nm":"PELICULA TPU SOFT CLEAR DEVIA","qt":2,"val":250,"pct":25.0,"abc":"A"},{"nm":"FONE DE OUVIDO P2","qt":1,"val":60,"pct":37.5,"abc":"A"},{"nm":"FONE JBL BLUETOOTH","qt":1,"val":100,"pct":50.0,"abc":"A"},{"nm":"PELICULA TPU SOFT FOSCA DEVIA","qt":1,"val":120,"pct":62.5,"abc":"A"},{"nm":"CAIXA DE SOM INOVA MHS007","qt":1,"val":300,"pct":75.0,"abc":"A"},{"nm":"CABO USB TIPO C FAM 3M FAM FCA XC30","qt":1,"val":40,"pct":87.5,"abc":"B"},{"nm":"CAPA IPHONE ORIGINAL","qt":1,"val":50,"pct":100.0,"abc":"C"}],"montserrat":[{"nm":"PELICULA TPU SOFT CLEAR DEVIA","qt":8,"val":840,"pct":25.0,"abc":"A"},{"nm":"CAPA IPHONE ORIGINAL","qt":3,"val":210,"pct":34.4,"abc":"A"},{"nm":"CABO PD TIPO C 1,2M 60W FAM FAC-AC1C","qt":3,"val":125,"pct":43.8,"abc":"A"},{"nm":"CARREGADOR TIPO C","qt":3,"val":210,"pct":53.1,"abc":"A"},{"nm":"CARREGADOR USB IPHONE FAM","qt":2,"val":140,"pct":59.4,"abc":"A"},{"nm":"PELICULA TPU SOFT FOSCA DEVIA","qt":2,"val":330,"pct":65.6,"abc":"A"},{"nm":"FONE REALME TECHLIFE BUDS","qt":2,"val":540,"pct":71.9,"abc":"A"},{"nm":"CABO USB IPHONE 1M FAM B510","qt":2,"val":80,"pct":78.1,"abc":"A"},{"nm":"RELOGIO SMARTWATCH 3.8","qt":1,"val":250,"pct":81.2,"abc":"B"},{"nm":"FONTE CARREGADOR FAM 35 W","qt":1,"val":130,"pct":84.4,"abc":"B"},{"nm":"FONE REALME BUDS T200 LITE","qt":1,"val":325,"pct":87.5,"abc":"B"},{"nm":"CABO USB V8 FAM FCA-X810","qt":1,"val":50,"pct":90.6,"abc":"B"},{"nm":"CAPA SILICONE","qt":1,"val":40,"pct":93.8,"abc":"B"},{"nm":"FONE DE OUVIDO P2","qt":1,"val":45,"pct":96.9,"abc":"C"},{"nm":"CABO USB TIPO C FAM 3M FAM FCA XC30","qt":1,"val":30,"pct":100.0,"abc":"C"}],"moxuara":[{"nm":"PELICULA TPU SOFT CLEAR DEVIA","qt":5,"val":450,"pct":33.3,"abc":"A"},{"nm":"PELICULA DEVIA PRIVACIDADE","qt":4,"val":670,"pct":60.0,"abc":"A"},{"nm":"CABO USB IPHONE 1M FAM B510","qt":1,"val":60,"pct":66.7,"abc":"A"},{"nm":"FONE DEVIA COOL SOUND WIRED","qt":1,"val":40,"pct":73.3,"abc":"A"},{"nm":"FONE REALME BUDS T200 LITE","qt":1,"val":270,"pct":80.0,"abc":"A"},{"nm":"POWER BANK KINTONE DEVIA 10000MAH EP095","qt":1,"val":110,"pct":86.7,"abc":"B"},{"nm":"CAPA IPHONE ORIGINAL","qt":1,"val":50,"pct":93.3,"abc":"B"},{"nm":"CARREGADOR VEICULAR KIMASTER 2USB 2.4A CV206","qt":1,"val":130,"pct":100.0,"abc":"C"}],"praiadacosta":[{"nm":"FONE AIR BUDS","qt":1,"val":200,"pct":50.0,"abc":"A"},{"nm":"PELICULA TPU SOFT FOSCA DEVIA","qt":1,"val":260,"pct":100.0,"abc":"C"}],"saomateus":[{"nm":"PELICULA TPU SOFT CLEAR DEVIA","qt":6,"val":655,"pct":42.9,"abc":"A"},{"nm":"CABO TIPO C TIPO C DEVIA","qt":2,"val":160,"pct":57.1,"abc":"A"},{"nm":"PELICULA TPU SOFT FOSCA DEVIA","qt":1,"val":120,"pct":64.3,"abc":"A"},{"nm":"CARREGADOR TIPO C","qt":1,"val":70,"pct":71.4,"abc":"A"},{"nm":"FONE DE OUVIDO P2 C/MIC VOL FAM FCM-OE12","qt":1,"val":60,"pct":78.6,"abc":"A"},{"nm":"CHIP CLARO","qt":1,"val":40,"pct":85.7,"abc":"B"},{"nm":"CABO USB TIPO C DEVIA","qt":1,"val":70,"pct":92.9,"abc":"B"},{"nm":"CAPA IPHONE ORIGINAL","qt":1,"val":70,"pct":100.0,"abc":"C"}],"serra":[{"nm":"PELICULA TPU SOFT CLEAR DEVIA","qt":8,"val":1130,"pct":32.0,"abc":"A"},{"nm":"PELICULA DEVIA PRIVACIDADE","qt":6,"val":920,"pct":56.0,"abc":"A"},{"nm":"CHIP CLARO","qt":3,"val":120,"pct":68.0,"abc":"A"},{"nm":"CABO PD TIPO C 1,2M 60W FAM FAC-AC1C","qt":3,"val":135,"pct":80.0,"abc":"A"},{"nm":"RELOGIO SMARTWATCH 3.8","qt":1,"val":230,"pct":84.0,"abc":"B"},{"nm":"CARREGADOR DEVIA 20W PD+QC","qt":1,"val":150,"pct":88.0,"abc":"B"},{"nm":"CABO USB IPHONE 1.2M FAM FCA -512-N","qt":1,"val":70,"pct":92.0,"abc":"B"},{"nm":"FONE REALME BUDS T200 LITE","qt":1,"val":350,"pct":96.0,"abc":"C"},{"nm":"CABO USB TIPO C FAM 3M FAM FCA XC30","qt":1,"val":35,"pct":100.0,"abc":"C"}],"teixeira":[{"nm":"CARREGADOR TIPO C","qt":2,"val":120,"pct":33.3,"abc":"A"},{"nm":"ALEXA ECHO SPOT","qt":1,"val":880,"pct":50.0,"abc":"A"},{"nm":"POWER BANK 5000MAH A'GOLD BTE03","qt":1,"val":120,"pct":66.7,"abc":"A"},{"nm":"CABO PD IPHONE 1,2 FAM FCA-5C16","qt":1,"val":48,"pct":83.3,"abc":"B"},{"nm":"PELICULA TPU SOFT CLEAR DEVIA","qt":1,"val":100,"pct":100.0,"abc":"C"}]}},
     top_modelos:{"payjoy":[{"nm":"SMARTPHONE REALME C71","qt":27,"val":50085},{"nm":"SMARTPHONE TECNO SPARK 30C","qt":26,"val":43985},{"nm":"SMARTPHONE  REALME NOTE 70","qt":10,"val":16860},{"nm":"SMARTPHONE INFINIX HOT 60I","qt":4,"val":7847},{"nm":"SMARTPHONE REALME C85","qt":1,"val":2400}],"odrescred":[{"nm":"SMARTPHONE REALME C71","qt":38,"val":75265},{"nm":"SMARTPHONE TECNO SPARK 30C","qt":31,"val":54945},{"nm":"SMARTPHONE  REALME NOTE 70","qt":23,"val":40707},{"nm":"SMARTPHONE INFINIX HOT 60I","qt":16,"val":34311},{"nm":"SMARTPHONE REALME C85","qt":9,"val":24450},{"nm":"SMARTPHONE TECNO SPARK GO 1S","qt":3,"val":3218},{"nm":"SMARTPHONE REALME P4 LITE","qt":2,"val":3500}],"salao":[{"nm":"SMARTPHONE REALME C71","qt":26,"val":46925},{"nm":"SMARTPHONE TECNO SPARK 30C","qt":16,"val":23780},{"nm":"SMARTPHONE  REALME NOTE 70","qt":13,"val":20368},{"nm":"SMARTPHONE REALME C85","qt":8,"val":21300},{"nm":"SMARTPHONE INFINIX HOT 60I","qt":3,"val":5430},{"nm":"CELULAR PHILIPS E6808","qt":2,"val":730},{"nm":"SMARTPHONE TECNO SPARK GO 1S","qt":2,"val":1000}],"lojas":{"barreiras":{"payjoy":[{"nm":"SMARTPHONE REALME C71","qt":4,"val":7150},{"nm":"SMARTPHONE INFINIX HOT 60I","qt":2,"val":3997},{"nm":"SMARTPHONE TECNO SPARK 30C","qt":2,"val":3700}],"odrescred":[{"nm":"SMARTPHONE INFINIX HOT 60I","qt":3,"val":6348},{"nm":"SMARTPHONE TECNO SPARK GO 1S","qt":2,"val":2119},{"nm":"SMARTPHONE REALME C71","qt":2,"val":4000},{"nm":"SMARTPHONE TECNO SPARK 30C","qt":1,"val":1700},{"nm":"SMARTPHONE REALME C85","qt":1,"val":2550}],"salao":[{"nm":"SMARTPHONE REALME C71","qt":2,"val":1700},{"nm":"SMARTPHONE REALME C85","qt":2,"val":4900},{"nm":"SMARTPHONE TECNO SPARK 30C","qt":1,"val":1550}]},"cariacica":{"payjoy":[{"nm":"SMARTPHONE TECNO SPARK 30C","qt":10,"val":17200},{"nm":"SMARTPHONE REALME C71","qt":3,"val":6000},{"nm":"SMARTPHONE  REALME NOTE 70","qt":3,"val":5000},{"nm":"SMARTPHONE INFINIX HOT 60I","qt":1,"val":1900}],"odrescred":[{"nm":"SMARTPHONE REALME C71","qt":3,"val":6330},{"nm":"SMARTPHONE  REALME NOTE 70","qt":3,"val":5160},{"nm":"SMARTPHONE TECNO SPARK 30C","qt":2,"val":3400}],"salao":[{"nm":"SMARTPHONE  REALME NOTE 70","qt":5,"val":7400},{"nm":"SMARTPHONE REALME C71","qt":3,"val":5900},{"nm":"SMARTPHONE TECNO SPARK 30C","qt":2,"val":3400},{"nm":"SMARTPHONE REALME C85","qt":2,"val":5400},{"nm":"CELULAR PHILIPS E6808","qt":1,"val":430}]},"itabuna":{"payjoy":[],"odrescred":[{"nm":"SMARTPHONE TECNO SPARK 30C","qt":7,"val":12250},{"nm":"SMARTPHONE REALME C71","qt":7,"val":12380},{"nm":"SMARTPHONE  REALME NOTE 70","qt":4,"val":6800}],"salao":[{"nm":"SMARTPHONE TECNO SPARK 30C","qt":6,"val":9130},{"nm":"SMARTPHONE REALME C71","qt":5,"val":9400},{"nm":"SMARTPHONE  REALME NOTE 70","qt":4,"val":6450},{"nm":"SMARTPHONE TECNO SPARK GO 1S","qt":1,"val":0},{"nm":"CELULAR PHILIPS E6808","qt":1,"val":300},{"nm":"SMARTPHONE REALME C85","qt":1,"val":2600}]},"linhares":{"payjoy":[{"nm":"SMARTPHONE REALME C71","qt":2,"val":4200},{"nm":"SMARTPHONE TECNO SPARK 30C","qt":1,"val":1615},{"nm":"SMARTPHONE  REALME NOTE 70","qt":1,"val":1600}],"odrescred":[{"nm":"SMARTPHONE REALME C71","qt":5,"val":9925},{"nm":"SMARTPHONE  REALME NOTE 70","qt":3,"val":5400},{"nm":"SMARTPHONE REALME C85","qt":2,"val":5100},{"nm":"SMARTPHONE TECNO SPARK 30C","qt":1,"val":1900}],"salao":[{"nm":"SMARTPHONE REALME C71","qt":6,"val":12775}]},"laranjeiras":{"payjoy":[{"nm":"SMARTPHONE REALME C71","qt":3,"val":5700}],"odrescred":[{"nm":"SMARTPHONE TECNO SPARK 30C","qt":7,"val":12045},{"nm":"SMARTPHONE REALME C71","qt":6,"val":12175},{"nm":"SMARTPHONE  REALME NOTE 70","qt":3,"val":5060},{"nm":"SMARTPHONE REALME C85","qt":1,"val":2550}],"salao":[{"nm":"SMARTPHONE TECNO SPARK 30C","qt":1,"val":0},{"nm":"SMARTPHONE TECNO SPARK GO 1S","qt":1,"val":1000},{"nm":"SMARTPHONE  REALME NOTE 70","qt":1,"val":1658},{"nm":"SMARTPHONE REALME C71","qt":1,"val":2200}]},"montserrat":{"payjoy":[{"nm":"SMARTPHONE TECNO SPARK 30C","qt":1,"val":1500},{"nm":"SMARTPHONE  REALME NOTE 70","qt":1,"val":1700}],"odrescred":[{"nm":"SMARTPHONE INFINIX HOT 60I","qt":3,"val":6263},{"nm":"SMARTPHONE REALME C71","qt":2,"val":4100},{"nm":"SMARTPHONE REALME P4 LITE","qt":2,"val":3500},{"nm":"SMARTPHONE TECNO SPARK 30C","qt":1,"val":1800}],"salao":[{"nm":"SMARTPHONE REALME C71","qt":2,"val":3750},{"nm":"SMARTPHONE REALME P4 LITE","qt":1,"val":1600}]},"moxuara":{"payjoy":[{"nm":"SMARTPHONE TECNO SPARK 30C","qt":4,"val":7270},{"nm":"SMARTPHONE REALME C71","qt":4,"val":7900},{"nm":"SMARTPHONE  REALME NOTE 70","qt":1,"val":1950}],"odrescred":[{"nm":"SMARTPHONE TECNO SPARK 30C","qt":3,"val":5400},{"nm":"SMARTPHONE INFINIX HOT 60I","qt":3,"val":6550}],"salao":[{"nm":"SMARTPHONE REALME C71","qt":3,"val":5900},{"nm":"SMARTPHONE REALME C85","qt":1,"val":2700},{"nm":"SMARTPHONE  REALME NOTE 70","qt":1,"val":1500},{"nm":"SMARTPHONE TECNO SPARK 30C","qt":1,"val":1800}]},"praiadacosta":{"payjoy":[{"nm":"SMARTPHONE REALME C71","qt":4,"val":7525}],"odrescred":[{"nm":"SMARTPHONE REALME C85","qt":1,"val":2550}],"salao":[{"nm":"SMARTPHONE TECNO SPARK 30C","qt":1,"val":1500}]},"saomateus":{"payjoy":[{"nm":"SMARTPHONE  REALME NOTE 70","qt":1,"val":1400}],"odrescred":[{"nm":"SMARTPHONE TECNO SPARK 30C","qt":7,"val":12650},{"nm":"SMARTPHONE REALME C71","qt":5,"val":10430},{"nm":"SMARTPHONE INFINIX HOT 60I","qt":3,"val":6100},{"nm":"SMARTPHONE  REALME NOTE 70","qt":3,"val":5038},{"nm":"SMARTPHONE TECNO SPARK GO 1S","qt":1,"val":1099},{"nm":"SMARTPHONE REALME C85","qt":1,"val":2700}],"salao":[{"nm":"SMARTPHONE TECNO SPARK 30C","qt":2,"val":3200},{"nm":"SMARTPHONE REALME C85","qt":2,"val":5700},{"nm":"SMARTPHONE  REALME NOTE 70","qt":1,"val":1800},{"nm":"SMARTPHONE INFINIX HOT 60I","qt":1,"val":1850}]},"serra":{"payjoy":[{"nm":"SMARTPHONE REALME C71","qt":1,"val":1600},{"nm":"SMARTPHONE TECNO SPARK 30C","qt":1,"val":1320},{"nm":"SMARTPHONE  REALME NOTE 70","qt":1,"val":1950}],"odrescred":[{"nm":"SMARTPHONE REALME C71","qt":8,"val":15925},{"nm":"SMARTPHONE  REALME NOTE 70","qt":7,"val":13250},{"nm":"SMARTPHONE INFINIX HOT 60I","qt":4,"val":9050},{"nm":"SMARTPHONE REALME C85","qt":3,"val":9000},{"nm":"SMARTPHONE TECNO SPARK 30C","qt":2,"val":3800}],"salao":[{"nm":"SMARTPHONE REALME C71","qt":4,"val":5300},{"nm":"SMARTPHONE TECNO SPARK 30C","qt":2,"val":3200}]},"teixeira":{"payjoy":[{"nm":"SMARTPHONE TECNO SPARK 30C","qt":7,"val":11380},{"nm":"SMARTPHONE REALME C71","qt":6,"val":10010},{"nm":"SMARTPHONE  REALME NOTE 70","qt":2,"val":3260},{"nm":"SMARTPHONE INFINIX HOT 60I","qt":1,"val":1950},{"nm":"SMARTPHONE REALME C85","qt":1,"val":2400}],"odrescred":[],"salao":[{"nm":"SMARTPHONE INFINIX HOT 60I","qt":2,"val":3580},{"nm":"SMARTPHONE  REALME NOTE 70","qt":1,"val":1560}]}}},
     diasDecorridos: 5, // atualizado pelo script de automação — não alterar manualmente
     diasMes: 31,          // agosto tem 31 dias
     ticket_cel: 1848,        // ticket médio celulares (SBON) — atualizado pelo bot
     ticket_acess: 97,      // ticket médio acessórios — atualizado pelo bot
     ped_cel: 259,           // pedidos celulares — atualizado pelo bot
-    ped_acess: 217,         // pedidos acessórios — atualizado pelo bot
+    ped_acess: 216,         // pedidos acessórios — atualizado pelo bot
 
     // ── Margem Bruta Mensal ──────────────────────────────────────────────────────
     // FONTE PRIMÁRIA: margem_lojas (por loja, do Relatório Gerencial ERP CDC)
     // O sistema deriva automaticamente: margem por loja → subrede → rede
     // COMO ATUALIZAR: edite apenas margem_lojas com os valores do ERP por loja
     // ─────────────────────────────────────────────────────────────────────────────
-    margem_dia: 52.27,              // rede hoje · zerado automaticamente à meia-noite
-    margem_dia_subredes: { t1: 51.03, t2: 50.74, t3: 54.93 },
+    margem_dia: 52.23,              // rede hoje · zerado automaticamente à meia-noite
+    margem_dia_subredes: { t1: 51.03, t2: 50.74, t3: 54.82 },
     margem_lojas: {
         // ── FONTE PRIMÁRIA — atualizar aqui com o Relatório Gerencial por Loja ──
         // atualizado pelo update_d360.py (por loja via API, fallback por subrede)
@@ -8070,15 +8074,15 @@ const D360 = {
         teixeira:    49.08,
         laranjeiras: 53.19,
         saomateus:   53.07,
-        serra:       55.77,
+        serra:       55.69,
         montserrat:  54.29,
         linhares:    53.03,
     },
     margem_subredes: {  // fallback quando margem_lojas estiver incompleta
-        t1: 51.51, t2: 48.63, t3: 54.14
+        t1: 51.51, t2: 48.63, t3: 54.12
     },
     // margem_mes: derivada automaticamente pelo _calcMargemPonderada (não editar)
-    margem_mes: 51.68,
+    margem_mes: 51.67,
 
     subredes: {
         t1: { nome:'Titãs 1', gestor:'Talysson', meta:0,
@@ -8190,14 +8194,14 @@ const D360 = {
             top:[{n:'LÍDIA DA PENHA DIOGO',i:'LD',p:18,t:23225.0,ds:18,ult:'06/10'},
                 {n:'Steffany Oliveira França',i:'SO',p:11,t:16025.0,ds:5,ult:'06/10'},
                 {n:'stefany santiago rocha',i:'SS',p:4,t:4360.0,ds:3,ult:'04/10'}]},
-        serra:       { label:'Serra',              sigla:'SR', sub:'t3', meta:290000,  total:68185.0, ped:60,  cancel:0, agend:0, agendCount:0, agendFat:21045.0,  fat_dia:15555.0, acess_dia:635.0, dia_a_dia:{"1":2230.0,"2":21520.0,"3":42545.0,"4":52630.0,"5":68185.0}, acess_dia_top:[{n:'Carlos Augusto Silva Falcão',i:'CA',t:635.0}], top_dia:[{n:'Carlos Augusto Silva Falcão',i:'CA',t:8585.0}, {n:'Gabriel Moura Dos Reis',i:'GM',t:6970.0}], fin_dia:14950.0, fin_mes:56115.0, top_fin_mes:[{n:'Carlos Augusto Silva Falcão',i:'CA',t:28780.0,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:28780.0},{nm:'Outras',t:0}]},{n:'Gabriel Moura Dos Reis',i:'GM',t:27335.0,bd:[{nm:'PayJoy',t:4870.0},{nm:'OdresCred',t:22465.0},{nm:'Outras',t:0}]}], fin_bd:[{nm:'PayJoy',t:4870.0},{nm:'OdresCred',t:51245.0},{nm:'Outras',t:0}], top_fin:[{n:'Carlos Augusto Silva Falcão',i:'CA',t:7980.0}, {n:'Gabriel Moura Dos Reis',i:'GM',t:6970.0}], metaAcess:22000,
+        serra:       { label:'Serra',              sigla:'SR', sub:'t3', meta:290000,  total:67965.0, ped:59,  cancel:0, agend:0, agendCount:0, agendFat:21045.0,  fat_dia:15335.0, acess_dia:415.0, dia_a_dia:{"1":2230.0,"2":21520.0,"3":42545.0,"4":52630.0,"5":67965.0}, acess_dia_top:[{n:'Carlos Augusto Silva Falcão',i:'CA',t:415.0}], top_dia:[{n:'Carlos Augusto Silva Falcão',i:'CA',t:8365.0}, {n:'Gabriel Moura Dos Reis',i:'GM',t:6970.0}], fin_dia:14950.0, fin_mes:56115.0, top_fin_mes:[{n:'Carlos Augusto Silva Falcão',i:'CA',t:28780.0,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:28780.0},{nm:'Outras',t:0}]},{n:'Gabriel Moura Dos Reis',i:'GM',t:27335.0,bd:[{nm:'PayJoy',t:4870.0},{nm:'OdresCred',t:22465.0},{nm:'Outras',t:0}]}], fin_bd:[{nm:'PayJoy',t:4870.0},{nm:'OdresCred',t:51245.0},{nm:'Outras',t:0}], top_fin:[{n:'Carlos Augusto Silva Falcão',i:'CA',t:7980.0}, {n:'Gabriel Moura Dos Reis',i:'GM',t:6970.0}], metaAcess:22000,
             agendamentos:{total:21045.0, fin:21045.0, fin_bd:[{nm:'PayJoy',t:1320.0},{nm:'OdresCred',t:19725.0},{nm:'Outras',t:0}], top:[{n:'Gabriel Moura Dos Reis',i:'GM',t:14045.0}, {n:'Carlos Augusto Silva Falcão',i:'CA',t:7000.0}]},
-            acessorios:{total:3790.0, top:[
+            acessorios:{total:3570.0, top:[
                 {n:'Marcela da Silva Lopes',i:'ML',t:1850,ds:12,ult:'12/06'},
                 {n:'Karen Scavelo Souza',i:'KS',t:1320,ds:12,ult:'12/06'},
                 {n:'Luiz Henrique Viana da Rocha',i:'LH',t:710,ds:12,ult:'12/06'}
             ], dias:[{d:'01/06',ac:190,cel:0},{d:'06/06',ac:1870,cel:34506.50},{d:'07/06',ac:770,cel:8399},{d:'08/06',ac:550,cel:6299}]},
-            top:[{n:'Carlos Augusto Silva Falcão',i:'CA',p:28,t:36060.0,ds:5,ult:'06/10'},
+            top:[{n:'Carlos Augusto Silva Falcão',i:'CA',p:27,t:35840.0,ds:5,ult:'06/10'},
                 {n:'Gabriel Moura Dos Reis',i:'GM',p:27,t:31505.0,ds:6,ult:'06/10'},
                 {n:'LUIZ GUSTAVO',i:'LG',p:3,t:470.0,ds:2,ult:'04/10'},
                 {n:'LUIZ HENRIQUE VIANA DA ROCHA',i:'LH',p:2,t:150.0,ds:2,ult:'03/10'}]},
@@ -8228,8 +8232,7 @@ const D360 = {
         eunapolis:   { label:'Eunápolis',          sigla:'EN', sub:'ind', meta:170000, preAbertura:true, total:0, ped:0, cancel:0, agend:0, agendCount:0, agendFat:0, fat_dia:0, acess_dia:0, dia_a_dia:{}, acess_dia_top:[], top_dia:[], fin_dia:0, fin_mes:0, top_fin_mes:[], fin_bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:0},{nm:'Outras',t:0}], top_fin:[], metaAcess:0,
             agendamentos:{total:0, fin:0, fin_bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:0},{nm:'Outras',t:0}], top:[]},
             acessorios:{total:0, top:[], dias:[]},
-            top:[{n:'ADRIEL SILVA DE OLIVEIRA',i:'AS',p:12,t:11376.0,ds:6,ult:'06/10'},
-                {n:'Nycolly Calazans Paulo',i:'NC',p:4,t:8275.0,ds:2,ult:'04/10'}]},
+            top:[]},
     }
 };
 
@@ -9409,7 +9412,7 @@ var _ERP_ESTOQUE = {
       'ZENFONE MAX PLUS':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:0},
       'ZENFONE MAX SHOT':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:0},
     };
-    var _ERP_ESTOQUE_TS = '05/10/2026 22:08';
+    var _ERP_ESTOQUE_TS = '05/10/2026 21:33';
 // Preços por produto — populado pelo update_d360.py a cada 30 min
 var _ERP_PRECOS = {
       'ALCATEL A2 XL': {custo:0.00,venda:0.00},
@@ -9764,7 +9767,7 @@ var _ERP_PRECOS = {
       'ZENFONE MAX PLUS': {custo:0.00,venda:0.00},
       'ZENFONE MAX SHOT': {custo:0.00,venda:0.00},
     };
-    var _ERP_PRECOS_TS = '05/10/2026 22:08';
+    var _ERP_PRECOS_TS = '05/10/2026 21:34';
 // Flag de sessão: true = fetch já tentado (sucesso ou falha), não tentar de novo
 var _erpPrecosCarregados = false;
 var _SUG_SPECS = {
@@ -11236,7 +11239,7 @@ function _renderAgendRanking() {
             var ag    = l.agendamentos || {total:0,top:[]};
             var total = ag.total || 0;
             var proj  = Math.round(total / diasD * diasM);
-            var meta  = _d.agendMetaPorLoja || 90000;
+            var meta  = (typeof METAS_AGEND !== 'undefined' && METAS_AGEND[k]) || _d.agendMetaPorLoja || 90000;
             var projPct = meta > 0 ? Math.round(proj / meta * 100) : null;
             var pctAtual = meta > 0 ? Math.min(100, Math.round(total / meta * 100)) : 0;
             var corProj  = _corD(projPct) || coresLojas[k] || '#818cf8';
@@ -12468,6 +12471,23 @@ const METAS_CAUTELAR = {
     _t2: 21000,
     _t3: 29500,
     _total: 80000,
+};
+
+/* Metas de Agendamentos — Outubro 2026 */
+const METAS_AGEND = {
+    cariacica:   130000,
+    itabuna:     130000,
+    moxuara:     130000,
+    praiadacosta: 70000,
+    barreiras:   130000,
+    teixeira:    130000,
+    laranjeiras:  90000,
+    saomateus:   130000,
+    serra:       130000,
+    linhares:    110000,
+    montserrat:  110000,
+    eunapolis:    60000,
+    _total:     1290000,
 };
 
 /* Gerentes responsáveis por mais de uma loja */
@@ -16215,7 +16235,9 @@ function render360(tipo, val) {
     // Central de Agendamentos
     const _agendCard = (() => {
             const agFat   = scope.reduce((s,l)=>s+(l.agendFat||0),0);
-            const agMeta  = scope.length * (_d.agendMetaPorLoja || 90000);
+            const agMeta  = (typeof METAS_AGEND !== 'undefined')
+                ? Object.entries(_d.lojas||{}).filter(([,l]) => scope.includes(l)).reduce((s,[k]) => s + (METAS_AGEND[k]||110000), 0)
+                : scope.length * (_d.agendMetaPorLoja || 90000);
             const agProj  = _d.diasDecorridos > 0 ? Math.round(agFat / _d.diasDecorridos * _d.diasMes) : 0;
             const agPctMeta = Math.min(100, Math.round(agFat / agMeta * 100));
             const agBarCor  = agPctMeta >= 100 ? '#4ade80' : agPctMeta >= 80 ? '#10b981' : agPctMeta >= 60 ? '#c084fc' : '#06b6d4';
@@ -29236,9 +29258,8 @@ async function _dirRotinaAnalisar(dateStr) {
     .map(([k,l]) => ({ k, l, pct: (l.metaAcess||0)*prop > 0 ? ((l.acessorios?.total||0)/((l.metaAcess||1)*prop))*100 : 0 }))
     .sort((a,b) => a.pct - b.pct);
 
-  const agendMetaLoja = D360.agendMetaPorLoja || 90000;
   const agendPorLoja  = Object.entries(D360.lojas).map(([k, l]) => {
-    const metaP = agendMetaLoja * prop;
+    const metaP = ((typeof METAS_AGEND !== 'undefined' && METAS_AGEND[k]) || D360.agendMetaPorLoja || 90000) * prop;
     const fat   = l.agendFat || 0;
     const pct   = metaP > 0 ? (fat / metaP) * 100 : 0;
     return { k, label: l.label, sigla: l.sigla, fat, metaP, pct };

@@ -16575,12 +16575,16 @@ function render360(tipo, val) {
             const subAcess= s.lojas.reduce((a,lk)=>a+(lojas[lk].acessorios?.total||0),0);
             const subAcessPct = subT > 0 ? Math.round(subAcess/subT*100) : 0;
             const subMeta = s.meta || s.lojas.reduce((a,lk)=>a+(lojas[lk].meta||0),0);
-            return {k, s, subT, subPed, subAcessPct, subMeta};
+            const subEntries  = _allLojaEntries.filter(([,l]) => l.sub === k);
+            const subMargem   = _calcMargemPonderada(subEntries) || ((_d.margem_subredes||{})[k]) || null;
+            return {k, s, subT, subPed, subAcessPct, subMeta, subMargem};
         });
         _subsArr.sort((a,b) => _rankModeSubs === 'meta' ? (b.subT/(b.subMeta||1))-(a.subT/(a.subMeta||1)) : b.subT-a.subT);
-        const metasHtml = _subsArr.map(({s, subT, subPed, subAcessPct, subMeta}) => {
-            const acessCor = subAcessPct>=5?'#4ade80':subAcessPct>=3?'#f59e0b':'#f87171';
-            const pedInfo  = `<span style="font-size:.6rem;color:#94a3b8;margin-left:.5rem;">📦 ${subPed} ped. · <span style="color:${acessCor};">🎧 ${subAcessPct}% acess.</span></span>`;
+        const metasHtml = _subsArr.map(({s, subT, subPed, subAcessPct, subMeta, subMargem}) => {
+            const acessCor   = subAcessPct>=5?'#4ade80':subAcessPct>=3?'#f59e0b':'#f87171';
+            const margemCor  = subMargem >= 50 ? '#4ade80' : subMargem >= 48 ? '#fbbf24' : '#f87171';
+            const margemSpan = subMargem ? ` · <span style="color:${margemCor};font-weight:700;">📊 ${subMargem.toFixed(1)}% mg</span>` : '';
+            const pedInfo    = `<span style="font-size:.6rem;color:#94a3b8;margin-left:.5rem;">📦 ${subPed} ped. · <span style="color:${acessCor};">🎧 ${subAcessPct}% acess.</span>${margemSpan}</span>`;
             return metaBar(s.nome, s.gestor, s.lojas.length+' lojas' + ` · ${pedInfo}`, subT, subMeta, null, _metaDiariaSubrede(s.lojas, lojas, subMeta));
         }).join('');
         const _btnSubStyle = (ativo, cor) => `display:inline-flex;align-items:center;gap:.25rem;padding:.18rem .5rem;border-radius:999px;font-size:.58rem;font-weight:700;cursor:pointer;border:1px solid ${ativo ? cor : 'rgba(255,255,255,.12)'};background:${ativo ? cor+'22' : 'transparent'};color:${ativo ? cor : '#6b7280'};transition:all .15s;`;

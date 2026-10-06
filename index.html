@@ -32084,12 +32084,25 @@ function _diarioRenderMgr(mgrId) {
       </button>
       <!-- Banner -->
       <div style="background:${m.bg};border:1px solid ${m.bordCor};border-radius:1rem;padding:1.5rem;margin-bottom:1.5rem">
-        <div class="flex items-center gap-4">
+        <div style="display:flex;align-items:center;gap:1rem">
           <span style="font-size:2.5rem">${m.ico}</span>
-          <div>
+          <div style="flex:1">
             <div style="color:${m.cor};font-size:1.4rem;font-weight:800">${m.nome} — ${m.titulo}</div>
             <div style="color:#6b7280;font-size:.85rem">${m.lojas}</div>
           </div>
+          ${['talysson','adriel','arthur','dias'].includes(mgrId) && (_diarioIsOwner(mgrId) || (user && ['diretoria','admin','franqueado'].includes(user.cargo))) ? `
+          <button onclick="_diarioGanhosOpen('${mgrId}')"
+                  title="Ver projeção de ganhos"
+                  style="background:linear-gradient(135deg,#065f46,#10b981);
+                         border:2px solid rgba(16,185,129,.6);color:#fff;
+                         font-size:1.1rem;font-weight:900;
+                         min-width:2.75rem;height:2.75rem;border-radius:50%;cursor:pointer;
+                         display:flex;align-items:center;justify-content:center;
+                         box-shadow:0 0 16px rgba(16,185,129,.45);
+                         flex-shrink:0;-webkit-tap-highlight-color:transparent;
+                         letter-spacing:-.02em">
+            $
+          </button>` : ''}
         </div>
       </div>`;
 
@@ -32647,6 +32660,403 @@ function _diarioRenderRelatorioHTML(mgrId, semana) {
     </div>`;
 }
 
+// ═══════════════════════════════════════════════════════════════════════════════
+//   PROJEÇÃO DE GANHOS — Gerente Sênior
+// ═══════════════════════════════════════════════════════════════════════════════
+
+function _diarioGanhosOpen(mgrId) {
+  let modal = document.getElementById('modal-ganhos-senior');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'modal-ganhos-senior';
+    modal.style.cssText = 'position:fixed;inset:0;z-index:9998;display:flex;align-items:flex-start;justify-content:center;background:rgba(0,0,0,.88);padding:1rem;overflow-y:auto';
+    modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+    document.body.appendChild(modal);
+  }
+  modal.innerHTML = `<div style="width:100%;max-width:540px;margin:auto" onclick="event.stopPropagation()">${_diarioGanhosHtml(mgrId)}</div>`;
+  modal.style.display = 'flex';
+}
+
+function _diarioGanhosHtml(mgrId) {
+  const m = _DIARIO_MGR[mgrId];
+  const d = _360D();
+  if (!d || !d.lojas) return `<div style="background:#0d0d0d;border:1px solid #374151;border-radius:1rem;padding:2rem;color:#ef4444">Dados D360 não disponíveis.</div>`;
+
+  const dias    = Math.max(1, d.diasDecorridos || 1);
+  const diasMes = Math.max(dias, d.diasMes || 31);
+  const sub     = m.sub;
+  const subLojas = _METAS_SUBREDE_LOJAS[sub] || [];
+
+  // Componentes salariais por gerente sênior
+  const _GS_SALARIO   = { talysson: 2310, adriel: 2927.53, arthur: 2310, dias: 5000 };
+  const _GS_VT_ALIM   = { talysson: 930,  adriel: 930,     arthur: 930,  dias: 930  };
+  const _GS_META_REDE = { talysson: 1000, adriel: 0,       arthur: 1000, dias: 0    };
+  const SALARIO   = _GS_SALARIO[mgrId]   || 2310;
+  const VT_ALIM   = _GS_VT_ALIM[mgrId]  || 930;
+  const META_REDE = _GS_META_REDE[mgrId] || 0;
+
+  // ─── DIAS: fórmula especial — 3,5% sobre acessórios da rede inteira ──────────
+  if (mgrId === 'dias') return _diarioGanhosHtmlDias(d, dias, diasMes, SALARIO, VT_ALIM, m);
+
+  // 0,40% é sempre aplicado (sem corte abaixo da mínima — a mínima é referência, não gatilho)
+  // 0,50% ao atingir a meta base | 0,60% ao atingir a super meta (120%)
+  function getTier(fat, meta) {
+    if (!meta) return { pct: 0.004, label: '0,40%', tier: 'base', cor: '#9ca3af' };
+    const superM = meta * 1.20;
+    if (fat >= superM) return { pct: 0.006, label: '0,60%', tier: 'super', cor: '#10b981' };
+    if (fat >= meta)   return { pct: 0.005, label: '0,50%', tier: 'base',  cor: '#f59e0b' };
+    return             { pct: 0.004, label: '0,40%', tier: 'abaixo', cor: '#9ca3af' };
+  }
+
+  const stores = subLojas.map(lk => {
+    const l = d.lojas[lk];
+    if (!l) return null;
+    const proj     = Math.round((l.total || 0) / dias * diasMes);
+    const meta     = l.meta || 0;
+    const minima   = Math.round(meta * 0.84);
+    const superMeta = Math.round(meta * 1.20);
+    const tier     = getTier(proj, meta);
+    const bonusAtual = Math.round(proj * tier.pct);
+    const bonusBase  = meta  > 0 ? Math.round(meta     * 0.005) : 0;
+    const bonusSuper = meta  > 0 ? Math.round(superMeta * 0.006) : 0;
+    return { lk, label: l.label || lk, total: l.total || 0, proj, meta, minima, superMeta, tier, bonusAtual, bonusBase, bonusSuper };
+  }).filter(Boolean);
+
+  const totalBonusAtual = stores.reduce((s, l) => s + l.bonusAtual, 0);
+  const totalBonusBase  = stores.reduce((s, l) => s + l.bonusBase,  0);
+  const totalBonusSuper = stores.reduce((s, l) => s + l.bonusSuper, 0);
+
+  const totalAtual = SALARIO + VT_ALIM + META_REDE + totalBonusAtual;
+  const totalBase  = SALARIO + VT_ALIM + META_REDE + totalBonusBase;
+  const totalSuper = SALARIO + VT_ALIM + META_REDE + totalBonusSuper;
+  const delta      = totalSuper - totalAtual;
+  const deltaBase  = totalBase  - totalAtual;
+
+  const atingiuBase  = stores.length > 0 && stores.every(s => s.meta > 0 && s.proj >= s.meta);
+  const atingiuSuper = stores.length > 0 && stores.every(s => s.meta > 0 && s.proj >= s.superMeta);
+
+  const meses = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  const mesNome = meses[new Date().getMonth()];
+
+  // Cor e mensagem
+  let msgHtml;
+  if (atingiuSuper) {
+    msgHtml = `<div style="color:#10b981;font-size:.88rem;font-weight:700;line-height:1.6">
+      🏆 No ritmo que você está, vai ganhar <strong>${_brlR(totalAtual)}</strong>. Parabéns — já está na <strong>supermeta em todas as lojas!</strong>
+    </div>`;
+  } else if (atingiuBase) {
+    msgHtml = `<div style="color:#f59e0b;font-size:.88rem;font-weight:700;line-height:1.6">
+      ⚡ No ritmo que você está, vai ganhar <strong>${_brlR(totalAtual)}</strong>. Se acelerar para a supermeta em todas as lojas, ganhará <strong>${_brlR(totalSuper)}</strong>. Você está a <strong>${_brlR(delta)}</strong> de distância.
+    </div>`;
+  } else {
+    msgHtml = `<div style="color:#f87171;font-size:.88rem;font-weight:700;line-height:1.6">
+      ⚠️ No ritmo que você está, vai ganhar <strong>${_brlR(totalAtual)}</strong>. Se bater a meta base, ganhará <strong>${_brlR(totalBase)}</strong>. Se bater a supermeta, ganhará <strong>${_brlR(totalSuper)}</strong>. Você está deixando <strong style="color:#ef4444">${_brlR(delta)}</strong> na mesa.
+    </div>`;
+  }
+
+  const bgMsg = atingiuSuper ? 'rgba(16,185,129,.07)' : atingiuBase ? 'rgba(245,158,11,.07)' : 'rgba(248,113,113,.06)';
+  const bdMsg = atingiuSuper ? 'rgba(16,185,129,.3)' : atingiuBase ? 'rgba(245,158,11,.3)' : 'rgba(248,113,113,.25)';
+
+  let html = `
+  <div style="background:#0d0d0d;border:1px solid ${m.bordCor};border-radius:1.25rem;
+              padding:1.5rem 1.25rem;margin-top:1rem;margin-bottom:1rem">
+
+    <!-- Cabeçalho -->
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem">
+      <div>
+        <div style="color:#10b981;font-size:1.05rem;font-weight:800;letter-spacing:.02em">💰 PROJEÇÃO DE GANHOS</div>
+        <div style="color:#6b7280;font-size:.75rem;margin-top:.2rem">${m.nome} · ${mesNome} ${new Date().getFullYear()} · Dia ${dias}/${diasMes}</div>
+      </div>
+      <button onclick="document.getElementById('modal-ganhos-senior').remove()"
+              style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);
+                     color:#9ca3af;border-radius:.6rem;padding:.35rem .8rem;cursor:pointer;font-size:.9rem;
+                     min-width:2.2rem;min-height:2.2rem">✕</button>
+    </div>
+
+    <!-- Mensagem -->
+    <div style="background:${bgMsg};border:1px solid ${bdMsg};border-radius:.9rem;padding:1rem 1.1rem;margin-bottom:1.25rem">
+      ${msgHtml}
+    </div>
+
+    <!-- 3 cenários -->
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem;margin-bottom:1.25rem">
+      <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:.85rem;padding:.8rem .5rem;text-align:center">
+        <div style="color:#9ca3af;font-size:.6rem;font-weight:700;letter-spacing:.04em;margin-bottom:.45rem;line-height:1.4">RITMO<br>ATUAL</div>
+        <div style="color:#f1f5f9;font-size:1rem;font-weight:900">${_brlR(totalAtual)}</div>
+        <div style="color:#6b7280;font-size:.62rem;margin-top:.2rem">bônus ${_brlR(totalBonusAtual)}</div>
+      </div>
+      <div style="background:rgba(245,158,11,.06);border:1px solid rgba(245,158,11,.25);border-radius:.85rem;padding:.8rem .5rem;text-align:center">
+        <div style="color:#f59e0b;font-size:.6rem;font-weight:700;letter-spacing:.04em;margin-bottom:.45rem;line-height:1.4">META BASE<br>(0,50%)</div>
+        <div style="color:#fbbf24;font-size:1rem;font-weight:900">${_brlR(totalBase)}</div>
+        <div style="color:#6b7280;font-size:.62rem;margin-top:.2rem">bônus ${_brlR(totalBonusBase)}</div>
+      </div>
+      <div style="background:rgba(16,185,129,.07);border:1px solid rgba(16,185,129,.3);border-radius:.85rem;padding:.8rem .5rem;text-align:center">
+        <div style="color:#10b981;font-size:.6rem;font-weight:700;letter-spacing:.04em;margin-bottom:.45rem;line-height:1.4">SUPER META<br>(0,60%)</div>
+        <div style="color:#34d399;font-size:1rem;font-weight:900">${_brlR(totalSuper)}</div>
+        <div style="color:#6b7280;font-size:.62rem;margin-top:.2rem">bônus ${_brlR(totalBonusSuper)}</div>
+      </div>
+    </div>
+
+    <!-- Composição salarial -->
+    <div style="background:#111827;border:1px solid #1f2937;border-radius:.85rem;padding:.85rem 1rem;margin-bottom:1.1rem">
+      <div style="color:#9ca3af;font-size:.65rem;font-weight:700;letter-spacing:.06em;margin-bottom:.6rem">COMPOSIÇÃO SALARIAL</div>
+      <div style="display:flex;flex-direction:column;gap:.35rem">
+        <div style="display:flex;justify-content:space-between">
+          <span style="color:#6b7280;font-size:.78rem">Salário Fixo</span>
+          <span style="color:#e5e7eb;font-size:.78rem;font-weight:600">${_brlR(SALARIO)}</span>
+        </div>
+        <div style="display:flex;justify-content:space-between">
+          <span style="color:#6b7280;font-size:.78rem">VT + Alimentação</span>
+          <span style="color:#e5e7eb;font-size:.78rem;font-weight:600">${_brlR(VT_ALIM)}</span>
+        </div>
+        ${META_REDE > 0 ? `<div style="display:flex;justify-content:space-between">
+          <span style="color:#6b7280;font-size:.78rem">Meta Rede</span>
+          <span style="color:#e5e7eb;font-size:.78rem;font-weight:600">${_brlR(META_REDE)}</span>
+        </div>` : ''}
+        <div style="border-top:1px solid #374151;margin-top:.3rem;padding-top:.4rem;display:flex;justify-content:space-between">
+          <span style="color:#9ca3af;font-size:.78rem;font-weight:700">Bonificação Lojas (projetado)</span>
+          <span style="color:#10b981;font-size:.78rem;font-weight:800">${_brlR(totalBonusAtual)}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Detalhamento por loja -->
+    <div style="color:#9ca3af;font-size:.65rem;font-weight:700;letter-spacing:.06em;margin-bottom:.6rem">DETALHAMENTO POR LOJA</div>
+    <div style="display:flex;flex-direction:column;gap:.5rem">`;
+
+  stores.forEach(s => {
+    const pctProj  = s.meta > 0 ? Math.round(s.proj / s.meta * 100) : 0;
+    const barW     = Math.min(100, pctProj);
+    const barColor = s.tier.cor;
+    const faltaBase  = Math.max(0, s.meta - s.proj);
+    const faltaSuper = Math.max(0, s.superMeta - s.proj);
+
+    html += `
+      <div style="background:#0a0f1a;border:1px solid #1f2937;border-radius:.75rem;padding:.85rem">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem">
+          <span style="color:#e5e7eb;font-size:.82rem;font-weight:700">${s.label}</span>
+          <span style="color:${s.tier.cor};font-size:.72rem;font-weight:800;
+                       background:${s.tier.cor}18;border:1px solid ${s.tier.cor}44;
+                       border-radius:20px;padding:.12rem .55rem">${s.tier.label}</span>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.25rem;margin-bottom:.55rem;text-align:center">
+          <div>
+            <div style="color:#4b5563;font-size:.6rem">Atual</div>
+            <div style="color:#9ca3af;font-size:.78rem;font-weight:600">${_brlR(s.total)}</div>
+          </div>
+          <div>
+            <div style="color:#4b5563;font-size:.6rem">Projeção</div>
+            <div style="color:${s.tier.cor};font-size:.78rem;font-weight:800">${_brlR(s.proj)}</div>
+          </div>
+          <div>
+            <div style="color:#4b5563;font-size:.6rem">Bônus proj.</div>
+            <div style="color:#10b981;font-size:.78rem;font-weight:700">${_brlR(s.bonusAtual)}</div>
+          </div>
+        </div>
+        <div style="background:#1f2937;border-radius:4px;height:5px;overflow:hidden;margin-bottom:.35rem">
+          <div style="height:100%;width:${barW}%;background:${barColor};border-radius:4px"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between">
+          <span style="color:#374151;font-size:.6rem">Meta ${_brlR(s.meta)}</span>
+          <span style="color:#6b7280;font-size:.6rem;font-weight:700">${pctProj}%</span>
+          <span style="color:#374151;font-size:.6rem">Super ${_brlR(s.superMeta)}</span>
+        </div>
+        ${faltaBase > 0 ? `<div style="color:#f59e0b;font-size:.62rem;margin-top:.3rem">
+          Falta <strong>${_brlR(faltaBase)}</strong> para a meta base (+${_brlR(s.bonusBase - s.bonusAtual)} no bônus)
+        </div>` : ''}
+        ${faltaSuper > 0 && faltaBase <= 0 ? `<div style="color:#10b981;font-size:.62rem;margin-top:.3rem">
+          Falta <strong>${_brlR(faltaSuper)}</strong> para a supermeta (+${_brlR(s.bonusSuper - s.bonusAtual)} no bônus)
+        </div>` : ''}
+        ${faltaSuper > 0 && faltaBase > 0 ? `<div style="color:#6b7280;font-size:.62rem;margin-top:.3rem">
+          Supermeta: falta <strong style="color:#9ca3af">${_brlR(faltaSuper)}</strong>
+        </div>` : ''}
+      </div>`;
+  });
+
+  html += `</div></div>`;
+  return html;
+}
+
+// ─── Projeção de ganhos — DIAS (Gerente Sênior de Acessórios) ────────────────
+// Fórmula: 3,5% sobre total de acessórios da rede inteira (sem tiers)
+function _diarioGanhosHtmlDias(d, dias, diasMes, SALARIO, VT_ALIM, m) {
+  const TODAS_LOJAS = ['cariacica','itabuna','moxuara','praiadacosta','barreiras','teixeira','laranjeiras','saomateus','serra','linhares','montserrat'];
+  const PCT = 0.035;
+
+  const stores = TODAS_LOJAS.map(lk => {
+    const l = d.lojas[lk];
+    if (!l) return null;
+    const atual    = l.acessorios?.total || 0;
+    const proj     = Math.round(atual / dias * diasMes);
+    const meta     = l.metaAcess || 0;
+    const projMeta = meta;                        // cenário meta
+    const projSuper = Math.round(meta * 1.20);    // cenário super (120%)
+    return { lk, label: l.label || lk, atual, proj, meta, projMeta, projSuper };
+  }).filter(Boolean);
+
+  const totalAtualAcess = stores.reduce((s, l) => s + l.atual,     0);
+  const totalProjAcess  = stores.reduce((s, l) => s + l.proj,      0);
+  const totalMetaAcess  = stores.reduce((s, l) => s + l.meta,      0);
+  const totalSuperAcess = stores.reduce((s, l) => s + l.projSuper, 0);
+
+  const bonusAtual = Math.round(totalProjAcess  * PCT);
+  const bonusMeta  = Math.round(totalMetaAcess  * PCT);
+  const bonusSuper = Math.round(totalSuperAcess * PCT);
+
+  const totalAtual = SALARIO + VT_ALIM + bonusAtual;
+  const totalMeta  = SALARIO + VT_ALIM + bonusMeta;
+  const totalSuper = SALARIO + VT_ALIM + bonusSuper;
+  const delta      = totalSuper - totalAtual;
+
+  const pctMeta = totalMetaAcess > 0 ? Math.round(totalProjAcess / totalMetaAcess * 100) : 0;
+  const atingiuMeta  = totalProjAcess >= totalMetaAcess;
+  const atingiuSuper = totalProjAcess >= totalSuperAcess;
+
+  const meses = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  const mesNome = meses[new Date().getMonth()];
+
+  let msgHtml;
+  if (atingiuSuper) {
+    msgHtml = `<div style="color:#10b981;font-size:.88rem;font-weight:700;line-height:1.6">
+      🏆 No ritmo que você está, vai ganhar <strong>${_brlR(totalAtual)}</strong>. Já está acima da supermeta de acessórios!
+    </div>`;
+  } else if (atingiuMeta) {
+    msgHtml = `<div style="color:#f59e0b;font-size:.88rem;font-weight:700;line-height:1.6">
+      ⚡ No ritmo que você está, vai ganhar <strong>${_brlR(totalAtual)}</strong>. Se acelerar para a supermeta, ganhará <strong>${_brlR(totalSuper)}</strong>. Você está a <strong>${_brlR(delta)}</strong> de distância.
+    </div>`;
+  } else {
+    msgHtml = `<div style="color:#f87171;font-size:.88rem;font-weight:700;line-height:1.6">
+      ⚠️ No ritmo que você está, vai ganhar <strong>${_brlR(totalAtual)}</strong>. Se todas as lojas baterem a meta de acessórios, ganhará <strong>${_brlR(totalMeta)}</strong>. Você está deixando <strong style="color:#ef4444">${_brlR(delta)}</strong> na mesa.
+    </div>`;
+  }
+
+  const bgMsg = atingiuSuper ? 'rgba(16,185,129,.07)' : atingiuMeta ? 'rgba(245,158,11,.07)' : 'rgba(248,113,113,.06)';
+  const bdMsg = atingiuSuper ? 'rgba(16,185,129,.3)' : atingiuMeta ? 'rgba(245,158,11,.3)' : 'rgba(248,113,113,.25)';
+
+  let html = `
+  <div style="background:#0d0d0d;border:1px solid ${m.bordCor};border-radius:1.25rem;
+              padding:1.5rem 1.25rem;margin-top:1rem;margin-bottom:1rem">
+
+    <!-- Cabeçalho -->
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem">
+      <div>
+        <div style="color:#a855f7;font-size:1.05rem;font-weight:800;letter-spacing:.02em">💰 PROJEÇÃO DE GANHOS</div>
+        <div style="color:#6b7280;font-size:.75rem;margin-top:.2rem">${m.nome} · Acessórios · ${mesNome} ${new Date().getFullYear()} · Dia ${dias}/${diasMes}</div>
+      </div>
+      <button onclick="document.getElementById('modal-ganhos-senior').remove()"
+              style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);
+                     color:#9ca3af;border-radius:.6rem;padding:.35rem .8rem;cursor:pointer;font-size:.9rem;
+                     min-width:2.2rem;min-height:2.2rem">✕</button>
+    </div>
+
+    <!-- Mensagem -->
+    <div style="background:${bgMsg};border:1px solid ${bdMsg};border-radius:.9rem;padding:1rem 1.1rem;margin-bottom:1.25rem">
+      ${msgHtml}
+    </div>
+
+    <!-- Totalizador de acessórios -->
+    <div style="background:#0f0a1a;border:1px solid rgba(168,85,247,.2);border-radius:.85rem;padding:.85rem 1rem;margin-bottom:1.1rem">
+      <div style="color:#a855f7;font-size:.65rem;font-weight:700;letter-spacing:.06em;margin-bottom:.6rem">ACESSÓRIOS DA REDE — 3,5% FLAT</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem">
+        <div>
+          <div style="color:#4b5563;font-size:.62rem">Atual (${dias} dias)</div>
+          <div style="color:#9ca3af;font-size:.9rem;font-weight:700">${_brlR(totalAtualAcess)}</div>
+        </div>
+        <div>
+          <div style="color:#4b5563;font-size:.62rem">Projeção (${diasMes} dias)</div>
+          <div style="color:#c084fc;font-size:.9rem;font-weight:800">${_brlR(totalProjAcess)}</div>
+        </div>
+        <div>
+          <div style="color:#4b5563;font-size:.62rem">Meta total rede</div>
+          <div style="color:#6b7280;font-size:.82rem;font-weight:600">${_brlR(totalMetaAcess)}</div>
+        </div>
+        <div>
+          <div style="color:#4b5563;font-size:.62rem">% da meta</div>
+          <div style="color:${pctMeta>=100?'#10b981':pctMeta>=80?'#f59e0b':'#f87171'};font-size:.82rem;font-weight:800">${pctMeta}%</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3 cenários -->
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem;margin-bottom:1.25rem">
+      <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:.85rem;padding:.8rem .5rem;text-align:center">
+        <div style="color:#9ca3af;font-size:.6rem;font-weight:700;letter-spacing:.04em;margin-bottom:.45rem;line-height:1.4">RITMO<br>ATUAL</div>
+        <div style="color:#f1f5f9;font-size:1rem;font-weight:900">${_brlR(totalAtual)}</div>
+        <div style="color:#6b7280;font-size:.62rem;margin-top:.2rem">bônus ${_brlR(bonusAtual)}</div>
+      </div>
+      <div style="background:rgba(168,85,247,.06);border:1px solid rgba(168,85,247,.25);border-radius:.85rem;padding:.8rem .5rem;text-align:center">
+        <div style="color:#a855f7;font-size:.6rem;font-weight:700;letter-spacing:.04em;margin-bottom:.45rem;line-height:1.4">META<br>ACESS.</div>
+        <div style="color:#c084fc;font-size:1rem;font-weight:900">${_brlR(totalMeta)}</div>
+        <div style="color:#6b7280;font-size:.62rem;margin-top:.2rem">bônus ${_brlR(bonusMeta)}</div>
+      </div>
+      <div style="background:rgba(16,185,129,.07);border:1px solid rgba(16,185,129,.3);border-radius:.85rem;padding:.8rem .5rem;text-align:center">
+        <div style="color:#10b981;font-size:.6rem;font-weight:700;letter-spacing:.04em;margin-bottom:.45rem;line-height:1.4">SUPER<br>(+20%)</div>
+        <div style="color:#34d399;font-size:1rem;font-weight:900">${_brlR(totalSuper)}</div>
+        <div style="color:#6b7280;font-size:.62rem;margin-top:.2rem">bônus ${_brlR(bonusSuper)}</div>
+      </div>
+    </div>
+
+    <!-- Composição salarial -->
+    <div style="background:#111827;border:1px solid #1f2937;border-radius:.85rem;padding:.85rem 1rem;margin-bottom:1.1rem">
+      <div style="color:#9ca3af;font-size:.65rem;font-weight:700;letter-spacing:.06em;margin-bottom:.6rem">COMPOSIÇÃO SALARIAL</div>
+      <div style="display:flex;flex-direction:column;gap:.35rem">
+        <div style="display:flex;justify-content:space-between">
+          <span style="color:#6b7280;font-size:.78rem">Salário Fixo</span>
+          <span style="color:#e5e7eb;font-size:.78rem;font-weight:600">${_brlR(SALARIO)}</span>
+        </div>
+        <div style="display:flex;justify-content:space-between">
+          <span style="color:#6b7280;font-size:.78rem">VT + Alimentação</span>
+          <span style="color:#e5e7eb;font-size:.78rem;font-weight:600">${_brlR(VT_ALIM)}</span>
+        </div>
+        <div style="border-top:1px solid #374151;margin-top:.3rem;padding-top:.4rem;display:flex;justify-content:space-between">
+          <span style="color:#9ca3af;font-size:.78rem;font-weight:700">Bonificação Acessórios (3,5% projetado)</span>
+          <span style="color:#a855f7;font-size:.78rem;font-weight:800">${_brlR(bonusAtual)}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Detalhamento por loja -->
+    <div style="color:#9ca3af;font-size:.65rem;font-weight:700;letter-spacing:.06em;margin-bottom:.6rem">DETALHAMENTO POR LOJA</div>
+    <div style="display:flex;flex-direction:column;gap:.4rem">`;
+
+  stores.forEach(s => {
+    const pctL   = s.meta > 0 ? Math.round(s.proj / s.meta * 100) : 0;
+    const barW   = Math.min(120, pctL);
+    const barCor = pctL >= 120 ? '#10b981' : pctL >= 100 ? '#f59e0b' : '#6b7280';
+    const bonusL = Math.round(s.proj * PCT);
+    const faltaMeta = Math.max(0, s.meta - s.proj);
+
+    html += `
+      <div style="background:#0a0f1a;border:1px solid #1f2937;border-radius:.65rem;padding:.7rem .85rem">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.4rem">
+          <span style="color:#e5e7eb;font-size:.78rem;font-weight:700">${s.label}</span>
+          <span style="color:${barCor};font-size:.68rem;font-weight:800">${pctL}% da meta</span>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.25rem;margin-bottom:.4rem;text-align:center">
+          <div>
+            <div style="color:#4b5563;font-size:.58rem">Atual</div>
+            <div style="color:#9ca3af;font-size:.72rem;font-weight:600">${_brlR(s.atual)}</div>
+          </div>
+          <div>
+            <div style="color:#4b5563;font-size:.58rem">Projeção</div>
+            <div style="color:#c084fc;font-size:.72rem;font-weight:800">${_brlR(s.proj)}</div>
+          </div>
+          <div>
+            <div style="color:#4b5563;font-size:.58rem">Bônus proj.</div>
+            <div style="color:#a855f7;font-size:.72rem;font-weight:700">${_brlR(bonusL)}</div>
+          </div>
+        </div>
+        <div style="background:#1f2937;border-radius:3px;height:4px;overflow:hidden">
+          <div style="height:100%;width:${Math.min(100,pctL)}%;background:${barCor};border-radius:3px"></div>
+        </div>
+        ${faltaMeta > 0 ? `<div style="color:#6b7280;font-size:.6rem;margin-top:.3rem">Falta <strong style="color:#9ca3af">${_brlR(faltaMeta)}</strong> para a meta (+${_brlR(Math.round(faltaMeta*PCT))} no bônus)</div>` : `<div style="color:#10b981;font-size:.6rem;margin-top:.3rem">✓ Meta batida</div>`}
+      </div>`;
+  });
+
+  html += `</div></div>`;
+  return html;
+}
+
 // Expor globalmente
 window._diarioOpenMgr       = _diarioOpenMgr;
 window._diarioSelectDay     = _diarioSelectDay;
@@ -32655,6 +33065,7 @@ window._diarioDescInput     = _diarioDescInput;
 window._diarioSalvar        = _diarioSalvar;
 window._diarioShowView      = _diarioShowView;
 window._diarioRenderLanding = _diarioRenderLanding;
+window._diarioGanhosOpen    = _diarioGanhosOpen;
 window._diarioInit          = _diarioInit;
 window._diarioUploadAnexos  = _diarioUploadAnexos;
 window._diarioRemAnexo      = _diarioRemAnexo;

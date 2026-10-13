@@ -16,6 +16,13 @@ except ImportError:
     os.system(f"{sys.executable} -m pip install requests -q")
     import requests
 
+# Timeout padrão para TODAS as chamadas requests — evita bloqueio infinito no LaunchAgent
+_orig_req = requests.Session.request
+def _req_with_timeout(self, method, url, **kwargs):
+    kwargs.setdefault('timeout', (30, 120))
+    return _orig_req(self, method, url, **kwargs)
+requests.Session.request = _req_with_timeout
+
 ERP_BASE      = 'https://api.erp.odrestech.com.br/api/v1'
 INDEX_HTML    = os.environ.get('INDEX_HTML', 'index.html')
 FIREBASE_KEY  = 'AIzaSyDFrLshzqf8Ct9U1SkM9MSveDNPuy_2--8'
@@ -44,6 +51,10 @@ STORE_MAP = {
     'SAO MATEUS':                 'saomateus',
     'SERRA':                      'serra',
     'TEIXEIRA DE FREITAS NOVO':   'teixeira',
+    'ODRES EUNAPOLIS':            'eunapolis',
+    'EUNAPOLIS':                  'eunapolis',
+    'EUNÁPOLIS':                  'eunapolis',
+    'ODRES EUNÁPOLIS':            'eunapolis',
 }
 
 # Lojas de cada subrede (chaves do STORE_MAP)
@@ -51,6 +62,7 @@ SUBREDE_LOJAS = {
     't1': ['cariacica', 'itabuna', 'moxuara'],
     't2': ['praiadacosta', 'barreiras', 'teixeira', 'laranjeiras'],
     't3': ['saomateus', 'serra', 'montserrat', 'linhares'],
+    'ind': ['eunapolis'],
 }
 
 # ── API ──────────────────────────────────────────────────────────────────────
@@ -169,7 +181,7 @@ def save_d360_to_firestore(sales, acess, acess_dia, today_sellers_proc, fin, fin
     dias_decorridos = min(_now_brt.day, dias_mes)
 
     lojas_data = {}
-    for sk in STORE_MAP.values():
+    for sk in STORE_KEYS_ORDER:
         lojas_data[sk] = {
             'total':         round(sales.get(sk, {}).get('total', 0), 2),
             'top':           sales.get(sk, {}).get('top', []),
@@ -214,8 +226,11 @@ def save_d360_to_firestore(sales, acess, acess_dia, today_sellers_proc, fin, fin
         return {'stringValue': str(v)}
 
     fields = {k: to_fs(v) for k, v in snap.items()}
+    # updateMask.fieldPaths garante que campos não enviados sejam DELETADOS (substituição real, não merge)
+    mask_params = '&'.join(f'updateMask.fieldPaths={k}' for k in snap.keys())
     url = (f'https://firestore.googleapis.com/v1/projects/{FIREBASE_PROJ}'
-           f'/databases/(default)/documents/ts_d360/dados_360_atual?key={FIREBASE_KEY}')
+           f'/databases/(default)/documents/ts_d360/dados_360_atual'
+           f'?key={FIREBASE_KEY}&{mask_params}')
     try:
         r = requests.patch(url, json={'fields': fields}, timeout=20)
         if r.status_code in (200, 201):
@@ -329,7 +344,7 @@ def fetch_store_ids(token, retries=3, wait=10):
     fallback = {
         'cariacica': 388, 'itabuna': 391, 'moxuara': 390, 'praiadacosta': 392,
         'barreiras': 395, 'teixeira': 396, 'laranjeiras': 397, 'linhares': 398,
-        'serra': 399, 'saomateus': 400, 'montserrat': 393,
+        'serra': 399, 'saomateus': 400, 'montserrat': 393, 'eunapolis': 741,
     }
     print(f"  IDs de lojas encontrados via fallback hardcoded: {fallback}")
     return fallback
@@ -699,12 +714,33 @@ def _update_cautelar_flat_block(content, block_name, valores_por_loja):
     return content[:block_start] + block + content[block_end:]
 
 
+def update_cautelar_lojas(content, caut_lojas_data):
+    """Insere ou atualiza cautelar:{protecao:{total:...},garantia:{total:...}} em cada loja do D360."""
+    for lk, v in caut_lojas_data.items():
+        prot = round(((v.get('protecao') or {}).get('total') or 0), 2)
+        grt  = round(((v.get('garantia') or {}).get('total') or 0), 2)
+        start, end = find_section(content, lk)
+        if start is None:
+            continue
+        sec = content[start:end]
+        new_caut = f'cautelar:{{protecao:{{total:{prot}}},garantia:{{total:{grt}}}}}'
+        if re.search(r'cautelar:\{protecao:\{total:', sec):
+            # Atualiza valores existentes
+            sec = re.sub(r'cautelar:\{protecao:\{total:[^}]*\}[^}]*\},garantia:\{total:[^}]*\}[^}]*\}',
+                         new_caut, sec, count=1)
+        else:
+            # Insere antes do último top:[ da seção
+            sec = re.sub(r'(\n\s+top:\[)', f'\n            {new_caut},\\1', sec, count=1)
+        content = content[:start] + sec + content[end:]
+        if prot > 0 or grt > 0:
+            print(f'  cautelar.{lk}: prot=R${prot:,.2f} grt=R${grt:,.2f}')
+    return content
+
 def update_cautelar_mes_lojas(content, cautelar_por_loja):
-    """Atualiza cautelar_mes_lojas por loja (proteção + garantia estendida do mês)."""
+    """LEGADO — mantido por compatibilidade. Atualiza cautelar_mes_lojas por loja."""
     block_m = re.search(r'cautelar_mes_lojas\s*:\s*\{([^}]+)\}', content, re.DOTALL)
     if not block_m:
-        print('  AVISO: bloco cautelar_mes_lojas não encontrado no HTML')
-        return content
+        return content  # bloco não existe, ignora silenciosamente
     block_start = block_m.start()
     block_end   = block_m.end()
     block       = block_m.group(0)
@@ -740,7 +776,13 @@ def update_margem_lojas(content, margem_por_loja):
 
     for lk, val in margem_por_loja.items():
         if not re.search(rf'\b{re.escape(lk)}\s*:\s*\d', block):
-            print(f"  AVISO: margem_lojas.{lk} não encontrado no HTML")
+            # Insere nova chave antes do } de fechamento do bloco
+            block = block.rstrip()
+            if block.endswith('}'):
+                block = block[:-1].rstrip().rstrip(',') + f',\n        {lk}:   {val:.2f},\n    }}'
+                print(f"  margem_lojas.{lk} → {val:.2f}% (inserido)")
+            else:
+                print(f"  AVISO: margem_lojas.{lk} não encontrado no HTML (inserção falhou)")
             continue
         new_block = re.sub(
             rf'(\b{re.escape(lk)}\s*:\s*)\d+(?:\.\d+)?',
@@ -933,6 +975,8 @@ def process_cautelar_dia(today_data):
     return stores
 
 
+_unmatched_stores_logged = set()
+
 def process(data, value_fn):
     """
     Filtra sellers, agrega por loja.
@@ -945,6 +989,9 @@ def process(data, value_fn):
         raw_name = (c.get('store_name') or '').upper().strip()
         store_key = STORE_MAP.get(raw_name)
         if not store_key:
+            if raw_name and raw_name not in _unmatched_stores_logged:
+                _unmatched_stores_logged.add(raw_name)
+                print(f"  DEBUG store_name sem mapeamento: '{raw_name}'")
             continue
         val = value_fn(c) or 0
         if val <= 0:
@@ -981,7 +1028,7 @@ def find_section(content, store_key):
     # loja (praiadacosta) tenha seção que abranja o restante do arquivo
     d360_close = _re.search(r'\n    \}\n\};', content[start:])
     end = (start + d360_close.end()) if d360_close else len(content)
-    for sk in STORE_MAP.values():
+    for sk in STORE_KEYS_ORDER:
         if sk == store_key:
             continue
         m2 = _re.search(f'\n        {sk}:\\s*\\{{', content[start + 1:end])
@@ -1033,6 +1080,9 @@ def update_store(content, store_key, total, acess_total, agend_total, agend_top,
         return content
 
     sec = content[start:end]
+
+    # 0. Remove preAbertura se existir — loja já em operação normal
+    sec = re.sub(r',?\s*preAbertura:true', '', sec, count=1)
 
     # 1. total (na linha principal da loja)
     sec = re.sub(r'(\btotal:)\d+(?:\.\d+)?(?=\s*,\s*ped:)', f'\\g<1>{total}', sec, count=1)
@@ -1251,15 +1301,15 @@ def fetch_top_produtos_por_financeira(token, start, end, top_n=7, retries=3, wai
 
     # Celulares: agrupa por financeira; acessórios: agrupa só por produto
     geral_cel  = _buckets()
-    lojas_cel  = {k: _buckets() for k in STORE_MAP.values()}
+    lojas_cel  = {k: _buckets() for k in STORE_KEYS_ORDER}
     geral_aces = defaultdict(lambda: {'qt': 0, 'val': 0.0})
-    lojas_aces = {k: defaultdict(lambda: {'qt': 0, 'val': 0.0}) for k in STORE_MAP.values()}
+    lojas_aces = {k: defaultdict(lambda: {'qt': 0, 'val': 0.0}) for k in STORE_KEYS_ORDER}
 
     def _caut_bucket():
         return {'protecao': {'total': 0.0, 'salao': 0.0, 'financeiras': 0.0, 'sellers': defaultdict(float)},
                 'garantia': {'total': 0.0, 'salao': 0.0, 'financeiras': 0.0, 'sellers': defaultdict(float)}}
     geral_caut = _caut_bucket()
-    lojas_caut = {k: _caut_bucket() for k in STORE_MAP.values()}
+    lojas_caut = {k: _caut_bucket() for k in STORE_KEYS_ORDER}
     _CAUT_GRUPO = {'PROTEÇÃO': 'protecao', 'GARANTIA ESTENDIDA': 'garantia'}
 
     for item in all_items:
@@ -1377,7 +1427,7 @@ def fetch_top_modelos_por_financeira(token, start, end, top_n=7, retries=3, wait
 
 STORE_KEYS_ORDER = [
     'cariacica','itabuna','moxuara','praiadacosta','barreiras',
-    'laranjeiras','teixeira','saomateus','serra','montserrat','linhares',
+    'laranjeiras','teixeira','saomateus','serra','montserrat','linhares','eunapolis',
 ]
 
 # Mapeamento ERP loja-name → store_key (complementar ao STORE_MAP)
@@ -1388,11 +1438,12 @@ STORE_NAME_TO_KEY = {
     'LINHARES':                 'linhares',
     'LARANJEIRAS':              'laranjeiras',
     'MONTSERRAT':               'montserrat',
-    'SHOPPING MOXUARA':             'moxuara',
+    'SHOPPING MOXUARA':         'moxuara',
     'PRAIA DA COSTA':           'praiadacosta',
     'SAO MATEUS':               'saomateus',
     'SERRA':                    'serra',
     'TEIXEIRA DE FREITAS NOVO': 'teixeira',
+    'ODRES EUNAPOLIS':          'eunapolis',
 }
 
 def _normalize_model_key(nm):
@@ -1874,6 +1925,48 @@ def main():
 
     sales     = process(sales_data, lambda c: c.get('total_sold', 0))
     acess     = process(sales_data, lambda c: (c.get('group_totals') or {}).get('ACESSÓRIOS', 0))
+
+    # Fallback para lojas 'ind' (expansão): busca gerencial por store_id sempre que
+    # o total estiver ausente OU vier zerado via sales_by_collaborator (bug de API).
+    if store_id_map:
+        for lk in SUBREDE_LOJAS.get('ind', []):
+            if (lk not in sales or sales.get(lk, {}).get('total', 0) == 0) and store_id_map.get(lk):
+                try:
+                    _g = fetch_gerencial(token, start, today, store_ids=[store_id_map[lk]])
+                    _ranking = (_g or {}).get('employee_ranking', [])
+                    _store = {'total': 0.0, 'top': []}
+                    for _emp in _ranking:
+                        if (_emp.get('profile_name') or '').strip().lower() != 'vendedor':
+                            continue
+                        _v = _parse_brl(_emp.get('total_sales', 0))
+                        if _v <= 0:
+                            continue
+                        _store['total'] += _v
+                        _nm = (_emp.get('name') or '').strip()
+                        _pts = _nm.split()
+                        _ini = (_pts[0][0]+_pts[1][0]).upper() if len(_pts)>=2 else _nm[:2].upper()
+                        _store['top'].append({'n':_nm,'i':_ini,'t':_v,'p':_emp.get('sales_count',0)})
+                    if _store['total'] > 0:
+                        _store['total'] = round(_store['total'], 2)
+                        _store['top'].sort(key=lambda x: x['t'], reverse=True)
+                        sales[lk] = _store
+                        print(f"  {lk}: total obtido via fallback gerencial/store_id → R${_store['total']:,.2f}")
+                    # Also fallback for acess
+                    if lk not in acess:
+                        _astore = {'total': 0.0, 'top': []}
+                        for _emp in _ranking:
+                            if (_emp.get('profile_name') or '').strip().lower() != 'vendedor':
+                                continue
+                            _av = (_emp.get('group_totals') or {}).get('ACESSÓRIOS', 0) or 0
+                            if _av <= 0:
+                                continue
+                            _astore['total'] += _av
+                        if _astore['total'] > 0:
+                            _astore['total'] = round(_astore['total'], 2)
+                            acess[lk] = _astore
+                except Exception as _fe:
+                    print(f"  AVISO: fallback gerencial {lk} falhou: {_fe}")
+
     acess_dia    = process(today_data, lambda c: (c.get('group_totals') or {}).get('ACESSÓRIOS', 0))
     cautelar_dia = process_cautelar_dia(today_data)
     caut_dia_total = sum(v['total'] for v in cautelar_dia.values())
@@ -1885,6 +1978,34 @@ def main():
 
     # Vendas do dia: totais por loja e set de vendedores
     today_sellers_proc = process(today_data, lambda c: c.get('total_sold', 0))
+
+    # Fallback dia para lojas 'ind': roda se ausente ou total=0
+    if store_id_map:
+        for lk in SUBREDE_LOJAS.get('ind', []):
+            if (lk not in today_sellers_proc or today_sellers_proc.get(lk, {}).get('total', 0) == 0) and store_id_map.get(lk):
+                try:
+                    _gd = fetch_gerencial(token, today, today, store_ids=[store_id_map[lk]])
+                    _rd = (_gd or {}).get('employee_ranking', [])
+                    _ds = {'total': 0.0, 'top': []}
+                    for _emp in _rd:
+                        if (_emp.get('profile_name') or '').strip().lower() != 'vendedor':
+                            continue
+                        _v = _parse_brl(_emp.get('total_sales', 0))
+                        if _v <= 0:
+                            continue
+                        _ds['total'] += _v
+                        _nm = (_emp.get('name') or '').strip()
+                        _pts = _nm.split()
+                        _ini = (_pts[0][0]+_pts[1][0]).upper() if len(_pts)>=2 else _nm[:2].upper()
+                        _ds['top'].append({'n':_nm,'i':_ini,'t':_v,'p':_emp.get('sales_count',0)})
+                    if _ds['total'] > 0:
+                        _ds['total'] = round(_ds['total'], 2)
+                        _ds['top'].sort(key=lambda x: x['t'], reverse=True)
+                        today_sellers_proc[lk] = _ds
+                        print(f"  {lk} fat_dia: obtido via fallback gerencial → R${_ds['total']:,.2f}")
+                except Exception as _fe:
+                    print(f"  AVISO: fallback fat_dia {lk}: {_fe}")
+
     sellers_today_by_store = {}
     for sk, sv in today_sellers_proc.items():
         sellers_today_by_store[sk] = {v['n'].lower() for v in sv['top']}
@@ -1892,7 +2013,7 @@ def main():
     print(f"Vendedores com venda hoje: {vendas_hoje_total}")
 
     print("\nTotais por loja:")
-    for sk in STORE_MAP.values():
+    for sk in STORE_KEYS_ORDER:
         s  = sales.get(sk, {}).get('total', 0)
         a  = acess.get(sk, {}).get('total', 0)
         ag = agend.get(sk, {}).get('total', 0)
@@ -1902,15 +2023,15 @@ def main():
         print(f"  {sk:<15} total={s:>10,.2f} | acess={a:>8,.2f} | agend={ag:>10,.2f} | fat_dia={fd:>8,.2f} | fin_dia={fn:>8,.2f} | fin_mes={fm:>8,.2f}")
 
     # ── Conferência geral: agendamentos vs total de vendas ────────────────────
-    grand_total = sum(sales.get(sk, {}).get('total', 0) for sk in STORE_MAP.values())
-    grand_agend = sum(agend.get(sk, {}).get('total', 0) for sk in STORE_MAP.values())
+    grand_total = sum(sales.get(sk, {}).get('total', 0) for sk in STORE_KEYS_ORDER)
+    grand_agend = sum(agend.get(sk, {}).get('total', 0) for sk in STORE_KEYS_ORDER)
     grand_outros = grand_total - grand_agend
     print(f"\n{'─'*70}")
     print(f"  CONFERÊNCIA — Canal 6 (Agendamentos) vs Total geral de vendas")
     print(f"  {'LOJA':<15} {'TOTAL GERAL':>13} {'CANAL 6':>13} {'OUTROS':>13} {'%CANAL6':>8}")
     print(f"  {'─'*15} {'─'*13} {'─'*13} {'─'*13} {'─'*8}")
     alertas = []
-    for sk in STORE_MAP.values():
+    for sk in STORE_KEYS_ORDER:
         s  = sales.get(sk, {}).get('total', 0)
         ag = agend.get(sk, {}).get('total', 0)
         outros = s - ag
@@ -1936,7 +2057,7 @@ def main():
     # Montar fin_bd por loja e bd por vendedor
     fin_bd_by_store = {}
     top_fin_mes_bd_by_store = {}
-    for sk in STORE_MAP.values():
+    for sk in STORE_KEYS_ORDER:
         bd_store = []
         ven_fin = {}   # {nome_lower: {nm: valor}}
         for grp in FINANCEIRAS_GROUPS:
@@ -1963,8 +2084,17 @@ def main():
     with open(INDEX_HTML, 'r', encoding='utf-8') as f:
         content = f.read()
 
-    for sk in STORE_MAP.values():
-        if sk not in sales:
+    def _html_total(ct, loja_key):
+        """Lê o total acumulado atual do HTML para uma loja (proteção contra sobreescrita com zero)."""
+        _s, _e = find_section(ct, loja_key)
+        if _s is None: return 0
+        _m = re.search(r'\btotal:(\d+(?:\.\d+)?)\s*,\s*ped:', ct[_s:_e])
+        return float(_m.group(1)) if _m else 0
+
+    for sk in STORE_KEYS_ORDER:
+        novo_total = sales.get(sk, {}).get('total', 0)
+
+        if sk not in sales or novo_total == 0:
             # Na virada de mês (dia 1) sempre zera — evita acumulado do mês anterior
             if dias_decorridos == 1:
                 content = update_store(
@@ -1978,7 +2108,12 @@ def main():
                 )
                 print(f"  {sk}: sem vendas — zerado (dia 1 do mês)")
             else:
-                print(f"  {sk}: sem dados de vendas, pulando")
+                # Proteção extra: se HTML já tem dado acumulado, não sobrescreve com zero
+                _atual = _html_total(content, sk)
+                if _atual > 0:
+                    print(f"  {sk}: ERP retornou 0 mas HTML tem R${_atual:,.2f} — preservado")
+                else:
+                    print(f"  {sk}: sem dados de vendas, pulando")
             continue
         _af = agend_fin_by_store.get(sk, {})
         content = update_store(
@@ -2040,18 +2175,10 @@ def main():
     if cautelar_dia:
         content = update_cautelar_dia_lojas(content, {lk: v.get('total', 0) for lk, v in cautelar_dia.items()})
 
-    # Atualiza cautelar_mes_lojas / cautelar_prot_lojas / cautelar_grt_lojas por loja
+    # Atualiza cautelar inline em cada loja do D360
     caut_lojas_data = (top_cautelar or {}).get('lojas', {})
     if caut_lojas_data:
-        cautelar_mes_por_loja = {
-            lk: round((v.get('protecao', {}).get('total', 0) or 0) + (v.get('garantia', {}).get('total', 0) or 0), 2)
-            for lk, v in caut_lojas_data.items()
-        }
-        content = update_cautelar_mes_lojas(content, cautelar_mes_por_loja)
-        content = _update_cautelar_flat_block(content, 'cautelar_prot_lojas',
-            {lk: round(v.get('protecao', {}).get('total', 0) or 0, 2) for lk, v in caut_lojas_data.items()})
-        content = _update_cautelar_flat_block(content, 'cautelar_grt_lojas',
-            {lk: round(v.get('garantia', {}).get('total', 0) or 0, 2) for lk, v in caut_lojas_data.items()})
+        content = update_cautelar_lojas(content, caut_lojas_data)
 
     # Atualiza margem_dia_lojas com valores individuais por loja (margem do dia)
     if margem_dia_por_loja:
@@ -2125,7 +2252,7 @@ def main():
 
     # Gravar total do fat_dia para o check_threshold do próximo run
     fat_dia_total = sum(
-        today_sellers_proc.get(sk, {}).get('total', 0) for sk in STORE_MAP.values()
+        today_sellers_proc.get(sk, {}).get('total', 0) for sk in STORE_KEYS_ORDER
     )
     total_out = os.environ.get('UPDATE_TOTAL_OUTPUT', '')
     if total_out:

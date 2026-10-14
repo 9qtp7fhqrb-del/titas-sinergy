@@ -2292,32 +2292,78 @@ def main():
     print("\nSincronizando com Firestore...")
     save_d360_to_firestore(sales, acess, acess_dia, today_sellers_proc, fin, fin_acum, agend, top_fin_mes_bd_by_store, fin_bd_by_store, top_cautelar, cautelar_dia, html_preserved_totals=html_preserved_totals)
 
-    # Apuração DEFY — Motorola DEFY (product_variant_id=1003) desde 01/10/2026
-    # Usa group_totals.SM do fetch principal (sales_data já cobre 01/MM a hoje)
-    # DEFY pertence ao grupo 'SM'; unidades ≈ round(total_SM / 1200)
+    # Apuração DEFY — Motorola DEFY (product_variation_id=1003) desde 01/10/2026
+    # Método: paginar /reports/sales (faixa 800-1800), verificar sale_items em paralelo
     print("\nApurando vendas DEFY...")
     try:
         import time as _tm_defy
-        defy_colabs = get_collaborators(sales_data)
+        from concurrent.futures import ThreadPoolExecutor, as_completed as _as_completed
+
+        # 1. Coletar candidatos por faixa de preço do DEFY
+        _candidates = []
+        _dp, _dpp = 1, 100
+        while True:
+            _dr = requests.get(
+                f'{ERP_BASE}/reports/sales?start_date=2026-10-01&end_date={today}&per_page={_dpp}&page={_dp}',
+                headers={'Authorization': f'Bearer {token}', 'Accept': 'application/json'}, timeout=30)
+            _dr.raise_for_status()
+            _dd = _dr.json()
+            for _s in _dd.get('sales', []):
+                _t = float(_s.get('total', 0) or 0)
+                if 800 <= _t <= 1800:
+                    _candidates.append(_s)
+            _dpagy = _dd.get('pagy', {})
+            if _dp >= _dpagy.get('last', 1):
+                break
+            _dp += 1
+        print(f"  Candidatos DEFY (R$800-1800): {len(_candidates)}")
+
+        # 2. Verificar sale_items em paralelo (4 threads)
+        def _check_defy(s):
+            _r2 = requests.get(f'{ERP_BASE}/sales/{s["id"]}',
+                headers={'Authorization': f'Bearer {token}', 'Accept': 'application/json'}, timeout=20)
+            if _r2.status_code != 200:
+                return None
+            _d2 = _r2.json()
+            if not any(_it.get('product_variation_id') == 1003 for _it in _d2.get('sale_items', [])):
+                return None
+            _sel = _d2.get('seller') or {}
+            _sto = _d2.get('store') or {}
+            return {
+                'seller': _sel.get('name', '?') if isinstance(_sel, dict) else '?',
+                'store':  _sto.get('name', s.get('store_name', '?')) if isinstance(_sto, dict) else s.get('store_name', '?'),
+            }
+
+        _defy_raw_sales = []
+        with ThreadPoolExecutor(max_workers=4) as _ex:
+            _futs = {_ex.submit(_check_defy, c): c for c in _candidates}
+            for _f in _as_completed(_futs):
+                _res = _f.result()
+                if _res:
+                    _defy_raw_sales.append(_res)
+
+        # 3. Agregar por loja e vendedor
         _defy_stores = {}
-        _defy_sellers = []
-        DEFY_PRICE = 1200.0
-        for _c in defy_colabs:
-            if _c.get('profile_key') != 'seller':
-                continue
-            _raw = (_c.get('store_name') or '').strip().upper()
+        _defy_sellers_raw = {}  # (name, store) -> units
+        for _sale in _defy_raw_sales:
+            _raw = (_sale['store'] or '').strip().upper()
             _sk = STORE_MAP.get(_raw)
             if not _sk:
                 continue
-            _sm_val = (_c.get('group_totals') or {}).get('SM', 0) or 0
-            _u = round(_sm_val / DEFY_PRICE)
+            _nm = (_sale['seller'] or '').strip()
             if _sk not in _defy_stores:
                 _defy_stores[_sk] = {'units': 0, 'sellers': []}
-            _defy_stores[_sk]['units'] += _u
-            if _u > 0:
-                _nm = (_c.get('collaborator_name') or '').strip()
-                _defy_stores[_sk]['sellers'].append({'name': _nm, 'units': _u})
-                _defy_sellers.append({'name': _nm, 'store': _sk, 'units': _u})
+            _defy_stores[_sk]['units'] += 1
+            _key = (_nm, _sk)
+            _defy_sellers_raw[_key] = _defy_sellers_raw.get(_key, 0) + 1
+
+        _defy_sellers = [{'name': k[0], 'store': k[1], 'units': v}
+                         for k, v in _defy_sellers_raw.items()]
+        _defy_sellers.sort(key=lambda x: -x['units'])
+        for _sk, _sv in _defy_stores.items():
+            _sv['sellers'] = [{'name': k[0], 'units': v}
+                              for (k, v) in _defy_sellers_raw.items() if k[1] == _sk]
+
         _defy_total = sum(s['units'] for s in _defy_stores.values())
         _defy_sellers.sort(key=lambda x: x['units'], reverse=True)
         _defy_doc = {

@@ -2293,18 +2293,54 @@ def main():
     save_d360_to_firestore(sales, acess, acess_dia, today_sellers_proc, fin, fin_acum, agend, top_fin_mes_bd_by_store, fin_bd_by_store, top_cautelar, cautelar_dia, html_preserved_totals=html_preserved_totals)
 
     # Apuração DEFY — Motorola DEFY (product_variation_id=1003) desde 01/10/2026
-    # Método: paginar /reports/sales (faixa 800-1800), verificar sale_items em paralelo
+    # Acumulação incremental: busca apenas o dia atual e soma ao histórico no Firestore.
+    # Se não houver histórico, faz backfill completo desde 01/10/2026.
     print("\nApurando vendas DEFY...")
     try:
         import time as _tm_defy
+        from datetime import datetime as _dt_defy, timedelta as _td_defy
         from concurrent.futures import ThreadPoolExecutor, as_completed as _as_completed
 
-        # 1. Coletar candidatos por faixa de preço do DEFY
+        _PREMIO_MIN   = 1300.0
+        _PREMIO_VALOR = 10
+        _DEFY_INICIO  = '2026-10-01'
+
+        # --- helpers Firestore read ---
+        def _fs_val(v):
+            if not isinstance(v, dict): return v
+            if 'stringValue'  in v: return v['stringValue']
+            if 'integerValue' in v: return int(v['integerValue'])
+            if 'doubleValue'  in v: return float(v['doubleValue'])
+            if 'booleanValue' in v: return v['booleanValue']
+            if 'nullValue'    in v: return None
+            if 'arrayValue'   in v: return [_fs_val(i) for i in v['arrayValue'].get('values', [])]
+            if 'mapValue'     in v: return {k2: _fs_val(v2) for k2, v2 in v['mapValue'].get('fields', {}).items()}
+            return v
+
+        # 1. Ler estado atual do Firestore
+        _defy_get_url = (f'https://firestore.googleapis.com/v1/projects/{FIREBASE_PROJ}'
+                         f'/databases/(default)/documents/ts_d360/defy_out2026?key={FIREBASE_KEY}')
+        _defy_get_r   = requests.get(_defy_get_url, timeout=15)
+        _defy_current = {}
+        if _defy_get_r.status_code == 200:
+            _defy_current = {k: _fs_val(v) for k, v in _defy_get_r.json().get('fields', {}).items()}
+
+        # dia_a_dia: dict date_str -> {'units': N, 'sellers_raw': {key: N}, 'premio_raw': {key: N}}
+        _dia_a_dia = _defy_current.get('dia_a_dia') or {}
+        if not isinstance(_dia_a_dia, dict): _dia_a_dia = {}
+
+        # 2. Determinar período a buscar
+        # Se já temos histórico, buscamos apenas hoje (re-processa o dia corrente).
+        # Se não temos, fazemos backfill desde _DEFY_INICIO.
+        _fetch_start = _DEFY_INICIO if not _dia_a_dia else today
+        print(f"  Período a buscar: {_fetch_start} → {today}")
+
+        # 3. Coletar candidatos por faixa de preço
         _candidates = []
         _dp, _dpp = 1, 100
         while True:
             _dr = requests.get(
-                f'{ERP_BASE}/reports/sales?start_date=2026-10-01&end_date={today}&per_page={_dpp}&page={_dp}',
+                f'{ERP_BASE}/reports/sales?start_date={_fetch_start}&end_date={today}&per_page={_dpp}&page={_dp}',
                 headers={'Authorization': f'Bearer {token}', 'Accept': 'application/json'}, timeout=30)
             _dr.raise_for_status()
             _dd = _dr.json()
@@ -2318,7 +2354,7 @@ def main():
             _dp += 1
         print(f"  Candidatos DEFY (R$800-1800): {len(_candidates)}")
 
-        # 2. Verificar sale_items em paralelo (4 threads)
+        # 4. Verificar sale_items em paralelo
         def _check_defy(s):
             _r2 = requests.get(f'{ERP_BASE}/sales/{s["id"]}',
                 headers={'Authorization': f'Bearer {token}', 'Accept': 'application/json'}, timeout=20)
@@ -2327,61 +2363,85 @@ def main():
             _d2 = _r2.json()
             if not any(_it.get('product_variation_id') == 1003 for _it in _d2.get('sale_items', [])):
                 return None
-            _sel = _d2.get('seller') or {}
-            _sto = _d2.get('store') or {}
+            _sel  = _d2.get('seller') or {}
+            _sto  = _d2.get('store') or {}
+            _date = str(_d2.get('sold_at') or _d2.get('created_at') or s.get('date') or today)[:10]
             return {
                 'seller': _sel.get('name', '?') if isinstance(_sel, dict) else '?',
                 'store':  _sto.get('name', s.get('store_name', '?')) if isinstance(_sto, dict) else s.get('store_name', '?'),
                 'total':  float(_d2.get('total', 0) or 0),
+                'date':   _date,
             }
 
-        _defy_raw_sales = []
+        _new_raw = []
         with ThreadPoolExecutor(max_workers=4) as _ex:
             _futs = {_ex.submit(_check_defy, c): c for c in _candidates}
             for _f in _as_completed(_futs):
                 _res = _f.result()
                 if _res:
-                    _defy_raw_sales.append(_res)
+                    _new_raw.append(_res)
 
-        # 3. Agregar por loja e vendedor
-        _defy_stores = {}
-        _defy_sellers_raw = {}  # (name, store) -> units
-        for _sale in _defy_raw_sales:
-            _raw = (_sale['store'] or '').strip().upper()
-            _sk = STORE_MAP.get(_raw)
-            if not _sk:
-                continue
-            _nm = (_sale['seller'] or '').strip()
-            if _sk not in _defy_stores:
-                _defy_stores[_sk] = {'units': 0, 'sellers': []}
-            _defy_stores[_sk]['units'] += 1
-            _key = (_nm, _sk)
-            _defy_sellers_raw[_key] = _defy_sellers_raw.get(_key, 0) + 1
+        # 5. Agrupar novas vendas por dia
+        _new_by_day = {}  # date -> list of sales
+        for _sale in _new_raw:
+            _d = _sale['date']
+            _new_by_day.setdefault(_d, []).append(_sale)
+
+        # 6. Atualizar dia_a_dia: substituir apenas os dias no período buscado
+        for _d, _day_sales in _new_by_day.items():
+            _day_sellers_raw  = {}  # "nome___loja" -> units
+            _day_premio_raw   = {}  # "nome___loja" -> qualifying
+            for _sale in _day_sales:
+                _raw = (_sale['store'] or '').strip().upper()
+                _sk  = STORE_MAP.get(_raw)
+                if not _sk: continue
+                _nm  = (_sale['seller'] or '').strip()
+                _k   = f'{_nm}___{_sk}'
+                _day_sellers_raw[_k]  = _day_sellers_raw.get(_k, 0) + 1
+                if _sale.get('total', 0) >= _PREMIO_MIN:
+                    _day_premio_raw[_k] = _day_premio_raw.get(_k, 0) + 1
+            _dia_a_dia[_d] = {
+                'units':       len(_day_sales),
+                'sellers_raw': _day_sellers_raw,
+                'premio_raw':  _day_premio_raw,
+            }
+
+        # Dias no período sem vendas DEFY → garantir que existam como zero
+        _fetch_dt   = _dt_defy.strptime(_fetch_start, '%Y-%m-%d')
+        _today_dt   = _dt_defy.strptime(today, '%Y-%m-%d')
+        _cur_dt     = _fetch_dt
+        while _cur_dt <= _today_dt:
+            _ds = _cur_dt.strftime('%Y-%m-%d')
+            if _ds not in _dia_a_dia:
+                _dia_a_dia[_ds] = {'units': 0, 'sellers_raw': {}, 'premio_raw': {}}
+            _cur_dt += _td_defy(days=1)
+
+        # 7. Agregar todos os dias → totais acumulados
+        _defy_stores      = {}
+        _defy_sellers_raw = {}  # (name, sk) -> units
+        _premio_raw       = {}  # (name, sk) -> qualifying
+
+        for _d_entry in _dia_a_dia.values():
+            for _k, _u in _d_entry.get('sellers_raw', {}).items():
+                _nm2, _sk2 = _k.rsplit('___', 1)
+                _key2 = (_nm2, _sk2)
+                _defy_sellers_raw[_key2] = _defy_sellers_raw.get(_key2, 0) + _u
+                _defy_stores.setdefault(_sk2, {'units': 0, 'sellers': []})
+                _defy_stores[_sk2]['units'] += _u
+            for _k, _q in _d_entry.get('premio_raw', {}).items():
+                _nm2, _sk2 = _k.rsplit('___', 1)
+                _premio_raw[(_nm2, _sk2)] = _premio_raw.get((_nm2, _sk2), 0) + _q
 
         _defy_sellers = [{'name': k[0], 'store': k[1], 'units': v}
                          for k, v in _defy_sellers_raw.items()]
         _defy_sellers.sort(key=lambda x: -x['units'])
         for _sk, _sv in _defy_stores.items():
             _sv['sellers'] = [{'name': k[0], 'units': v}
-                              for (k, v) in _defy_sellers_raw.items() if k[1] == _sk]
+                              for k, v in _defy_sellers_raw.items() if k[1] == _sk]
 
         _defy_total = sum(s['units'] for s in _defy_stores.values())
-        _defy_sellers.sort(key=lambda x: x['units'], reverse=True)
 
-        # 4. Apuração de prêmio: R$10 por venda com total >= R$1.300
-        _PREMIO_MIN   = 1300.0
-        _PREMIO_VALOR = 10
-        _premio_raw = {}  # (name, store) -> qualifying count
-        for _sale in _defy_raw_sales:
-            _raw2 = (_sale['store'] or '').strip().upper()
-            _sk2  = STORE_MAP.get(_raw2)
-            if not _sk2:
-                continue
-            if _sale.get('total', 0) >= _PREMIO_MIN:
-                _nm2  = (_sale['seller'] or '').strip()
-                _key2 = (_nm2, _sk2)
-                _premio_raw[_key2] = _premio_raw.get(_key2, 0) + 1
-
+        # 8. Prêmio acumulado
         _premio_stores = {}
         for (_nm2, _sk2), _q in _premio_raw.items():
             if _sk2 not in _premio_stores:
@@ -2399,23 +2459,29 @@ def main():
         _premio_sellers_list.sort(key=lambda x: -x['qualifyingUnits'])
         _premio_total_q     = sum(v for v in _premio_raw.values())
         _premio_total_prize = _premio_total_q * _PREMIO_VALOR
-        print(f"  DEFY prêmio: {_premio_total_q} vendas qualificadas (≥R$1.300) → R${_premio_total_prize} a pagar")
+        print(f"  DEFY: {_defy_total} unidades acumuladas | prêmio: {_premio_total_q}×  → R${_premio_total_prize}")
+
+        # dia_a_dia simples para o JS (só units por dia, ordenado)
+        _dia_resumo = {_d: _e['units'] for _d, _e in sorted(_dia_a_dia.items())}
 
         _defy_doc = {
-            'savedAt': int(_tm_defy.time() * 1000),
+            'savedAt':   int(_tm_defy.time() * 1000),
+            'lastDate':  today,
             'totalUnits': _defy_total,
-            'stores': _defy_stores,
-            'sellers': _defy_sellers[:20],
+            'stores':    _defy_stores,
+            'sellers':   _defy_sellers[:20],
+            'dia_a_dia': _dia_a_dia,    # dados completos por dia (para acumulação)
+            'diaResumo': _dia_resumo,   # units por dia (para o gráfico JS)
             'premio': {
-                'prizePerSale': _PREMIO_VALOR,
-                'minPrice':     _PREMIO_MIN,
+                'prizePerSale':    _PREMIO_VALOR,
+                'minPrice':        _PREMIO_MIN,
                 'totalQualifying': _premio_total_q,
                 'totalPrize':      _premio_total_prize,
                 'stores':   _premio_stores,
                 'sellers':  _premio_sellers_list,
             },
         }
-        print(f"  DEFY: {_defy_total} unidades vendidas desde 01/10/2026")
+        print(f"  DEFY: {_defy_total} unidades vendidas desde {_DEFY_INICIO}")
         # Salva em ts_d360/defy_out2026
 
         def _to_fs_defy(v):

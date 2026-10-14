@@ -2126,6 +2126,14 @@ def main():
                     print(f"  {sk}: ERP retornou 0 mas HTML tem R${_atual:,.2f} — preservado")
                 else:
                     print(f"  {sk}: sem dados de vendas, pulando")
+                # Remove preAbertura:true mesmo sem novos dados — evita filtro para não-diretores
+                _ps, _pe = find_section(content, sk)
+                if _ps is not None:
+                    _sec = content[_ps:_pe]
+                    _sec2 = re.sub(r',?\s*preAbertura:true', '', _sec, count=1)
+                    if _sec2 != _sec:
+                        content = content[:_ps] + _sec2 + content[_pe:]
+                        print(f"  {sk}: preAbertura:true removido")
             continue
         _af = agend_fin_by_store.get(sk, {})
         content = update_store(

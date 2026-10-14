@@ -110,25 +110,49 @@ def main():
 
     # 2. Firebase deploy — copia os arquivos do site para /tmp/ e publica dali,
     #    evitando restrição TCC do macOS que bloqueia Node.js de ler ~/Documents/.
-    import json as _json, shutil as _shutil
+    import json as _json
     firebase_cmd = find_firebase()
     tmp_dir  = '/tmp/titas-firebase-deploy'
     pub_dir  = '/tmp/titas-firebase-pub'   # pasta com os arquivos reais do site
     deploy_ok = False
+
+    def _safe_copy(src, dst):
+        """Copia via open/read/write — evita EDEADLK do TCC em LaunchAgent."""
+        os.makedirs(os.path.dirname(dst), exist_ok=True)
+        with open(src, 'rb') as _f:
+            data = _f.read()
+        with open(dst, 'wb') as _f:
+            _f.write(data)
+
+    def _safe_rmtree(path):
+        for root, dirs, files in os.walk(path, topdown=False):
+            for f in files:
+                try: os.remove(os.path.join(root, f))
+                except: pass
+            for d in dirs:
+                try: os.rmdir(os.path.join(root, d))
+                except: pass
+        try: os.rmdir(path)
+        except: pass
+
     try:
         os.makedirs(tmp_dir, exist_ok=True)
         # Recria pasta pública do zero para garantir versão fresca
         if os.path.exists(pub_dir):
-            _shutil.rmtree(pub_dir)
+            _safe_rmtree(pub_dir)
         os.makedirs(pub_dir)
-        # Copia arquivos que compõem o site
+        # Copia arquivos que compõem o site (open/read/write evita TCC EDEADLK)
         for _fname in ('index.html', 'sw.js', '404.html', 'favicon.svg'):
             _src = os.path.join(PROJECT, _fname)
             if os.path.isfile(_src):
-                _shutil.copy2(_src, os.path.join(pub_dir, _fname))
+                _safe_copy(_src, os.path.join(pub_dir, _fname))
         _assets_src = os.path.join(PROJECT, 'assets')
         if os.path.isdir(_assets_src):
-            _shutil.copytree(_assets_src, os.path.join(pub_dir, 'assets'), dirs_exist_ok=True)
+            for _root, _dirs, _files in os.walk(_assets_src):
+                for _af in _files:
+                    _asrc = os.path.join(_root, _af)
+                    _arel = os.path.relpath(_asrc, PROJECT)
+                    _safe_copy(_asrc, os.path.join(pub_dir, _arel))
         # firebase.json com public apontando para /tmp/ — Node.js só lê daqui
         deploy_cfg = {
             'hosting': {

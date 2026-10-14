@@ -2680,9 +2680,7 @@
                     <button class="f360-pill" data-tipo="sub" data-val="t3" onclick="filtrar360(this,'sub','t3')">
                         ⚡ Titãs 3
                     </button>
-                    <button id="pill-eunapolis" class="f360-pill hidden" data-tipo="loja" data-val="eunapolis" onclick="filtrar360(this,'loja','eunapolis')">
-                        Eunápolis
-                    </button>
+
                     <button onclick="_abrirRankAcess()"
                             style="display:flex;align-items:center;gap:.4rem;padding:.3rem .85rem;border-radius:999px;font-size:.7rem;font-weight:700;letter-spacing:.03em;background:linear-gradient(135deg,#065f46,#059669);border:1px solid #10b981;color:#6ee7b7;cursor:pointer;box-shadow:0 0 12px rgba(16,185,129,.35);transition:all .2s;"
                             onmouseover="this.style.boxShadow='0 0 20px rgba(16,185,129,.6)';this.style.background='linear-gradient(135deg,#059669,#10b981)'"
@@ -6063,7 +6061,6 @@ function openDash() {
     if (_podeVerEstoque()) _showBtn('btn-estoque');
     if (allowedUsuarios || ['diretoria','franqueado','gerente-senior','gerente-senior-acess','gerente','subgerente'].includes(user.cargo))
         _showBtn('btn-lancar-metas');
-    if (allowed360 && user.cargo !== 'vendedor') _showBtn('pill-eunapolis');
     // btn-diario: visível por padrão no HTML → esconde apenas para cargos sem acesso
     if (!['diretoria','admin','franqueado','gerente-senior','gerente-senior-acess','gerente','subgerente'].includes(user.cargo)) _hideEl('btn-diario');
 

@@ -3283,32 +3283,40 @@
               const stores = raw.stores || {};
               const allSellers = (raw.sellers || []).slice();
               let totalUnits = raw.totalUnits || 0;
-              const GOAL = 100, daysInMonth = 31;
+              const GOAL = 100, ESTOQUE = 200, daysInMonth = 31;
               const daysElapsed = new Date().getDate();
               const daysRemaining = daysInMonth - daysElapsed;
               const dailyRate = daysElapsed > 0 ? totalUnits / daysElapsed : 0;
               const projection = Math.round(dailyRate * daysInMonth);
+              const faltam = Math.max(0, GOAL - totalUnits);
+              const necessDia = (faltam / Math.max(1, daysRemaining)).toFixed(1);
               const expectedByNow = Math.round((GOAL / daysInMonth) * daysElapsed);
               const pct = Math.min(100, Math.round((totalUnits / GOAL) * 100));
               const onTrack = totalUnits >= expectedByNow;
               allSellers.sort((a,b) => b.units - a.units);
+              const bc = pct >= 100 ? '#4ade80' : onTrack ? '#3b82f6' : '#f87171';
+              const rC = parseFloat(necessDia) > dailyRate * 1.2 ? '#f87171' : '#4ade80';
 
               let h = '';
-              // Cards
-              h += `<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;margin-bottom:1.25rem;">`;
-              h += `<div class="_defy-card"><div style="font-size:1.9rem;font-weight:900;color:#93c5fd;line-height:1;">${totalUnits}</div><div style="font-size:.66rem;color:#64748b;margin-top:.25rem;">VENDIDAS</div></div>`;
-              h += `<div class="_defy-card"><div style="font-size:1.9rem;font-weight:900;color:${onTrack?'#4ade80':'#f87171'};line-height:1;">${projection}</div><div style="font-size:.66rem;color:#64748b;margin-top:.25rem;">PROJEÇÃO</div></div>`;
-              h += `<div class="_defy-card"><div style="font-size:1.9rem;font-weight:900;color:#a78bfa;line-height:1;">${daysRemaining}</div><div style="font-size:.66rem;color:#64748b;margin-top:.25rem;">DIAS RESTANTES</div></div>`;
+              // 4 Cards
+              h += `<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:.55rem;margin-bottom:1.1rem;">`;
+              h += `<div class="_defy-card"><div style="font-size:1.65rem;font-weight:900;color:#93c5fd;line-height:1;">${totalUnits}</div><div style="font-size:.58rem;color:#64748b;margin-top:.2rem;">VENDIDAS</div></div>`;
+              h += `<div class="_defy-card"><div style="font-size:1.65rem;font-weight:900;color:${faltam===0?'#4ade80':'#f87171'};line-height:1;">${faltam}</div><div style="font-size:.58rem;color:#64748b;margin-top:.2rem;">FALTAM</div></div>`;
+              h += `<div class="_defy-card"><div style="font-size:1.65rem;font-weight:900;color:#a78bfa;line-height:1;">${ESTOQUE}</div><div style="font-size:.58rem;color:#64748b;margin-top:.2rem;">ESTOQUE</div></div>`;
+              h += `<div class="_defy-card"><div style="font-size:1.65rem;font-weight:900;color:#a78bfa;line-height:1;">${daysRemaining}</div><div style="font-size:.58rem;color:#64748b;margin-top:.2rem;">DIAS REST.</div></div>`;
               h += `</div>`;
-              // Progresso geral
-              const bc = pct >= 100 ? '#4ade80' : onTrack ? '#3b82f6' : '#f87171';
+              // Progresso + ritmo
               h += `<div style="margin-bottom:1.5rem;">`;
               h += `<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.4rem;">`;
-              h += `<span style="font-size:.7rem;font-weight:700;color:#94a3b8;letter-spacing:.07em;">PROGRESSO GERAL</span>`;
+              h += `<span style="font-size:.7rem;font-weight:700;color:#94a3b8;letter-spacing:.07em;">META: ${GOAL} UNIDADES</span>`;
               h += `<span style="font-size:.8rem;font-weight:700;color:${bc};">${totalUnits} / ${GOAL} (${pct}%)</span>`;
               h += `</div>`;
               h += `<div class="_defy-bar-bg"><div class="_defy-bar-fill" id="_defy-bar-main" style="width:0%;background:linear-gradient(90deg,${bc},${bc}99);"></div></div>`;
-              h += `<div style="font-size:.65rem;color:#475569;margin-top:.35rem;">Dia ${daysElapsed} de ${daysInMonth} · Esperado até hoje: ${expectedByNow} unid · Ritmo atual: ${dailyRate.toFixed(1)} unid/dia · Necessário: ${((GOAL-totalUnits)/Math.max(1,daysRemaining)).toFixed(1)} unid/dia</div>`;
+              h += `<div style="display:flex;gap:.9rem;margin-top:.5rem;flex-wrap:wrap;">`;
+              h += `<span style="font-size:.63rem;color:#475569;">Ritmo atual: <b style="color:#93c5fd;">${dailyRate.toFixed(1)}/dia</b></span>`;
+              h += `<span style="font-size:.63rem;color:#475569;">Necessário: <b style="color:${rC};">${necessDia}/dia</b></span>`;
+              h += `<span style="font-size:.63rem;color:#475569;">Projeção: <b style="color:${onTrack?'#4ade80':'#f87171'};">${projection} unid</b></span>`;
+              h += `</div>`;
               h += `</div>`;
               // Por subrede
               h += `<div style="margin-bottom:1.5rem;">`;
@@ -3500,26 +3508,30 @@
             const stores = raw.stores || {};
             const allSellers = (raw.sellers || []).slice();
             const totalUnits = raw.totalUnits || 0;
-            const GOAL = 100, daysInMonth = 31;
+            const GOAL = 100, ESTOQUE = 200, daysInMonth = 31;
             const daysElapsed = new Date().getDate();
             const daysRemaining = daysInMonth - daysElapsed;
             const dailyRate = daysElapsed > 0 ? totalUnits / daysElapsed : 0;
             const projection = Math.round(dailyRate * daysInMonth);
+            const faltam = Math.max(0, GOAL - totalUnits);
+            const necessDia = (faltam / Math.max(1, daysRemaining)).toFixed(1);
             const expectedByNow = Math.round((GOAL / daysInMonth) * daysElapsed);
             const pct = Math.min(100, Math.round((totalUnits / GOAL) * 100));
             const onTrack = totalUnits >= expectedByNow;
             allSellers.sort((a,b) => b.units - a.units);
             const bc = pct >= 100 ? '#4ade80' : onTrack ? '#3b82f6' : '#f87171';
+            const rC = parseFloat(necessDia) > dailyRate * 1.2 ? '#f87171' : '#4ade80';
             const lGoal = Math.round(GOAL/12);
             const lExp = Math.round((lGoal/daysInMonth)*daysElapsed);
             const medals = ['🥇','🥈','🥉'];
             let h = '';
-            h += `<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;margin-bottom:1.25rem;">`;
-            h += `<div class="_defy-card"><div style="font-size:1.9rem;font-weight:900;color:#93c5fd;line-height:1;">${totalUnits}</div><div style="font-size:.66rem;color:#64748b;margin-top:.25rem;">VENDIDAS</div></div>`;
-            h += `<div class="_defy-card"><div style="font-size:1.9rem;font-weight:900;color:${onTrack?'#4ade80':'#f87171'};line-height:1;">${projection}</div><div style="font-size:.66rem;color:#64748b;margin-top:.25rem;">PROJEÇÃO</div></div>`;
-            h += `<div class="_defy-card"><div style="font-size:1.9rem;font-weight:900;color:#a78bfa;line-height:1;">${daysRemaining}</div><div style="font-size:.66rem;color:#64748b;margin-top:.25rem;">DIAS RESTANTES</div></div>`;
+            h += `<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:.55rem;margin-bottom:1.1rem;">`;
+            h += `<div class="_defy-card"><div style="font-size:1.65rem;font-weight:900;color:#93c5fd;line-height:1;">${totalUnits}</div><div style="font-size:.58rem;color:#64748b;margin-top:.2rem;">VENDIDAS</div></div>`;
+            h += `<div class="_defy-card"><div style="font-size:1.65rem;font-weight:900;color:${faltam===0?'#4ade80':'#f87171'};line-height:1;">${faltam}</div><div style="font-size:.58rem;color:#64748b;margin-top:.2rem;">FALTAM</div></div>`;
+            h += `<div class="_defy-card"><div style="font-size:1.65rem;font-weight:900;color:#a78bfa;line-height:1;">${ESTOQUE}</div><div style="font-size:.58rem;color:#64748b;margin-top:.2rem;">ESTOQUE</div></div>`;
+            h += `<div class="_defy-card"><div style="font-size:1.65rem;font-weight:900;color:#a78bfa;line-height:1;">${daysRemaining}</div><div style="font-size:.58rem;color:#64748b;margin-top:.2rem;">DIAS REST.</div></div>`;
             h += `</div>`;
-            h += `<div style="margin-bottom:1.5rem;"><div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.4rem;"><span style="font-size:.7rem;font-weight:700;color:#94a3b8;letter-spacing:.07em;">PROGRESSO GERAL</span><span style="font-size:.8rem;font-weight:700;color:${bc};">${totalUnits} / ${GOAL} (${pct}%)</span></div><div class="_defy-bar-bg"><div class="_defy-bar-fill" id="_defy-bar-main" style="width:0%;background:linear-gradient(90deg,${bc},${bc}99);"></div></div><div style="font-size:.65rem;color:#475569;margin-top:.35rem;">Dia ${daysElapsed} de ${daysInMonth} · Esperado: ${expectedByNow} · Ritmo: ${dailyRate.toFixed(1)}/dia · Necessário: ${((GOAL-totalUnits)/Math.max(1,daysRemaining)).toFixed(1)}/dia</div></div>`;
+            h += `<div style="margin-bottom:1.5rem;"><div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.4rem;"><span style="font-size:.7rem;font-weight:700;color:#94a3b8;letter-spacing:.07em;">META: ${GOAL} UNIDADES</span><span style="font-size:.8rem;font-weight:700;color:${bc};">${totalUnits} / ${GOAL} (${pct}%)</span></div><div class="_defy-bar-bg"><div class="_defy-bar-fill" id="_defy-bar-main" style="width:0%;background:linear-gradient(90deg,${bc},${bc}99);"></div></div><div style="display:flex;gap:.9rem;margin-top:.5rem;flex-wrap:wrap;"><span style="font-size:.63rem;color:#475569;">Ritmo atual: <b style="color:#93c5fd;">${dailyRate.toFixed(1)}/dia</b></span><span style="font-size:.63rem;color:#475569;">Necessário: <b style="color:${rC};">${necessDia}/dia</b></span><span style="font-size:.63rem;color:#475569;">Projeção: <b style="color:${onTrack?'#4ade80':'#f87171'};">${projection} unid</b></span></div></div>`;
             h += `<div style="margin-bottom:1.5rem;"><div style="font-size:.7rem;font-weight:700;color:#94a3b8;letter-spacing:.07em;margin-bottom:.65rem;">POR SUBREDE</div>`;
             for (const sn of _DSN) {
               const snU = sn.lojas.reduce((a,lk)=>a+(stores[lk]?.units||0),0);

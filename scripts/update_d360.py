@@ -2292,6 +2292,65 @@ def main():
     print("\nSincronizando com Firestore...")
     save_d360_to_firestore(sales, acess, acess_dia, today_sellers_proc, fin, fin_acum, agend, top_fin_mes_bd_by_store, fin_bd_by_store, top_cautelar, cautelar_dia, html_preserved_totals=html_preserved_totals)
 
+    # Apuração DEFY — Motorola DEFY (product_variant_id=1003) desde 01/10/2026
+    # Usa group_totals.SM do fetch principal (sales_data já cobre 01/MM a hoje)
+    # DEFY pertence ao grupo 'SM'; unidades ≈ round(total_SM / 1200)
+    print("\nApurando vendas DEFY...")
+    try:
+        import time as _tm_defy
+        defy_colabs = get_collaborators(sales_data)
+        _defy_stores = {}
+        _defy_sellers = []
+        DEFY_PRICE = 1200.0
+        for _c in defy_colabs:
+            if _c.get('profile_key') != 'seller':
+                continue
+            _raw = (_c.get('store_name') or '').strip().upper()
+            _sk = STORE_MAP.get(_raw)
+            if not _sk:
+                continue
+            _sm_val = (_c.get('group_totals') or {}).get('SM', 0) or 0
+            _u = round(_sm_val / DEFY_PRICE)
+            if _sk not in _defy_stores:
+                _defy_stores[_sk] = {'units': 0, 'sellers': []}
+            _defy_stores[_sk]['units'] += _u
+            if _u > 0:
+                _nm = (_c.get('collaborator_name') or '').strip()
+                _defy_stores[_sk]['sellers'].append({'name': _nm, 'units': _u})
+                _defy_sellers.append({'name': _nm, 'store': _sk, 'units': _u})
+        _defy_total = sum(s['units'] for s in _defy_stores.values())
+        _defy_sellers.sort(key=lambda x: x['units'], reverse=True)
+        _defy_doc = {
+            'savedAt': int(_tm_defy.time() * 1000),
+            'totalUnits': _defy_total,
+            'stores': _defy_stores,
+            'sellers': _defy_sellers[:20],
+        }
+        print(f"  DEFY: {_defy_total} unidades vendidas desde 01/10/2026")
+        # Salva em ts_d360/defy_out2026
+
+        def _to_fs_defy(v):
+            if v is None:            return {'nullValue': None}
+            if isinstance(v, bool):  return {'booleanValue': v}
+            if isinstance(v, int):   return {'integerValue': str(v)}
+            if isinstance(v, float): return {'doubleValue': v}
+            if isinstance(v, list):  return {'arrayValue': {'values': [_to_fs_defy(i) for i in v]}}
+            if isinstance(v, dict):  return {'mapValue': {'fields': {k2: _to_fs_defy(v2) for k2, v2 in v.items()}}}
+            return {'stringValue': str(v)}
+
+        _defy_fields = {k: _to_fs_defy(v) for k, v in _defy_doc.items()}
+        _defy_mask = '&'.join(f'updateMask.fieldPaths={k}' for k in _defy_doc.keys())
+        _defy_url = (f'https://firestore.googleapis.com/v1/projects/{FIREBASE_PROJ}'
+                     f'/databases/(default)/documents/ts_d360/defy_out2026'
+                     f'?key={FIREBASE_KEY}&{_defy_mask}')
+        _dr = requests.patch(_defy_url, json={'fields': _defy_fields}, timeout=20)
+        if _dr.status_code in (200, 201):
+            print(f'  ✅ DEFY Firestore OK')
+        else:
+            print(f'  AVISO DEFY Firestore: {_dr.status_code}: {_dr.text[:200]}')
+    except Exception as _e_defy:
+        print(f"  AVISO: erro na apuração DEFY: {_e_defy}")
+
 if __name__ == '__main__':
     main()
 

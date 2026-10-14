@@ -2332,6 +2332,7 @@ def main():
             return {
                 'seller': _sel.get('name', '?') if isinstance(_sel, dict) else '?',
                 'store':  _sto.get('name', s.get('store_name', '?')) if isinstance(_sto, dict) else s.get('store_name', '?'),
+                'total':  float(_d2.get('total', 0) or 0),
             }
 
         _defy_raw_sales = []
@@ -2366,11 +2367,53 @@ def main():
 
         _defy_total = sum(s['units'] for s in _defy_stores.values())
         _defy_sellers.sort(key=lambda x: x['units'], reverse=True)
+
+        # 4. Apuração de prêmio: R$10 por venda com total >= R$1.300
+        _PREMIO_MIN   = 1300.0
+        _PREMIO_VALOR = 10
+        _premio_raw = {}  # (name, store) -> qualifying count
+        for _sale in _defy_raw_sales:
+            _raw2 = (_sale['store'] or '').strip().upper()
+            _sk2  = STORE_MAP.get(_raw2)
+            if not _sk2:
+                continue
+            if _sale.get('total', 0) >= _PREMIO_MIN:
+                _nm2  = (_sale['seller'] or '').strip()
+                _key2 = (_nm2, _sk2)
+                _premio_raw[_key2] = _premio_raw.get(_key2, 0) + 1
+
+        _premio_stores = {}
+        for (_nm2, _sk2), _q in _premio_raw.items():
+            if _sk2 not in _premio_stores:
+                _premio_stores[_sk2] = {'qualifyingUnits': 0, 'totalPrize': 0, 'sellers': []}
+            _premio_stores[_sk2]['qualifyingUnits'] += _q
+            _premio_stores[_sk2]['totalPrize']      += _q * _PREMIO_VALOR
+            _premio_stores[_sk2]['sellers'].append({'name': _nm2, 'qualifyingUnits': _q, 'prize': _q * _PREMIO_VALOR})
+        for _sk2 in _premio_stores:
+            _premio_stores[_sk2]['sellers'].sort(key=lambda x: -x['qualifyingUnits'])
+
+        _premio_sellers_list = [
+            {'name': k[0], 'store': k[1], 'qualifyingUnits': v, 'prize': v * _PREMIO_VALOR}
+            for k, v in _premio_raw.items()
+        ]
+        _premio_sellers_list.sort(key=lambda x: -x['qualifyingUnits'])
+        _premio_total_q     = sum(v for v in _premio_raw.values())
+        _premio_total_prize = _premio_total_q * _PREMIO_VALOR
+        print(f"  DEFY prêmio: {_premio_total_q} vendas qualificadas (≥R$1.300) → R${_premio_total_prize} a pagar")
+
         _defy_doc = {
             'savedAt': int(_tm_defy.time() * 1000),
             'totalUnits': _defy_total,
             'stores': _defy_stores,
             'sellers': _defy_sellers[:20],
+            'premio': {
+                'prizePerSale': _PREMIO_VALOR,
+                'minPrice':     _PREMIO_MIN,
+                'totalQualifying': _premio_total_q,
+                'totalPrize':      _premio_total_prize,
+                'stores':   _premio_stores,
+                'sellers':  _premio_sellers_list,
+            },
         }
         print(f"  DEFY: {_defy_total} unidades vendidas desde 01/10/2026")
         # Salva em ts_d360/defy_out2026

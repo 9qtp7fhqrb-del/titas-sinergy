@@ -229,6 +229,11 @@ def save_d360_to_firestore(sales, acess, acess_dia, today_sellers_proc, fin, fin
         return {'stringValue': str(v)}
 
     fields = {k: to_fs(v) for k, v in snap.items()}
+    # Diagnóstico: confirma que eunapolis está no payload
+    lojas_no_payload = sorted(fields.get('lojas', {}).get('mapValue', {}).get('fields', {}).keys())
+    import json as _json_diag
+    payload_size = len(_json_diag.dumps({'fields': fields}))
+    print(f'  Firestore payload: {len(lojas_no_payload)} lojas, {payload_size//1024}KB — eunapolis {"✓" if "eunapolis" in lojas_no_payload else "✗ AUSENTE"}')
     # updateMask.fieldPaths garante que campos não enviados sejam DELETADOS (substituição real, não merge)
     mask_params = '&'.join(f'updateMask.fieldPaths={k}' for k in snap.keys())
     url = (f'https://firestore.googleapis.com/v1/projects/{FIREBASE_PROJ}'
@@ -237,7 +242,11 @@ def save_d360_to_firestore(sales, acess, acess_dia, today_sellers_proc, fin, fin
     try:
         r = requests.patch(url, json={'fields': fields}, timeout=20)
         if r.status_code in (200, 201):
+            # Verifica se eunapolis está na resposta do Firestore
+            resp_lojas = r.json().get('fields', {}).get('lojas', {}).get('mapValue', {}).get('fields', {})
+            eu_ok = 'eunapolis' in resp_lojas
             print(f'  ✅ Firestore atualizado — onSnapshot acionado em todos os browsers abertos')
+            print(f'  Resp Firestore: {len(resp_lojas)} lojas — eunapolis {"✓" if eu_ok else "✗ AUSENTE na resposta"}')
         else:
             print(f'  AVISO: Firestore retornou {r.status_code}: {r.text[:200]}')
     except Exception as e:

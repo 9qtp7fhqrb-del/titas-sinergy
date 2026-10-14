@@ -91,7 +91,11 @@ def main():
 
     # 1. Roda update_d360.py
     script = os.path.join(PROJECT, 'scripts', 'update_d360.py')
-    rc, out, err = run_captured([sys.executable, script])
+    try:
+        rc, out, err = run_captured([sys.executable, script], timeout=900)
+    except Exception as _te:
+        log(f'ERRO run_captured: {_te}')
+        return
     for line in out.strip().split('\n'):
         if line: log(f'  [update] {line}')
     for line in err.strip().split('\n'):

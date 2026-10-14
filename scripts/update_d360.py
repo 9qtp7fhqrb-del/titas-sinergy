@@ -172,7 +172,7 @@ def save_erp_token_to_firestore(token):
         print(f'  AVISO: erro ao salvar token ERP no Firestore: {e}')
 
 
-def save_d360_to_firestore(sales, acess, acess_dia, today_sellers_proc, fin, fin_acum, agend, top_fin_mes_bd_by_store=None, fin_bd_by_store=None, top_cautelar=None, cautelar_dia=None):
+def save_d360_to_firestore(sales, acess, acess_dia, today_sellers_proc, fin, fin_acum, agend, top_fin_mes_bd_by_store=None, fin_bd_by_store=None, top_cautelar=None, cautelar_dia=None, html_preserved_totals=None):
     """Atualiza ts_d360/dados_360_atual no Firestore — dispara onSnapshot em todos os browsers abertos."""
     import time, calendar
     MESES = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez']
@@ -182,8 +182,11 @@ def save_d360_to_firestore(sales, acess, acess_dia, today_sellers_proc, fin, fin
 
     lojas_data = {}
     for sk in STORE_KEYS_ORDER:
+        # Se ERP retornou 0 mas HTML tem valor acumulado, usa HTML (proteção anti-flap)
+        erp_total = round(sales.get(sk, {}).get('total', 0), 2)
+        fs_total  = (html_preserved_totals or {}).get(sk, erp_total) if erp_total == 0 else erp_total
         lojas_data[sk] = {
-            'total':         round(sales.get(sk, {}).get('total', 0), 2),
+            'total':         fs_total,
             'top':           sales.get(sk, {}).get('top', []),
             'fat_dia':       round(today_sellers_proc.get(sk, {}).get('total', 0), 2),
             'top_dia':       today_sellers_proc.get(sk, {}).get('top', []),
@@ -2260,9 +2263,17 @@ def main():
             f.write(str(round(fat_dia_total, 2)))
         print(f"Total fat_dia salvo: R$ {fat_dia_total:,.2f}")
 
+    # Coleta totais preservados do HTML para lojas onde ERP retornou 0 (ex: eunápolis de manhã)
+    html_preserved_totals = {}
+    for sk in STORE_KEYS_ORDER:
+        if sales.get(sk, {}).get('total', 0) == 0:
+            _ht = _html_total(content, sk)
+            if _ht > 0:
+                html_preserved_totals[sk] = _ht
+
     # Atualiza Firestore em tempo real — dispara onSnapshot em todos os browsers abertos
     print("\nSincronizando com Firestore...")
-    save_d360_to_firestore(sales, acess, acess_dia, today_sellers_proc, fin, fin_acum, agend, top_fin_mes_bd_by_store, fin_bd_by_store, top_cautelar, cautelar_dia)
+    save_d360_to_firestore(sales, acess, acess_dia, today_sellers_proc, fin, fin_acum, agend, top_fin_mes_bd_by_store, fin_bd_by_store, top_cautelar, cautelar_dia, html_preserved_totals=html_preserved_totals)
 
 if __name__ == '__main__':
     main()

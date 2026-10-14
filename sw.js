@@ -1,4 +1,4 @@
-const CACHE_NAME = 'titas-sinergy-v57';
+const CACHE_NAME = 'titas-sinergy-v58';
 
 // Install: ativa imediatamente, sem esperar aba fechar
 self.addEventListener('install', event => {

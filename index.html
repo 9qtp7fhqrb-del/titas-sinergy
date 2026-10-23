@@ -6636,9 +6636,9 @@ function openDash() {
         _showBtn('btn-lancar-metas');
     // btn-diario: visível por padrão no HTML → esconde apenas para cargos sem acesso
     if (!['diretoria','admin','franqueado','gerente-senior','gerente-senior-acess','gerente','subgerente'].includes(user.cargo)) _hideEl('btn-diario');
-    // btn-dicta: SEMPRE oculto — só Melo pode ver, e apenas se o botão existir no HTML
+    // btn-dicta: SEMPRE oculto — só Melo pode ver
     _hideEl('btn-dicta');
-    if (_dictaIsMelo()) _showBtn('btn-dicta');
+    if (user && user.cargo === 'diretoria' && (user.name||'').toLowerCase().includes('melo')) _showBtn('btn-dicta');
 
     // Não-diretoria com acesso 360°: badge por cargo
     if (['franqueado','gerente-senior','gerente-senior-acess','subgerente','gerente','vendedor'].includes(user.cargo)) {

@@ -823,12 +823,14 @@ def process_gerencial(data):
 
     ranking = (data or {}).get('employee_ranking', [])
     stores = {}
+    _unmatched = set()
     for emp in ranking:
         if (emp.get('profile_name') or '').strip().lower() != 'vendedor':
             continue
         raw_name = (emp.get('store_name') or '').upper().strip()
         store_key = STORE_MAP.get(raw_name)
         if not store_key:
+            _unmatched.add(raw_name)
             continue
         val = parse_brl(emp.get('total_sales', 0))
         if val <= 0:
@@ -843,6 +845,8 @@ def process_gerencial(data):
     for s in stores.values():
         s['top'].sort(key=lambda x: x['t'], reverse=True)
         s['total'] = round(s['total'], 2)
+    if _unmatched:
+        print(f"  [process_gerencial] store_names SEM MATCH no STORE_MAP: {sorted(_unmatched)}")
     return stores
 
 
@@ -1986,6 +1990,7 @@ def main():
     agend     = process(agend_data, lambda c: c.get('total_sold', 0))
     fin      = process_gerencial(fin_today_data)
     fin_acum = process_gerencial(fin_mes_data)
+    print(f"  [fin_acum] lojas com financeiras no mês: { {k: round(v['total'],2) for k,v in fin_acum.items()} }")
     fin_grps = {nm: process_gerencial(d) for nm, d in fin_groups_data.items()}
 
     # Vendas do dia: totais por loja e set de vendedores

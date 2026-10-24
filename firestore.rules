@@ -80,5 +80,12 @@ service cloud.firestore {
     match /ts_audiencias/{docId} {
       allow read, write: if true;
     }
+
+    match /ts_patrimonio/{lojaId} {
+      allow read, write: if true;
+      match /itens/{itemId} {
+        allow read, write: if true;
+      }
+    }
   }
 }

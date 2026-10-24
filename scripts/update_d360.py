@@ -821,12 +821,19 @@ def process_gerencial(data):
         except Exception:
             return 0.0
 
+    # Perfis gerenciais que carregam o total da loja — nunca incluir
+    _EXCLUIR_PROFILES = {'gerencia', 'sub-gerente', 'gerente', 'subgerente',
+                         'diretor franqueado', 'trainee', 'caixa'}
+
     ranking = (data or {}).get('employee_ranking', [])
     stores = {}
     _unmatched = set()
     for emp in ranking:
-        if (emp.get('profile_name') or '').strip().lower() != 'vendedor':
+        pn = (emp.get('profile_name') or '').strip().lower()
+        if pn in _EXCLUIR_PROFILES or pn == '':
             continue
+        # Inclui: vendedor, auxiliar, vendedor financeira — e qualquer outro perfil de vendas não listado
+        # (filtro negativo: exclui apenas perfis gerenciais conhecidos)
         raw_name = (emp.get('store_name') or '').upper().strip()
         store_key = STORE_MAP.get(raw_name)
         if not store_key:

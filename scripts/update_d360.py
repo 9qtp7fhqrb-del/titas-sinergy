@@ -822,8 +822,7 @@ def process_gerencial(data):
             return 0.0
 
     # Perfis gerenciais que carregam o total da loja — nunca incluir
-    _EXCLUIR_PROFILES = {'gerencia', 'sub-gerente', 'gerente', 'subgerente',
-                         'diretor franqueado', 'trainee', 'caixa'}
+    _EXCLUIR_PROFILES = {'gerencia', 'gerente', 'trainee'}
 
     ranking = (data or {}).get('employee_ranking', [])
     stores = {}

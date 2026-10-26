@@ -2372,10 +2372,7 @@ def main():
             if _r2.status_code != 200:
                 return None
             _d2 = _r2.json()
-            _defy_qty = sum(int(_it.get('quantity') or 1)
-                            for _it in _d2.get('sale_items', [])
-                            if _it.get('product_variation_id') == 1003)
-            if _defy_qty == 0:
+            if not any(_it.get('product_variation_id') == 1003 for _it in _d2.get('sale_items', [])):
                 return None
             _sel  = _d2.get('seller') or {}
             _sto  = _d2.get('store') or {}
@@ -2385,7 +2382,7 @@ def main():
                 'store':  _sto.get('name', s.get('store_name', '?')) if isinstance(_sto, dict) else s.get('store_name', '?'),
                 'total':  float(_d2.get('total', 0) or 0),
                 'date':   _date,
-                'qty':    _defy_qty,
+                'qty':    1,
             }
 
         _new_raw = []

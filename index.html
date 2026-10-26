@@ -7,7 +7,7 @@
     <script>
     // Cache-buster: força reload se a versão mudou
     (function(){
-      var BUILD = '20261026142047';
+      var BUILD = '20261026142759';
       var stored = localStorage.getItem('d360_build');
       if (stored && stored !== BUILD) {
         localStorage.setItem('d360_build', BUILD);
@@ -8699,8 +8699,8 @@ const D360 = {
     // O sistema deriva automaticamente: margem por loja → subrede → rede
     // COMO ATUALIZAR: edite apenas margem_lojas com os valores do ERP por loja
     // ─────────────────────────────────────────────────────────────────────────────
-    margem_dia: 49.80,              // rede hoje · zerado automaticamente à meia-noite
-    margem_dia_subredes: { t1: 43.57, t2: 48.53, t3: 54.73, ind: 58.36 },
+    margem_dia: 49.89,              // rede hoje · zerado automaticamente à meia-noite
+    margem_dia_subredes: { t1: 43.57, t2: 48.92, t3: 54.73, ind: 58.36 },
     margem_lojas: {
         // ── FONTE PRIMÁRIA — atualizar aqui com o Relatório Gerencial por Loja ──
         // atualizado pelo update_d360.py (por loja via API, fallback por subrede)
@@ -8709,7 +8709,7 @@ const D360 = {
         moxuara:     51.03,
         praiadacosta:50.90,
         barreiras:   48.27,
-        teixeira:    48.24,
+        teixeira:    48.25,
         laranjeiras: 51.55,
         saomateus:   52.89,
         serra:       52.46,
@@ -8718,10 +8718,10 @@ const D360 = {
         eunapolis:   46.66,
     },
     margem_subredes: {  // fallback quando margem_lojas estiver incompleta
-        t1: 50.66, t2: 49.50, t3: 52.45, ind: 46.66
+        t1: 50.66, t2: 49.51, t3: 52.45, ind: 46.66
     },
     // margem_mes: derivada automaticamente pelo _calcMargemPonderada (não editar)
-    margem_mes: 50.85,
+    margem_mes: 50.86,
 
     subredes: {
         t1: { nome:'Titãs 1', gestor:'Talysson', meta:0,
@@ -8819,9 +8819,9 @@ const D360 = {
                 {n:'Fabiano Francisco Fontes',i:'FF',p:21,t:28480.0,ds:5,ult:'06/10'},
                 {n:'GABRIEL BARRETO PEREIRA',i:'GB',p:22,t:25249.0,ds:19,ult:'08/10'},
                 {n:'ANA CAROLINA DA SILVA',i:'AC',p:4,t:170.0}]},
-        teixeira:    { label:'Teixeira de Freitas',sigla:'TF', sub:'t2', meta:210000,  total:194533.48,  ped:158,  cancel:0, agend:0, agendCount:0, agendFat:84992.99,  fat_dia:3080.0, acess_dia:120.0, dia_a_dia:{"1":10363.0,"2":19541.0,"3":25981.0,"4":25981.0,"5":38471.0,"8":63587.0,"13":95801.99,"14":104159.98,"16":127559.98,"19":142916.37,"20":152196.37,"22":172108.37,"23":180377.38,"24":191453.48,"25":191453.48,"26":194533.48}, acess_dia_top:[{n:'CARLA SANTOS LUIZ',i:'CS',t:120.0}], top_dia:[{n:'AMANDA GOULART ANDRADE',i:'AG',t:2960.0}, {n:'CARLA SANTOS LUIZ',i:'CS',t:120.0}], fin_dia:1400.0, fin_mes:27342.98, top_fin_mes:[{n:'CARINE FERREIRA FRANCO',i:'CF',t:13910.0,bd:[{nm:'PayJoy',t:31480.0},{nm:'OdresCred',t:13910.0},{nm:'Outras',t:0}]},{n:'AMANDA GOULART ANDRADE',i:'AG',t:7014.98,bd:[{nm:'PayJoy',t:52714.0},{nm:'OdresCred',t:7014.98},{nm:'Outras',t:0}]},{n:'CARLA SANTOS LUIZ',i:'CS',t:6418.0,bd:[{nm:'PayJoy',t:50060.0},{nm:'OdresCred',t:6418.0},{nm:'Outras',t:0}]}], fin_bd:[{nm:'PayJoy',t:134254.0},{nm:'OdresCred',t:27342.98},{nm:'Outras',t:0}], top_fin:[{n:'AMANDA GOULART ANDRADE',i:'AG',t:1400.0}], metaAcess:6000,
+        teixeira:    { label:'Teixeira de Freitas',sigla:'TF', sub:'t2', meta:210000,  total:194603.48,  ped:159,  cancel:0, agend:0, agendCount:0, agendFat:84992.99,  fat_dia:3150.0, acess_dia:190.0, dia_a_dia:{"1":10363.0,"2":19541.0,"3":25981.0,"4":25981.0,"5":38471.0,"8":63587.0,"13":95801.99,"14":104159.98,"16":127559.98,"19":142916.37,"20":152196.37,"22":172108.37,"23":180377.38,"24":191453.48,"25":191453.48,"26":194603.48}, acess_dia_top:[{n:'CARLA SANTOS LUIZ',i:'CS',t:120.0}, {n:'CARINE FERREIRA FRANCO',i:'CF',t:70.0}], top_dia:[{n:'AMANDA GOULART ANDRADE',i:'AG',t:2960.0}, {n:'CARLA SANTOS LUIZ',i:'CS',t:120.0}, {n:'CARINE FERREIRA FRANCO',i:'CF',t:70.0}], fin_dia:1400.0, fin_mes:27342.98, top_fin_mes:[{n:'CARINE FERREIRA FRANCO',i:'CF',t:13910.0,bd:[{nm:'PayJoy',t:31480.0},{nm:'OdresCred',t:13910.0},{nm:'Outras',t:0}]},{n:'AMANDA GOULART ANDRADE',i:'AG',t:7014.98,bd:[{nm:'PayJoy',t:52714.0},{nm:'OdresCred',t:7014.98},{nm:'Outras',t:0}]},{n:'CARLA SANTOS LUIZ',i:'CS',t:6418.0,bd:[{nm:'PayJoy',t:50060.0},{nm:'OdresCred',t:6418.0},{nm:'Outras',t:0}]}], fin_bd:[{nm:'PayJoy',t:134254.0},{nm:'OdresCred',t:27342.98},{nm:'Outras',t:0}], top_fin:[{n:'AMANDA GOULART ANDRADE',i:'AG',t:1400.0}], metaAcess:6000,
             agendamentos:{total:84992.99, fin:83592.99, fin_bd:[{nm:'PayJoy',t:71404.0},{nm:'OdresCred',t:12188.99},{nm:'Outras',t:0}], top:[{n:'AMANDA GOULART ANDRADE',i:'AG',t:56688.98}, {n:'CARINE FERREIRA FRANCO',i:'CF',t:18755.0}, {n:'CARLA SANTOS LUIZ',i:'CS',t:9549.01}]},
-            acessorios:{total:4970.99, top:[
+            acessorios:{total:5040.99, top:[
                 {n:'Amanda Goulart Andrade',i:'AG',t:740,ds:12,ult:'12/06'},
                 {n:'Carla Santos Luiz',i:'CL',t:690,ds:12,ult:'12/06'},
                 {n:'Wilghyner de Padua Soares de Souza',i:'WS',t:440,ds:12,ult:'12/06'},
@@ -8832,7 +8832,7 @@ const D360 = {
             cautelar:{protecao:{total:0},garantia:{total:0}},
             top:[{n:'CARLA SANTOS LUIZ',i:'CS',p:64,t:69995.4,ds:17,ult:'26/10'},
                 {n:'AMANDA GOULART ANDRADE',i:'AG',p:46,t:68381.08,ds:15,ult:'26/10'},
-                {n:'CARINE FERREIRA FRANCO',i:'CF',p:45,t:56033.0,ds:10,ult:'25/10'},
+                {n:'CARINE FERREIRA FRANCO',i:'CF',p:46,t:56103.0,ds:11,ult:'26/10'},
                 {n:'PALOMA DE JESUS SANTOS',i:'PD',p:2,t:68.0,ds:2,ult:'02/10'},
                 {n:'WILGHYNER DE PADUA SOARES DE SOUZA',i:'WD',p:1,t:56.0}]},
         laranjeiras: { label:'Laranjeiras',        sigla:'LJ', sub:'t2', meta:180000,  total:191319.54,ped:153,  cancel:0, agend:0, agendCount:0, agendFat:66870.63,   fat_dia:40.0, acess_dia:40.0, dia_a_dia:{"1":1700.0,"2":15940.0,"3":32085.0,"4":32085.0,"5":43610.0,"8":70029.15,"13":92697.61,"14":103421.6,"16":118821.58,"19":140503.07,"20":146033.06,"22":170338.05,"23":176866.54,"24":191279.54,"25":191279.54,"26":191319.54}, acess_dia_top:[{n:'MAXWELL FREITAS DA SILVA JUNIOR',i:'MF',t:40.0}], top_dia:[{n:'MAXWELL FREITAS DA SILVA JUNIOR',i:'MF',t:40.0}], fin_dia:0, fin_mes:118569.54, top_fin_mes:[{n:'Steffany Oliveira França',i:'SO',t:54440.62,bd:[{nm:'PayJoy',t:17455.0},{nm:'OdresCred',t:54440.62},{nm:'Outras',t:0}]},{n:'LÍDIA DA PENHA DIOGO',i:'LD',t:46550.95,bd:[{nm:'PayJoy',t:26901.0},{nm:'OdresCred',t:46550.95},{nm:'Outras',t:4600.0}]},{n:'MAXWELL FREITAS DA SILVA JUNIOR',i:'MF',t:15677.97,bd:[{nm:'PayJoy',t:9535.0},{nm:'OdresCred',t:15677.97},{nm:'Outras',t:0}]},{n:'stefany santiago rocha',i:'SS',t:1900.0,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:1900.0},{nm:'Outras',t:0}]}], fin_bd:[{nm:'PayJoy',t:53891.0},{nm:'OdresCred',t:118569.54},{nm:'Outras',t:4600.0}], top_fin:[], metaAcess:5000,
@@ -10078,7 +10078,7 @@ var _ERP_ESTOQUE = {
       'ZENFONE MAX PLUS':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:0,eunapolis:0},
       'ZENFONE MAX SHOT':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:0,eunapolis:0},
     };
-    var _ERP_ESTOQUE_TS = '26/10/2026 11:20';
+    var _ERP_ESTOQUE_TS = '26/10/2026 11:27';
 // Preços por produto — populado pelo update_d360.py a cada 30 min
 var _ERP_PRECOS = {
       'ALCATEL A2 XL': {custo:0.00,venda:0.00},
@@ -10432,7 +10432,7 @@ var _ERP_PRECOS = {
       'ZENFONE MAX PLUS': {custo:0.00,venda:0.00},
       'ZENFONE MAX SHOT': {custo:0.00,venda:0.00},
     };
-    var _ERP_PRECOS_TS = '26/10/2026 11:20';
+    var _ERP_PRECOS_TS = '26/10/2026 11:27';
 // Flag de sessão: true = fetch já tentado (sucesso ou falha), não tentar de novo
 var _erpPrecosCarregados = false;
 var _SUG_SPECS = {

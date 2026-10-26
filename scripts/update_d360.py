@@ -738,7 +738,7 @@ def update_cautelar_lojas(content, caut_lojas_data):
         new_caut = f'cautelar:{{protecao:{{total:{prot}}},garantia:{{total:{grt}}}}}'
         if re.search(r'cautelar:\{protecao:\{total:', sec):
             # Atualiza valores existentes
-            sec = re.sub(r'cautelar:\{protecao:\{total:[^}]*\}[^}]*\},garantia:\{total:[^}]*\}[^}]*\}',
+            sec = re.sub(r'cautelar:\{protecao:\{total:[^{}]*\},garantia:\{total:[^{}]*\}\}',
                          new_caut, sec, count=1)
         else:
             # Insere antes do último top:[ da seção

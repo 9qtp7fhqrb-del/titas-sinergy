@@ -2357,13 +2357,13 @@ def main():
             _dd = _dr.json()
             for _s in _dd.get('sales', []):
                 _t = float(_s.get('total', 0) or 0)
-                if 800 <= _t <= 1800:
+                if 700 <= _t <= 3000:
                     _candidates.append(_s)
             _dpagy = _dd.get('pagy', {})
             if _dp >= _dpagy.get('last', 1):
                 break
             _dp += 1
-        print(f"  Candidatos DEFY (R$800-1800): {len(_candidates)}")
+        print(f"  Candidatos DEFY (R$700-3000): {len(_candidates)}")
 
         # 4. Verificar sale_items em paralelo
         def _check_defy(s):
@@ -2372,7 +2372,10 @@ def main():
             if _r2.status_code != 200:
                 return None
             _d2 = _r2.json()
-            if not any(_it.get('product_variation_id') == 1003 for _it in _d2.get('sale_items', [])):
+            _defy_qty = sum(int(_it.get('quantity') or 1)
+                            for _it in _d2.get('sale_items', [])
+                            if _it.get('product_variation_id') == 1003)
+            if _defy_qty == 0:
                 return None
             _sel  = _d2.get('seller') or {}
             _sto  = _d2.get('store') or {}
@@ -2382,6 +2385,7 @@ def main():
                 'store':  _sto.get('name', s.get('store_name', '?')) if isinstance(_sto, dict) else s.get('store_name', '?'),
                 'total':  float(_d2.get('total', 0) or 0),
                 'date':   _date,
+                'qty':    _defy_qty,
             }
 
         _new_raw = []
@@ -2408,11 +2412,12 @@ def main():
                 if not _sk: continue
                 _nm  = (_sale['seller'] or '').strip()
                 _k   = f'{_nm}___{_sk}'
-                _day_sellers_raw[_k]  = _day_sellers_raw.get(_k, 0) + 1
+                _qty = _sale.get('qty', 1)
+                _day_sellers_raw[_k]  = _day_sellers_raw.get(_k, 0) + _qty
                 if _sale.get('total', 0) >= _PREMIO_MIN:
-                    _day_premio_raw[_k] = _day_premio_raw.get(_k, 0) + 1
+                    _day_premio_raw[_k] = _day_premio_raw.get(_k, 0) + _qty
             _dia_a_dia[_d] = {
-                'units':       len(_day_sales),
+                'units':       sum(_s.get('qty', 1) for _s in _day_sales),
                 'sellers_raw': _day_sellers_raw,
                 'premio_raw':  _day_premio_raw,
             }

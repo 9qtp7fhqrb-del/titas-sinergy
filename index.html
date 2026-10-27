@@ -3308,8 +3308,8 @@
                 : '—';
               const tmC = ticketMedio >= 1300 ? '#4ade80' : ticketMedio >= 1000 ? '#fbbf24' : '#f87171';
               let h = '';
-              // 7 Cards — grid auto-fill
-              h += `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:.55rem;margin-bottom:1.1rem;">`;
+              // 6 Cards — 2 linhas de 3
+              h += `<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.55rem;margin-bottom:1.1rem;">`;
               h += `<div class="_defy-card"><div style="font-size:1.65rem;font-weight:900;color:#93c5fd;line-height:1;">${totalUnits}</div><div style="font-size:.58rem;color:#64748b;margin-top:.2rem;">VENDIDAS</div></div>`;
               h += `<div class="_defy-card" style="cursor:${vendidasHoje>0?'pointer':'default'};" onclick="${vendidasHoje>0?'_defyHojeLojas()':''}" title="${vendidasHoje>0?'Ver lojas':''}">
                       <div style="font-size:1.65rem;font-weight:900;color:${vendidasHoje>0?'#4ade80':'#64748b'};line-height:1;">${vendidasHoje}</div>
@@ -3319,7 +3319,6 @@
               h += `<div class="_defy-card"><div style="font-size:1.65rem;font-weight:900;color:${faltam===0?'#4ade80':'#f87171'};line-height:1;">${faltam}</div><div style="font-size:.58rem;color:#64748b;margin-top:.2rem;">FALTAM</div></div>`;
               h += `<div class="_defy-card"><div style="font-size:1.65rem;font-weight:900;color:#a78bfa;line-height:1;">${estoqueAtual}</div><div style="font-size:.58rem;color:#64748b;margin-top:.2rem;">ESTOQUE</div></div>`;
               h += `<div class="_defy-card"><div style="font-size:1.65rem;font-weight:900;color:${metaDiariaC};line-height:1;">${necessDia}</div><div style="font-size:.58rem;color:#64748b;margin-top:.2rem;">META/DIA</div></div>`;
-              h += `<div class="_defy-card"><div style="font-size:1.65rem;font-weight:900;color:#a78bfa;line-height:1;">${daysRemaining}</div><div style="font-size:.58rem;color:#64748b;margin-top:.2rem;">DIAS REST.</div></div>`;
               h += `<div class="_defy-card"><div style="font-size:1.35rem;font-weight:900;color:${tmC};line-height:1;">${tmFmt}</div><div style="font-size:.58rem;color:#64748b;margin-top:.2rem;">TICKET MÉD.</div></div>`;
               h += `</div>`;
               // Progresso + ritmo
@@ -3333,6 +3332,7 @@
               h += `<span style="font-size:.63rem;color:#475569;">Ritmo atual: <b style="color:#93c5fd;">${dailyRate.toFixed(1)}/dia</b></span>`;
               h += `<span style="font-size:.63rem;color:#475569;">Necessário: <b style="color:${rC};">${necessDia}/dia</b></span>`;
               h += `<span style="font-size:.63rem;color:#475569;">Projeção: <b style="color:${onTrack?'#4ade80':'#f87171'};">${projection} unid</b></span>`;
+              h += `<span style="font-size:.63rem;color:#475569;">Dias rest.: <b style="color:#a78bfa;">${daysRemaining}</b></span>`;
               h += `</div>`;
               h += `</div>`;
               // Gráfico de acumulação diária

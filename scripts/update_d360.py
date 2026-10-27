@@ -2372,17 +2372,21 @@ def main():
             if _r2.status_code != 200:
                 return None
             _d2 = _r2.json()
-            if not any(_it.get('product_variation_id') == 1003 for _it in _d2.get('sale_items', [])):
+            _defy_items = [_it for _it in _d2.get('sale_items', []) if _it.get('product_variation_id') == 1003]
+            if not _defy_items:
                 return None
             _sel  = _d2.get('seller') or {}
             _sto  = _d2.get('store') or {}
             _date = str(_d2.get('sold_at') or _d2.get('created_at') or s.get('date') or today)[:10]
+            # Soma apenas os valores dos itens DEFY (não o total da venda que pode ter outros itens)
+            _defy_total = sum(float(_it.get('total', 0) or float(_it.get('price', 0) or 0)) for _it in _defy_items)
+            _defy_qty   = sum(int(_it.get('quantity', 1) or 1) for _it in _defy_items)
             return {
                 'seller': _sel.get('name', '?') if isinstance(_sel, dict) else '?',
                 'store':  _sto.get('name', s.get('store_name', '?')) if isinstance(_sto, dict) else s.get('store_name', '?'),
-                'total':  float(_d2.get('total', 0) or 0),
+                'total':  _defy_total,
                 'date':   _date,
-                'qty':    1,
+                'qty':    _defy_qty,
             }
 
         _new_raw = []
@@ -2403,6 +2407,7 @@ def main():
         for _d, _day_sales in _new_by_day.items():
             _day_sellers_raw  = {}  # "nome___loja" -> units
             _day_premio_raw   = {}  # "nome___loja" -> qualifying
+            _day_revenue = 0.0
             for _sale in _day_sales:
                 _raw = (_sale['store'] or '').strip().upper()
                 _sk  = STORE_MAP.get(_raw)
@@ -2413,10 +2418,12 @@ def main():
                 _day_sellers_raw[_k]  = _day_sellers_raw.get(_k, 0) + _qty
                 if _sale.get('total', 0) >= _PREMIO_MIN:
                     _day_premio_raw[_k] = _day_premio_raw.get(_k, 0) + _qty
+                _day_revenue += float(_sale.get('total', 0) or 0)
             _dia_a_dia[_d] = {
                 'units':       sum(_s.get('qty', 1) for _s in _day_sales),
                 'sellers_raw': _day_sellers_raw,
                 'premio_raw':  _day_premio_raw,
+                'revenue':     _day_revenue,
             }
 
         # Dias no período sem vendas DEFY → garantir que existam como zero
@@ -2433,8 +2440,10 @@ def main():
         _defy_stores      = {}
         _defy_sellers_raw = {}  # (name, sk) -> units
         _premio_raw       = {}  # (name, sk) -> qualifying
+        _total_revenue    = 0.0
 
         for _d_entry in _dia_a_dia.values():
+            _total_revenue += float(_d_entry.get('revenue', 0) or 0)
             for _k, _u in _d_entry.get('sellers_raw', {}).items():
                 _nm2, _sk2 = _k.rsplit('___', 1)
                 _key2 = (_nm2, _sk2)
@@ -2453,6 +2462,7 @@ def main():
                               for k, v in _defy_sellers_raw.items() if k[1] == _sk]
 
         _defy_total = sum(s['units'] for s in _defy_stores.values())
+        _ticket_medio = (_total_revenue / _defy_total) if _defy_total > 0 else 0.0
 
         # 8. Prêmio acumulado
         _premio_stores = {}
@@ -2478,13 +2488,15 @@ def main():
         _dia_resumo = {_d: _e['units'] for _d, _e in sorted(_dia_a_dia.items())}
 
         _defy_doc = {
-            'savedAt':   int(_tm_defy.time() * 1000),
-            'lastDate':  today,
-            'totalUnits': _defy_total,
-            'stores':    _defy_stores,
-            'sellers':   _defy_sellers[:20],
-            'dia_a_dia': _dia_a_dia,    # dados completos por dia (para acumulação)
-            'diaResumo': _dia_resumo,   # units por dia (para o gráfico JS)
+            'savedAt':      int(_tm_defy.time() * 1000),
+            'lastDate':     today,
+            'totalUnits':   _defy_total,
+            'totalRevenue': _total_revenue,
+            'ticketMedio':  _ticket_medio,
+            'stores':       _defy_stores,
+            'sellers':      _defy_sellers[:20],
+            'dia_a_dia':    _dia_a_dia,    # dados completos por dia (para acumulação)
+            'diaResumo':    _dia_resumo,   # units por dia (para o gráfico JS)
             'premio': {
                 'prizePerSale':    _PREMIO_VALOR,
                 'minPrice':        _PREMIO_MIN,

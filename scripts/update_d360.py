@@ -2372,17 +2372,21 @@ def main():
             if _r2.status_code != 200:
                 return None
             _d2 = _r2.json()
-            if not any(_it.get('product_variation_id') == 1003 for _it in _d2.get('sale_items', [])):
+            _defy_items = [_it for _it in _d2.get('sale_items', []) if _it.get('product_variation_id') == 1003]
+            if not _defy_items:
                 return None
             _sel  = _d2.get('seller') or {}
             _sto  = _d2.get('store') or {}
             _date = str(_d2.get('sold_at') or _d2.get('created_at') or s.get('date') or today)[:10]
+            # Soma apenas os valores dos itens DEFY (não o total da venda que pode ter outros itens)
+            _defy_total = sum(float(_it.get('total', 0) or float(_it.get('price', 0) or 0)) for _it in _defy_items)
+            _defy_qty   = sum(int(_it.get('quantity', 1) or 1) for _it in _defy_items)
             return {
                 'seller': _sel.get('name', '?') if isinstance(_sel, dict) else '?',
                 'store':  _sto.get('name', s.get('store_name', '?')) if isinstance(_sto, dict) else s.get('store_name', '?'),
-                'total':  float(_d2.get('total', 0) or 0),
+                'total':  _defy_total,
                 'date':   _date,
-                'qty':    1,
+                'qty':    _defy_qty,
             }
 
         _new_raw = []

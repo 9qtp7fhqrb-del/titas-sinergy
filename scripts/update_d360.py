@@ -2382,13 +2382,14 @@ def main():
             _sel  = _d2.get('seller') or {}
             _sto  = _d2.get('store') or {}
             _date = str(_d2.get('sold_at') or _d2.get('created_at') or s.get('date') or today)[:10]
-            # Soma apenas os valores dos itens DEFY (não o total da venda que pode ter outros itens)
-            _defy_total = sum(float(_it.get('total', 0) or float(_it.get('price', 0) or 0)) for _it in _defy_items)
-            _defy_qty   = sum(int(_it.get('quantity', 1) or 1) for _it in _defy_items)
+            # Quantidade de unidades DEFY na venda
+            _defy_qty = sum(int(_it.get('quantity') or _it.get('qty') or 1) for _it in _defy_items)
+            # Ticket médio = total da venda / qtd DEFY (venda é de R$700-3000, DEFY é o produto principal)
+            _sale_total = float(_d2.get('total', 0) or 0)
             return {
                 'seller': _sel.get('name', '?') if isinstance(_sel, dict) else '?',
                 'store':  _sto.get('name', s.get('store_name', '?')) if isinstance(_sto, dict) else s.get('store_name', '?'),
-                'total':  _defy_total,
+                'total':  _sale_total,
                 'date':   _date,
                 'qty':    _defy_qty,
             }
@@ -2527,7 +2528,7 @@ def main():
         _defy_url = (f'https://firestore.googleapis.com/v1/projects/{FIREBASE_PROJ}'
                      f'/databases/(default)/documents/ts_d360/defy_out2026'
                      f'?key={FIREBASE_KEY}&{_defy_mask}')
-        _dr = requests.patch(_defy_url, json={'fields': _defy_fields}, timeout=20)
+        _dr = requests.patch(_defy_url, json={'fields': _defy_fields}, timeout=60)
         if _dr.status_code in (200, 201):
             print(f'  ✅ DEFY Firestore OK')
         else:

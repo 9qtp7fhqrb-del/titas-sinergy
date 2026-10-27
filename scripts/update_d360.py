@@ -2416,6 +2416,7 @@ def main():
             for _sale in _day_sales:
                 _raw = (_sale['store'] or '').strip().upper()
                 _sk  = STORE_MAP.get(_raw)
+                _day_revenue += float(_sale.get('total', 0) or 0)
                 if not _sk: continue
                 _nm  = (_sale['seller'] or '').strip()
                 _k   = f'{_nm}___{_sk}'
@@ -2423,7 +2424,6 @@ def main():
                 _day_sellers_raw[_k]  = _day_sellers_raw.get(_k, 0) + _qty
                 if _sale.get('total', 0) >= _PREMIO_MIN:
                     _day_premio_raw[_k] = _day_premio_raw.get(_k, 0) + _qty
-                _day_revenue += float(_sale.get('total', 0) or 0)
             _dia_a_dia[_d] = {
                 'units':       sum(_s.get('qty', 1) for _s in _day_sales),
                 'sellers_raw': _day_sellers_raw,

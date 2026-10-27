@@ -2371,9 +2371,15 @@ def main():
 
         # 4. Verificar sale_items em paralelo
         def _check_defy(s):
-            _r2 = requests.get(f'{ERP_BASE}/sales/{s["id"]}',
-                headers={'Authorization': f'Bearer {token}', 'Accept': 'application/json'}, timeout=20)
-            if _r2.status_code != 200:
+            for _attempt in range(2):
+                try:
+                    _r2 = requests.get(f'{ERP_BASE}/sales/{s["id"]}',
+                        headers={'Authorization': f'Bearer {token}', 'Accept': 'application/json'}, timeout=30)
+                    if _r2.status_code == 200:
+                        break
+                except requests.exceptions.RequestException:
+                    pass
+            else:
                 return None
             _d2 = _r2.json()
             _defy_items = [_it for _it in _d2.get('sale_items', []) if _it.get('product_variation_id') == 1003]
@@ -2466,8 +2472,13 @@ def main():
             _sv['sellers'] = [{'name': k[0], 'units': v}
                               for k, v in _defy_sellers_raw.items() if k[1] == _sk]
 
-        _defy_total = sum(s['units'] for s in _defy_stores.values())
-        _ticket_medio = (_total_revenue / _defy_total) if _defy_total > 0 else 0.0
+        _defy_total_calc = sum(s['units'] for s in _defy_stores.values())
+        # Nunca reduzir o total em relação ao Firestore (proteção contra falhas parciais de API)
+        _defy_total_stored = int(_defy_current.get('totalUnits') or 0)
+        _defy_total = max(_defy_total_calc, _defy_total_stored)
+        if _defy_total > _defy_total_calc:
+            print(f"  Guard: calculado={_defy_total_calc} < Firestore={_defy_total_stored} → mantendo {_defy_total}")
+        _ticket_medio = (_total_revenue / _defy_total_calc) if _defy_total_calc > 0 else 0.0
 
         # 8. Prêmio acumulado
         _premio_stores = {}

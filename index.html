@@ -6705,7 +6705,7 @@ function openDash() {
     const _nomeBase = (user.name||'').toLowerCase().split(' ')[0];
     if ((user.cargo === 'diretoria' && ['melo','neto'].includes(_nomeBase)) || (user.cargo === 'franqueado' && ['roberto','aguiar'].includes(_nomeBase))) _showBtn('btn-olhaisso');
     if (allowed360)        _showBtn('btn-360');
-    _showBtn('btn-patrimonio');
+    if (['diretoria','franqueado','admin','escritorio','gerente-senior','gerente-senior-acess','gerente','subgerente'].includes(user.cargo)) _showBtn('btn-patrimonio');
     if (allowedUsuarios)   _showBtn('btn-usuarios');
     if (allowedUsuarios || user.cargo === 'escritorio')   _showBtn('btn-juridico');
     if (user.cargo === 'diretoria') _showBtn('btn-rastreio');
@@ -36661,10 +36661,10 @@ function _patriRenderGrid() {
     const grid = document.getElementById('patri-grid');
     if (!grid) return;
     const allLojas = _patriGetLojas();
-    // Mostrar botões de filtro apenas para quem tem acesso a múltiplas sub-redes
+    // Mostrar botões de filtro apenas para quem tem acesso a todas as subredes
     const filtrosEl = document.getElementById('patri-filtros');
     if (filtrosEl) {
-        const temMultiSub = allLojas.length > (_PATRI_SUB_LOJAS.t1?.length || 4);
+        const temMultiSub = ['diretoria','franqueado','admin','escritorio','gerente-senior-acess'].includes(user.cargo);
         filtrosEl.style.display = temMultiSub ? 'flex' : 'none';
     }
     const lojas = _patriSubFilter === 'all' ? allLojas

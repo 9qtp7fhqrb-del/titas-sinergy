@@ -1,0 +1,29 @@
+name: Buscar RSS — Olha Isso
+
+on:
+  schedule:
+    - cron: '0 * * * *'   # todo hora
+  workflow_dispatch:
+
+concurrency:
+  group: fetch-rss
+  cancel-in-progress: true
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Instalar dependências
+        run: pip install requests -q
+
+      - name: Buscar e salvar feeds
+        run: python scripts/fetch_rss.py

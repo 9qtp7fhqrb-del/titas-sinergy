@@ -738,7 +738,7 @@ def update_cautelar_lojas(content, caut_lojas_data):
         new_caut = f'cautelar:{{protecao:{{total:{prot}}},garantia:{{total:{grt}}}}}'
         if re.search(r'cautelar:\{protecao:\{total:', sec):
             # Atualiza valores existentes
-            sec = re.sub(r'cautelar:\{protecao:\{total:[^}]*\}[^}]*\},garantia:\{total:[^}]*\}[^}]*\}',
+            sec = re.sub(r'cautelar:\{protecao:\{total:[^{}]*\},garantia:\{total:[^{}]*\}\}',
                          new_caut, sec, count=1)
         else:
             # Insere antes do último top:[ da seção
@@ -821,12 +821,18 @@ def process_gerencial(data):
         except Exception:
             return 0.0
 
+    # Perfis gerenciais que carregam o total da loja — nunca incluir
+    _EXCLUIR_PROFILES = {'gerencia', 'gerente', 'trainee'}
+
     ranking = (data or {}).get('employee_ranking', [])
     stores = {}
     _unmatched = set()
     for emp in ranking:
-        if (emp.get('profile_name') or '').strip().lower() != 'vendedor':
+        pn = (emp.get('profile_name') or '').strip().lower()
+        if pn in _EXCLUIR_PROFILES or pn == '':
             continue
+        # Inclui: vendedor, auxiliar, vendedor financeira — e qualquer outro perfil de vendas não listado
+        # (filtro negativo: exclui apenas perfis gerenciais conhecidos)
         raw_name = (emp.get('store_name') or '').upper().strip()
         store_key = STORE_MAP.get(raw_name)
         if not store_key:
@@ -2351,13 +2357,13 @@ def main():
             _dd = _dr.json()
             for _s in _dd.get('sales', []):
                 _t = float(_s.get('total', 0) or 0)
-                if 800 <= _t <= 1800:
+                if 700 <= _t <= 3000:
                     _candidates.append(_s)
             _dpagy = _dd.get('pagy', {})
             if _dp >= _dpagy.get('last', 1):
                 break
             _dp += 1
-        print(f"  Candidatos DEFY (R$800-1800): {len(_candidates)}")
+        print(f"  Candidatos DEFY (R$700-3000): {len(_candidates)}")
 
         # 4. Verificar sale_items em paralelo
         def _check_defy(s):
@@ -2376,6 +2382,7 @@ def main():
                 'store':  _sto.get('name', s.get('store_name', '?')) if isinstance(_sto, dict) else s.get('store_name', '?'),
                 'total':  float(_d2.get('total', 0) or 0),
                 'date':   _date,
+                'qty':    1,
             }
 
         _new_raw = []
@@ -2396,19 +2403,23 @@ def main():
         for _d, _day_sales in _new_by_day.items():
             _day_sellers_raw  = {}  # "nome___loja" -> units
             _day_premio_raw   = {}  # "nome___loja" -> qualifying
+            _day_revenue = 0.0
             for _sale in _day_sales:
                 _raw = (_sale['store'] or '').strip().upper()
                 _sk  = STORE_MAP.get(_raw)
                 if not _sk: continue
                 _nm  = (_sale['seller'] or '').strip()
                 _k   = f'{_nm}___{_sk}'
-                _day_sellers_raw[_k]  = _day_sellers_raw.get(_k, 0) + 1
+                _qty = _sale.get('qty', 1)
+                _day_sellers_raw[_k]  = _day_sellers_raw.get(_k, 0) + _qty
                 if _sale.get('total', 0) >= _PREMIO_MIN:
-                    _day_premio_raw[_k] = _day_premio_raw.get(_k, 0) + 1
+                    _day_premio_raw[_k] = _day_premio_raw.get(_k, 0) + _qty
+                _day_revenue += float(_sale.get('total', 0) or 0)
             _dia_a_dia[_d] = {
-                'units':       len(_day_sales),
+                'units':       sum(_s.get('qty', 1) for _s in _day_sales),
                 'sellers_raw': _day_sellers_raw,
                 'premio_raw':  _day_premio_raw,
+                'revenue':     _day_revenue,
             }
 
         # Dias no período sem vendas DEFY → garantir que existam como zero
@@ -2425,8 +2436,10 @@ def main():
         _defy_stores      = {}
         _defy_sellers_raw = {}  # (name, sk) -> units
         _premio_raw       = {}  # (name, sk) -> qualifying
+        _total_revenue    = 0.0
 
         for _d_entry in _dia_a_dia.values():
+            _total_revenue += float(_d_entry.get('revenue', 0) or 0)
             for _k, _u in _d_entry.get('sellers_raw', {}).items():
                 _nm2, _sk2 = _k.rsplit('___', 1)
                 _key2 = (_nm2, _sk2)
@@ -2445,6 +2458,7 @@ def main():
                               for k, v in _defy_sellers_raw.items() if k[1] == _sk]
 
         _defy_total = sum(s['units'] for s in _defy_stores.values())
+        _ticket_medio = (_total_revenue / _defy_total) if _defy_total > 0 else 0.0
 
         # 8. Prêmio acumulado
         _premio_stores = {}
@@ -2470,13 +2484,15 @@ def main():
         _dia_resumo = {_d: _e['units'] for _d, _e in sorted(_dia_a_dia.items())}
 
         _defy_doc = {
-            'savedAt':   int(_tm_defy.time() * 1000),
-            'lastDate':  today,
-            'totalUnits': _defy_total,
-            'stores':    _defy_stores,
-            'sellers':   _defy_sellers[:20],
-            'dia_a_dia': _dia_a_dia,    # dados completos por dia (para acumulação)
-            'diaResumo': _dia_resumo,   # units por dia (para o gráfico JS)
+            'savedAt':      int(_tm_defy.time() * 1000),
+            'lastDate':     today,
+            'totalUnits':   _defy_total,
+            'totalRevenue': _total_revenue,
+            'ticketMedio':  _ticket_medio,
+            'stores':       _defy_stores,
+            'sellers':      _defy_sellers[:20],
+            'dia_a_dia':    _dia_a_dia,    # dados completos por dia (para acumulação)
+            'diaResumo':    _dia_resumo,   # units por dia (para o gráfico JS)
             'premio': {
                 'prizePerSale':    _PREMIO_VALOR,
                 'minPrice':        _PREMIO_MIN,

@@ -2341,9 +2341,13 @@ def main():
         if not isinstance(_dia_a_dia, dict): _dia_a_dia = {}
 
         # 2. Determinar período a buscar
-        # Se já temos histórico, buscamos apenas hoje (re-processa o dia corrente).
-        # Se não temos, fazemos backfill desde _DEFY_INICIO.
-        _fetch_start = _DEFY_INICIO if not _dia_a_dia else today
+        # Força backfill completo se alguma entrada com vendas não tiver 'revenue' (campo novo).
+        _missing_revenue = any(
+            'revenue' not in _e for _e in _dia_a_dia.values() if _e.get('units', 0) > 0
+        )
+        _fetch_start = _DEFY_INICIO if (not _dia_a_dia or _missing_revenue) else today
+        if _missing_revenue:
+            print("  Backfill forçado: campo 'revenue' ausente em entradas existentes")
         print(f"  Período a buscar: {_fetch_start} → {today}")
 
         # 3. Coletar candidatos por faixa de preço

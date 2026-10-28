@@ -33,7 +33,7 @@ TOKEN = _load_token()
 REPO  = os.environ.get("GITHUB_REPO", "9qtp7fhqrb-del/titas-sinergy")
 ROOT  = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-FILES_DEFAULT = ["index.html", "scripts/update_d360.py"]
+FILES_DEFAULT = ["index.html", "scripts/update_d360.py", "orbita_clientes.json"]
 
 def api(method, path, data=None, timeout=120):
     url = f"https://api.github.com/repos/{REPO}/{path}"
@@ -102,21 +102,23 @@ def extract_d360_block(content):
 
 def merge_index_html(local_content, remote_content):
     """
-    Substitui o bloco D360 no remote pelo bloco D360 do local.
-    Se não conseguir extrair/substituir, retorna o local (fallback).
+    Base: código LOCAL (tem todos os fixes de código).
+    D360: do REMOTE (tem os dados de vendas mais recentes do GitHub Actions).
+    Se não conseguir extrair, retorna o local completo (fallback seguro).
     """
-    local_block = extract_d360_block(local_content)
+    local_block  = extract_d360_block(local_content)
     remote_block = extract_d360_block(remote_content)
 
     if not local_block or not remote_block:
         print("  [merge] não foi possível extrair bloco D360 — usando local completo (fallback)")
         return local_content
 
-    local_d360_str  = local_block[2]
-    r_start, r_end, _ = remote_block
+    l_start, l_end, _ = local_block
+    remote_d360_str   = remote_block[2]
 
-    merged = remote_content[:r_start] + local_d360_str + remote_content[r_end:]
-    print(f"  [merge] D360 do local ({len(local_d360_str):,} chars) injetado no remote ({len(remote_content):,} chars) → {len(merged):,} chars")
+    # Injeta D360 do remote no local (preserva código do local + dados do remote)
+    merged = local_content[:l_start] + remote_d360_str + local_content[l_end:]
+    print(f"  [merge] D360 do remote ({len(remote_d360_str):,} chars) injetado no local ({len(local_content):,} chars) → {len(merged):,} chars")
     return merged
 
 def upload_blob(local_path, content_override=None):

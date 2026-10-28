@@ -35207,15 +35207,27 @@ async function _orbRunQuery(structuredQuery) {
 // ── Nova arquitetura: JSON estático + Firestore só para diff ──
 
 // Carrega JSON base (todos os 4021 clientes, sem quota Firestore)
+// Se falhar, tenta Firestore por loja (fallback)
 async function _orbEnsureBase() {
     if (_orbJsonBase) return;
     try {
-        const r = await fetch('/orbita_clientes.json');
+        const r = await fetch('/orbita_clientes.json?t=' + Math.floor(Date.now()/60000)); // cache bust por minuto
+        if (!r.ok) throw new Error('HTTP ' + r.status);
         _orbJsonBase = await r.json();
+        console.log('[Órbita] JSON ok:', _orbJsonBase.length, 'clientes');
     } catch(e) {
-        console.warn('Órbita: falha ao carregar JSON', e);
-        _orbJsonBase = [];
+        console.warn('[Órbita] JSON falhou, tentando Firestore por loja:', e.message);
+        _orbJsonBase = null; // sinaliza: ainda não carregado, tenta Firestore por loja
     }
+}
+
+// Carrega UMA loja direto do Firestore (fallback quando JSON falha)
+async function _orbFirestoreLoja(lk) {
+    const docs = await _orbRunQuery({
+        from: [{collectionId:'ts_orbita'}],
+        where: {fieldFilter:{field:{fieldPath:'loja'},op:'EQUAL',value:{stringValue:lk}}}
+    });
+    return docs || [];
 }
 
 // Carrega diff do Firestore: só clientes processados (status != 'novo'), inicialmente 0 docs
@@ -35248,14 +35260,29 @@ function _orbMergeDoc(d) {
 async function _orbLoadSummary() {
     await _orbEnsureBase();
     await _orbEnsureProcessados();
-    _orbSummary = (_orbJsonBase||[]).map(_orbMergeDoc);
+    if (_orbJsonBase) {
+        _orbSummary = _orbJsonBase.map(_orbMergeDoc);
+    } else {
+        // JSON falhou: usa dados em cache ou vazio (grade mostra botões mas sem contagens reais)
+        _orbSummary = _orbCacheGet('summary_fb', 60*60*1000) || [];
+    }
 }
 
 // Carrega dados completos de uma loja (para kanban)
 async function _orbLoadLoja(lk) {
     await _orbEnsureBase();
     await _orbEnsureProcessados();
-    _orbData = (_orbJsonBase||[]).filter(d => d.loja === lk).map(_orbMergeDoc);
+    if (_orbJsonBase) {
+        // Caminho normal: JSON carregado com sucesso
+        _orbData = _orbJsonBase.filter(d => d.loja === lk).map(_orbMergeDoc);
+    } else {
+        // Fallback: Firestore direto por loja (1 query por abertura de loja)
+        const cached = _orbCacheGet('fb_'+lk, _ORB_TTL_LOJA);
+        if (cached) { _orbData = cached; return; }
+        const docs = await _orbFirestoreLoja(lk);
+        _orbData = docs.map(_orbMergeDoc);
+        if (docs.length) _orbCacheSet('fb_'+lk, docs);
+    }
 }
 
 async function _orbPatch(id, updates) {
@@ -35280,13 +35307,26 @@ async function _orbPatch(id, updates) {
 window._orbitaInit = async function() {
     const root = document.getElementById('orbita-root');
     if (!root) return;
-    root.innerHTML = `<div style="text-align:center;padding:3rem;color:#64748b;font-size:.9rem;"><i class="fas fa-satellite fa-spin" style="color:#38bdf8;font-size:1.4rem;margin-bottom:.5rem;display:block;"></i>Carregando Órbita...</div>`;
+    root.innerHTML = `<div style="text-align:center;padding:3rem;color:#64748b;font-size:.9rem;"><i class="fas fa-satellite fa-spin" style="color:#38bdf8;font-size:1.4rem;margin-bottom:.5rem;display:block;"></i>Carregando clientes...</div>`;
+
+    // Força recarregar JSON se ainda não foi tentado
+    if (_orbJsonBase === null) await _orbEnsureBase();
+
+    const total = _orbJsonBase ? _orbJsonBase.length : 0;
+    if (total === 0 && _orbJsonBase !== null) {
+        // JSON retornou array vazio — algo errado
+        root.innerHTML = `<div style="text-align:center;padding:2rem;color:#f87171;font-size:.85rem;">
+          <i class="fas fa-circle-exclamation" style="font-size:1.4rem;margin-bottom:.5rem;display:block;"></i>
+          JSON carregado mas vazio.<br><small style="color:#6b7280;">Arquivo: /orbita_clientes.json · Clientes: 0</small><br><br>
+          <button onclick="_orbitaInit()" style="padding:6px 14px;border-radius:8px;border:1px solid rgba(248,113,113,.4);background:rgba(248,113,113,.1);color:#f87171;cursor:pointer;font-size:.75rem;">Tentar novamente</button>
+        </div>`;
+        return;
+    }
+
     if (_orbIsSenior()) {
-        // Sênior vê grade — carrega só campos mínimos de todas as lojas
         _orbLojaAtiva = null;
         await _orbLoadSummary();
     } else {
-        // Não-senior vai direto para sua loja
         const lj = _orbUserLoja();
         _orbLojaAtiva = lj || null;
         if (lj) await _orbLoadLoja(lj);

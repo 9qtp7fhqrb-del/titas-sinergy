@@ -35273,9 +35273,25 @@ function _orbRender() {
     // Kanban
     h += `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(255px,1fr));gap:.75rem;align-items:start;">`;
 
-    // Coluna FILA
+    // Coluna FILA — agrupada por loja
+    const filaByLoja = {};
+    fila.forEach(d => {
+        const lk = d.loja || 'sem_loja';
+        if (!filaByLoja[lk]) filaByLoja[lk] = [];
+        filaByLoja[lk].push(d);
+    });
+    const filaHtml = Object.entries(filaByLoja)
+        .sort(([a],[b]) => (_ORB_LOJAS[a]||a).localeCompare(_ORB_LOJAS[b]||b))
+        .map(([lk, clientes]) => `
+        <div style="margin-bottom:.2rem;">
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:4px 2px 5px;border-bottom:1px solid rgba(255,255,255,.06);margin-bottom:.35rem;">
+            <span style="font-size:.6rem;font-weight:700;color:#64748b;letter-spacing:.06em;">${(_ORB_LOJAS[lk]||lk).toUpperCase()}</span>
+            <span style="font-size:.58rem;font-weight:700;padding:1px 6px;border-radius:999px;background:rgba(148,163,184,.1);color:#64748b;">${clientes.length}</span>
+          </div>
+          ${clientes.map(d=>_orbCardFila(d)).join('')}
+        </div>`).join('');
     h += _orbColuna('📋 Fila de Espera', fila.length, '#94a3b8',
-        fila.map(d=>_orbCardFila(d)).join(''),
+        filaHtml,
         `<button onclick="_orbPegarProximo()" style="width:100%;margin-top:.5rem;padding:.55rem;border-radius:10px;border:1px solid rgba(56,189,248,.35);background:rgba(56,189,248,.1);color:#38bdf8;font-size:.75rem;font-weight:700;cursor:pointer;">⚡ Pegar Próximo</button>`
     );
 

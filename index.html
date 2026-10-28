@@ -35138,9 +35138,12 @@ const _ORB_LOJAS = {
     montserrat:'Montserrat', linhares:'Linhares', eunapolis:'Eunápolis'
 };
 
-let _orbData    = []; // docs completos da loja ativa (kanban)
-let _orbSummary = []; // campos mínimos de todas as lojas (grade)
-let _orbLojaAtiva = null; // null = tela seletora de lojas
+let _orbData          = []; // docs completos da loja ativa (kanban)
+let _orbSummary       = []; // campos mínimos de todas as lojas (grade)
+let _orbLojaAtiva     = null; // null = tela seletora de lojas
+let _orbJsonBase      = null; // todos os clientes do JSON (leitura livre, sem quota)
+let _orbProcessados   = null; // {id→doc} clientes com status != 'novo' (Firestore diff, pequeno)
+let _orbProcessadosTS = 0;
 
 const _ORB_QUERY   = `https://firestore.googleapis.com/v1/projects/titas-sinergy/databases/(default)/documents:runQuery?key=${_ORB_KEY}`;
 const _ORB_TTL_LOJA = 4 * 60 * 1000;  // 4 min
@@ -35201,31 +35204,58 @@ async function _orbRunQuery(structuredQuery) {
     } catch(e) { console.warn('orbita query:', e); return null; }
 }
 
-// Carrega dados mínimos de todas as lojas (para grade)
-async function _orbLoadSummary() {
-    const cached = _orbCacheGet('summary', _ORB_TTL_SUM);
-    if (cached) { _orbSummary = cached; return; }
+// ── Nova arquitetura: JSON estático + Firestore só para diff ──
+
+// Carrega JSON base (todos os 4021 clientes, sem quota Firestore)
+async function _orbEnsureBase() {
+    if (_orbJsonBase) return;
+    try {
+        const r = await fetch('/orbita_clientes.json');
+        _orbJsonBase = await r.json();
+    } catch(e) {
+        console.warn('Órbita: falha ao carregar JSON', e);
+        _orbJsonBase = [];
+    }
+}
+
+// Carrega diff do Firestore: só clientes processados (status != 'novo'), inicialmente 0 docs
+async function _orbEnsureProcessados() {
+    const agora = Date.now();
+    if (_orbProcessados !== null && (agora - _orbProcessadosTS) < _ORB_TTL_LOJA) return;
+    const cached = _orbCacheGet('proc', _ORB_TTL_LOJA);
+    if (cached) { _orbProcessados = cached; _orbProcessadosTS = agora; return; }
     const docs = await _orbRunQuery({
         from: [{collectionId:'ts_orbita'}],
-        select: {fields:[
-            {fieldPath:'loja'},{fieldPath:'status'},
-            {fieldPath:'convertidoEm'},{fieldPath:'finalizadoEm'}
-        ]}
+        where: {fieldFilter:{field:{fieldPath:'status'},op:'NOT_EQUAL',value:{stringValue:'novo'}}}
     });
-    if (docs !== null) { _orbSummary = docs; _orbCacheSet('summary', docs); }
-    else if (!_orbSummary.length) _orbSummary = _orbCacheGet('summary', Infinity) || [];
+    if (docs !== null) {
+        _orbProcessados = {};
+        docs.forEach(d => { _orbProcessados[d._id] = d; });
+        _orbProcessadosTS = agora;
+        _orbCacheSet('proc', _orbProcessados);
+    } else if (_orbProcessados === null) {
+        _orbProcessados = {}; // fallback: quota esgotada, assume todos 'novo'
+    }
+}
+
+function _orbMergeDoc(d) {
+    if (!_orbProcessados) return d;
+    const upd = _orbProcessados[d._id];
+    return upd ? Object.assign({}, d, upd) : d;
+}
+
+// Carrega dados mínimos de todas as lojas (para grade)
+async function _orbLoadSummary() {
+    await _orbEnsureBase();
+    await _orbEnsureProcessados();
+    _orbSummary = (_orbJsonBase||[]).map(_orbMergeDoc);
 }
 
 // Carrega dados completos de uma loja (para kanban)
 async function _orbLoadLoja(lk) {
-    const cached = _orbCacheGet('loja_'+lk, _ORB_TTL_LOJA);
-    if (cached) { _orbData = cached; return; }
-    const docs = await _orbRunQuery({
-        from: [{collectionId:'ts_orbita'}],
-        where: {fieldFilter:{field:{fieldPath:'loja'},op:'EQUAL',value:{stringValue:lk}}}
-    });
-    if (docs !== null) { _orbData = docs; _orbCacheSet('loja_'+lk, docs); }
-    else if (!_orbData.length) _orbData = _orbCacheGet('loja_'+lk, Infinity) || [];
+    await _orbEnsureBase();
+    await _orbEnsureProcessados();
+    _orbData = (_orbJsonBase||[]).filter(d => d.loja === lk).map(_orbMergeDoc);
 }
 
 async function _orbPatch(id, updates) {
@@ -35233,8 +35263,17 @@ async function _orbPatch(id, updates) {
     const mask = Object.keys(updates).map(k=>`updateMask.fieldPaths=${encodeURIComponent(k)}`).join('&');
     const url = `${_ORB_BASE}/${id}?key=${_ORB_KEY}&${mask}`;
     await fetch(url, {method:'PATCH', headers:{'Content-Type':'application/json'}, body:JSON.stringify({fields})});
+    // Atualiza memória imediatamente
     const item = _orbData.find(d=>d._id===id);
     if (item) Object.assign(item, updates);
+    if (_orbProcessados) {
+        if (!_orbProcessados[id]) {
+            const base = (_orbJsonBase||[]).find(d=>d._id===id) || {_id:id};
+            _orbProcessados[id] = Object.assign({}, base, updates);
+        } else {
+            Object.assign(_orbProcessados[id], updates);
+        }
+    }
 }
 
 // ── Entry point ──
@@ -35494,9 +35533,10 @@ window._orbAbrirLoja = async function(lk) {
     _orbRender();
 };
 window._orbVoltarLojas = function() { _orbLojaAtiva = null; _orbRender(); };
-function _orbInvalidateCache(lk) {
-    _orbCacheDel('loja_'+(lk||_orbLojaAtiva));
-    _orbCacheDel('summary');
+function _orbInvalidateCache() {
+    _orbProcessados = null;
+    _orbProcessadosTS = 0;
+    _orbCacheDel('proc');
 }
 window._orbPegar = async function(id) {
     const now = new Date().toISOString();
@@ -35601,8 +35641,13 @@ window._orbSalvarForm = async function(editId) {
     if (editId) {
         const item = _orbData.find(d=>d._id===editId);
         if (item) Object.assign(item, dados);
+        if (_orbProcessados && _orbProcessados[editId]) Object.assign(_orbProcessados[editId], dados);
+        const baseItem = (_orbJsonBase||[]).find(d=>d._id===editId);
+        if (baseItem) Object.assign(baseItem, dados);
     } else {
-        _orbData.unshift(_orbDocToObj(saved));
+        const newDoc = _orbDocToObj(saved);
+        _orbData.unshift(newDoc);
+        if (_orbJsonBase) _orbJsonBase.unshift(newDoc);
     }
     _orbRender();
 };

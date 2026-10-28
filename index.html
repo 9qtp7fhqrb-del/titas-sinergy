@@ -7,7 +7,7 @@
     <script>
     // Cache-buster: força reload se a versão mudou
     (function(){
-      var BUILD = '20261028205927';
+      var BUILD = '20261028210917';
       var stored = localStorage.getItem('d360_build');
       if (stored && stored !== BUILD) {
         localStorage.setItem('d360_build', BUILD);
@@ -8726,24 +8726,24 @@ const D360 = {
     ticket_cel: 1760,        // ticket médio celulares (SBON) — atualizado pelo bot
     ticket_acess: 105,      // ticket médio acessórios — atualizado pelo bot
     ped_cel: 1347,           // pedidos celulares — atualizado pelo bot
-    ped_acess: 1353,         // pedidos acessórios — atualizado pelo bot
+    ped_acess: 1355,         // pedidos acessórios — atualizado pelo bot
 
     // ── Margem Bruta Mensal ──────────────────────────────────────────────────────
     // FONTE PRIMÁRIA: margem_lojas (por loja, do Relatório Gerencial ERP ODRES SMART)
     // O sistema deriva automaticamente: margem por loja → subrede → rede
     // COMO ATUALIZAR: edite apenas margem_lojas com os valores do ERP por loja
     // ─────────────────────────────────────────────────────────────────────────────
-    margem_dia: 47.84,              // rede hoje · zerado automaticamente à meia-noite
-    margem_dia_subredes: { t1: 44.59, t2: 46.31, t3: 50.97, ind: 51.92 },
+    margem_dia: 47.87,              // rede hoje · zerado automaticamente à meia-noite
+    margem_dia_subredes: { t1: 44.51, t2: 46.31, t3: 51.13, ind: 51.92 },
     margem_dia_lojas: {
-        cariacica:47.06, itabuna:40.86, moxuara:44.63, praiadacosta:51.07,
+        cariacica:46.91, itabuna:40.86, moxuara:44.63, praiadacosta:51.07,
         barreiras:44.63, teixeira:47.94, laranjeiras:0, saomateus:53.78,
-        serra:48.20, montserrat:69.62, linhares:48.41, eunapolis:51.92,
+        serra:48.20, montserrat:69.62, linhares:49.05, eunapolis:51.92,
     },
     margem_lojas: {
         // ── FONTE PRIMÁRIA — atualizar aqui com o Relatório Gerencial por Loja ──
         // atualizado pelo update_d360.py (por loja via API, fallback por subrede)
-        cariacica:   51.20,
+        cariacica:   51.19,
         itabuna:     48.69,
         moxuara:     50.80,
         praiadacosta:51.07,
@@ -8753,7 +8753,7 @@ const D360 = {
         saomateus:   52.80,
         serra:       52.40,
         montserrat:  53.85,
-        linhares:    51.02,
+        linhares:    51.03,
         eunapolis:   46.77,
     },
     margem_subredes: {  // fallback quando margem_lojas estiver incompleta
@@ -8899,16 +8899,16 @@ const D360 = {
                 {n:'Gabriel Moura Dos Reis',i:'GM',p:127,t:181778.5,ds:17,ult:'28/10'},
                 {n:'LUIZ HENRIQUE VIANA DA ROCHA',i:'LH',p:3,t:2650.0,ds:2,ult:'03/10'},
                 {n:'LUIZ GUSTAVO',i:'LG',p:16,t:2500.0,ds:6,ult:'28/10'}]},
-        linhares:    { label:'Linhares',           sigla:'LH', sub:'t3', meta:220000,  total:270132.57,  ped:236,  cancel:0, agend:0, agendCount:0, agendFat:134525.87,  fat_dia:7014.99, acess_dia:0, dia_a_dia:{"1":10190.0,"2":19965.0,"3":35015.0,"4":35015.0,"5":45765.0,"8":81023.5,"13":116170.45,"14":130507.45,"16":163937.92,"19":186951.91,"20":192175.9,"22":228110.61,"23":230340.59,"24":253142.58,"26":264002.58,"27":265342.58,"28":270132.57}, acess_dia_top:[], top_dia:[{n:'Wenderson Pereira Rocha',i:'WP',t:5399.99}, {n:'Juliana Pereira do Nascimento',i:'JP',t:1615.0}], fin_dia:3899.99, fin_mes:136077.32, top_fin_mes:[{n:'Isabely Andrade Araujo',i:'IA',t:39311.95,bd:[{nm:'PayJoy',t:12965.0},{nm:'OdresCred',t:39311.95},{nm:'Outras',t:3285.0}]},{n:'Juliana Pereira do Nascimento',i:'JP',t:38599.91,bd:[{nm:'PayJoy',t:13321.0},{nm:'OdresCred',t:38599.91},{nm:'Outras',t:0}]},{n:'RAYCA MENDES MORAIS',i:'RM',t:31254.99,bd:[{nm:'PayJoy',t:18489.0},{nm:'OdresCred',t:31254.99},{nm:'Outras',t:0}]},{n:'Wenderson Pereira Rocha',i:'WP',t:26910.47,bd:[{nm:'PayJoy',t:12300.0},{nm:'OdresCred',t:26910.47},{nm:'Outras',t:0}]}], fin_bd:[{nm:'PayJoy',t:57075.0},{nm:'OdresCred',t:136077.32},{nm:'Outras',t:3285.0}], top_fin:[{n:'Wenderson Pereira Rocha',i:'WP',t:3899.99}], metaAcess:12000,
+        linhares:    { label:'Linhares',           sigla:'LH', sub:'t3', meta:220000,  total:270282.57,  ped:238,  cancel:0, agend:0, agendCount:0, agendFat:134525.87,  fat_dia:7164.99, acess_dia:150.0, dia_a_dia:{"1":10190.0,"2":19965.0,"3":35015.0,"4":35015.0,"5":45765.0,"8":81023.5,"13":116170.45,"14":130507.45,"16":163937.92,"19":186951.91,"20":192175.9,"22":228110.61,"23":230340.59,"24":253142.58,"26":264002.58,"27":265342.58,"28":270282.57}, acess_dia_top:[{n:'RAYCA MENDES MORAIS',i:'RM',t:80.0}, {n:'Wenderson Pereira Rocha',i:'WP',t:70.0}], top_dia:[{n:'Wenderson Pereira Rocha',i:'WP',t:5469.99}, {n:'Juliana Pereira do Nascimento',i:'JP',t:1615.0}, {n:'RAYCA MENDES MORAIS',i:'RM',t:80.0}], fin_dia:3899.99, fin_mes:136077.32, top_fin_mes:[{n:'Isabely Andrade Araujo',i:'IA',t:39311.95,bd:[{nm:'PayJoy',t:12965.0},{nm:'OdresCred',t:39311.95},{nm:'Outras',t:3285.0}]},{n:'Juliana Pereira do Nascimento',i:'JP',t:38599.91,bd:[{nm:'PayJoy',t:13321.0},{nm:'OdresCred',t:38599.91},{nm:'Outras',t:0}]},{n:'RAYCA MENDES MORAIS',i:'RM',t:31254.99,bd:[{nm:'PayJoy',t:18489.0},{nm:'OdresCred',t:31254.99},{nm:'Outras',t:0}]},{n:'Wenderson Pereira Rocha',i:'WP',t:26910.47,bd:[{nm:'PayJoy',t:12300.0},{nm:'OdresCred',t:26910.47},{nm:'Outras',t:0}]}], fin_bd:[{nm:'PayJoy',t:57075.0},{nm:'OdresCred',t:136077.32},{nm:'Outras',t:3285.0}], top_fin:[{n:'Wenderson Pereira Rocha',i:'WP',t:3899.99}], metaAcess:12000,
             agendamentos:{total:134525.87, fin:122865.87, fin_bd:[{nm:'PayJoy',t:33051.0},{nm:'OdresCred',t:89814.87},{nm:'Outras',t:0}], top:[{n:'Juliana Pereira do Nascimento',i:'JP',t:47845.91}, {n:'Isabely Andrade Araujo',i:'IA',t:35441.98}, {n:'Wenderson Pereira Rocha',i:'WP',t:27712.98}, {n:'RAYCA MENDES MORAIS',i:'RM',t:22115.0}, {n:'Wesley Felipe Bezerra dos Santos',i:'WF',t:1410.0}]},
-            acessorios:{total:10380.0, top:[
+            acessorios:{total:10530.0, top:[
                 {n:'Rayca Mendes Morais',i:'RM',t:940,ds:12,ult:'12/06'},
                 {n:'Natalia Rocha Leonel',i:'NL',t:820,ds:12,ult:'12/06'}
             ], dias:[{d:'01/06',ac:80,cel:3150},{d:'06/06',ac:760,cel:23220},{d:'08/06',ac:260,cel:7397}]},
             cautelar:{protecao:{total:3042.0},garantia:{total:635.25}},
-            top:[{n:'RAYCA MENDES MORAIS',i:'RM',p:82,t:79186.74,ds:27,ult:'28/10'},
+            top:[{n:'RAYCA MENDES MORAIS',i:'RM',p:83,t:79266.74,ds:27,ult:'28/10'},
                 {n:'Isabely Andrade Araujo',i:'IA',p:55,t:70008.95,ds:15,ult:'24/10'},
-                {n:'Wenderson Pereira Rocha',i:'WP',p:56,t:66460.47,ds:14,ult:'28/10'},
+                {n:'Wenderson Pereira Rocha',i:'WP',p:57,t:66530.47,ds:14,ult:'28/10'},
                 {n:'Juliana Pereira do Nascimento',i:'JP',p:40,t:52530.91,ds:12,ult:'28/10'},
                 {n:'Wesley Felipe Bezerra dos Santos',i:'WF',p:3,t:1945.5,ds:1,ult:'16/10'}]},
         montserrat:  { label:'Montserrat',         sigla:'MT', sub:'t3', meta:210000,  total:174524.92,  ped:227,  cancel:0, agend:0, agendCount:0, agendFat:71847.95,  fat_dia:210.0, acess_dia:210.0, dia_a_dia:{"1":2685.0,"2":3185.0,"3":21780.0,"4":26497.99,"5":31227.99,"8":55232.98,"13":89006.98,"14":89816.98,"16":100070.96,"19":120395.94,"20":120395.94,"22":141180.92,"23":143350.92,"24":150800.92,"26":170675.92,"27":174314.92,"28":174524.92}, acess_dia_top:[{n:'JOAQUIN EMILIANO RODRIGO',i:'JE',t:170.0}, {n:'ADRIANO JEREMIAS CARDOSO MONTEIRO',i:'AJ',t:40.0}], top_dia:[{n:'JOAQUIN EMILIANO RODRIGO',i:'JE',t:170.0}, {n:'ADRIANO JEREMIAS CARDOSO MONTEIRO',i:'AJ',t:40.0}], fin_dia:0, fin_mes:88530.94, top_fin_mes:[{n:'ADRIANO JEREMIAS CARDOSO MONTEIRO',i:'AJ',t:46772.95,bd:[{nm:'PayJoy',t:1900.0},{nm:'OdresCred',t:46772.95},{nm:'Outras',t:0}]},{n:'JOAQUIN EMILIANO RODRIGO',i:'JE',t:41757.99,bd:[{nm:'PayJoy',t:12700.0},{nm:'OdresCred',t:41757.99},{nm:'Outras',t:0}]}], fin_bd:[{nm:'PayJoy',t:14600.0},{nm:'OdresCred',t:88530.94},{nm:'Outras',t:0}], top_fin:[], metaAcess:17000,
@@ -10118,7 +10118,7 @@ var _ERP_ESTOQUE = {
       'ZENFONE MAX PLUS':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:0,eunapolis:0},
       'ZENFONE MAX SHOT':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:0,eunapolis:0},
     };
-    var _ERP_ESTOQUE_TS = '28/10/2026 17:59';
+    var _ERP_ESTOQUE_TS = '28/10/2026 18:08';
 // Preços por produto — populado pelo update_d360.py a cada 30 min
 var _ERP_PRECOS = {
       'ALCATEL A2 XL': {custo:0.00,venda:0.00},
@@ -10474,7 +10474,7 @@ var _ERP_PRECOS = {
       'ZENFONE MAX PLUS': {custo:0.00,venda:0.00},
       'ZENFONE MAX SHOT': {custo:0.00,venda:0.00},
     };
-    var _ERP_PRECOS_TS = '28/10/2026 17:59';
+    var _ERP_PRECOS_TS = '28/10/2026 18:09';
 // Flag de sessão: true = fetch já tentado (sucesso ou falha), não tentar de novo
 var _erpPrecosCarregados = false;
 var _SUG_SPECS = {

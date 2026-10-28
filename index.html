@@ -1235,6 +1235,10 @@
                 <i class="fas fa-box-open" style="color:#f59e0b;"></i>
                 <span>Rastreio</span>
             </button>
+            <button id="btn-orbita" class="tab-btn hidden px-4 sm:px-6 py-4 text-sm font-semibold text-gray-400 tracking-wider flex items-center gap-2 whitespace-nowrap" onclick="switchTab('orbita')">
+                <i class="fas fa-satellite" style="color:#38bdf8;"></i>
+                <span>Órbita</span>
+            </button>
             <button id="btn-diario" class="tab-btn px-4 sm:px-6 py-4 text-sm font-semibold text-gray-400 tracking-wider flex items-center gap-2 whitespace-nowrap" onclick="switchTab('diario')">
                 <i class="fas fa-clipboard-check" style="color:#60a5fa;"></i>
                 <span>Diário</span>
@@ -4505,6 +4509,11 @@
         </div>
         <!-- ══════════ fim RASTREIO TAB ══════════ -->
 
+        <!-- ══════════ ABA ÓRBITA ══════════ -->
+        <div id="tab-orbita" class="hidden">
+          <div id="orbita-root" style="max-width:1100px;margin:0 auto;padding:.5rem 0 3rem;"></div>
+        </div>
+        <!-- ══════════ fim ÓRBITA TAB ══════════ -->
 
 
     </div>
@@ -6715,6 +6724,7 @@ function openDash() {
     if (allowedUsuarios)   _showBtn('btn-usuarios');
     if (allowedUsuarios || user.cargo === 'escritorio')   _showBtn('btn-juridico');
     if (user.cargo === 'diretoria') _showBtn('btn-rastreio');
+    if (['diretoria','franqueado','gerente-senior','gerente-senior-acess','gerente','subgerente'].includes(user.cargo)) _showBtn('btn-orbita');
     if (_podeVerEstoque()) _showBtn('btn-estoque');
     if (allowedUsuarios || ['diretoria','franqueado','gerente-senior','gerente-senior-acess','gerente','subgerente'].includes(user.cargo))
         _showBtn('btn-lancar-metas');
@@ -8074,7 +8084,7 @@ function _jurClose() {
 
 /* ─── Tab switcher ─── */
 function switchTab(tab) {
-    const ALL = ['planning', 'matinais', 'academy', 'olhaisso', '360', 'dicta', 'usuarios', 'diario', 'juridico', 'rastreio', 'estoque', 'patrimonio'];
+    const ALL = ['planning', 'matinais', 'academy', 'olhaisso', '360', 'dicta', 'usuarios', 'diario', 'juridico', 'rastreio', 'estoque', 'patrimonio', 'orbita'];
     ALL.forEach(t => {
         const tabEl = document.getElementById('tab-' + t);
         const btnEl = document.getElementById('btn-' + t);
@@ -8130,6 +8140,7 @@ function switchTab(tab) {
     try { if (tab === 'dicta')     _dictaInit();               } catch(e) { console.warn('dictaInit:', e); }
     try { if (tab === 'diario')    _diarioInit();              } catch(e) { console.warn('diarioInit:', e); }
     try { if (tab === 'rastreio')  _rastreioInit();            } catch(e) { console.warn('rastreioInit:', e); }
+    try { if (tab === 'orbita')    _orbitaInit();              } catch(e) { console.warn('_orbitaInit:', e); }
     try { if (tab === 'olhaisso') _olhaIssoInit();             } catch(e) { console.warn('olhaIssoInit:', e); }
     try { if (tab === 'estoque')  _estoqueInit();              } catch(e) { console.warn('estoqueInit:', e); }
     try { if (tab === 'patrimonio') _patriInit();              } catch(e) { console.warn('_patriInit:', e); }

@@ -35139,7 +35139,7 @@ const _ORB_LOJAS = {
 };
 
 let _orbData = [];
-let _orbFiltroLoja = 'all';
+let _orbLojaAtiva = null; // null = tela seletora de lojas
 
 // ── Firestore helpers ──
 function _orbFsVal(v) {
@@ -35197,6 +35197,11 @@ window._orbitaInit = async function() {
     if (!root) return;
     root.innerHTML = `<div style="text-align:center;padding:3rem;color:#64748b;font-size:.9rem;"><i class="fas fa-satellite fa-spin" style="color:#38bdf8;font-size:1.4rem;margin-bottom:.5rem;display:block;"></i>Carregando Órbita...</div>`;
     await _orbLoadAll();
+    // Não-senior vai direto para sua loja
+    if (!_orbIsSenior()) {
+        const lj = _orbUserLoja();
+        if (lj) _orbLojaAtiva = lj;
+    }
     _orbRender();
 };
 
@@ -35219,17 +35224,87 @@ function _orbIsSenior() {
 function _orbRender() {
     const root = document.getElementById('orbita-root');
     if (!root) return;
-    const userNome  = _orbUserNome();
-    const userLoja  = _orbUserLoja();
-    const isSenior  = _orbIsSenior();
-    const hoje      = new Date().toISOString().slice(0,10);
+    root.innerHTML = _orbLojaAtiva ? _orbViewKanban(_orbLojaAtiva) : _orbViewLojas();
+}
 
-    let base = _orbData;
-    if (!isSenior && userLoja) base = base.filter(d=>d.loja===userLoja);
-    if (isSenior && _orbFiltroLoja!=='all') base = base.filter(d=>d.loja===_orbFiltroLoja);
+// ── TELA 1: grade de lojas ──
+function _orbViewLojas() {
+    const userNome = _orbUserNome();
+    const hoje     = new Date().toISOString().slice(0,10);
+    const totFila  = _orbData.filter(d=>d.status==='novo').length;
+    const totAt    = _orbData.filter(d=>d.status==='em_atendimento').length;
+    const totVenda = _orbData.filter(d=>d.status==='convertido'&&(d.convertidoEm||'').startsWith(hoje)).length;
 
-    const fila      = base.filter(d=>d.status==='novo')
-                          .sort((a,b)=>(a.dataMarcada||a.criadoEm||'').localeCompare(b.dataMarcada||b.criadoEm||''));
+    let h = `
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:1.2rem;flex-wrap:wrap;">
+      <div style="width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,rgba(56,189,248,.22),rgba(56,189,248,.05));border:1px solid rgba(56,189,248,.35);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <i class="fas fa-satellite" style="color:#38bdf8;font-size:1rem;"></i>
+      </div>
+      <div style="flex:1;min-width:0;">
+        <div style="font-size:.9rem;font-weight:800;color:#f3f4f6;">Órbita <span style="color:#38bdf8;font-weight:600;">· Call Center</span></div>
+        <div style="font-size:.62rem;color:#6b7280;margin-top:1px;">${totFila} na fila · ${totAt} em atendimento · ${totVenda} vendas hoje</div>
+      </div>
+      <button onclick="_orbitaInit()" title="Atualizar" style="font-size:.68rem;padding:5px 9px;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:#6b7280;cursor:pointer;"><i class="fas fa-rotate-right"></i></button>
+    </div>`;
+
+    h += `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:.75rem;">`;
+
+    Object.entries(_ORB_LOJAS).forEach(([lk, lnome]) => {
+        const lojaData  = _orbData.filter(d=>d.loja===lk);
+        const fila      = lojaData.filter(d=>d.status==='novo').length;
+        const emAtend   = lojaData.filter(d=>d.status==='em_atendimento').length;
+        const vendaHoje = lojaData.filter(d=>d.status==='convertido'&&(d.convertidoEm||'').startsWith(hoje)).length;
+        const totalConv = lojaData.filter(d=>d.status==='convertido').length;
+        const totalFin  = lojaData.filter(d=>d.status==='finalizado').length;
+        const taxa      = (totalConv+totalFin)>0 ? Math.round(totalConv/(totalConv+totalFin)*100) : 0;
+        const taxaCor   = taxa>=40?'#4ade80':taxa>=20?'#fbbf24':'#ef4444';
+        const filaCor   = fila>10?'#f87171':fila>5?'#fbbf24':'#4ade80';
+
+        h += `
+        <div onclick="_orbAbrirLoja('${lk}')" style="background:rgba(0,0,0,.28);border:1px solid rgba(56,189,248,.12);border-radius:14px;padding:1rem 1.1rem;cursor:pointer;transition:border-color .15s;position:relative;overflow:hidden;"
+          onmouseover="this.style.borderColor='rgba(56,189,248,.4)'"
+          onmouseout="this.style.borderColor='rgba(56,189,248,.12)'">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.65rem;">
+            <div style="font-size:.82rem;font-weight:800;color:#f3f4f6;">${lnome.toUpperCase()}</div>
+            <i class="fas fa-chevron-right" style="color:#374151;font-size:.65rem;"></i>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.35rem;margin-bottom:.65rem;">
+            <div style="background:rgba(0,0,0,.3);border-radius:8px;padding:.4rem .3rem;text-align:center;">
+              <div style="font-size:1.1rem;font-weight:900;color:${filaCor};">${fila}</div>
+              <div style="font-size:.52rem;color:#6b7280;">📋 fila</div>
+            </div>
+            <div style="background:rgba(0,0,0,.3);border-radius:8px;padding:.4rem .3rem;text-align:center;">
+              <div style="font-size:1.1rem;font-weight:900;color:#38bdf8;">${emAtend}</div>
+              <div style="font-size:.52rem;color:#6b7280;">⚡ atend.</div>
+            </div>
+            <div style="background:rgba(0,0,0,.3);border-radius:8px;padding:.4rem .3rem;text-align:center;">
+              <div style="font-size:1.1rem;font-weight:900;color:#4ade80;">${vendaHoje}</div>
+              <div style="font-size:.52rem;color:#6b7280;">🏆 vendas</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;">
+            <div style="flex:1;height:3px;background:rgba(255,255,255,.06);border-radius:3px;margin-right:.5rem;">
+              <div style="height:100%;width:${Math.min(100,taxa)}%;background:${taxaCor};border-radius:3px;"></div>
+            </div>
+            <span style="font-size:.62rem;font-weight:700;color:${taxaCor};">${taxa}% conv.</span>
+          </div>
+          ${fila>0?`<div style="position:absolute;top:8px;right:28px;width:18px;height:18px;border-radius:999px;background:#f87171;display:flex;align-items:center;justify-content:center;font-size:.55rem;font-weight:900;color:#fff;">${fila>99?'99+':fila}</div>`:''}
+        </div>`;
+    });
+
+    h += `</div>`;
+    return h;
+}
+
+// ── TELA 2: kanban de uma loja ──
+function _orbViewKanban(lk) {
+    const lnome    = _ORB_LOJAS[lk] || lk;
+    const userNome = _orbUserNome();
+    const isSenior = _orbIsSenior();
+    const hoje     = new Date().toISOString().slice(0,10);
+
+    const base      = _orbData.filter(d=>d.loja===lk);
+    const fila      = base.filter(d=>d.status==='novo').sort((a,b)=>(a.dataMarcada||a.criadoEm||'').localeCompare(b.dataMarcada||b.criadoEm||''));
     const emAtend   = base.filter(d=>d.status==='em_atendimento');
     const meusAt    = emAtend.filter(d=>d.responsavel===userNome);
     const outrosAt  = emAtend.filter(d=>d.responsavel!==userNome);
@@ -35240,78 +35315,47 @@ function _orbRender() {
     const taxa      = (totalConv+totalFin)>0 ? Math.round(totalConv/(totalConv+totalFin)*100) : 0;
     const taxaCor   = taxa>=40?'#4ade80':taxa>=20?'#fbbf24':'#f87171';
 
-    let h = '';
-
-    // Header
-    h += `<div style="display:flex;align-items:center;gap:12px;margin-bottom:1rem;flex-wrap:wrap;">
-      <div style="width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,rgba(56,189,248,.22),rgba(56,189,248,.05));border:1px solid rgba(56,189,248,.35);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-        <i class="fas fa-satellite" style="color:#38bdf8;font-size:1rem;"></i>
+    let h = `
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:1rem;flex-wrap:wrap;">
+      ${isSenior?`<button onclick="_orbVoltarLojas()" style="font-size:.68rem;padding:5px 10px;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:#64748b;cursor:pointer;"><i class="fas fa-arrow-left"></i></button>`:''}
+      <div style="width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,rgba(56,189,248,.22),rgba(56,189,248,.05));border:1px solid rgba(56,189,248,.35);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <i class="fas fa-satellite" style="color:#38bdf8;font-size:.9rem;"></i>
       </div>
       <div style="flex:1;min-width:0;">
-        <div style="font-size:.9rem;font-weight:800;color:#f3f4f6;">Órbita <span style="color:#38bdf8;font-weight:600;">· Call Center</span></div>
-        <div style="font-size:.62rem;color:#6b7280;margin-top:1px;">Olá, ${userNome}${userLoja?' — '+(_ORB_LOJAS[userLoja]||userLoja):''}</div>
+        <div style="font-size:.88rem;font-weight:800;color:#f3f4f6;">${lnome} <span style="color:#38bdf8;font-weight:500;font-size:.75rem;">· Call Center</span></div>
+        <div style="font-size:.6rem;color:#6b7280;">${fila.length} na fila · ${emAtend.length} em atendimento · ${vendaHoje.length} vendas hoje</div>
       </div>
-      <div style="display:flex;gap:5px;align-items:center;">
-        ${isSenior?`<select onchange="_orbSetFiltroLoja(this.value)" style="font-size:.68rem;padding:4px 8px;border-radius:8px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:#94a3b8;cursor:pointer;">
-          <option value="all" ${_orbFiltroLoja==='all'?'selected':''}>🌐 Todas</option>
-          ${Object.entries(_ORB_LOJAS).map(([k,n])=>`<option value="${k}" ${_orbFiltroLoja===k?'selected':''}>${n}</option>`).join('')}
-        </select>`:''}
-        <button onclick="_orbAbrirForm()" style="font-size:.68rem;font-weight:700;padding:5px 12px;border-radius:8px;border:1px solid rgba(56,189,248,.35);background:rgba(56,189,248,.1);color:#38bdf8;cursor:pointer;white-space:nowrap;"><i class="fas fa-plus"></i> Novo</button>
-        <button onclick="_orbitaInit()" title="Atualizar" style="font-size:.68rem;padding:5px 9px;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:#6b7280;cursor:pointer;"><i class="fas fa-rotate-right"></i></button>
-      </div>
+      <button onclick="_orbAbrirForm()" style="font-size:.68rem;font-weight:700;padding:5px 11px;border-radius:8px;border:1px solid rgba(56,189,248,.35);background:rgba(56,189,248,.1);color:#38bdf8;cursor:pointer;white-space:nowrap;"><i class="fas fa-plus"></i> Novo</button>
+      <button onclick="_orbitaInit()" title="Atualizar" style="font-size:.68rem;padding:5px 9px;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:#6b7280;cursor:pointer;"><i class="fas fa-rotate-right"></i></button>
     </div>`;
 
     // KPI strip
-    h += `<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:.45rem;margin-bottom:1.2rem;">
+    h += `<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:.45rem;margin-bottom:1.2rem;">
       ${_orbKpi('📋','Fila',fila.length,'#94a3b8')}
       ${_orbKpi('⚡','Atendendo',emAtend.length,'#38bdf8')}
-      ${_orbKpi('✅','Finalizados',totalFin,'#64748b')}
       ${_orbKpi('🏆','Vendas Hoje',vendaHoje.length,'#4ade80')}
-      ${_orbKpi('📈','Taxa Conv.',taxa+'%',taxaCor)}
+      ${_orbKpi('📈','Taxa',taxa+'%',taxaCor)}
     </div>`;
 
-    // Kanban
-    h += `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(255px,1fr));gap:.75rem;align-items:start;">`;
+    // Kanban 4 colunas
+    h += `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:.75rem;align-items:start;">`;
 
-    // Coluna FILA — agrupada por loja
-    const filaByLoja = {};
-    fila.forEach(d => {
-        const lk = d.loja || 'sem_loja';
-        if (!filaByLoja[lk]) filaByLoja[lk] = [];
-        filaByLoja[lk].push(d);
-    });
-    const filaHtml = Object.entries(filaByLoja)
-        .sort(([a],[b]) => (_ORB_LOJAS[a]||a).localeCompare(_ORB_LOJAS[b]||b))
-        .map(([lk, clientes]) => `
-        <div style="margin-bottom:.2rem;">
-          <div style="display:flex;align-items:center;justify-content:space-between;padding:4px 2px 5px;border-bottom:1px solid rgba(255,255,255,.06);margin-bottom:.35rem;">
-            <span style="font-size:.6rem;font-weight:700;color:#64748b;letter-spacing:.06em;">${(_ORB_LOJAS[lk]||lk).toUpperCase()}</span>
-            <span style="font-size:.58rem;font-weight:700;padding:1px 6px;border-radius:999px;background:rgba(148,163,184,.1);color:#64748b;">${clientes.length}</span>
-          </div>
-          ${clientes.map(d=>_orbCardFila(d)).join('')}
-        </div>`).join('');
-    h += _orbColuna('📋 Fila de Espera', fila.length, '#94a3b8',
-        filaHtml,
+    h += _orbColuna('📋 Fila', fila.length, '#94a3b8',
+        fila.map(d=>_orbCardFila(d)).join(''),
         `<button onclick="_orbPegarProximo()" style="width:100%;margin-top:.5rem;padding:.55rem;border-radius:10px;border:1px solid rgba(56,189,248,.35);background:rgba(56,189,248,.1);color:#38bdf8;font-size:.75rem;font-weight:700;cursor:pointer;">⚡ Pegar Próximo</button>`
     );
-
-    // Coluna EM ATENDIMENTO
     h += _orbColuna('⚡ Em Atendimento', emAtend.length, '#38bdf8',
         [...meusAt.map(d=>_orbCardAtend(d,true)), ...outrosAt.map(d=>_orbCardAtend(d,false))].join('')
     );
-
-    // Coluna FINALIZADO HOJE
     h += _orbColuna('✅ Finalizados Hoje', finHoje.length, '#64748b',
         finHoje.map(d=>_orbCardFinal(d,'finalizado')).join('')
     );
-
-    // Coluna VENDA HOJE
     h += _orbColuna('🏆 Vendas Hoje', vendaHoje.length, '#4ade80',
         vendaHoje.map(d=>_orbCardFinal(d,'convertido')).join('')
     );
 
     h += `</div>`;
-    root.innerHTML = h;
+    return h;
 }
 
 function _orbKpi(icon, label, value, cor) {
@@ -35335,13 +35379,12 @@ function _orbColuna(titulo, count, cor, cardsHtml, extra) {
 }
 
 function _orbCardFila(d) {
-    const lj = _ORB_LOJAS[d.loja]||d.loja||'?';
     const dt = _orbFmtData(d.dataMarcada);
     const wa = (d.whatsapp||'').replace(/\D/g,'');
     return `<div style="background:rgba(15,23,42,.65);border:1px solid rgba(148,163,184,.15);border-radius:10px;padding:.6rem .75rem;">
       <div style="font-size:.78rem;font-weight:700;color:#e2e8f0;margin-bottom:.25rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${d.nome||'—'}</div>
       <div style="display:flex;gap:5px;font-size:.6rem;color:#64748b;flex-wrap:wrap;margin-bottom:.35rem;">
-        <span>📍 ${lj}</span>${d.interesse?`<span>📦 ${d.interesse}</span>`:''}${dt?`<span>📅 ${dt}</span>`:''}${d.via==='agente_ia'?`<span style="color:#a78bfa;">🤖</span>`:''}
+        ${d.interesse?`<span>📦 ${d.interesse}</span>`:''}${dt?`<span>📅 ${dt}</span>`:''}${d.via==='agente_ia'?`<span style="color:#a78bfa;">🤖</span>`:''}
       </div>
       <div style="display:flex;gap:.35rem;">
         ${wa?`<a href="https://wa.me/${wa}" target="_blank" style="flex:0 0 auto;padding:3px 8px;border-radius:7px;border:1px solid rgba(74,222,128,.3);background:rgba(74,222,128,.08);color:#4ade80;font-size:.62rem;font-weight:700;text-decoration:none;"><i class="fab fa-whatsapp"></i></a>`:''}
@@ -35352,8 +35395,7 @@ function _orbCardFila(d) {
 }
 
 function _orbCardAtend(d, isMine) {
-    const lj = _ORB_LOJAS[d.loja]||d.loja||'?';
-    const wa = (d.whatsapp||'').replace(/\D/g,'');
+    const wa  = (d.whatsapp||'').replace(/\D/g,'');
     const bdr = isMine?'rgba(56,189,248,.35)':'rgba(255,255,255,.1)';
     const bg  = isMine?'rgba(56,189,248,.05)':'rgba(15,23,42,.5)';
     return `<div style="background:${bg};border:1px solid ${bdr};border-radius:10px;padding:.6rem .75rem;">
@@ -35361,9 +35403,7 @@ function _orbCardAtend(d, isMine) {
         ?`<div style="font-size:.55rem;font-weight:700;color:#38bdf8;letter-spacing:.06em;margin-bottom:.2rem;">VOCÊ</div>`
         :`<div style="font-size:.55rem;color:#4b5563;margin-bottom:.2rem;">👤 ${d.responsavel||'—'}</div>`}
       <div style="font-size:.78rem;font-weight:700;color:#e2e8f0;margin-bottom:.25rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${d.nome||'—'}</div>
-      <div style="display:flex;gap:5px;font-size:.6rem;color:#64748b;flex-wrap:wrap;margin-bottom:.35rem;">
-        <span>📍 ${lj}</span>${d.interesse?`<span>📦 ${d.interesse}</span>`:''}
-      </div>
+      ${d.interesse?`<div style="font-size:.6rem;color:#64748b;margin-bottom:.35rem;">📦 ${d.interesse}</div>`:''}
       ${isMine?`
       <div style="display:flex;gap:.35rem;margin-bottom:.35rem;">
         ${wa?`<a href="https://wa.me/${wa}" target="_blank" style="flex:0 0 auto;padding:4px 8px;border-radius:7px;border:1px solid rgba(74,222,128,.3);background:rgba(74,222,128,.08);color:#4ade80;font-size:.62rem;font-weight:700;text-decoration:none;"><i class="fab fa-whatsapp"></i></a>`:''}
@@ -35372,19 +35412,17 @@ function _orbCardAtend(d, isMine) {
       </div>
       <input type="text" placeholder="Obs rápida..." value="${(d.notas||'').replace(/"/g,'&quot;')}"
         onblur="_orbSalvarNota('${d._id}',this.value)"
-        style="width:100%;font-size:.6rem;padding:3px 7px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:6px;color:#94a3b8;outline:none;box-sizing:border-box;">
-      `:''}
+        style="width:100%;font-size:.6rem;padding:3px 7px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:6px;color:#94a3b8;outline:none;box-sizing:border-box;">`:''}
     </div>`;
 }
 
 function _orbCardFinal(d, tipo) {
-    const lj  = _ORB_LOJAS[d.loja]||d.loja||'?';
     const cor = tipo==='convertido'?'#4ade80':'#94a3b8';
     const wa  = (d.whatsapp||'').replace(/\D/g,'');
     return `<div style="background:rgba(15,23,42,.5);border:1px solid ${cor}1a;border-radius:10px;padding:.55rem .7rem;">
       <div style="font-size:.75rem;font-weight:700;color:#cbd5e1;margin-bottom:.2rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${d.nome||'—'}</div>
       <div style="display:flex;gap:5px;font-size:.58rem;color:#4b5563;flex-wrap:wrap;">
-        <span>📍 ${lj}</span>${d.responsavel?`<span>👤 ${d.responsavel}</span>`:''}${wa?`<a href="https://wa.me/${wa}" target="_blank" style="color:#4ade80;text-decoration:none;"><i class="fab fa-whatsapp"></i></a>`:''}
+        ${d.responsavel?`<span>👤 ${d.responsavel}</span>`:''}${wa?`<a href="https://wa.me/${wa}" target="_blank" style="color:#4ade80;text-decoration:none;"><i class="fab fa-whatsapp"></i></a>`:''}
       </div>
     </div>`;
 }
@@ -35399,17 +35437,17 @@ function _orbFmtData(v) {
 }
 
 // ── Ações ──
+window._orbAbrirLoja = function(lk) { _orbLojaAtiva = lk; _orbRender(); };
+window._orbVoltarLojas = function() { _orbLojaAtiva = null; _orbRender(); };
 window._orbPegar = async function(id) {
     const now = new Date().toISOString();
     await _orbPatch(id, {status:'em_atendimento', responsavel:_orbUserNome(), iniciouEm:now, atualizadoEm:now});
     _orbRender();
 };
 window._orbPegarProximo = async function() {
-    const userLoja = _orbUserLoja();
-    const isSenior = _orbIsSenior();
+    const lk = _orbLojaAtiva || _orbUserLoja();
     let fila = _orbData.filter(d=>d.status==='novo');
-    if (!isSenior && userLoja) fila = fila.filter(d=>d.loja===userLoja);
-    if (_orbFiltroLoja!=='all') fila = fila.filter(d=>d.loja===_orbFiltroLoja);
+    if (lk) fila = fila.filter(d=>d.loja===lk);
     fila.sort((a,b)=>(a.dataMarcada||a.criadoEm||'').localeCompare(b.dataMarcada||b.criadoEm||''));
     if (!fila.length) { alert('Fila vazia!'); return; }
     await window._orbPegar(fila[0]._id);
@@ -35429,9 +35467,6 @@ window._orbSalvarNota = async function(id, val) {
     if (!item || item.notas===val) return;
     await _orbPatch(id, {notas:val, atualizadoEm:new Date().toISOString()});
 };
-window._orbSetFiltroLoja = function(val) {
-    _orbFiltroLoja = val; _orbRender();
-};
 
 // ── Formulário ──
 function _orbInputSt() {
@@ -35439,8 +35474,9 @@ function _orbInputSt() {
 }
 window._orbAbrirForm = function(editId) {
     const item = editId ? _orbData.find(d=>d._id===editId) : null;
+    const lojaDefault = item?.loja || _orbLojaAtiva || _orbUserLoja() || '';
     const lojaOpts = Object.entries(_ORB_LOJAS).map(([k,n])=>
-        `<option value="${k}" ${item?.loja===k?'selected':''}>${n}</option>`).join('');
+        `<option value="${k}" ${(lojaDefault===k)?'selected':''}>${n}</option>`).join('');
     document.body.insertAdjacentHTML('beforeend', `
     <div id="modal-orbita-form" onclick="if(event.target===this)_orbFecharForm()" style="position:fixed;inset:0;z-index:10001;background:rgba(0,0,0,.78);display:flex;align-items:center;justify-content:center;padding:1rem;">
       <div style="background:#0f172a;border:1px solid rgba(56,189,248,.3);border-radius:16px;padding:1.5rem;width:100%;max-width:460px;max-height:90vh;overflow-y:auto;">

@@ -35138,8 +35138,11 @@ const _ORB_LOJAS = {
     montserrat:'Montserrat', linhares:'Linhares', eunapolis:'Eunápolis'
 };
 
-let _orbData = [];
+let _orbData    = []; // docs completos da loja ativa (kanban)
+let _orbSummary = []; // campos mínimos de todas as lojas (grade)
 let _orbLojaAtiva = null; // null = tela seletora de lojas
+
+const _ORB_QUERY = `https://firestore.googleapis.com/v1/projects/titas-sinergy/databases/(default)/documents:runQuery?key=${_ORB_KEY}`;
 
 // ── Firestore helpers ──
 function _orbFsVal(v) {
@@ -35168,18 +35171,36 @@ function _orbDocToObj(doc) {
     return obj;
 }
 
-async function _orbLoadAll() {
-    _orbData = [];
-    let pageToken = null;
+// runQuery genérico → array de objetos
+async function _orbRunQuery(structuredQuery) {
     try {
-        do {
-            const url = `${_ORB_BASE}?key=${_ORB_KEY}&pageSize=300${pageToken?'&pageToken='+pageToken:''}`;
-            const r = await fetch(url);
-            const d = await r.json();
-            if (d.documents) _orbData.push(...d.documents.map(_orbDocToObj));
-            pageToken = d.nextPageToken || null;
-        } while (pageToken);
-    } catch(e) { console.warn('orbita load:', e); }
+        const r = await fetch(_ORB_QUERY, {
+            method:'POST', headers:{'Content-Type':'application/json'},
+            body: JSON.stringify({structuredQuery})
+        });
+        const arr = await r.json();
+        if (!Array.isArray(arr)) return [];
+        return arr.filter(row=>row.document).map(row=>_orbDocToObj(row.document));
+    } catch(e) { console.warn('orbita query:', e); return []; }
+}
+
+// Carrega dados mínimos de todas as lojas (para grade)
+async function _orbLoadSummary() {
+    _orbSummary = await _orbRunQuery({
+        from: [{collectionId:'ts_orbita'}],
+        select: {fields:[
+            {fieldPath:'loja'},{fieldPath:'status'},
+            {fieldPath:'convertidoEm'},{fieldPath:'finalizadoEm'}
+        ]}
+    });
+}
+
+// Carrega dados completos de uma loja (para kanban)
+async function _orbLoadLoja(lk) {
+    _orbData = await _orbRunQuery({
+        from: [{collectionId:'ts_orbita'}],
+        where: {fieldFilter:{field:{fieldPath:'loja'},op:'EQUAL',value:{stringValue:lk}}}
+    });
 }
 
 async function _orbPatch(id, updates) {
@@ -35196,11 +35217,15 @@ window._orbitaInit = async function() {
     const root = document.getElementById('orbita-root');
     if (!root) return;
     root.innerHTML = `<div style="text-align:center;padding:3rem;color:#64748b;font-size:.9rem;"><i class="fas fa-satellite fa-spin" style="color:#38bdf8;font-size:1.4rem;margin-bottom:.5rem;display:block;"></i>Carregando Órbita...</div>`;
-    await _orbLoadAll();
-    // Não-senior vai direto para sua loja
-    if (!_orbIsSenior()) {
+    if (_orbIsSenior()) {
+        // Sênior vê grade — carrega só campos mínimos de todas as lojas
+        _orbLojaAtiva = null;
+        await _orbLoadSummary();
+    } else {
+        // Não-senior vai direto para sua loja
         const lj = _orbUserLoja();
-        if (lj) _orbLojaAtiva = lj;
+        _orbLojaAtiva = lj || null;
+        if (lj) await _orbLoadLoja(lj);
     }
     _orbRender();
 };
@@ -35227,13 +35252,12 @@ function _orbRender() {
     root.innerHTML = _orbLojaAtiva ? _orbViewKanban(_orbLojaAtiva) : _orbViewLojas();
 }
 
-// ── TELA 1: grade de lojas ──
+// ── TELA 1: grade de lojas (usa _orbSummary — dados mínimos) ──
 function _orbViewLojas() {
-    const userNome = _orbUserNome();
     const hoje     = new Date().toISOString().slice(0,10);
-    const totFila  = _orbData.filter(d=>d.status==='novo').length;
-    const totAt    = _orbData.filter(d=>d.status==='em_atendimento').length;
-    const totVenda = _orbData.filter(d=>d.status==='convertido'&&(d.convertidoEm||'').startsWith(hoje)).length;
+    const totFila  = _orbSummary.filter(d=>d.status==='novo').length;
+    const totAt    = _orbSummary.filter(d=>d.status==='em_atendimento').length;
+    const totVenda = _orbSummary.filter(d=>d.status==='convertido'&&(d.convertidoEm||'').startsWith(hoje)).length;
 
     let h = `
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:1.2rem;flex-wrap:wrap;">
@@ -35250,7 +35274,7 @@ function _orbViewLojas() {
     h += `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:.75rem;">`;
 
     Object.entries(_ORB_LOJAS).forEach(([lk, lnome]) => {
-        const lojaData  = _orbData.filter(d=>d.loja===lk);
+        const lojaData  = _orbSummary.filter(d=>d.loja===lk);
         const fila      = lojaData.filter(d=>d.status==='novo').length;
         const emAtend   = lojaData.filter(d=>d.status==='em_atendimento').length;
         const vendaHoje = lojaData.filter(d=>d.status==='convertido'&&(d.convertidoEm||'').startsWith(hoje)).length;
@@ -35326,7 +35350,7 @@ function _orbViewKanban(lk) {
         <div style="font-size:.6rem;color:#6b7280;">${fila.length} na fila · ${emAtend.length} em atendimento · ${vendaHoje.length} vendas hoje</div>
       </div>
       <button onclick="_orbAbrirForm()" style="font-size:.68rem;font-weight:700;padding:5px 11px;border-radius:8px;border:1px solid rgba(56,189,248,.35);background:rgba(56,189,248,.1);color:#38bdf8;cursor:pointer;white-space:nowrap;"><i class="fas fa-plus"></i> Novo</button>
-      <button onclick="_orbitaInit()" title="Atualizar" style="font-size:.68rem;padding:5px 9px;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:#6b7280;cursor:pointer;"><i class="fas fa-rotate-right"></i></button>
+      <button onclick="_orbAbrirLoja('${lk}')" title="Atualizar" style="font-size:.68rem;padding:5px 9px;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:#6b7280;cursor:pointer;"><i class="fas fa-rotate-right"></i></button>
     </div>`;
 
     // KPI strip
@@ -35437,7 +35461,13 @@ function _orbFmtData(v) {
 }
 
 // ── Ações ──
-window._orbAbrirLoja = function(lk) { _orbLojaAtiva = lk; _orbRender(); };
+window._orbAbrirLoja = async function(lk) {
+    _orbLojaAtiva = lk;
+    const root = document.getElementById('orbita-root');
+    if (root) root.innerHTML = `<div style="text-align:center;padding:3rem;color:#64748b;font-size:.9rem;"><i class="fas fa-satellite fa-spin" style="color:#38bdf8;font-size:1.3rem;margin-bottom:.5rem;display:block;"></i>Carregando ${_ORB_LOJAS[lk]||lk}...</div>`;
+    await _orbLoadLoja(lk);
+    _orbRender();
+};
 window._orbVoltarLojas = function() { _orbLojaAtiva = null; _orbRender(); };
 window._orbPegar = async function(id) {
     const now = new Date().toISOString();

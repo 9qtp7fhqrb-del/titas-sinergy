@@ -33,7 +33,14 @@ TOKEN = _load_token()
 REPO  = os.environ.get("GITHUB_REPO", "9qtp7fhqrb-del/titas-sinergy")
 ROOT  = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-FILES_DEFAULT = ["index.html", "scripts/update_d360.py", "orbita_clientes.json"]
+FILES_DEFAULT = [
+    "index.html", "scripts/update_d360.py",
+    "orbita_clientes.json", "orbita_summary.json",
+    "orbita_cariacica.json", "orbita_itabuna.json", "orbita_moxuara.json",
+    "orbita_praiadacosta.json", "orbita_barreiras.json", "orbita_teixeira.json",
+    "orbita_laranjeiras.json", "orbita_saomateus.json", "orbita_serra.json",
+    "orbita_montserrat.json", "orbita_linhares.json", "orbita_eunapolis.json",
+]
 
 def api(method, path, data=None, timeout=120):
     url = f"https://api.github.com/repos/{REPO}/{path}"

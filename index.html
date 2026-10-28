@@ -7,7 +7,7 @@
     <script>
     // Cache-buster: força reload se a versão mudou
     (function(){
-      var BUILD = '20261028222641';
+      var BUILD = '20261028223636';
       var stored = localStorage.getItem('d360_build');
       if (stored && stored !== BUILD) {
         localStorage.setItem('d360_build', BUILD);
@@ -8733,10 +8733,10 @@ const D360 = {
     // O sistema deriva automaticamente: margem por loja → subrede → rede
     // COMO ATUALIZAR: edite apenas margem_lojas com os valores do ERP por loja
     // ─────────────────────────────────────────────────────────────────────────────
-    margem_dia: 48.31,              // rede hoje · zerado automaticamente à meia-noite
+    margem_dia: 48.32,              // rede hoje · zerado automaticamente à meia-noite
     margem_dia_subredes: { t1: 46.36, t2: 46.31, t3: 50.94, ind: 51.92 },
     margem_dia_lojas: {
-        cariacica:48.70, itabuna:40.86, moxuara:46.70, praiadacosta:51.07,
+        cariacica:48.71, itabuna:40.86, moxuara:46.70, praiadacosta:51.07,
         barreiras:44.63, teixeira:47.94, laranjeiras:0, saomateus:53.78,
         serra:47.71, montserrat:60.31, linhares:49.05, eunapolis:51.92,
     },
@@ -9984,7 +9984,7 @@ var _ERP_ESTOQUE = {
       'REALME 9':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:0,eunapolis:0},
       'REALME 9I':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:0,eunapolis:0},
       'REALME C100I':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:2,barreiras:11,laranjeiras:0,teixeira:0,saomateus:1,serra:3,montserrat:2,linhares:0,eunapolis:0},
-      'REALME C100X':  {cariacica:12,itabuna:0,moxuara:10,praiadacosta:7,barreiras:0,laranjeiras:10,teixeira:14,saomateus:14,serra:13,montserrat:14,linhares:6,eunapolis:0},
+      'REALME C100X':  {cariacica:12,itabuna:0,moxuara:10,praiadacosta:7,barreiras:0,laranjeiras:10,teixeira:14,saomateus:14,serra:13,montserrat:13,linhares:6,eunapolis:0},
       'REALME C11':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:0,eunapolis:0},
       'REALME C15':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:0,eunapolis:0},
       'REALME C21Y - 64G':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:0,eunapolis:0},
@@ -10118,7 +10118,7 @@ var _ERP_ESTOQUE = {
       'ZENFONE MAX PLUS':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:0,eunapolis:0},
       'ZENFONE MAX SHOT':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:0,eunapolis:0},
     };
-    var _ERP_ESTOQUE_TS = '28/10/2026 19:26';
+    var _ERP_ESTOQUE_TS = '28/10/2026 19:36';
 // Preços por produto — populado pelo update_d360.py a cada 30 min
 var _ERP_PRECOS = {
       'ALCATEL A2 XL': {custo:0.00,venda:0.00},
@@ -10474,7 +10474,7 @@ var _ERP_PRECOS = {
       'ZENFONE MAX PLUS': {custo:0.00,venda:0.00},
       'ZENFONE MAX SHOT': {custo:0.00,venda:0.00},
     };
-    var _ERP_PRECOS_TS = '28/10/2026 19:26';
+    var _ERP_PRECOS_TS = '28/10/2026 19:36';
 // Flag de sessão: true = fetch já tentado (sucesso ou falha), não tentar de novo
 var _erpPrecosCarregados = false;
 var _SUG_SPECS = {

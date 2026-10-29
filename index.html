@@ -7,7 +7,7 @@
     <script>
     // Cache-buster: força reload se a versão mudou
     (function(){
-      var BUILD = '20261029194110';
+      var BUILD = '20261029224441';
       var stored = localStorage.getItem('d360_build');
       if (stored && stored !== BUILD) {
         localStorage.setItem('d360_build', BUILD);
@@ -6727,7 +6727,7 @@ function openDash() {
     if (allowedUsuarios)   _showBtn('btn-usuarios');
     if (allowedUsuarios || user.cargo === 'escritorio')   _showBtn('btn-juridico');
     if (['diretoria','franqueado'].includes(user.cargo)) _showBtn('btn-rastreio');
-    if (['diretoria','franqueado','escritorio'].includes(user.cargo)) _showBtn('btn-rh');
+    if (['diretoria','franqueado','escritorio','gerente-senior','gerente-senior-acess','gerente'].includes(user.cargo)) _showBtn('btn-rh');
     if (_podeVerEstoque()) _showBtn('btn-estoque');
     if (allowedUsuarios || ['diretoria','franqueado','gerente-senior','gerente-senior-acess','gerente','subgerente'].includes(user.cargo))
         _showBtn('btn-lancar-metas');
@@ -10121,7 +10121,7 @@ var _ERP_ESTOQUE = {
       'ZENFONE MAX PLUS':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:0,eunapolis:0},
       'ZENFONE MAX SHOT':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:0,eunapolis:0},
     };
-    var _ERP_ESTOQUE_TS = '29/10/2026 19:40';
+    var _ERP_ESTOQUE_TS = '29/10/2026 19:44';
 // Preços por produto — populado pelo update_d360.py a cada 30 min
 var _ERP_PRECOS = {
       'ALCATEL A2 XL': {custo:0.00,venda:0.00},
@@ -10477,7 +10477,7 @@ var _ERP_PRECOS = {
       'ZENFONE MAX PLUS': {custo:0.00,venda:0.00},
       'ZENFONE MAX SHOT': {custo:0.00,venda:0.00},
     };
-    var _ERP_PRECOS_TS = '29/10/2026 19:41';
+    var _ERP_PRECOS_TS = '29/10/2026 19:44';
 // Flag de sessão: true = fetch já tentado (sucesso ou falha), não tentar de novo
 var _erpPrecosCarregados = false;
 var _SUG_SPECS = {
@@ -13278,46 +13278,46 @@ let _metasOverride = {}; // { lojaKey: { vendKey: meta_cel } }
 const VEND_METAS_DB = {
     barreiras: [
         {k:'nanda',      meta:                                    78000},   // Ago/26: 78.000
-        {k:'isabela',    meta:                                                                                                        780000},   // Ago/26: 40.500
-        {k:'larisse',    meta:                                                                                                             83333},   // Ago/26: 40.500
+        {k:'isabela',    meta:                                                                                                          780000},   // Ago/26: 40.500
+        {k:'larisse',    meta:                                                                                                               83333},   // Ago/26: 40.500
         {k:'matheus',    meta:                                                             80000},   // Ago/26: 40.500
-        {k:'victor',     meta:                                                                                                             65000},   // Ago/26: 40.500
-        {k:'gustavo',    meta:                                                                                                             15000},   // sem meta lançada
+        {k:'victor',     meta:                                                                                                               65000},   // Ago/26: 40.500
+        {k:'gustavo',    meta:                                                                                                               15000},   // sem meta lançada
     ],
     cariacica: [
-        {k:'mayara',     meta:                                                                                          130000},   // Ago/26: 70.000
+        {k:'mayara',     meta:                                                                                            130000},   // Ago/26: 70.000
         {k:'fabiano',    meta:                                             125000},   // Ago/26: 100.000
         {k:'roberta',    meta:                                              130000},   // Ago/26: 100.000
-        {k:'bruno',      meta:                                                                                          130000},   // Ago/26: 80.000
-        {k:'liz',        meta:                                                                                          107500},   // Ago/26: 100.000
+        {k:'bruno',      meta:                                                                                            130000},   // Ago/26: 80.000
+        {k:'liz',        meta:                                                                                            107500},   // Ago/26: 100.000
         {k:'sophia',     meta: 100000},   // alias liz sophia
         {k:'nicolas',    meta:  50000},   // sem meta lançada
         {k:'glaupierre', meta:  50000},   // sem meta lançada
-        {k:'gabriel',    meta:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       180000},   // sem meta lançada
+        {k:'gabriel',    meta:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         180000},   // sem meta lançada
     ],
     itabuna: [
-        {k:'mikaelle',   meta:                                                                                                     130000},   // Ago/26: 91.000
-        {k:'jhonatas',   meta:                                                                   78000},   // Ago/26: 60.000
+        {k:'mikaelle',   meta:                                                                                                       130000},   // Ago/26: 91.000
+        {k:'jhonatas',   meta:                                                                     78000},   // Ago/26: 60.000
         {k:'keifit',     meta:                                                          84000},   // Ago/26: 60.000
-        {k:'andreza',    meta:                                                                                                     78000},   // Ago/26: 60.000
-        {k:'hericles',   meta:                                                                                                     78000},   // Ago/26: 40.000
+        {k:'andreza',    meta:                                                                                                       78000},   // Ago/26: 60.000
+        {k:'hericles',   meta:                                                                                                       78000},   // Ago/26: 40.000
         {k:'evelyn',     meta:  25000},   // sem meta lançada
         {k:'sandy',      meta:  50000},   // sem meta lançada
         {k:'maikelly',   meta:  25000},   // sem meta lançada
     ],
     laranjeiras: [
-        {k:'lidia',      meta:                                                                                                                 90000},   // ref jul/26 — aguardando lançamento ago/26
+        {k:'lidia',      meta:                                                                                                                   90000},   // ref jul/26 — aguardando lançamento ago/26
         {k:'lídia',      meta:  52500},   // alias
         {k:'mayara',     meta:  52500},   // ref jul/26 — aguardando lançamento ago/26
-        {k:'nycolly',    meta:                                                                                                                     70000},   // ref jul/26 — aguardando lançamento ago/26
+        {k:'nycolly',    meta:                                                                                                                       70000},   // ref jul/26 — aguardando lançamento ago/26
         {k:'joyce',      meta:  50000},   // sem meta lançada
         {k:'marcus',     meta:  50000},   // sem meta lançada
         {k:'jhennyfer',  meta:  50000},   // sem meta lançada
     ],
     linhares: [
-        {k:'rayca',      meta:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           36666},   // Set/26: 68.850
-        {k:'juliana',    meta:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           110000},   // Set/26: 86.300
-        {k:'wenderson',  meta:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           36666},   // Set/26: 68.850
+        {k:'rayca',      meta:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             36666},   // Set/26: 68.850
+        {k:'juliana',    meta:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             110000},   // Set/26: 86.300
+        {k:'wenderson',  meta:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             36666},   // Set/26: 68.850
         {k:'natalia',    meta:  71500},   // aguardando lançamento set/26
         {k:'natália',    meta:  71500},   // alias natalia
         {k:'krystian',   meta:  50000},   // sem meta lançada
@@ -13327,15 +13327,15 @@ const VEND_METAS_DB = {
     montserrat: [
         {k:'vinicius',   meta:                                   100000},   // Ago/26: 100.000
         {k:'joaquin',    meta:                                                             80000},   // Ago/26: 60.000
-        {k:'adriano',    meta:                                                                                                         105000},   // Ago/26: 60.000
-        {k:'jhenifer',   meta:                                               20000},   // sem meta lançada
+        {k:'adriano',    meta:                                                                                                           105000},   // Ago/26: 60.000
+        {k:'jhenifer',   meta:                                                 20000},   // sem meta lançada
         {k:'vitor',      meta:  50000},   // sem meta lançada
         {k:'arthur',     meta:  50000},   // sem meta lançada
     ],
     moxuara: [
         {k:'luccas',     meta:                                              91000},   // Ago/26: 91.000
-        {k:'khayllane',  meta:                                                                                           107500},   // Ago/26: 90.000
-        {k:'iasmim',     meta:                                                                                           107500},   // Ago/26: 90.000
+        {k:'khayllane',  meta:                                                                                             107500},   // Ago/26: 90.000
+        {k:'iasmim',     meta:                                                                                             107500},   // Ago/26: 90.000
         {k:'almeida',    meta:  90000},   // alias khayllane
         {k:'nicolas',    meta:  50000},   // sem meta lançada
         {k:'thauany',    meta:  50000},   // sem meta lançada
@@ -13344,18 +13344,18 @@ const VEND_METAS_DB = {
     ],
     praiadacosta: [
         {k:'nycolly',    meta:  50000},   // Ago/26: 50.000
-        {k:'stefany',    meta:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                50000},   // Ago/26: 50.000
+        {k:'stefany',    meta:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  50000},   // Ago/26: 50.000
         {k:'filipe',     meta:  50000},   // sem meta lançada
         {k:'deborah',    meta:  50000},   // sem meta lançada
         {k:'thaymmon',   meta:  50000},   // sem meta lançada
         {k:'nicolas',    meta:  50000},   // sem meta lançada
     ],
     saomateus: [
-        {k:'randeclay',  meta:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             84000},   // Set/26: 98.000
-        {k:'leandro',    meta:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             84000},   // Set/26: 98.000
+        {k:'randeclay',  meta:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               84000},   // Set/26: 98.000
+        {k:'leandro',    meta:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               84000},   // Set/26: 98.000
         {k:'stefany',    meta:  98000},   // Set/26: 98.000
-        {k:'heloa',      meta:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             84000},   // Set/26: 44.500
-        {k:'ana',        meta:                                               130000},   // aguardando lançamento set/26
+        {k:'heloa',      meta:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               84000},   // Set/26: 44.500
+        {k:'ana',        meta:                                                 130000},   // aguardando lançamento set/26
         {k:'alice',      meta:  57000},   // sem meta lançada
         {k:'daniele',    meta:  57000},   // sem meta lançada
         {k:'ramos',      meta:  57000},   // gerente São Mateus
@@ -13363,7 +13363,7 @@ const VEND_METAS_DB = {
     ],
     serra: [
         {k:'gabriel',    meta:  50000},   // Set/26: 50.000
-        {k:'carlos',     meta:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 180000},   // Ago/26: 59.000
+        {k:'carlos',     meta:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   180000},   // Ago/26: 59.000
         {k:'hiully',     meta:                                    59000},   // Ago/26: 59.000
         {k:'felipe',     meta:  50000},   // sem meta lançada
         {k:'karen',      meta:  50000},   // sem meta lançada
@@ -13373,12 +13373,12 @@ const VEND_METAS_DB = {
         {k:'hismenia',   meta:  50000},   // sem meta lançada
     ],
     teixeira: [
-        {k:'amanda',     meta:                                                                                             130000},   // Ago/26: 58.000
-        {k:'carine',     meta:                                                                                             71000},   // Ago/26: 44.000
-        {k:'carla',      meta:                                                                                             71000},   // Ago/26: 44.000
+        {k:'amanda',     meta:                                                                                               130000},   // Ago/26: 58.000
+        {k:'carine',     meta:                                                                                               71000},   // Ago/26: 44.000
+        {k:'carla',      meta:                                                                                               71000},   // Ago/26: 44.000
         {k:'gustavo',    meta:  44000},   // Ago/26: 44.000
         {k:'paloma',     meta:                                               50000},   // Ago/26: 44.000
-        {k:'beatriz',    meta:                                              35000},   // sem meta lançada
+        {k:'beatriz',    meta:                                                35000},   // sem meta lançada
         {k:'wilghyner',  meta:  50000},   // sem meta lançada
     ],
 };
@@ -37078,7 +37078,7 @@ let _rhDraft      = null;  // rascunho de edição
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 function _rhCanEdit() {
-    return ['diretoria','franqueado','escritorio'].includes(user?.cargo);
+    return ['diretoria','franqueado','escritorio'].includes(window.user?.cargo);
 }
 function _rhPeriodoAtual() {
     const d = new Date(Date.now() - 3*3600*1000);
@@ -37180,9 +37180,8 @@ function _rhDefaultData() {
         lojas,
         enps:{ total:0, promotores:0, neutros:0, detratores:0 },
         comentarios_clima:[],
-        questionario:[],
         updatedAt: Date.now(),
-        updatedBy: user?.name || '?',
+        updatedBy: window.user?.name || '?',
     };
 }
 
@@ -37257,6 +37256,7 @@ function _rhRender() {
         <button onclick="_rhNavPeriodo('${nextPk}')" ${!canNext?'disabled style="opacity:.35;cursor:default;"':''} style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:.5rem;color:#6b7280;width:28px;height:28px;cursor:pointer;font-size:.8rem;">›</button>
       </div>
       <div style="display:flex;align-items:center;gap:.6rem;">
+        ${canEdit ? `<button onclick="_rhAbrirLancamento()" style="display:flex;align-items:center;gap:.4rem;padding:.45rem 1rem;background:rgba(52,211,153,.12);border:1px solid rgba(52,211,153,.35);border-radius:.6rem;color:#34d399;font-size:.72rem;font-weight:700;cursor:pointer;letter-spacing:.05em;"><i class="fas fa-pen-to-square"></i> Lançar Indicadores</button>` : ''}
         ${canEdit ? `<button onclick="_rhPesquisaClima()" style="display:flex;align-items:center;gap:.4rem;padding:.45rem 1rem;background:rgba(99,102,241,.1);border:1px solid rgba(99,102,241,.3);border-radius:.6rem;color:#818cf8;font-size:.72rem;font-weight:700;cursor:pointer;letter-spacing:.05em;"><i class="fas fa-chart-pie"></i> Pesquisa Clima</button>` : ''}
         ${_rhData ? `<span style="font-size:.58rem;color:#475569;">atualizado por ${_rhData.updatedBy||'?'}</span>` : `<span style="font-size:.58rem;color:#475569;font-style:italic;">sem dados lançados</span>`}
       </div>
@@ -37292,38 +37292,29 @@ function _rhRender() {
 
     // ── Conteúdo da sub-aba ──
     h += `<div class="rh-sec">`;
-    h += _rhRenderSubAba(_rhAbaAtiva, data, kpi, canEdit);
+    h += _rhRenderSubAba(_rhAbaAtiva, data, kpi);
     h += `</div>`;
 
     document.getElementById('rh-root').innerHTML = h;
 }
 
 // ── Sub-abas ──────────────────────────────────────────────────────────────────
-function _rhRenderSubAba(aba, data, kpi, canEdit) {
+function _rhRenderSubAba(aba, data, kpi) {
     switch(aba) {
-        case 'headcount':   return _rhRenderHeadcount(data, canEdit);
-        case 'turnover':    return _rhRenderTurnover(data, canEdit);
-        case 'absenteismo': return _rhRenderAbsenteismo(data, canEdit);
-        case 'enps':        return _rhRenderEnps(data, canEdit);
-        case 'vagas':       return _rhRenderVagas(data, canEdit);
-        case 'ocorrencias': return _rhRenderOcorrencias(data, canEdit);
+        case 'headcount':   return _rhRenderHeadcount(data);
+        case 'turnover':    return _rhRenderTurnover(data);
+        case 'absenteismo': return _rhRenderAbsenteismo(data);
+        case 'enps':        return _rhRenderEnps(data);
+        case 'vagas':       return _rhRenderVagas(data);
+        case 'ocorrencias': return _rhRenderOcorrencias(data);
         default: return '';
     }
 }
 
-function _rhInp(lk, field, val) {
-    return `<input class="rh-inp" type="number" min="0" max="999" value="${val}" oninput="_rhInlineSet('${lk}','${field}',+this.value)">`;
-}
-function _rhSaveBtn() {
-    return `<div style="display:flex;justify-content:flex-end;margin-top:.85rem;">
-      <button id="_rh-save-btn" onclick="_rhSalvarInline()" style="display:flex;align-items:center;gap:.4rem;padding:.5rem 1.25rem;background:rgba(52,211,153,.15);border:1px solid rgba(52,211,153,.4);border-radius:.65rem;color:#34d399;font-size:.75rem;font-weight:700;cursor:pointer;"><i class="fas fa-floppy-disk"></i> Salvar alterações</button>
-    </div>`;
-}
-
-function _rhRenderHeadcount(data, canEdit) {
+function _rhRenderHeadcount(data) {
     let h = `<div style="font-size:.72rem;font-weight:800;color:#94a3b8;letter-spacing:.07em;text-transform:uppercase;margin-bottom:.75rem;">Efetivo por Loja</div>`;
     h += `<table class="rh-tbl"><thead><tr>
-      <th>Loja</th><th>Quadro Real</th><th>Quadro Ideal</th>${canEdit?'':'<th>Cobertura</th><th>Diferença</th>'}
+      <th>Loja</th><th>Quadro Real</th><th>Quadro Ideal</th><th>Cobertura</th><th>Diferença</th>
     </tr></thead><tbody>`;
     for (const lk of _RH_LOJAS) {
         const l = data.lojas?.[lk] || {};
@@ -37332,103 +37323,74 @@ function _rhRenderHeadcount(data, canEdit) {
         const pct   = ideal > 0 ? Math.round((real/ideal)*100) : 100;
         const diff  = real - ideal;
         const c = pct >= 90 ? '#4ade80' : pct >= 75 ? '#fbbf24' : '#f87171';
-        h += `<tr><td><span style="font-weight:700;color:#e2e8f0;">${_RH_NM[lk]}</span></td>`;
-        if (canEdit) {
-            h += `<td>${_rhInp(lk,'headcount_real',real)}</td><td>${_rhInp(lk,'headcount_ideal',ideal)}</td>`;
-        } else {
-            h += `<td><span style="font-weight:700;color:#f1f5f9;">${real}</span></td>
-              <td><span style="color:#94a3b8;">${ideal||'—'}</span></td>
-              <td><div style="display:flex;align-items:center;gap:.5rem;"><div style="width:80px;">${_rhBar(pct,c)}</div><span style="color:${c};font-weight:700;">${ideal?pct+'%':'—'}</span></div></td>
-              <td><span style="color:${diff>=0?'#4ade80':diff>=-1?'#fbbf24':'#f87171'};font-weight:700;">${diff>=0?'+'+diff:diff}</span></td>`;
-        }
-        h += `</tr>`;
+        h += `<tr><td><span style="font-weight:700;color:#e2e8f0;">${_RH_NM[lk]}</span></td>
+          <td><span style="font-weight:700;color:#f1f5f9;">${real}</span></td>
+          <td><span style="color:#94a3b8;">${ideal||'—'}</span></td>
+          <td><div style="display:flex;align-items:center;gap:.5rem;">
+            <div style="width:80px;">${_rhBar(pct, c)}</div>
+            <span style="color:${c};font-weight:700;">${ideal?pct+'%':'—'}</span>
+          </div></td>
+          <td><span style="color:${diff>=0?'#4ade80':diff>=-1?'#fbbf24':'#f87171'};font-weight:700;">${diff>=0?'+'+diff:diff}</span></td>
+        </tr>`;
     }
     h += `</tbody></table>`;
-    if (canEdit) h += _rhSaveBtn();
     return h;
 }
 
-function _rhRenderTurnover(data, canEdit) {
+function _rhRenderTurnover(data) {
     let h = `<div style="font-size:.72rem;font-weight:800;color:#94a3b8;letter-spacing:.07em;text-transform:uppercase;margin-bottom:.75rem;">Turnover por Loja</div>`;
-    if (canEdit) {
-        h += `<table class="rh-tbl"><thead><tr><th>Loja</th><th>Admissões</th><th>Demissões</th><th>Deslig. Empresa</th><th>Deslig. Própria Vontade</th></tr></thead><tbody>`;
-        for (const lk of _RH_LOJAS) {
-            const l = data.lojas?.[lk] || {};
-            h += `<tr><td><span style="font-weight:700;color:#e2e8f0;">${_RH_NM[lk]}</span></td>
-              <td>${_rhInp(lk,'admissoes',l.admissoes||0)}</td>
-              <td>${_rhInp(lk,'demissoes',l.demissoes||0)}</td>
-              <td>${_rhInp(lk,'deslig_empresa',l.deslig_empresa||0)}</td>
-              <td>${_rhInp(lk,'deslig_vontade',l.deslig_vontade||0)}</td>
-            </tr>`;
-        }
-        h += `</tbody></table>${_rhSaveBtn()}`;
-    } else {
-        h += `<table class="rh-tbl"><thead><tr>
-          <th>Loja</th><th>Efetivo Início</th><th>Admissões</th><th>Demissões</th><th>Turnover %</th><th>Tipos Desligamento</th>
-        </tr></thead><tbody>`;
-        for (const lk of _RH_LOJAS) {
-            const l  = data.lojas?.[lk] || {};
-            const r  = l.headcount_real  || 0;
-            const adm = l.admissoes  || 0;
-            const dem = l.demissoes  || 0;
-            const hi  = Math.max(0, r + dem - adm);
-            const pct = hi > 0 ? _rhPct(dem, hi) : 0;
-            const c = _rhColor(pct, [[3,'#4ade80'],[7,'#fbbf24'],[Infinity,'#f87171']]);
-            const de = l.deslig_empresa  || 0;
-            const dv = l.deslig_vontade  || 0;
-            h += `<tr><td><span style="font-weight:700;color:#e2e8f0;">${_RH_NM[lk]}</span></td>
-              <td>${hi||'—'}</td>
-              <td>${adm>0?`<span style="color:#4ade80;font-weight:700;">+${adm}</span>`:`<span style="color:#475569;">0</span>`}</td>
-              <td>${dem>0?`<span style="color:#f87171;font-weight:700;">-${dem}</span>`:`<span style="color:#475569;">0</span>`}</td>
-              <td><span style="color:${c};font-weight:700;">${pct.toFixed(1)}%</span></td>
-              <td><span style="font-size:.62rem;color:#64748b;">${de?`${de} empresa`:''}${de&&dv?' · ':''}${dv?`${dv} própria vontade`:''}&nbsp;</span></td>
-            </tr>`;
-        }
-        h += `</tbody></table>`;
+    h += `<table class="rh-tbl"><thead><tr>
+      <th>Loja</th><th>Efetivo Início</th><th>Admissões</th><th>Demissões</th><th>Turnover %</th><th>Tipos Desligamento</th>
+    </tr></thead><tbody>`;
+    for (const lk of _RH_LOJAS) {
+        const l  = data.lojas?.[lk] || {};
+        const r  = l.headcount_real  || 0;
+        const adm = l.admissoes  || 0;
+        const dem = l.demissoes  || 0;
+        const hi  = Math.max(0, r + dem - adm);
+        const pct = hi > 0 ? _rhPct(dem, hi) : 0;
+        const c = _rhColor(pct, [[3,'#4ade80'],[7,'#fbbf24'],[Infinity,'#f87171']]);
+        const de = l.deslig_empresa  || 0;
+        const dv = l.deslig_vontade  || 0;
+        h += `<tr><td><span style="font-weight:700;color:#e2e8f0;">${_RH_NM[lk]}</span></td>
+          <td>${hi||'—'}</td>
+          <td>${adm > 0 ? `<span style="color:#4ade80;font-weight:700;">+${adm}</span>` : `<span style="color:#475569;">0</span>`}</td>
+          <td>${dem > 0 ? `<span style="color:#f87171;font-weight:700;">-${dem}</span>` : `<span style="color:#475569;">0</span>`}</td>
+          <td><span style="color:${c};font-weight:700;">${pct.toFixed(1)}%</span></td>
+          <td><span style="font-size:.62rem;color:#64748b;">${de?`${de} empresa`:''}${de&&dv?' · ':''}${dv?`${dv} própria vontade`:''}&nbsp;</span></td>
+        </tr>`;
     }
+    h += `</tbody></table>`;
     return h;
 }
 
-function _rhRenderAbsenteismo(data, canEdit) {
+function _rhRenderAbsenteismo(data) {
     let h = `<div style="font-size:.72rem;font-weight:800;color:#94a3b8;letter-spacing:.07em;text-transform:uppercase;margin-bottom:.75rem;">Absenteísmo por Loja</div>`;
+    h += `<table class="rh-tbl"><thead><tr>
+      <th>Loja</th><th>Faltas</th><th>Atestados</th><th>Atrasos</th><th>% Absenteísmo</th><th>Impacto</th>
+    </tr></thead><tbody>`;
     const diasUteis = 22;
-    if (canEdit) {
-        h += `<table class="rh-tbl"><thead><tr><th>Loja</th><th>Faltas</th><th>Atestados</th><th>Atrasos</th></tr></thead><tbody>`;
-        for (const lk of _RH_LOJAS) {
-            const l = data.lojas?.[lk] || {};
-            h += `<tr><td><span style="font-weight:700;color:#e2e8f0;">${_RH_NM[lk]}</span></td>
-              <td>${_rhInp(lk,'faltas',l.faltas||0)}</td>
-              <td>${_rhInp(lk,'atestados',l.atestados||0)}</td>
-              <td>${_rhInp(lk,'atrasos',l.atrasos||0)}</td>
-            </tr>`;
-        }
-        h += `</tbody></table>${_rhSaveBtn()}`;
-    } else {
-        h += `<table class="rh-tbl"><thead><tr>
-          <th>Loja</th><th>Faltas</th><th>Atestados</th><th>Atrasos</th><th>% Absenteísmo</th><th>Impacto</th>
-        </tr></thead><tbody>`;
-        for (const lk of _RH_LOJAS) {
-            const l   = data.lojas?.[lk] || {};
-            const r   = l.headcount_real || 1;
-            const fa  = l.faltas     || 0;
-            const at  = l.atestados  || 0;
-            const ar  = l.atrasos    || 0;
-            const pct = _rhPct(fa, r * diasUteis);
-            const c = _rhColor(pct, [[2,'#4ade80'],[4,'#fbbf24'],[Infinity,'#f87171']]);
-            h += `<tr><td><span style="font-weight:700;color:#e2e8f0;">${_RH_NM[lk]}</span></td>
-              <td>${fa>0?`<span style="color:#f87171;font-weight:700;">${fa}</span>`:`<span style="color:#475569;">0</span>`}</td>
-              <td>${at>0?`<span style="color:#fbbf24;">${at}</span>`:`<span style="color:#475569;">0</span>`}</td>
-              <td>${ar>0?`<span style="color:#94a3b8;">${ar}</span>`:`<span style="color:#475569;">0</span>`}</td>
-              <td><span style="color:${c};font-weight:700;">${pct.toFixed(1)}%</span></td>
-              <td>${_rhBar(Math.min(pct*10,100),c)}</td>
-            </tr>`;
-        }
-        h += `</tbody></table>`;
+    for (const lk of _RH_LOJAS) {
+        const l   = data.lojas?.[lk] || {};
+        const r   = l.headcount_real || 1;
+        const fa  = l.faltas     || 0;
+        const at  = l.atestados  || 0;
+        const ar  = l.atrasos    || 0;
+        const pct = _rhPct(fa, r * diasUteis);
+        const c = _rhColor(pct, [[2,'#4ade80'],[4,'#fbbf24'],[Infinity,'#f87171']]);
+        h += `<tr><td><span style="font-weight:700;color:#e2e8f0;">${_RH_NM[lk]}</span></td>
+          <td>${fa > 0 ? `<span style="color:#f87171;font-weight:700;">${fa}</span>` : `<span style="color:#475569;">0</span>`}</td>
+          <td>${at > 0 ? `<span style="color:#fbbf24;">${at}</span>` : `<span style="color:#475569;">0</span>`}</td>
+          <td>${ar > 0 ? `<span style="color:#94a3b8;">${ar}</span>` : `<span style="color:#475569;">0</span>`}</td>
+          <td><span style="color:${c};font-weight:700;">${pct.toFixed(1)}%</span></td>
+          <td>${_rhBar(Math.min(pct*10,100), c)}</td>
+        </tr>`;
     }
+    h += `</tbody></table>`;
     return h;
 }
 
-function _rhRenderEnps(data, canEdit) {
+function _rhRenderEnps(data) {
     const e = data.enps || {};
     const total = e.total || 0;
     const prom  = e.promotores  || 0;
@@ -37436,81 +37398,49 @@ function _rhRenderEnps(data, canEdit) {
     const detr  = e.detratores  || 0;
     const score = total > 0 ? Math.round(((prom - detr) / total) * 100) : null;
     const scoreC = score === null ? '#6b7280' : score >= 50 ? '#4ade80' : score >= 20 ? '#fbbf24' : '#f87171';
-
-    if (canEdit) {
-        const coments = (data.comentarios_clima||[]).join('\n');
-        const qs = data.questionario || [];
-        const tipoLabel = {escala:'Escala 0–10', texto:'Resposta Livre', simnao:'Sim / Não'};
-        let h = ``;
-
-        // ── Resultados da pesquisa ──
-        h += `<div style="font-size:.68rem;font-weight:800;color:#818cf8;letter-spacing:.06em;text-transform:uppercase;margin-bottom:.6rem;">Resultados da Pesquisa</div>`;
-        h += `<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:.75rem;margin-bottom:1rem;">`;
-        for (const {f,l,c} of [{f:'total',l:'Total Respondentes',c:'#94a3b8'},{f:'promotores',l:'Promotores (9-10)',c:'#4ade80'},{f:'neutros',l:'Neutros (7-8)',c:'#fbbf24'},{f:'detratores',l:'Detratores (0-6)',c:'#f87171'}]) {
-            h += `<div style="text-align:center;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:.65rem;padding:.75rem;">
-              <div style="font-size:.58rem;color:${c};font-weight:700;letter-spacing:.07em;text-transform:uppercase;margin-bottom:.4rem;">${l}</div>
-              <input class="rh-inp" type="number" min="0" max="9999" style="width:80px;font-size:1rem;" value="${e[f]||0}" oninput="_rhInlineSetEnps('${f}',+this.value)">
-            </div>`;
-        }
-        h += `</div>`;
-        h += `<div style="font-size:.62rem;color:#6b7280;margin-bottom:.4rem;font-weight:700;">Comentários abertos (um por linha, anônimos)</div>
-        <textarea oninput="_rhInlineSetComents(this.value)" style="width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:.55rem;color:#e2e8f0;font-size:.7rem;padding:.6rem .75rem;resize:vertical;min-height:70px;box-sizing:border-box;margin-bottom:1.25rem;" placeholder="Cole aqui os comentários abertos da pesquisa...">${coments}</textarea>`;
-
-        // ── Questionário ──
-        h += `<div style="border-top:1px solid rgba(255,255,255,.07);padding-top:1.1rem;margin-bottom:.75rem;">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem;">
-            <div style="font-size:.68rem;font-weight:800;color:#818cf8;letter-spacing:.06em;text-transform:uppercase;">Questionário de Clima</div>
-            <button onclick="_rhAddQ()" style="display:flex;align-items:center;gap:.35rem;padding:.35rem .85rem;background:rgba(99,102,241,.12);border:1px solid rgba(99,102,241,.35);border-radius:.5rem;color:#818cf8;font-size:.68rem;font-weight:700;cursor:pointer;"><i class="fas fa-plus"></i> Adicionar pergunta</button>
-          </div>
-          <div id="_rh-qs-list">`;
-        if (qs.length === 0) {
-            h += `<div style="text-align:center;padding:1.25rem;color:#475569;font-size:.72rem;border:1px dashed rgba(255,255,255,.08);border-radius:.65rem;">Nenhuma pergunta adicionada ainda.</div>`;
-        }
-        for (let i=0; i<qs.length; i++) {
-            const q = qs[i];
-            h += `<div id="_rh-q-${i}" style="display:flex;align-items:flex-start;gap:.6rem;margin-bottom:.6rem;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.07);border-radius:.65rem;padding:.7rem .85rem;">
-              <div style="font-size:.65rem;font-weight:800;color:#475569;min-width:18px;margin-top:.3rem;">${i+1}.</div>
-              <div style="flex:1;">
-                <input type="text" value="${(q.texto||'').replace(/"/g,'&quot;')}" oninput="_rhSetQ(${i},'texto',this.value)"
-                  style="width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:.4rem;padding:.35rem .55rem;color:#f1f5f9;font-size:.72rem;box-sizing:border-box;margin-bottom:.35rem;" placeholder="Digite a pergunta...">
-                <select onchange="_rhSetQ(${i},'tipo',this.value)" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:.4rem;padding:.28rem .5rem;color:#94a3b8;font-size:.62rem;">
-                  <option value="escala" ${q.tipo==='escala'?'selected':''}>Escala 0–10</option>
-                  <option value="texto" ${q.tipo==='texto'?'selected':''}>Resposta Livre</option>
-                  <option value="simnao" ${q.tipo==='simnao'?'selected':''}>Sim / Não</option>
-                </select>
-              </div>
-              <button onclick="_rhDelQ(${i})" style="background:none;border:none;color:#ef4444;font-size:.9rem;cursor:pointer;padding:.15rem .3rem;margin-top:.1rem;" title="Remover"><i class="fas fa-trash-can"></i></button>
-            </div>`;
-        }
-        h += `</div></div>`;
-        h += _rhSaveBtn();
-        return h;
-    }
-
     const promPct = total > 0 ? Math.round(prom/total*100) : 0;
     const neutPct = total > 0 ? Math.round(neut/total*100) : 0;
     const detrPct = total > 0 ? Math.round(detr/total*100) : 0;
+
     let h = `<div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;">`;
+    // Score gauge
     h += `<div style="background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.07);border-radius:.75rem;padding:1.25rem;text-align:center;">
-      <div style="font-size:.6rem;font-weight:800;color:#6b7280;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.75rem;">Índice de Clima</div>
+      <div style="font-size:.6rem;font-weight:800;color:#6b7280;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.75rem;">Employee NPS</div>
       <div style="font-size:3.5rem;font-weight:900;color:${scoreC};line-height:1;">${score !== null ? (score>=0?'+':'')+score : '—'}</div>
       <div style="font-size:.62rem;color:#475569;margin-top:.35rem;">${total} respondentes</div>
       <div style="margin-top:1rem;font-size:.65rem;color:#6b7280;">
         <div style="margin-bottom:.3rem;">Escala: -100 (pior) → +100 (melhor)</div>
         <div style="display:flex;gap:.4rem;justify-content:center;flex-wrap:wrap;">
-          <span style="color:#f87171;">Abaixo de 0 = crítico</span>
+          <span style="color:#f87171;"><b>${score!==null&&score<0?'▼':''}</b> Abaixo de 0 = crítico</span>
           <span style="color:#fbbf24;">0-49 = regular</span>
           <span style="color:#4ade80;">50+ = excelente</span>
         </div>
       </div>
     </div>`;
+    // Breakdowns
     h += `<div style="background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.07);border-radius:.75rem;padding:1.25rem;">
       <div style="font-size:.6rem;font-weight:800;color:#6b7280;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.85rem;">Distribuição</div>
-      <div style="margin-bottom:.75rem;"><div style="display:flex;justify-content:space-between;margin-bottom:.3rem;"><span style="font-size:.68rem;color:#4ade80;font-weight:700;">😊 Promotores (9-10)</span><span style="font-size:.68rem;color:#4ade80;font-weight:700;">${prom} (${promPct}%)</span></div>${_rhBar(promPct,'#4ade80')}</div>
-      <div style="margin-bottom:.75rem;"><div style="display:flex;justify-content:space-between;margin-bottom:.3rem;"><span style="font-size:.68rem;color:#fbbf24;font-weight:700;">😐 Neutros (7-8)</span><span style="font-size:.68rem;color:#fbbf24;font-weight:700;">${neut} (${neutPct}%)</span></div>${_rhBar(neutPct,'#fbbf24')}</div>
-      <div><div style="display:flex;justify-content:space-between;margin-bottom:.3rem;"><span style="font-size:.68rem;color:#f87171;font-weight:700;">😞 Detratores (0-6)</span><span style="font-size:.68rem;color:#f87171;font-weight:700;">${detr} (${detrPct}%)</span></div>${_rhBar(detrPct,'#f87171')}</div>
+      <div style="margin-bottom:.75rem;">
+        <div style="display:flex;justify-content:space-between;margin-bottom:.3rem;">
+          <span style="font-size:.68rem;color:#4ade80;font-weight:700;">😊 Promotores (9-10)</span>
+          <span style="font-size:.68rem;color:#4ade80;font-weight:700;">${prom} (${promPct}%)</span>
+        </div>${_rhBar(promPct,'#4ade80')}
+      </div>
+      <div style="margin-bottom:.75rem;">
+        <div style="display:flex;justify-content:space-between;margin-bottom:.3rem;">
+          <span style="font-size:.68rem;color:#fbbf24;font-weight:700;">😐 Neutros (7-8)</span>
+          <span style="font-size:.68rem;color:#fbbf24;font-weight:700;">${neut} (${neutPct}%)</span>
+        </div>${_rhBar(neutPct,'#fbbf24')}
+      </div>
+      <div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:.3rem;">
+          <span style="font-size:.68rem;color:#f87171;font-weight:700;">😞 Detratores (0-6)</span>
+          <span style="font-size:.68rem;color:#f87171;font-weight:700;">${detr} (${detrPct}%)</span>
+        </div>${_rhBar(detrPct,'#f87171')}
+      </div>
     </div>`;
     h += `</div>`;
+    // Comentários
     const coments = data.comentarios_clima || [];
     if (coments.length > 0) {
         h += `<div style="margin-top:1rem;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.07);border-radius:.75rem;padding:1rem 1.2rem;">
@@ -37520,93 +37450,59 @@ function _rhRenderEnps(data, canEdit) {
         }
         h += `</div>`;
     }
-    const qs = data.questionario || [];
-    if (qs.length > 0) {
-        const tipoLabel = {escala:'Escala 0–10', texto:'Resposta Livre', simnao:'Sim / Não'};
-        h += `<div style="margin-top:1rem;background:rgba(99,102,241,.04);border:1px solid rgba(99,102,241,.2);border-radius:.75rem;padding:1rem 1.2rem;">
-          <div style="font-size:.6rem;font-weight:800;color:#818cf8;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.75rem;">Questionário de Clima</div>`;
-        for (let i=0; i<qs.length; i++) {
-            h += `<div style="display:flex;align-items:flex-start;gap:.6rem;margin-bottom:.55rem;">
-              <span style="font-size:.65rem;font-weight:800;color:#6b7280;min-width:18px;margin-top:.1rem;">${i+1}.</span>
-              <div style="flex:1;">
-                <div style="font-size:.72rem;color:#e2e8f0;margin-bottom:.15rem;">${qs[i].texto||'—'}</div>
-                <span style="font-size:.58rem;color:#6b7280;background:rgba(255,255,255,.05);border-radius:.3rem;padding:.08rem .35rem;">${tipoLabel[qs[i].tipo]||qs[i].tipo}</span>
-              </div>
-            </div>`;
-        }
-        h += `</div>`;
-    }
     return h;
 }
 
-function _rhRenderVagas(data, canEdit) {
+function _rhRenderVagas(data) {
     let h = `<div style="font-size:.72rem;font-weight:800;color:#94a3b8;letter-spacing:.07em;text-transform:uppercase;margin-bottom:.75rem;">Vagas Abertas por Loja</div>`;
-    if (canEdit) {
-        h += `<table class="rh-tbl"><thead><tr><th>Loja</th><th>Vagas em Aberto</th></tr></thead><tbody>`;
-        for (const lk of _RH_LOJAS) {
-            const v = data.lojas?.[lk]?.vagas || 0;
-            h += `<tr><td><span style="font-weight:700;color:#e2e8f0;">${_RH_NM[lk]}</span></td><td>${_rhInp(lk,'vagas',v)}</td></tr>`;
-        }
-        h += `</tbody></table>${_rhSaveBtn()}`;
-    } else {
-        const comVagas = _RH_LOJAS.filter(lk => (data.lojas?.[lk]?.vagas||0) > 0);
-        if (comVagas.length === 0) {
-            h += `<div style="text-align:center;padding:2rem;color:#4ade80;font-size:.8rem;"><i class="fas fa-circle-check" style="font-size:1.5rem;margin-bottom:.5rem;display:block;"></i>Nenhuma vaga em aberto — quadro completo!</div>`;
-            return h;
-        }
-        h += `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:.6rem;">`;
-        for (const lk of _RH_LOJAS) {
-            const v = data.lojas?.[lk]?.vagas || 0;
-            if (!v) continue;
-            h += `<div style="background:rgba(251,191,36,.07);border:1px solid rgba(251,191,36,.25);border-radius:.7rem;padding:.85rem;text-align:center;">
-              <div style="font-size:1.5rem;font-weight:900;color:#fbbf24;">${v}</div>
-              <div style="font-size:.65rem;color:#94a3b8;margin-top:.2rem;">${_RH_NM[lk]}</div>
-              <div style="font-size:.58rem;color:#78716c;margin-top:.15rem;">${v===1?'1 vaga':''+v+' vagas'} em aberto</div>
-            </div>`;
-        }
-        h += `</div>`;
+    const comVagas = _RH_LOJAS.filter(lk => (data.lojas?.[lk]?.vagas||0) > 0);
+    if (comVagas.length === 0) {
+        h += `<div style="text-align:center;padding:2rem;color:#4ade80;font-size:.8rem;"><i class="fas fa-circle-check" style="font-size:1.5rem;margin-bottom:.5rem;display:block;"></i>Nenhuma vaga em aberto — quadro completo!</div>`;
+        return h;
     }
+    h += `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:.6rem;">`;
+    for (const lk of _RH_LOJAS) {
+        const v = data.lojas?.[lk]?.vagas || 0;
+        if (!v) continue;
+        h += `<div style="background:rgba(251,191,36,.07);border:1px solid rgba(251,191,36,.25);border-radius:.7rem;padding:.85rem;text-align:center;">
+          <div style="font-size:1.5rem;font-weight:900;color:#fbbf24;">${v}</div>
+          <div style="font-size:.65rem;color:#94a3b8;margin-top:.2rem;">${_RH_NM[lk]}</div>
+          <div style="font-size:.58rem;color:#78716c;margin-top:.15rem;">${v===1?'1 vaga':''+v+' vagas'} em aberto</div>
+        </div>`;
+    }
+    h += `</div>`;
     return h;
 }
 
-function _rhRenderOcorrencias(data, canEdit) {
+function _rhRenderOcorrencias(data) {
     let h = `<div style="font-size:.72rem;font-weight:800;color:#94a3b8;letter-spacing:.07em;text-transform:uppercase;margin-bottom:.75rem;">Ocorrências Disciplinares</div>`;
-    if (canEdit) {
-        h += `<table class="rh-tbl"><thead><tr><th>Loja</th><th>Advertências</th><th>Suspensões</th><th>Deslig. Empresa</th><th>Deslig. Própria Vontade</th></tr></thead><tbody>`;
-        for (const lk of _RH_LOJAS) {
-            const l = data.lojas?.[lk] || {};
-            h += `<tr><td><span style="font-weight:700;color:#e2e8f0;">${_RH_NM[lk]}</span></td>
-              <td>${_rhInp(lk,'advertencias',l.advertencias||0)}</td>
-              <td>${_rhInp(lk,'suspensoes',l.suspensoes||0)}</td>
-              <td>${_rhInp(lk,'deslig_empresa',l.deslig_empresa||0)}</td>
-              <td>${_rhInp(lk,'deslig_vontade',l.deslig_vontade||0)}</td>
-            </tr>`;
-        }
-        h += `</tbody></table>${_rhSaveBtn()}`;
-    } else {
-        h += `<table class="rh-tbl"><thead><tr>
-          <th>Loja</th><th>Advertências</th><th>Suspensões</th><th>Deslig. Empresa</th><th>Deslig. Própria Vontade</th><th>Total</th>
-        </tr></thead><tbody>`;
-        for (const lk of _RH_LOJAS) {
-            const l  = data.lojas?.[lk] || {};
-            const adv = l.advertencias   || 0;
-            const sus = l.suspensoes     || 0;
-            const de  = l.deslig_empresa || 0;
-            const dv  = l.deslig_vontade || 0;
-            const tot = adv + sus + de + dv;
-            if (!tot) continue;
-            h += `<tr><td><span style="font-weight:700;color:#e2e8f0;">${_RH_NM[lk]}</span></td>
-              <td>${adv>0?`<span style="color:#fbbf24;font-weight:700;">${adv}</span>`:'<span style="color:#475569;">0</span>'}</td>
-              <td>${sus>0?`<span style="color:#f97316;font-weight:700;">${sus}</span>`:'<span style="color:#475569;">0</span>'}</td>
-              <td>${de>0?`<span style="color:#f87171;font-weight:700;">${de}</span>`:'<span style="color:#475569;">0</span>'}</td>
-              <td>${dv>0?`<span style="color:#94a3b8;">${dv}</span>`:'<span style="color:#475569;">0</span>'}</td>
-              <td><span style="font-weight:700;color:#e2e8f0;">${tot}</span></td>
-            </tr>`;
-        }
-        const allZero = _RH_LOJAS.every(lk => { const l=data.lojas?.[lk]||{}; return !((l.advertencias||0)+(l.suspensoes||0)+(l.deslig_empresa||0)+(l.deslig_vontade||0)); });
-        if (allZero) h += `<tr><td colspan="6" style="text-align:center;padding:1.5rem;color:#4ade80;font-size:.72rem;"><i class="fas fa-circle-check"></i> Nenhuma ocorrência registrada</td></tr>`;
-        h += `</tbody></table>`;
+    h += `<table class="rh-tbl"><thead><tr>
+      <th>Loja</th><th>Advertências</th><th>Suspensões</th><th>Deslig. Empresa</th><th>Deslig. Própria Vontade</th><th>Total</th>
+    </tr></thead><tbody>`;
+    for (const lk of _RH_LOJAS) {
+        const l  = data.lojas?.[lk] || {};
+        const adv = l.advertencias     || 0;
+        const sus = l.suspensoes       || 0;
+        const de  = l.deslig_empresa   || 0;
+        const dv  = l.deslig_vontade   || 0;
+        const tot = adv + sus + de + dv;
+        if (!tot) continue;
+        h += `<tr><td><span style="font-weight:700;color:#e2e8f0;">${_RH_NM[lk]}</span></td>
+          <td>${adv>0?`<span style="color:#fbbf24;font-weight:700;">${adv}</span>`:'<span style="color:#475569;">0</span>'}</td>
+          <td>${sus>0?`<span style="color:#f97316;font-weight:700;">${sus}</span>`:'<span style="color:#475569;">0</span>'}</td>
+          <td>${de>0?`<span style="color:#f87171;font-weight:700;">${de}</span>`:'<span style="color:#475569;">0</span>'}</td>
+          <td>${dv>0?`<span style="color:#94a3b8;">${dv}</span>`:'<span style="color:#475569;">0</span>'}</td>
+          <td><span style="font-weight:700;color:#e2e8f0;">${tot}</span></td>
+        </tr>`;
     }
+    const allZero = _RH_LOJAS.every(lk => {
+        const l = data.lojas?.[lk]||{};
+        return !((l.advertencias||0)+(l.suspensoes||0)+(l.deslig_empresa||0)+(l.deslig_vontade||0));
+    });
+    if (allZero) {
+        h += `<tr><td colspan="6" style="text-align:center;padding:1.5rem;color:#4ade80;font-size:.72rem;"><i class="fas fa-circle-check"></i> Nenhuma ocorrência registrada</td></tr>`;
+    }
+    h += `</tbody></table>`;
     return h;
 }
 
@@ -37715,51 +37611,6 @@ function _rhEdBodyEnps() {
     return h;
 }
 
-window._rhAddQ = function() {
-    if (!_rhData) _rhData = _rhDefaultData();
-    if (!_rhData.questionario) _rhData.questionario = [];
-    _rhData.questionario.push({texto:'', tipo:'escala'});
-    _rhSubAba('enps');
-};
-window._rhDelQ = function(idx) {
-    if (!_rhData?.questionario) return;
-    _rhData.questionario.splice(idx, 1);
-    _rhSubAba('enps');
-};
-window._rhSetQ = function(idx, field, val) {
-    if (!_rhData?.questionario?.[idx]) return;
-    _rhData.questionario[idx][field] = val;
-};
-window._rhInlineSet = function(lk, field, val) {
-    if (!_rhData) _rhData = _rhDefaultData();
-    if (!_rhData.lojas) _rhData.lojas = {};
-    if (!_rhData.lojas[lk]) _rhData.lojas[lk] = {};
-    _rhData.lojas[lk][field] = val;
-};
-window._rhInlineSetEnps = function(field, val) {
-    if (!_rhData) _rhData = _rhDefaultData();
-    if (!_rhData.enps) _rhData.enps = {};
-    _rhData.enps[field] = val;
-};
-window._rhInlineSetComents = function(text) {
-    if (!_rhData) _rhData = _rhDefaultData();
-    _rhData.comentarios_clima = text.split('\n').map(s=>s.trim()).filter(Boolean);
-};
-window._rhSalvarInline = async function() {
-    const btn = document.getElementById('_rh-save-btn');
-    if (btn) { btn.disabled=true; btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Salvando...'; }
-    if (!_rhData) _rhData = _rhDefaultData();
-    _rhData.updatedAt = Date.now();
-    _rhData.updatedBy = user?.name || '?';
-    const ok = await _rhSave(_rhPeriodo, _rhData);
-    if (ok) {
-        _rhLsSet(_rhPeriodo, _rhData);
-        _rhRender();
-    } else {
-        if (btn) { btn.disabled=false; btn.innerHTML='<i class="fas fa-floppy-disk"></i> Salvar alterações'; }
-        alert('Erro ao salvar. Verifique a conexão.');
-    }
-};
 window._rhDraftSet = function(lk, f, v) {
     if (!_rhDraft) return;
     if (!_rhDraft.lojas) _rhDraft.lojas = {};
@@ -37780,7 +37631,7 @@ window._rhSalvarLancamento = async function() {
     const btn = document.querySelector('#_rh-modal-bg button[onclick*=Salvar]');
     if (btn) { btn.disabled=true; btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Salvando...'; }
     _rhDraft.updatedAt = Date.now();
-    _rhDraft.updatedBy = user?.name || '?';
+    _rhDraft.updatedBy = window.user?.name || '?';
     const ok = await _rhSave(_rhPeriodo, _rhDraft);
     if (ok) {
         _rhData = JSON.parse(JSON.stringify(_rhDraft));

@@ -11453,7 +11453,7 @@ function abrirDetalhesFat(tipo, val) {
     html += '</div>';
     // Barra de meta
     html += '<div style="display:flex;flex-direction:column;gap:.3rem;">';
-    html += '<div style="display:flex;justify-content:space-between;"><span style="font-size:.65rem;color:#9ca3af;">Meta</span><span style="font-size:.65rem;color:#a855f7;font-weight:700;">' + (d.barPct||0) + '%</span></div>';
+    html += '<div style="display:flex;justify-content:space-between;"><span style="font-size:.65rem;color:#9ca3af;">Meta</span><span style="font-size:.65rem;color:#a855f7;font-weight:700;">' + (d.pReal||d.barPct||0) + '%</span></div>';
     html += '<div style="height:5px;background:#1f2937;border-radius:3px;"><div style="height:100%;width:'+(d.barPct||0)+'%;background:'+BAR+';border-radius:3px;"></div></div>';
     html += '<span style="font-size:.6rem;color:#6b7280;">' + (d.nota||'') + '</span>';
     html += '</div>';
@@ -16789,12 +16789,13 @@ function render360(tipo, val) {
     </div>`;
 
     // Card Faturamento Total (com evolução incorporada)
-    const _fatBarPct  = Math.min(100, pct(total, meta));
-    const _fatNota    = `${pct(total,meta)}% da meta (${brl(meta)})` + (_d.diasDecorridos > 0 ? ` · méd. ${brl(Math.round(total/_d.diasDecorridos))}/dia` : '');
+    const _fatPReal   = meta > 0 ? Math.round(total / meta * 100) : 0;
+    const _fatBarPct  = Math.min(100, _fatPReal);
+    const _fatNota    = `${_fatPReal}% da meta (${brl(meta)})` + (_d.diasDecorridos > 0 ? ` · méd. ${brl(Math.round(total/_d.diasDecorridos))}/dia` : '');
     const _fatProjVal = _d.diasDecorridos ? Math.round(total / _d.diasDecorridos * _d.diasMes) : 0;
     const _fatMetaDiaria = _metaDiariaSubrede(lojaKeysDeScope(), lojas, meta);
     // Salva dados para o popup
-    window._fatCardDetalhe = { total, meta, barPct: _fatBarPct, nota: _fatNota, antLine: _antLine, margLine: _margLine, projVal: _fatProjVal, periodo: _d.periodo, tipo, val, ticketGeral: _ticketGeral, ticketCel: _ticketCel, ticketAcess: _ticketAcess, pedidos, pedCel: _pedCel, pedAcess: _pedAcess, numLojas: scope.length };
+    window._fatCardDetalhe = { total, meta, barPct: _fatBarPct, pReal: _fatPReal, nota: _fatNota, antLine: _antLine, margLine: _margLine, projVal: _fatProjVal, periodo: _d.periodo, tipo, val, ticketGeral: _ticketGeral, ticketCel: _ticketCel, ticketAcess: _ticketAcess, pedidos, pedCel: _pedCel, pedAcess: _pedAcess, numLojas: scope.length };
     const _fatCard = (() => {
         const _mediaDia = _d.diasDecorridos > 0 ? Math.round(total / _d.diasDecorridos) : 0;
         return `<div class="glass-360 rounded-2xl p-4 card-lift" style="display:flex;flex-direction:column;justify-content:space-between;gap:.3rem;cursor:pointer;" onclick="abrirDetalhesFat('${tipo}','${val}')">

@@ -2354,11 +2354,17 @@ def main():
         _candidates = []
         _dp, _dpp = 1, 100
         while True:
-            _dr = requests.get(
-                f'{ERP_BASE}/reports/sales?start_date={_fetch_start}&end_date={today}&per_page={_dpp}&page={_dp}',
-                headers={'Authorization': f'Bearer {token}', 'Accept': 'application/json'}, timeout=30)
-            _dr.raise_for_status()
-            _dd = _dr.json()
+            try:
+                _dr = requests.get(
+                    f'{ERP_BASE}/reports/sales?start_date={_fetch_start}&end_date={today}&per_page={_dpp}&page={_dp}',
+                    headers={'Authorization': f'Bearer {token}', 'Accept': 'application/json'}, timeout=30)
+                if _dr.status_code != 200:
+                    print(f"  DEFY pág {_dp}: HTTP {_dr.status_code} — pulando")
+                    break
+                _dd = _dr.json()
+            except Exception as _ep:
+                print(f"  DEFY pág {_dp}: erro {_ep} — interrompendo coleta")
+                break
             for _s in _dd.get('sales', []):
                 _t = float(_s.get('total', 0) or 0)
                 if 700 <= _t <= 3000:
@@ -2401,7 +2407,7 @@ def main():
             }
 
         _new_raw = []
-        with ThreadPoolExecutor(max_workers=4) as _ex:
+        with ThreadPoolExecutor(max_workers=8) as _ex:
             _futs = {_ex.submit(_check_defy, c): c for c in _candidates}
             for _f in _as_completed(_futs):
                 _res = _f.result()

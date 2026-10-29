@@ -16640,7 +16640,9 @@ function render360(tipo, val) {
     const BAR = 'linear-gradient(90deg,#7c3aed,#06b6d4)';
 
     /* ── KPIs ── */
-    const meta = tipo==='sub' ? subs[val].meta : tipo==='loja' ? (lojas[val].meta || subs[lojas[val].sub].meta/subs[lojas[val].sub].lojas.length) : _d.meta_rede;
+    const meta = tipo==='sub'  ? (subs[val].meta || subs[val].lojas.reduce((a,lk)=>a+(lojas[lk]?.meta||0),0))
+               : tipo==='loja' ? (lojas[val].meta || subs[lojas[val].sub].meta/subs[lojas[val].sub].lojas.length)
+               : _d.meta_rede;
     const metaBatidaRede = hitMeta(total, meta);
     // Performance — faturamento real do período vs mesmo período mês anterior e recorde
     const _perf    = _d.performance || {};

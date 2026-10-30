@@ -7,7 +7,7 @@
     <script>
     // Cache-buster: força reload se a versão mudou
     (function(){
-      var BUILD = '20261030163933';
+      var BUILD = '20261030164632';
       var stored = localStorage.getItem('d360_build');
       if (stored && stored !== BUILD) {
         localStorage.setItem('d360_build', BUILD);
@@ -8736,10 +8736,10 @@ const D360 = {
     // O sistema deriva automaticamente: margem por loja → subrede → rede
     // COMO ATUALIZAR: edite apenas margem_lojas com os valores do ERP por loja
     // ─────────────────────────────────────────────────────────────────────────────
-    margem_dia: 48.41,              // rede hoje · zerado automaticamente à meia-noite
-    margem_dia_subredes: { t1: 48.50, t2: 45.53, t3: 52.09, ind: 41.49 },
+    margem_dia: 48.43,              // rede hoje · zerado automaticamente à meia-noite
+    margem_dia_subredes: { t1: 48.57, t2: 45.53, t3: 52.09, ind: 41.49 },
     margem_dia_lojas: {
-        cariacica:50.62, itabuna:44.58, moxuara:52.55, praiadacosta:40.39,
+        cariacica:50.62, itabuna:44.58, moxuara:52.95, praiadacosta:40.39,
         barreiras:44.32, teixeira:43.40, laranjeiras:46.99, saomateus:55.22,
         serra:44.84, montserrat:89.42, linhares:50.34, eunapolis:41.49,
     },
@@ -8811,9 +8811,9 @@ const D360 = {
                 {n:'ANA CAROLINA DA SILVA',i:'AC',p:26,t:28288.5,ds:10,ult:'22/10'},
                 {n:'CAUTELAR FRANQUIA',i:'CF',p:1,t:1900.0},
                 {n:'mirelly vieira portugal',i:'MV',p:1,t:30.0,ds:2,ult:'04/10'}]},
-        itabuna:     { label:'Itabuna',            sigla:'IT', sub:'t1', meta:310000,  total:320551.87,  ped:324,  cancel:0, agend:0, agendCount:0, agendFat:91210.44,  fat_dia:4550.0, acess_dia:810.0, dia_a_dia:{"1":11194.99,"2":26659.99,"3":44269.99,"4":44269.99,"5":62214.97,"8":95939.95,"13":145748.42,"14":163853.91,"16":188602.88,"19":207150.88,"20":220760.88,"22":253204.88,"23":253244.88,"24":267442.88,"26":281591.87,"27":293136.87,"28":302336.87,"29":316001.87,"30":320551.87}, acess_dia_top:[{n:'MIKAELLE SANTOS VIRGENS',i:'MS',t:380.0}, {n:'HERICLES LISBOA DE FREITAS',i:'HL',t:330.0}, {n:'ANDREZA DE JESUS SOUZA',i:'AD',t:100.0}], top_dia:[{n:'HERICLES LISBOA DE FREITAS',i:'HL',t:2450.0}, {n:'MIKAELLE SANTOS VIRGENS',i:'MS',t:2000.0}, {n:'ANDREZA DE JESUS SOUZA',i:'AD',t:100.0}], fin_dia:2000.0, fin_mes:130396.87, top_fin_mes:[{n:'MIKAELLE SANTOS VIRGENS',i:'MS',t:58900.95,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:58900.95},{nm:'Outras',t:9039.98}]},{n:'ANDREZA DE JESUS SOUZA',i:'AD',t:19847.99,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:19847.99},{nm:'Outras',t:10608.99}]},{n:'HERICLES LISBOA DE FREITAS',i:'HL',t:18482.98,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:18482.98},{nm:'Outras',t:5599.99}]},{n:'jhonatas lucas machado pereira',i:'JL',t:16466.97,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:16466.97},{nm:'Outras',t:0}]},{n:'Isabela Sousa da Silva Diger',i:'IS',t:12098.98,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:12098.98},{nm:'Outras',t:4600.0}]},{n:'KEIFIT MOREIRA DOS SANTOS',i:'KM',t:3400.0,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:3400.0},{nm:'Outras',t:0}]},{n:'SANDY DE ARAUJO SANTOS LIMA',i:'SD',t:1199.0,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:1199.0},{nm:'Outras',t:330.0}]}], fin_bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:130396.87},{nm:'Outras',t:30178.96}], top_fin:[{n:'MIKAELLE SANTOS VIRGENS',i:'MS',t:2000.0}], metaAcess:15000,
+        itabuna:     { label:'Itabuna',            sigla:'IT', sub:'t1', meta:310000,  total:322751.87,  ped:325,  cancel:0, agend:0, agendCount:0, agendFat:91210.44,  fat_dia:6750.0, acess_dia:1410.0, dia_a_dia:{"1":11194.99,"2":26659.99,"3":44269.99,"4":44269.99,"5":62214.97,"8":95939.95,"13":145748.42,"14":163853.91,"16":188602.88,"19":207150.88,"20":220760.88,"22":253204.88,"23":253244.88,"24":267442.88,"26":281591.87,"27":293136.87,"28":302336.87,"29":316001.87,"30":322751.87}, acess_dia_top:[{n:'jhonatas lucas machado pereira',i:'JL',t:600.0}, {n:'MIKAELLE SANTOS VIRGENS',i:'MS',t:380.0}, {n:'HERICLES LISBOA DE FREITAS',i:'HL',t:330.0}, {n:'ANDREZA DE JESUS SOUZA',i:'AD',t:100.0}], top_dia:[{n:'HERICLES LISBOA DE FREITAS',i:'HL',t:2450.0}, {n:'jhonatas lucas machado pereira',i:'JL',t:2200.0}, {n:'MIKAELLE SANTOS VIRGENS',i:'MS',t:2000.0}, {n:'ANDREZA DE JESUS SOUZA',i:'AD',t:100.0}], fin_dia:2000.0, fin_mes:130396.87, top_fin_mes:[{n:'MIKAELLE SANTOS VIRGENS',i:'MS',t:58900.95,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:58900.95},{nm:'Outras',t:9039.98}]},{n:'ANDREZA DE JESUS SOUZA',i:'AD',t:19847.99,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:19847.99},{nm:'Outras',t:10608.99}]},{n:'HERICLES LISBOA DE FREITAS',i:'HL',t:18482.98,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:18482.98},{nm:'Outras',t:5599.99}]},{n:'jhonatas lucas machado pereira',i:'JL',t:16466.97,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:16466.97},{nm:'Outras',t:0}]},{n:'Isabela Sousa da Silva Diger',i:'IS',t:12098.98,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:12098.98},{nm:'Outras',t:4600.0}]},{n:'KEIFIT MOREIRA DOS SANTOS',i:'KM',t:3400.0,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:3400.0},{nm:'Outras',t:0}]},{n:'SANDY DE ARAUJO SANTOS LIMA',i:'SD',t:1199.0,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:1199.0},{nm:'Outras',t:330.0}]}], fin_bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:130396.87},{nm:'Outras',t:30178.96}], top_fin:[{n:'MIKAELLE SANTOS VIRGENS',i:'MS',t:2000.0}], metaAcess:15000,
             agendamentos:{total:91210.44, fin:72092.94, fin_bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:68902.94},{nm:'Outras',t:8989.98}], top:[{n:'MIKAELLE SANTOS VIRGENS',i:'MS',t:71695.95}, {n:'Isabela Sousa da Silva Diger',i:'IS',t:7712.49}, {n:'jhonatas lucas machado pereira',i:'JL',t:5698.0}, {n:'HERICLES LISBOA DE FREITAS',i:'HL',t:3355.0}, {n:'ANDREZA DE JESUS SOUZA',i:'AD',t:1550.0}, {n:'SANDY DE ARAUJO SANTOS LIMA',i:'SD',t:1199.0}]},
-            acessorios:{total:13951.5, top:[
+            acessorios:{total:14551.5, top:[
                 {n:'Hericles Lisboa de Freitas',i:'HL',t:1792,ds:12,ult:'12/06'},
                 {n:'Andreza de Jesus Souza',i:'AJ',t:1365,ds:12,ult:'12/06'},
                 {n:'Mikaelle Santos Virgens',i:'MS',t:1165,ds:12,ult:'12/06'},
@@ -8825,7 +8825,7 @@ const D360 = {
             top:[{n:'HERICLES LISBOA DE FREITAS',i:'HL',p:84,t:76591.98,ds:18,ult:'30/10'},
                 {n:'ANDREZA DE JESUS SOUZA',i:'AD',p:89,t:75965.49,ds:28,ult:'30/10'},
                 {n:'MIKAELLE SANTOS VIRGENS',i:'MS',p:57,t:72235.95,ds:17,ult:'30/10'},
-                {n:'jhonatas lucas machado pereira',i:'JL',p:38,t:43176.97,ds:15,ult:'30/10'},
+                {n:'jhonatas lucas machado pereira',i:'JL',p:39,t:45376.97,ds:15,ult:'30/10'},
                 {n:'Isabela Sousa da Silva Diger',i:'IS',p:28,t:33426.48,ds:5,ult:'28/10'},
                 {n:'KEIFIT MOREIRA DOS SANTOS',i:'KM',p:11,t:10305.0,ds:6,ult:'06/10'},
                 {n:'SANDY DE ARAUJO SANTOS LIMA',i:'SD',p:17,t:8850.0,ds:8,ult:'30/10'}]},
@@ -8844,9 +8844,9 @@ const D360 = {
                 {n:'MATEUS DA SILVA MATOS',i:'MD',p:45,t:48744.96,ds:13,ult:'24/10'},
                 {n:'DANIELA MILENA GOMES MARES',i:'DM',p:40,t:47617.97,ds:17,ult:'30/10'},
                 {n:'VICTOR ROBERTO DE OLIVEIRA NASCIMENTO',i:'VR',p:25,t:31753.98,ds:9,ult:'20/10'}]},
-        moxuara:     { label:'Moxuara',            sigla:'MX', sub:'t1', meta:280000,  total:283747.97,  ped:247, cancel:0, agend:0, agendCount:0, agendFat:127709.0,  fat_dia:2620.0, acess_dia:620.0, dia_a_dia:{"1":9880.0,"2":15150.0,"3":22960.0,"4":31710.0,"5":47509.0,"8":77949.0,"13":127452.98,"14":139432.98,"16":151052.97,"19":184678.97,"20":193318.97,"22":215718.97,"23":222018.97,"24":234078.97,"26":255288.97,"27":259398.97,"28":271598.97,"29":281127.97,"30":283747.97}, acess_dia_top:[{n:'Liz Sophia Andrade Pereira',i:'LS',t:620.0}], top_dia:[{n:'Liz Sophia Andrade Pereira',i:'LS',t:2620.0}], fin_dia:0, fin_mes:59637.97, top_fin_mes:[{n:'Liz Sophia Andrade Pereira',i:'LS',t:18328.99,bd:[{nm:'PayJoy',t:15050.0},{nm:'OdresCred',t:18328.99},{nm:'Outras',t:5500.0}]},{n:'Iasmim vitoria medeiros gaio',i:'IV',t:13860.0,bd:[{nm:'PayJoy',t:41030.0},{nm:'OdresCred',t:13860.0},{nm:'Outras',t:17750.0}]},{n:'Fabiano Francisco Fontes',i:'FF',t:12700.0,bd:[{nm:'PayJoy',t:7420.0},{nm:'OdresCred',t:12700.0},{nm:'Outras',t:0}]},{n:'KHAYLLANE DE ALMEIDA FERREIRA',i:'KD',t:11649.98,bd:[{nm:'PayJoy',t:36600.0},{nm:'OdresCred',t:11649.98},{nm:'Outras',t:7000.0}]},{n:'GABRIEL BARRETO PEREIRA',i:'GB',t:3099.0,bd:[{nm:'PayJoy',t:9350.0},{nm:'OdresCred',t:3099.0},{nm:'Outras',t:2000.0}]}], fin_bd:[{nm:'PayJoy',t:109450.0},{nm:'OdresCred',t:59637.97},{nm:'Outras',t:32250.0}], top_fin:[], metaAcess:17000,
+        moxuara:     { label:'Moxuara',            sigla:'MX', sub:'t1', meta:280000,  total:283777.97,  ped:248, cancel:0, agend:0, agendCount:0, agendFat:127709.0,  fat_dia:2650.0, acess_dia:650.0, dia_a_dia:{"1":9880.0,"2":15150.0,"3":22960.0,"4":31710.0,"5":47509.0,"8":77949.0,"13":127452.98,"14":139432.98,"16":151052.97,"19":184678.97,"20":193318.97,"22":215718.97,"23":222018.97,"24":234078.97,"26":255288.97,"27":259398.97,"28":271598.97,"29":281127.97,"30":283777.97}, acess_dia_top:[{n:'Liz Sophia Andrade Pereira',i:'LS',t:650.0}], top_dia:[{n:'Liz Sophia Andrade Pereira',i:'LS',t:2650.0}], fin_dia:0, fin_mes:59637.97, top_fin_mes:[{n:'Liz Sophia Andrade Pereira',i:'LS',t:18328.99,bd:[{nm:'PayJoy',t:15050.0},{nm:'OdresCred',t:18328.99},{nm:'Outras',t:5500.0}]},{n:'Iasmim vitoria medeiros gaio',i:'IV',t:13860.0,bd:[{nm:'PayJoy',t:41030.0},{nm:'OdresCred',t:13860.0},{nm:'Outras',t:17750.0}]},{n:'Fabiano Francisco Fontes',i:'FF',t:12700.0,bd:[{nm:'PayJoy',t:7420.0},{nm:'OdresCred',t:12700.0},{nm:'Outras',t:0}]},{n:'KHAYLLANE DE ALMEIDA FERREIRA',i:'KD',t:11649.98,bd:[{nm:'PayJoy',t:36600.0},{nm:'OdresCred',t:11649.98},{nm:'Outras',t:7000.0}]},{n:'GABRIEL BARRETO PEREIRA',i:'GB',t:3099.0,bd:[{nm:'PayJoy',t:9350.0},{nm:'OdresCred',t:3099.0},{nm:'Outras',t:2000.0}]}], fin_bd:[{nm:'PayJoy',t:109450.0},{nm:'OdresCred',t:59637.97},{nm:'Outras',t:32250.0}], top_fin:[], metaAcess:17000,
             agendamentos:{total:127709.0, fin:117419.0, fin_bd:[{nm:'PayJoy',t:72350.0},{nm:'OdresCred',t:34969.0},{nm:'Outras',t:14600.0}], top:[{n:'Iasmim vitoria medeiros gaio',i:'IV',t:41520.0}, {n:'KHAYLLANE DE ALMEIDA FERREIRA',i:'KD',t:34130.0}, {n:'Liz Sophia Andrade Pereira',i:'LS',t:26109.0}, {n:'GABRIEL BARRETO PEREIRA',i:'GB',t:15600.0}, {n:'Fabiano Francisco Fontes',i:'FF',t:10350.0}]},
-            acessorios:{total:15570.0, top:[
+            acessorios:{total:15600.0, top:[
                 {n:'Khayllane de Almeida Ferreira',i:'KF',t:3495,ds:12,ult:'12/06'},
                 {n:'Gabriel Barreto Pereira',i:'GB',t:1140,ds:12,ult:'12/06'},
                 {n:'Luccas da Silva Medeiros Martins',i:'LS',t:1280,ds:12,ult:'12/06'},
@@ -8855,7 +8855,7 @@ const D360 = {
             cautelar:{protecao:{total:870.0},garantia:{total:0}},
             top:[{n:'KHAYLLANE DE ALMEIDA FERREIRA',i:'KD',p:82,t:90874.98,ds:12,ult:'30/10'},
                 {n:'Iasmim vitoria medeiros gaio',i:'IV',p:75,t:88575.0,ds:10,ult:'30/10'},
-                {n:'Liz Sophia Andrade Pereira',i:'LS',p:43,t:50398.99,ds:8,ult:'30/10'},
+                {n:'Liz Sophia Andrade Pereira',i:'LS',p:44,t:50428.99,ds:8,ult:'30/10'},
                 {n:'Fabiano Francisco Fontes',i:'FF',p:21,t:28480.0,ds:5,ult:'06/10'},
                 {n:'GABRIEL BARRETO PEREIRA',i:'GB',p:22,t:25249.0,ds:19,ult:'08/10'},
                 {n:'ANA CAROLINA DA SILVA',i:'AC',p:4,t:170.0}]},
@@ -10121,7 +10121,7 @@ var _ERP_ESTOQUE = {
       'ZENFONE MAX PLUS':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:0,eunapolis:0},
       'ZENFONE MAX SHOT':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:0,eunapolis:0},
     };
-    var _ERP_ESTOQUE_TS = '30/10/2026 13:39';
+    var _ERP_ESTOQUE_TS = '30/10/2026 13:46';
 // Preços por produto — populado pelo update_d360.py a cada 30 min
 var _ERP_PRECOS = {
       'ALCATEL A2 XL': {custo:0.00,venda:0.00},
@@ -10477,7 +10477,7 @@ var _ERP_PRECOS = {
       'ZENFONE MAX PLUS': {custo:0.00,venda:0.00},
       'ZENFONE MAX SHOT': {custo:0.00,venda:0.00},
     };
-    var _ERP_PRECOS_TS = '30/10/2026 13:39';
+    var _ERP_PRECOS_TS = '30/10/2026 13:46';
 // Flag de sessão: true = fetch já tentado (sucesso ou falha), não tentar de novo
 var _erpPrecosCarregados = false;
 var _SUG_SPECS = {

@@ -7,7 +7,7 @@
     <script>
     // Cache-buster: força reload se a versão mudou
     (function(){
-      var BUILD = '20261030171552';
+      var BUILD = '20261030141806';
       var stored = localStorage.getItem('d360_build');
       if (stored && stored !== BUILD) {
         localStorage.setItem('d360_build', BUILD);
@@ -10121,7 +10121,7 @@ var _ERP_ESTOQUE = {
       'ZENFONE MAX PLUS':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:0,eunapolis:0},
       'ZENFONE MAX SHOT':  {cariacica:0,itabuna:0,moxuara:0,praiadacosta:0,barreiras:0,laranjeiras:0,teixeira:0,saomateus:0,serra:0,montserrat:0,linhares:0,eunapolis:0},
     };
-    var _ERP_ESTOQUE_TS = '30/10/2026 14:15';
+    var _ERP_ESTOQUE_TS = '30/10/2026 14:17';
 // Preços por produto — populado pelo update_d360.py a cada 30 min
 var _ERP_PRECOS = {
       'ALCATEL A2 XL': {custo:0.00,venda:0.00},
@@ -10477,7 +10477,7 @@ var _ERP_PRECOS = {
       'ZENFONE MAX PLUS': {custo:0.00,venda:0.00},
       'ZENFONE MAX SHOT': {custo:0.00,venda:0.00},
     };
-    var _ERP_PRECOS_TS = '30/10/2026 14:15';
+    var _ERP_PRECOS_TS = '30/10/2026 14:18';
 // Flag de sessão: true = fetch já tentado (sucesso ou falha), não tentar de novo
 var _erpPrecosCarregados = false;
 var _SUG_SPECS = {
@@ -17108,12 +17108,25 @@ function render360(tipo, val) {
     var _bfCard = '';
     try {
         var _bfIsBF = user && (['diretoria','franqueado'].indexOf(user.cargo) >= 0);
+        var _bfDiasRestantes = (function(){ var t=new Date(2026,10,27); var h=new Date(); t.setHours(0,0,0,0); h.setHours(0,0,0,0); return Math.max(0,Math.round((t-h)/(1000*60*60*24))); })();
         if (!_bfIsBF) {
-            _bfCard = '<div class="glass-360 rounded-2xl p-4" style="background:linear-gradient(135deg,#0d0202,#1a0505,#0d0202);border:1px solid #3d0000;display:flex;flex-direction:column;justify-content:center;align-items:center;min-height:160px;text-align:center;gap:.5rem;">'
-                + '<div style="font-size:2rem;line-height:1.1;">&#x1F525;&#x1F5A4;&#x26A1;</div>'
-                + '<div style="font-size:.85rem;font-weight:900;color:#ff6b00;text-transform:uppercase;letter-spacing:.08em;">Em Breve</div>'
-                + '<div style="font-size:.65rem;font-weight:700;color:#d4a017;line-height:1.6;max-width:160px;">chegara a melhor Black de todos os tempos</div>'
-                + '<div style="font-size:.52rem;color:#4b5563;margin-top:.2rem;">&#x1F512; exclusivo para gestao</div>'
+            _bfCard = '<div class="glass-360 rounded-2xl p-4" style="background:linear-gradient(135deg,#0d0202,#1a0505,#0d0202);border:1px solid #3d0000;display:flex;flex-direction:column;justify-content:space-between;">'
+                + '<div>'
+                + '<div style="display:flex;align-items:center;justify-content:space-between;gap:.5rem;margin-bottom:.3rem;">'
+                + '<div style="display:flex;align-items:center;gap:.5rem;"><div style="width:28px;height:28px;border-radius:8px;background:rgba(124,45,0,.2);border:1px solid rgba(124,45,0,.4);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.9rem;">&#x1F5A4;</div>'
+                + '<span style="font-size:.72rem;font-weight:900;color:#f97316;letter-spacing:.03em;text-transform:uppercase;">Black Friday</span></div>'
+                + '<span style="font-size:.6rem;font-weight:700;padding:.15rem .55rem;border-radius:999px;background:rgba(124,45,0,.2);color:#f97316;white-space:nowrap;">27-28/11 &#x26A1;</span>'
+                + '</div>'
+                + '<p style="font-size:1.25rem;font-weight:900;color:#ff6b00;line-height:1.2;margin:0 0 .25rem;">Em Breve</p>'
+                + '<div style="height:3px;background:#1f2937;border-radius:3px;margin-bottom:.25rem;"><div style="height:20%;background:linear-gradient(90deg,#c2410c,#ffd700);border-radius:3px;animation:pulse 2s infinite;"></div></div>'
+                + '<p style="font-size:.6rem;color:#9ca3af;margin:0;line-height:1.4;">Faltam <span style="color:#f97316;font-weight:700;">' + _bfDiasRestantes + ' dias</span> para a Black Friday</p>'
+                + '</div>'
+                + '<div>'
+                + '<div style="display:flex;justify-content:space-between;align-items:center;padding:.22rem .6rem;border-radius:.45rem;background:rgba(124,45,0,.1);border:1px solid rgba(124,45,0,.2);margin-bottom:.2rem;">'
+                + '<span style="font-size:.58rem;color:#9ca3af;font-weight:600;">&#x1F525; chegara a melhor Black</span><span style="font-size:.58rem;color:#f97316;font-weight:700;">ever</span></div>'
+                + '<div style="display:flex;justify-content:space-between;align-items:center;padding:.22rem .6rem;border-radius:.45rem;background:rgba(124,45,0,.06);border:1px solid rgba(124,45,0,.12);margin-bottom:.2rem;">'
+                + '<span style="font-size:.58rem;color:#4b5563;font-weight:600;">&#x1F512; exclusivo para gestao</span></div>'
+                + '</div>'
                 + '</div>';
         } else {
             var _bfPReal  = bfMeta > 0 ? Math.round(bfTotal / bfMeta * 100) : 0;
@@ -17123,12 +17136,12 @@ function render360(tipo, val) {
                 : '<span style="color:#4b5563;font-size:.75rem;font-style:italic;">aguardando Black Friday</span>';
             var _bfMetaHtml = bfMeta > 0
                 ? (_bfPReal + '% da meta &middot; ' + brl(bfMeta))
-                : 'Metas nao configuradas';
+                : ('Faltam <span style="color:#f97316;font-weight:700;">' + _bfDiasRestantes + ' dias</span>');
             var _bfLojaRows = '';
             scope.forEach(function(l) {
                 if ((l.bf_meta || 0) > 0) {
                     var _bfLpct = Math.min(100, Math.round(((l.bf_total||0)/l.bf_meta)*100));
-                    var _bfLclr = (l.bf_total||0) > 0 ? '#ffd700' : '#374151';
+                    var _bfLclr = (l.bf_total||0) > 0 ? '#ffd700' : '#4b5563';
                     var _bfLval = (l.bf_total||0) > 0 ? brl(l.bf_total||0) : '&mdash;';
                     _bfLojaRows += '<div style="display:flex;align-items:center;gap:.4rem;margin-bottom:.15rem;">'
                         + '<span style="font-size:.52rem;font-weight:700;color:#f97316;width:20px;flex-shrink:0;">' + (l.sigla||'') + '</span>'
@@ -17139,7 +17152,14 @@ function render360(tipo, val) {
                         + '</div>';
                 }
             });
-            if (!_bfLojaRows) _bfLojaRows = '<div style="font-size:.6rem;color:#374151;text-align:center;padding:.4rem 0;">metas por loja em breve</div>';
+            if (!_bfLojaRows) {
+                _bfLojaRows = '<div style="display:flex;justify-content:space-between;align-items:center;padding:.22rem .6rem;border-radius:.45rem;background:rgba(124,45,0,.1);border:1px solid rgba(124,45,0,.2);margin-bottom:.2rem;">'
+                    + '<span style="font-size:.58rem;color:#9ca3af;font-weight:600;">&#x1F3AF; Meta rede</span>'
+                    + '<span style="font-size:.65rem;font-weight:700;color:#4b5563;">a configurar</span></div>'
+                    + '<div style="display:flex;justify-content:space-between;align-items:center;padding:.22rem .6rem;border-radius:.45rem;background:rgba(124,45,0,.06);border:1px solid rgba(124,45,0,.12);margin-bottom:.2rem;">'
+                    + '<span style="font-size:.58rem;color:#9ca3af;font-weight:600;">&#x1F4C5; 27 e 28/11</span>'
+                    + '<span style="font-size:.65rem;font-weight:700;color:#f97316;">' + _bfDiasRestantes + ' dias</span></div>';
+            }
             _bfCard = '<div class="glass-360 rounded-2xl p-4 card-lift" style="display:flex;flex-direction:column;justify-content:space-between;gap:.3rem;background:linear-gradient(135deg,rgba(20,5,0,.95),rgba(35,12,0,.95));border:1px solid #7c2d00;">'
                 + '<div>'
                 + '<div style="display:flex;align-items:center;justify-content:space-between;gap:.5rem;margin-bottom:.3rem;">'
@@ -17151,7 +17171,7 @@ function render360(tipo, val) {
                 + '</div>'
                 + '<p style="font-size:1.25rem;font-weight:900;color:#fff;line-height:1.2;margin:0 0 .25rem;">' + _bfValHtml + '</p>'
                 + '<div style="height:3px;background:#1f2937;border-radius:3px;margin-bottom:.25rem;"><div style="height:100%;width:' + _bfBarPct + '%;background:linear-gradient(90deg,#c2410c,#ffd700);border-radius:3px;transition:width .4s;"></div></div>'
-                + '<p style="font-size:.6rem;color:#9ca3af;margin:0 0 .35rem;line-height:1.4;">' + _bfMetaHtml + '</p>'
+                + '<p style="font-size:.6rem;color:#9ca3af;margin:0;line-height:1.4;">' + _bfMetaHtml + '</p>'
                 + '</div>'
                 + '<div>' + _bfLojaRows + '</div>'
                 + '</div>';

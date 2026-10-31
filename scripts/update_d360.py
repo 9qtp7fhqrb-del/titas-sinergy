@@ -2354,11 +2354,17 @@ def main():
         _candidates = []
         _dp, _dpp = 1, 100
         while True:
-            _dr = requests.get(
-                f'{ERP_BASE}/reports/sales?start_date={_fetch_start}&end_date={today}&per_page={_dpp}&page={_dp}',
-                headers={'Authorization': f'Bearer {token}', 'Accept': 'application/json'}, timeout=30)
-            _dr.raise_for_status()
-            _dd = _dr.json()
+            try:
+                _dr = requests.get(
+                    f'{ERP_BASE}/reports/sales?start_date={_fetch_start}&end_date={today}&per_page={_dpp}&page={_dp}',
+                    headers={'Authorization': f'Bearer {token}', 'Accept': 'application/json'}, timeout=30)
+                if _dr.status_code != 200:
+                    print(f"  DEFY pág {_dp}: HTTP {_dr.status_code} — pulando")
+                    break
+                _dd = _dr.json()
+            except Exception as _ep:
+                print(f"  DEFY pág {_dp}: erro {_ep} — interrompendo coleta")
+                break
             for _s in _dd.get('sales', []):
                 _t = float(_s.get('total', 0) or 0)
                 if 700 <= _t <= 3000:
@@ -2371,9 +2377,15 @@ def main():
 
         # 4. Verificar sale_items em paralelo
         def _check_defy(s):
-            _r2 = requests.get(f'{ERP_BASE}/sales/{s["id"]}',
-                headers={'Authorization': f'Bearer {token}', 'Accept': 'application/json'}, timeout=20)
-            if _r2.status_code != 200:
+            for _attempt in range(2):
+                try:
+                    _r2 = requests.get(f'{ERP_BASE}/sales/{s["id"]}',
+                        headers={'Authorization': f'Bearer {token}', 'Accept': 'application/json'}, timeout=30)
+                    if _r2.status_code == 200:
+                        break
+                except requests.exceptions.RequestException:
+                    pass
+            else:
                 return None
             _d2 = _r2.json()
             _defy_items = [_it for _it in _d2.get('sale_items', []) if _it.get('product_variation_id') == 1003]
@@ -2395,7 +2407,7 @@ def main():
             }
 
         _new_raw = []
-        with ThreadPoolExecutor(max_workers=4) as _ex:
+        with ThreadPoolExecutor(max_workers=8) as _ex:
             _futs = {_ex.submit(_check_defy, c): c for c in _candidates}
             for _f in _as_completed(_futs):
                 _res = _f.result()
@@ -2416,6 +2428,7 @@ def main():
             for _sale in _day_sales:
                 _raw = (_sale['store'] or '').strip().upper()
                 _sk  = STORE_MAP.get(_raw)
+                _day_revenue += float(_sale.get('total', 0) or 0)
                 if not _sk: continue
                 _nm  = (_sale['seller'] or '').strip()
                 _k   = f'{_nm}___{_sk}'
@@ -2423,7 +2436,6 @@ def main():
                 _day_sellers_raw[_k]  = _day_sellers_raw.get(_k, 0) + _qty
                 if _sale.get('total', 0) >= _PREMIO_MIN:
                     _day_premio_raw[_k] = _day_premio_raw.get(_k, 0) + _qty
-                _day_revenue += float(_sale.get('total', 0) or 0)
             _dia_a_dia[_d] = {
                 'units':       sum(_s.get('qty', 1) for _s in _day_sales),
                 'sellers_raw': _day_sellers_raw,
@@ -2466,8 +2478,13 @@ def main():
             _sv['sellers'] = [{'name': k[0], 'units': v}
                               for k, v in _defy_sellers_raw.items() if k[1] == _sk]
 
-        _defy_total = sum(s['units'] for s in _defy_stores.values())
-        _ticket_medio = (_total_revenue / _defy_total) if _defy_total > 0 else 0.0
+        _defy_total_calc = sum(s['units'] for s in _defy_stores.values())
+        # Nunca reduzir o total em relação ao Firestore (proteção contra falhas parciais de API)
+        _defy_total_stored = int(_defy_current.get('totalUnits') or 0)
+        _defy_total = max(_defy_total_calc, _defy_total_stored)
+        if _defy_total > _defy_total_calc:
+            print(f"  Guard: calculado={_defy_total_calc} < Firestore={_defy_total_stored} → mantendo {_defy_total}")
+        _ticket_medio = (_total_revenue / _defy_total_calc) if _defy_total_calc > 0 else 0.0
 
         # 8. Prêmio acumulado
         _premio_stores = {}

@@ -91,5 +91,9 @@ service cloud.firestore {
     match /ts_olha_isso/{docId} {
       allow read, write: if true;
     }
+
+    match /ts_orbita/{docId} {
+      allow read, write: if true;
+    }
   }
 }

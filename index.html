@@ -9324,9 +9324,8 @@ function _gerarPdfRanking(lojasData, mesLabel, diasDec, diasMes, ano, mesNum, pr
 
         // Pill sigla
         const sc=SUB_COR[sub]||C.navy;
-        doc.setFillColor(sc[0],sc[1],sc[2]); doc.setGState&&doc.setGState({opacity:0.1});
+        doc.setFillColor(sc[0]+170>255?220:sc[0]+170, sc[1]+170>255?220:sc[1]+170, sc[2]+170>255?220:sc[2]+170);
         doc.roundedRect(COL.loja,y+2.5,10,6.5,1,1,'F');
-        doc.setGState&&doc.setGState({opacity:1});
         doc.setFont('helvetica','bold'); doc.setFontSize(5.8); doc.setTextColor(...sc);
         doc.text(sigla,COL.loja+5,y+7.2,{align:'center'});
 

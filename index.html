@@ -9393,13 +9393,14 @@ function _gerarPdfRanking(lojasData, mesLabel, diasDec, diasMes, ano, mesNum, pr
             doc.text('S/dado',COL.cresc,y+6.5);
         }
 
-        // Margem por loja
-        if (margem>0) {
-            const mc=margem>=50?C.green:margem>=48?C.amber:C.red;
+        // Margem por loja (fallback para margem da rede quando não há dado por loja)
+        const margemExib = margem>0 ? margem : (margemRede||0);
+        if (margemExib>0) {
+            const mc=margemExib>=50?C.green:margemExib>=48?C.amber:C.red;
             doc.setFont('helvetica','bold'); doc.setFontSize(8.5); doc.setTextColor(...mc);
-            doc.text(_pct(margem),COL.mg,y+6.5);
+            doc.text(_pct(margemExib),COL.mg,y+6.5);
             doc.setFont('helvetica','normal'); doc.setFontSize(4.8); doc.setTextColor(...C.muted);
-            doc.text(margem>=50?'Otima':margem>=48?'Adequada':'Baixa',COL.mg,y+9.8);
+            doc.text(margem>0?(margemExib>=50?'Otima':margemExib>=48?'Adequada':'Baixa'):'Media rede',COL.mg,y+9.8);
         } else {
             doc.setFont('helvetica','normal'); doc.setFontSize(6); doc.setTextColor(...C.border);
             doc.text('—',COL.mg+2,y+6.5);

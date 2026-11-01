@@ -108,9 +108,8 @@ jobs:
       - name: Sincronizar com commits recentes antes do deploy
         if: steps.threshold.outputs.should_update == 'true' && steps.diff.outputs.changed == 'true'
         run: |
-          # index.html é 100% gerado pelo script — em caso de corrida com outro run,
-          # não faz sentido resolver conflito de texto: descartamos nosso commit local,
-          # reaplicamos o index.html recém-gerado sobre o HEAD mais novo e tentamos de novo.
+          # Merge inteligente: preserva o código do remote (botões, funções, fixes)
+          # e injeta apenas o bloco const D360 = {...} gerado pelo script de dados.
           git config user.name "D360-Bot"
           git config user.email "bot@titas-sinergy.web.app"
           cp index.html /tmp/index_novo.html
@@ -118,7 +117,46 @@ jobs:
           for i in 1 2 3 4 5; do
             git fetch origin main
             git reset --hard origin/main
-            cp /tmp/index_novo.html index.html
+            python3 - <<'PYEOF'
+import re, sys
+
+def extract_d360(content):
+    m = re.search(r'(^const D360 = \{)', content, re.MULTILINE)
+    if not m: return None
+    start = m.start()
+    depth = 0; i = m.start(1) + len("const D360 = ")
+    in_str = False; str_char = None
+    while i < len(content):
+        c = content[i]
+        if in_str:
+            if c == '\\': i += 2; continue
+            if c == str_char: in_str = False
+        else:
+            if c in '"\'`': in_str = True; str_char = c
+            elif c == '{': depth += 1
+            elif c == '}':
+                depth -= 1
+                if depth == 0:
+                    end = i + 1
+                    if end < len(content) and content[end] == ';': end += 1
+                    if end < len(content) and content[end] == '\n': end += 1
+                    return (start, end, content[start:end])
+        i += 1
+    return None
+
+with open('/tmp/index_novo.html', 'r', encoding='utf-8') as f: novo = f.read()
+with open('index.html', 'r', encoding='utf-8') as f: base = f.read()
+
+novo_block = extract_d360(novo)
+base_block = extract_d360(base)
+if novo_block and base_block:
+    merged = base[:base_block[0]] + novo_block[2] + base[base_block[1]:]
+    with open('index.html', 'w', encoding='utf-8') as f: f.write(merged)
+    print('[merge] D360 do script injetado no código do remote — fixes de código preservados')
+else:
+    with open('index.html', 'w', encoding='utf-8') as f: f.write(novo)
+    print('[merge] fallback: usando gerado pelo script completo')
+PYEOF
             git add index.html
             if git diff --cached --quiet; then
               echo "Sem diferença após sincronizar — outro run já publicou este dado."

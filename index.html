@@ -9165,12 +9165,16 @@ function _imprimirRankingLojas(mesKey) {
                 const lojasFire = f.lojas?.mapValue?.fields || {};
                 const lojasData = {};
                 Object.entries(lojasFire).forEach(([k, v]) => { lojasData[k] = _parseFsLoja(v.mapValue?.fields); });
+                const _MESES_ABREV = ['','Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+                const _anoK = parseInt(f.ano?.integerValue || key.split('_')[0]);
+                const _mesK = parseInt(f.mes_num?.integerValue || key.split('_')[1]);
+                const _labelK = f.mes?.stringValue || (_MESES_ABREV[_mesK] + ' ' + _anoK);
                 return {
-                    mesLabel: f.mes?.stringValue || key,
+                    mesLabel: _labelK,
                     diasMes:  parseInt(f.diasMes?.integerValue || 30),
                     diasDec:  parseInt(f.diasDecorridos?.integerValue || f.diasMes?.integerValue || 30),
-                    ano:      parseInt(f.ano?.integerValue || key.split('_')[0]),
-                    mesNum:   parseInt(f.mes_num?.integerValue || key.split('_')[1]),
+                    ano:      _anoK,
+                    mesNum:   _mesK,
                     lojas:    lojasData,
                 };
             }).catch(() => null);
@@ -9335,7 +9339,7 @@ function _gerarPdfRanking(lojasData, mesLabel, diasDec, diasMes, ano, mesNum, pr
 
         // Tipo + dias úteis
         doc.setFont('helvetica','normal'); doc.setFontSize(5.8); doc.setTextColor(...C.muted);
-        doc.text((isSh?'🏬 Shopping':'🏪 Rua')+'  ·  '+diasU+' dias úteis / '+diasDec,COL.loja+12,y+12.5);
+        doc.text((isSh?'Shopping':'Rua')+'  |  '+diasU+' dias uteis de '+diasDec,COL.loja+12,y+12.5);
 
         // Faturamento
         doc.setFont('helvetica','bold'); doc.setFontSize(8.5); doc.setTextColor(...C.text);

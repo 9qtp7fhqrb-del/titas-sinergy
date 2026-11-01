@@ -9216,10 +9216,11 @@ function _imprimirRankingLojas(mesKey) {
 function _gerarPdfRanking(lojasData, mesLabel, diasDec, diasMes, ano, mesNum, prevLojas, prevMesLabel, margemRede) {
     if (!window.jspdf) { alert('jsPDF não carregado.'); return; }
     const { jsPDF } = window.jspdf;
-    const doc = new jsPDF({ orientation:'portrait', unit:'mm', format:'a4' });
-    const PW=210, PH=297, M=12, W=PW-M*2;
+    // ── Paisagem A4 — uma página garantida ──
+    const doc = new jsPDF({ orientation:'landscape', unit:'mm', format:'a4' });
+    const PW=297, PH=210, M=11, W=PW-M*2;
     const C = {
-        navy:[15,40,80], gold:[180,140,30], white:[255,255,255], gray1:[247,248,250],
+        navy:[15,40,80], gold:[180,140,30], white:[255,255,255], gray1:[247,249,251],
         text:[25,30,45], muted:[105,110,130], border:[215,217,225],
         green:[18,140,70], greenBg:[230,248,238], amber:[170,120,0], amberBg:[253,245,220],
         red:[195,45,45], redBg:[252,232,232], blue:[30,80,170],
@@ -9228,10 +9229,9 @@ function _gerarPdfRanking(lojasData, mesLabel, diasDec, diasMes, ano, mesNum, pr
     const _fmtK = v => { const n=v||0; return n>=1000000?'R$'+(n/1000000).toFixed(2)+'M':n>=1000?'R$'+(n/1000).toFixed(1)+'K':'R$'+n.toFixed(0); };
     const _pct  = v => (v||0).toFixed(1)+'%';
     const _corPct = p => p>=100?C.green:p>=75?C.amber:C.red;
-    const _bgPct  = p => p>=100?C.greenBg:p>=75?C.amberBg:C.redBg;
     const SHOPPING = ['moxuara','serra','montserrat','praiadacosta'];
     const SIGLAS  = {cariacica:'CC',saomateus:'SM',itabuna:'IT',moxuara:'MX',praiadacosta:'PC',barreiras:'BR',teixeira:'TF',laranjeiras:'LJ',serra:'SR',montserrat:'MT',linhares:'LH',eunapolis:'EN'};
-    const NOMES   = {cariacica:'Cariacica',saomateus:'São Mateus',itabuna:'Itabuna',moxuara:'Moxuara',praiadacosta:'Praia da Costa',barreiras:'Barreiras',teixeira:'Teixeira',laranjeiras:'Laranjeiras',serra:'Serra',montserrat:'Montserrat',linhares:'Linhares',eunapolis:'Eunápolis'};
+    const NOMES   = {cariacica:'Cariacica',saomateus:'Sao Mateus',itabuna:'Itabuna',moxuara:'Moxuara',praiadacosta:'Praia da Costa',barreiras:'Barreiras',teixeira:'Teixeira',laranjeiras:'Laranjeiras',serra:'Serra',montserrat:'Montserrat',linhares:'Linhares',eunapolis:'Eunapolis'};
     const SUBREDE = {cariacica:'T1',saomateus:'T3',itabuna:'T1',moxuara:'T1',praiadacosta:'T2',barreiras:'T2',teixeira:'T2',laranjeiras:'T2',serra:'T3',montserrat:'T3',linhares:'T3',eunapolis:'T2'};
     const SUB_COR = {T1:[35,75,175],T2:[95,38,175],T3:[165,75,0]};
 
@@ -9251,162 +9251,170 @@ function _gerarPdfRanking(lojasData, mesLabel, diasDec, diasMes, ano, mesNum, pr
     const prevTotal = prevLojas?Object.values(prevLojas).reduce((s,v)=>s+(v.total||0),0):0;
     const crescRede = prevTotal>0?((totalRede-prevTotal)/prevTotal*100):null;
     const hoje = new Date().toLocaleDateString('pt-BR');
-
-    function initPage() { doc.setFillColor(...C.white); doc.rect(0,0,PW,PH,'F'); }
-    initPage();
-
-    // ── Cabeçalho ──
-    doc.setFillColor(...C.navy); doc.rect(0,0,PW,33,'F');
-    doc.setFillColor(...C.gold); doc.rect(0,0,PW,4,'F');
-    doc.setFont('helvetica','bold'); doc.setFontSize(18); doc.setTextColor(...C.white);
-    doc.text('TITÃS SINERGY', M, 19);
-    doc.setFont('helvetica','normal'); doc.setFontSize(8); doc.setTextColor(175,195,225);
-    doc.text('Relatório de Desempenho — Ranking Geral de Lojas', M, 26);
-    doc.setFontSize(7); doc.setTextColor(140,165,200);
-    doc.text(`${mesLabel}  ·  Dias: ${diasDec}/${diasMes}  ·  Emitido em: ${hoje}`, PW-M, 26, {align:'right'});
-
-    let y=40;
-
-    // ── Resumo da Rede ──
     const _mg = margemRede||0;
     const _mgCor = _mg>=50?C.green:_mg>=48?C.amber:_mg>0?C.red:C.muted;
-    doc.setFillColor(...C.gray1); doc.roundedRect(M,y,W,28,2,2,'F');
-    doc.setDrawColor(...C.border); doc.setLineWidth(0.25); doc.roundedRect(M,y,W,28,2,2,'S');
-    doc.setFont('helvetica','bold'); doc.setFontSize(6); doc.setTextColor(...C.muted);
-    doc.text('RESUMO CONSOLIDADO DA REDE', M+4, y+6.5);
-    doc.setDrawColor(...C.border); doc.setLineWidth(0.2); doc.line(M+4,y+8.5,M+W-4,y+8.5);
-    const kCols=[0,31,62,95,131,162];
-    const kLbls=['Faturamento Total','Meta da Rede','% Atingimento','Projeção do Mês',crescRede!==null?`vs ${prevMesLabel||'Mes Ant.'}`:'Dias Dec.','Margem Bruta'];
+
+    doc.setFillColor(...C.white); doc.rect(0,0,PW,PH,'F');
+
+    // ── Cabeçalho ──
+    doc.setFillColor(...C.navy); doc.rect(0,0,PW,24,'F');
+    doc.setFillColor(...C.gold); doc.rect(0,0,PW,3,'F');
+    doc.setFont('helvetica','bold'); doc.setFontSize(15); doc.setTextColor(...C.white);
+    doc.text('TITAS SINERGY', M, 14);
+    doc.setFont('helvetica','normal'); doc.setFontSize(7); doc.setTextColor(175,195,225);
+    doc.text('Relatorio de Desempenho - Ranking Geral de Lojas', M, 20);
+    doc.setFontSize(6.5); doc.setTextColor(140,165,200);
+    doc.text(`${mesLabel}  |  Dias: ${diasDec}/${diasMes}  |  Emitido em: ${hoje}`, PW-M, 20, {align:'right'});
+
+    let y = 28;
+
+    // ── Resumo ──
+    doc.setFillColor(...C.gray1); doc.roundedRect(M,y,W,18,2,2,'F');
+    doc.setDrawColor(...C.border); doc.setLineWidth(0.2); doc.roundedRect(M,y,W,18,2,2,'S');
+    doc.setFont('helvetica','bold'); doc.setFontSize(5.5); doc.setTextColor(...C.muted);
+    doc.text('RESUMO CONSOLIDADO DA REDE', M+4, y+5.5);
+    doc.setDrawColor(...C.border); doc.setLineWidth(0.15); doc.line(M+4,y+7,M+W-4,y+7);
+    const kCols=[0,43,86,133,180,228];
+    const kLbls=['Faturamento Total','Meta da Rede','% Atingimento','Projecao do Mes',crescRede!==null?('vs '+(prevMesLabel||'Mes Ant.')):'Dias Decorridos','Margem Bruta'];
     const kVals=[_fmt(totalRede),metaRede>0?_fmt(metaRede):'Sem meta',_pct(pctRede),_fmt(projRede),crescRede!==null?(crescRede>=0?'+':'')+crescRede.toFixed(1)+'%':`${diasDec}/${diasMes}`,_mg>0?_pct(_mg):'N/D'];
     const kCors=[C.navy,C.muted,_corPct(pctRede),C.blue,crescRede===null?C.muted:crescRede>=0?C.green:C.red,_mgCor];
     kCols.forEach((cx,i)=>{
         const x=M+4+cx;
-        doc.setFont('helvetica','normal'); doc.setFontSize(5.5); doc.setTextColor(...C.muted); doc.text(kLbls[i],x,y+15);
-        doc.setFont('helvetica','bold'); doc.setFontSize(i===2||i===5?9.5:8); doc.setTextColor(...kCors[i]); doc.text(kVals[i],x,y+23);
+        doc.setFont('helvetica','normal'); doc.setFontSize(5); doc.setTextColor(...C.muted); doc.text(kLbls[i],x,y+11);
+        doc.setFont('helvetica','bold'); doc.setFontSize(i===2||i===5?9:7.5); doc.setTextColor(...kCors[i]); doc.text(kVals[i],x,y+17);
     });
-    y+=35;
+    y += 22;
 
-    // ── Cabeçalho da tabela ──
-    const COL={rank:M+5,loja:M+22,fat:M+72,meta:M+99,pct:M+120,delta:M+137,cresc:M+155,mg:M+173};
-    function drawHeader(yh) {
-        doc.setFillColor(...C.navy); doc.rect(M,yh,W,7.5,'F');
-        doc.setFont('helvetica','bold'); doc.setFontSize(5.8); doc.setTextColor(...C.white);
-        doc.text('#',COL.rank,yh+5.2,{align:'center'});
-        doc.text('LOJA / TIPO / DIAS ÚTEIS',COL.loja,yh+5.2);
-        doc.text('FATURAMENTO',COL.fat,yh+5.2);
-        doc.text('META',COL.meta,yh+5.2);
-        doc.text('% META',COL.pct,yh+5.2);
-        doc.text('DELTA',COL.delta,yh+5.2);
-        doc.text('CRESCIM.',COL.cresc,yh+5.2);
-        doc.text('MARGEM',COL.mg,yh+5.2);
-        return yh+7.5;
-    }
-    y = drawHeader(y);
+    // ── Tabela ──
+    // Colunas: rank | loja+tipo | fat | meta | %meta | delta | crescim | margem
+    const COL={rank:M+6, sg:M+14, loja:M+27, fat:M+97, meta:M+133, pct:M+165, delta:M+198, cresc:M+224, mg:M+255};
+    const HDR_H=6.5, ROW_H=11;
 
-    const ROW_H=19;
+    doc.setFillColor(...C.navy); doc.rect(M,y,W,HDR_H,'F');
+    doc.setFont('helvetica','bold'); doc.setFontSize(5.5); doc.setTextColor(...C.white);
+    doc.text('#',          COL.rank, y+4.5, {align:'center'});
+    doc.text('LOJA',       COL.loja, y+4.5);
+    doc.text('TIPO / DIAS UTEIS', COL.sg+1, y+4.5);
+    doc.text('FATURAMENTO',COL.fat,  y+4.5);
+    doc.text('META',       COL.meta, y+4.5);
+    doc.text('% META',     COL.pct,  y+4.5);
+    doc.text('DELTA',      COL.delta,y+4.5);
+    doc.text('CRESCIMENTO',COL.cresc,y+4.5);
+    doc.text('MARGEM',     COL.mg,   y+4.5);
+    y += HDR_H;
+
     lojasList.forEach(([key,v],idx)=>{
-        if (y+ROW_H>PH-15) { doc.addPage(); initPage(); y=drawHeader(M); }
-        const total  = v.total||0, meta=v.meta||0, margem=v.margem||0;
-        const pct    = meta>0?(total/meta*100):0;
-        const delta  = meta>0?(pct-100):null;
-        const proj   = diasDec>0?(total/diasDec*diasMes):0;
-        const prevT  = prevLojas?(prevLojas[key]?.total||0):0;
-        const cresc  = prevT>0?((total-prevT)/prevT*100):null;
-        const diasU  = _diasUteis(key);
-        const isSh   = SHOPPING.includes(key);
-        const nome   = NOMES[key]||key, sigla=SIGLAS[key]||'??', sub=SUBREDE[key]||'';
-        const rank   = idx+1;
-        const cor    = _corPct(pct), bgCor=_bgPct(pct);
-        const bateu  = meta>0&&pct>=100;
+        const total = v.total||0, meta=v.meta||0, margem=v.margem||0;
+        const pct   = meta>0?(total/meta*100):0;
+        const delta = meta>0?(pct-100):null;
+        const proj  = diasDec>0?(total/diasDec*diasMes):0;
+        const prevT = prevLojas?(prevLojas[key]?.total||0):0;
+        const cresc = prevT>0?((total-prevT)/prevT*100):null;
+        const diasU = _diasUteis(key);
+        const isSh  = SHOPPING.includes(key);
+        const nome  = NOMES[key]||key, sigla=SIGLAS[key]||'??', sub=SUBREDE[key]||'';
+        const rank  = idx+1;
+        const cor   = _corPct(pct);
+        const bateu = meta>0&&pct>=100;
+        const sc    = SUB_COR[sub]||C.navy;
 
-        // Zebra + destaque lateral verde se bateu
+        // Zebra + barra lateral
         doc.setFillColor(...(idx%2===0?C.white:C.gray1)); doc.rect(M,y,W,ROW_H,'F');
-        if (bateu) { doc.setFillColor(...C.green); doc.rect(M,y,2,ROW_H,'F'); }
-        doc.setDrawColor(...C.border); doc.setLineWidth(0.15); doc.line(M,y+ROW_H,M+W,y+ROW_H);
+        if (bateu) { doc.setFillColor(...C.green); doc.rect(M,y,2.5,ROW_H,'F'); }
+        doc.setDrawColor(...C.border); doc.setLineWidth(0.12); doc.line(M,y+ROW_H,M+W,y+ROW_H);
 
-        // Badge ranking
+        // Badge # ranking
         const bc=rank===1?[212,175,30]:rank===2?[155,160,170]:rank===3?[170,100,45]:C.border;
-        doc.setFillColor(...bc); doc.roundedRect(COL.rank-4,y+4.5,8,8,1,1,'F');
-        doc.setFont('helvetica','bold'); doc.setFontSize(7); doc.setTextColor(rank<=3?255:70,rank<=3?255:70,rank<=3?255:70);
-        doc.text(String(rank),COL.rank,y+10,{align:'center'});
+        doc.setFillColor(...bc); doc.roundedRect(COL.rank-4,y+2,8,7,1,1,'F');
+        doc.setFont('helvetica','bold'); doc.setFontSize(6.5); doc.setTextColor(rank<=3?255:70,rank<=3?255:70,rank<=3?255:70);
+        doc.text(String(rank),COL.rank,y+7,{align:'center'});
 
-        // Pill sigla
-        const sc=SUB_COR[sub]||C.navy;
+        // Pill sigla subrede
         doc.setFillColor(sc[0]+170>255?220:sc[0]+170, sc[1]+170>255?220:sc[1]+170, sc[2]+170>255?220:sc[2]+170);
-        doc.roundedRect(COL.loja,y+2.5,10,6.5,1,1,'F');
-        doc.setFont('helvetica','bold'); doc.setFontSize(5.8); doc.setTextColor(...sc);
-        doc.text(sigla,COL.loja+5,y+7.2,{align:'center'});
+        doc.roundedRect(COL.sg,y+2,11,7,1.2,1.2,'F');
+        doc.setFont('helvetica','bold'); doc.setFontSize(5.5); doc.setTextColor(...sc);
+        doc.text(sigla,COL.sg+5.5,y+7,{align:'center'});
 
-        // Nome
-        doc.setFont('helvetica','bold'); doc.setFontSize(8.5); doc.setTextColor(...C.text);
-        doc.text(nome,COL.loja+12,y+7.5);
+        // Nome loja
+        doc.setFont('helvetica','bold'); doc.setFontSize(8); doc.setTextColor(...C.text);
+        doc.text(nome, COL.loja, y+6.5);
 
-        // Tipo + dias úteis
-        doc.setFont('helvetica','normal'); doc.setFontSize(5.8); doc.setTextColor(...C.muted);
-        doc.text((isSh?'Shopping':'Rua')+'  |  '+diasU+' dias uteis de '+diasDec,COL.loja+12,y+12.5);
+        // Tipo / dias uteis (segunda linha compacta)
+        doc.setFont('helvetica','normal'); doc.setFontSize(5); doc.setTextColor(...C.muted);
+        doc.text((isSh?'Shopping':'Rua')+'  |  '+diasU+' dias uteis / '+diasDec, COL.loja, y+9.8);
 
         // Faturamento
-        doc.setFont('helvetica','bold'); doc.setFontSize(8.5); doc.setTextColor(...C.text);
-        doc.text(_fmtK(total),COL.fat,y+8);
-        doc.setFont('helvetica','normal'); doc.setFontSize(5.5); doc.setTextColor(...C.muted);
-        doc.text('Proj: '+_fmtK(proj),COL.fat,y+12.5);
+        doc.setFont('helvetica','bold'); doc.setFontSize(8); doc.setTextColor(...C.text);
+        doc.text(_fmtK(total),COL.fat,y+6.5);
+        doc.setFont('helvetica','normal'); doc.setFontSize(5); doc.setTextColor(...C.muted);
+        doc.text('Proj: '+_fmtK(proj),COL.fat,y+9.8);
 
         // Meta
-        if (meta>0) { doc.setFont('helvetica','normal'); doc.setFontSize(8); doc.setTextColor(...C.muted); doc.text(_fmtK(meta),COL.meta,y+8); }
-        else { doc.setFont('helvetica','normal'); doc.setFontSize(7); doc.setTextColor(...C.border); doc.text('Sem meta',COL.meta,y+8); }
-
-        // % Meta
         if (meta>0) {
-            doc.setFont('helvetica','bold'); doc.setFontSize(9.5); doc.setTextColor(...cor);
-            doc.text(_pct(pct),COL.pct,y+8);
-            const barW=13,barY=y+9.5;
-            doc.setFillColor(...C.border); doc.roundedRect(COL.pct,barY,barW,1.8,0.5,0.5,'F');
-            const fill=Math.min(pct,100)/100*barW;
-            if (fill>0.3){doc.setFillColor(...cor); doc.roundedRect(COL.pct,barY,fill,1.8,0.5,0.5,'F');}
-            doc.setFillColor(...bgCor); doc.roundedRect(COL.pct,y+12.5,13,4,0.8,0.8,'F');
-            doc.setFont('helvetica','bold'); doc.setFontSize(5); doc.setTextColor(...cor);
-            doc.text(bateu?'Batida!':'Abaixo',COL.pct+6.5,y+15.2,{align:'center'});
+            doc.setFont('helvetica','normal'); doc.setFontSize(7.5); doc.setTextColor(...C.muted);
+            doc.text(_fmtK(meta),COL.meta,y+6.5);
         } else {
-            doc.setFont('helvetica','normal'); doc.setFontSize(7); doc.setTextColor(...C.border); doc.text('—',COL.pct+3,y+8);
+            doc.setFont('helvetica','normal'); doc.setFontSize(6); doc.setTextColor(...C.border);
+            doc.text('Sem meta',COL.meta,y+6.5);
+        }
+
+        // % Meta + barra
+        if (meta>0) {
+            doc.setFont('helvetica','bold'); doc.setFontSize(8.5); doc.setTextColor(...cor);
+            doc.text(_pct(pct),COL.pct,y+6.5);
+            const bW=20, bY=y+7.8;
+            doc.setFillColor(...C.border); doc.roundedRect(COL.pct,bY,bW,1.8,0.5,0.5,'F');
+            const fill=Math.min(pct,100)/100*bW;
+            if(fill>0.3){doc.setFillColor(...cor); doc.roundedRect(COL.pct,bY,fill,1.8,0.5,0.5,'F');}
+        } else {
+            doc.setFont('helvetica','normal'); doc.setFontSize(6); doc.setTextColor(...C.border);
+            doc.text('—',COL.pct+2,y+6.5);
         }
 
         // Delta
         if (delta!==null) {
-            const ds=(delta>=0?'+':'')+delta.toFixed(1)+'%';
-            doc.setFont('helvetica','bold'); doc.setFontSize(8.5); doc.setTextColor(...(delta>=0?C.green:C.red)); doc.text(ds,COL.delta,y+8);
-            doc.setFont('helvetica','normal'); doc.setFontSize(5.2); doc.setTextColor(...C.muted);
-            doc.text(delta>=0?'acima':'abaixo',COL.delta,y+12.5);
-        } else { doc.setFont('helvetica','normal'); doc.setFontSize(7); doc.setTextColor(...C.border); doc.text('—',COL.delta+3,y+8); }
+            doc.setFont('helvetica','bold'); doc.setFontSize(7.5); doc.setTextColor(...(delta>=0?C.green:C.red));
+            doc.text((delta>=0?'+':'')+delta.toFixed(1)+'%',COL.delta,y+6.5);
+            doc.setFont('helvetica','normal'); doc.setFontSize(4.8); doc.setTextColor(...C.muted);
+            doc.text(delta>=0?'acima da meta':'abaixo da meta',COL.delta,y+9.8);
+        } else {
+            doc.setFont('helvetica','normal'); doc.setFontSize(6); doc.setTextColor(...C.border);
+            doc.text('—',COL.delta+2,y+6.5);
+        }
 
         // Crescimento
         if (cresc!==null) {
-            const cs=(cresc>=0?'+':'')+cresc.toFixed(1)+'%';
-            doc.setFont('helvetica','bold'); doc.setFontSize(8.5); doc.setTextColor(...(cresc>=0?C.green:C.red)); doc.text(cs,COL.cresc,y+8);
-            doc.setFont('helvetica','normal'); doc.setFontSize(5.2); doc.setTextColor(...C.muted);
-            doc.text('vs '+(prevMesLabel||'mês ant.'),COL.cresc,y+12.5);
-        } else { doc.setFont('helvetica','normal'); doc.setFontSize(6); doc.setTextColor(...C.border); doc.text('S/dado',COL.cresc,y+8); }
+            doc.setFont('helvetica','bold'); doc.setFontSize(7.5); doc.setTextColor(...(cresc>=0?C.green:C.red));
+            doc.text((cresc>=0?'+':'')+cresc.toFixed(1)+'%',COL.cresc,y+6.5);
+            doc.setFont('helvetica','normal'); doc.setFontSize(4.8); doc.setTextColor(...C.muted);
+            doc.text('vs '+(prevMesLabel||'mes ant.'),COL.cresc,y+9.8);
+        } else {
+            doc.setFont('helvetica','normal'); doc.setFontSize(6); doc.setTextColor(...C.border);
+            doc.text('S/dado',COL.cresc,y+6.5);
+        }
 
-        // Margem
+        // Margem por loja
         if (margem>0) {
             const mc=margem>=50?C.green:margem>=48?C.amber:C.red;
-            doc.setFont('helvetica','bold'); doc.setFontSize(9); doc.setTextColor(...mc); doc.text(_pct(margem),COL.mg,y+8);
-            doc.setFont('helvetica','normal'); doc.setFontSize(5.2); doc.setTextColor(...C.muted);
-            doc.text(margem>=50?'Ótima':margem>=48?'Adequada':'Baixa',COL.mg,y+12.5);
-        } else { doc.setFont('helvetica','normal'); doc.setFontSize(6); doc.setTextColor(...C.border); doc.text('—',COL.mg+3,y+8); }
+            doc.setFont('helvetica','bold'); doc.setFontSize(8.5); doc.setTextColor(...mc);
+            doc.text(_pct(margem),COL.mg,y+6.5);
+            doc.setFont('helvetica','normal'); doc.setFontSize(4.8); doc.setTextColor(...C.muted);
+            doc.text(margem>=50?'Otima':margem>=48?'Adequada':'Baixa',COL.mg,y+9.8);
+        } else {
+            doc.setFont('helvetica','normal'); doc.setFontSize(6); doc.setTextColor(...C.border);
+            doc.text('—',COL.mg+2,y+6.5);
+        }
 
-        y+=ROW_H;
+        y += ROW_H;
     });
 
     // ── Rodapé ──
-    const totalPages=doc.internal.getNumberOfPages();
-    for (let p=1;p<=totalPages;p++) {
-        doc.setPage(p);
-        doc.setDrawColor(...C.border); doc.setLineWidth(0.25); doc.line(M,PH-11,M+W,PH-11);
-        doc.setFillColor(...C.gold); doc.rect(0,PH-3.5,PW,3.5,'F');
-        doc.setFont('helvetica','normal'); doc.setFontSize(6); doc.setTextColor(...C.muted);
-        doc.text(`Titãs Sinergy  ·  ${mesLabel}  ·  Confidencial`,M,PH-5.5);
-        doc.text(`Pág. ${p} / ${totalPages}`,PW-M,PH-5.5,{align:'right'});
-    }
+    doc.setDrawColor(...C.border); doc.setLineWidth(0.2); doc.line(M,PH-9,M+W,PH-9);
+    doc.setFillColor(...C.gold); doc.rect(0,PH-3,PW,3,'F');
+    doc.setFont('helvetica','normal'); doc.setFontSize(5.5); doc.setTextColor(...C.muted);
+    doc.text(`Titas Sinergy  |  ${mesLabel}  |  Confidencial`,M,PH-4.5);
+    doc.text('1 / 1',PW-M,PH-4.5,{align:'right'});
+
     doc.save(`ranking-lojas-${mesLabel.replace(' ','-').toLowerCase()}.pdf`);
 }
 

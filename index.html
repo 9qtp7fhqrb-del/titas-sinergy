@@ -9170,12 +9170,13 @@ function _imprimirRankingLojas(mesKey) {
                 const _mesK = parseInt(f.mes_num?.integerValue || key.split('_')[1]);
                 const _labelK = f.mes?.stringValue || (_MESES_ABREV[_mesK] + ' ' + _anoK);
                 return {
-                    mesLabel: _labelK,
-                    diasMes:  parseInt(f.diasMes?.integerValue || 30),
-                    diasDec:  parseInt(f.diasDecorridos?.integerValue || f.diasMes?.integerValue || 30),
-                    ano:      _anoK,
-                    mesNum:   _mesK,
-                    lojas:    lojasData,
+                    mesLabel:   _labelK,
+                    diasMes:    parseInt(f.diasMes?.integerValue || 30),
+                    diasDec:    parseInt(f.diasDecorridos?.integerValue || f.diasMes?.integerValue || 30),
+                    ano:        _anoK,
+                    mesNum:     _mesK,
+                    lojas:      lojasData,
+                    margemRede: parseFloat(f.margem_rede?.doubleValue || f.margem_rede?.integerValue || 0),
                 };
             }).catch(() => null);
     }
@@ -9187,7 +9188,7 @@ function _imprimirRankingLojas(mesKey) {
         Promise.all([_fetchMes(mesKey), _fetchMes(antKey)]).then(([curr, prev]) => {
             if (!curr) { alert('Dados do mês não encontrados.'); return; }
             _gerarPdfRanking(curr.lojas, curr.mesLabel, curr.diasDec, curr.diasMes,
-                             curr.ano, curr.mesNum, prev?.lojas||null, prev?.mesLabel||null);
+                             curr.ano, curr.mesNum, prev?.lojas||null, prev?.mesLabel||null, curr.margemRede||0);
         });
         return;
     }
@@ -9206,12 +9207,13 @@ function _imprimirRankingLojas(mesKey) {
     });
     const antMes = mesNum===1?12:mesNum-1;
     const antAno = mesNum===1?ano-1:ano;
+    const margemRedeAtual = d.margem_mes || 0;
     _fetchMes(`${antAno}_${String(antMes).padStart(2,'0')}`).then(prev => {
-        _gerarPdfRanking(lojasData, mesLabel, diasDec, diasMes, ano, mesNum, prev?.lojas||null, prev?.mesLabel||null);
+        _gerarPdfRanking(lojasData, mesLabel, diasDec, diasMes, ano, mesNum, prev?.lojas||null, prev?.mesLabel||null, margemRedeAtual);
     });
 }
 
-function _gerarPdfRanking(lojasData, mesLabel, diasDec, diasMes, ano, mesNum, prevLojas, prevMesLabel) {
+function _gerarPdfRanking(lojasData, mesLabel, diasDec, diasMes, ano, mesNum, prevLojas, prevMesLabel, margemRede) {
     if (!window.jspdf) { alert('jsPDF não carregado.'); return; }
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF({ orientation:'portrait', unit:'mm', format:'a4' });
@@ -9266,19 +9268,21 @@ function _gerarPdfRanking(lojasData, mesLabel, diasDec, diasMes, ano, mesNum, pr
     let y=40;
 
     // ── Resumo da Rede ──
+    const _mg = margemRede||0;
+    const _mgCor = _mg>=50?C.green:_mg>=48?C.amber:_mg>0?C.red:C.muted;
     doc.setFillColor(...C.gray1); doc.roundedRect(M,y,W,28,2,2,'F');
     doc.setDrawColor(...C.border); doc.setLineWidth(0.25); doc.roundedRect(M,y,W,28,2,2,'S');
     doc.setFont('helvetica','bold'); doc.setFontSize(6); doc.setTextColor(...C.muted);
     doc.text('RESUMO CONSOLIDADO DA REDE', M+4, y+6.5);
     doc.setDrawColor(...C.border); doc.setLineWidth(0.2); doc.line(M+4,y+8.5,M+W-4,y+8.5);
-    const kCols=[0,38,78,118,155];
-    const kLbls=['Faturamento Total','Meta da Rede','% Atingimento','Projeção do Mês', crescRede!==null?`vs ${prevMesLabel||'Mês Ant.'}`:'Dias Decorridos'];
-    const kVals=[_fmt(totalRede),metaRede>0?_fmt(metaRede):'Sem meta',_pct(pctRede),_fmt(projRede),crescRede!==null?(crescRede>=0?'+':'')+crescRede.toFixed(1)+'%':`${diasDec}/${diasMes}`];
-    const kCors=[C.navy,C.muted,_corPct(pctRede),C.blue,crescRede===null?C.muted:crescRede>=0?C.green:C.red];
+    const kCols=[0,31,62,95,131,162];
+    const kLbls=['Faturamento Total','Meta da Rede','% Atingimento','Projeção do Mês',crescRede!==null?`vs ${prevMesLabel||'Mes Ant.'}`:'Dias Dec.','Margem Bruta'];
+    const kVals=[_fmt(totalRede),metaRede>0?_fmt(metaRede):'Sem meta',_pct(pctRede),_fmt(projRede),crescRede!==null?(crescRede>=0?'+':'')+crescRede.toFixed(1)+'%':`${diasDec}/${diasMes}`,_mg>0?_pct(_mg):'N/D'];
+    const kCors=[C.navy,C.muted,_corPct(pctRede),C.blue,crescRede===null?C.muted:crescRede>=0?C.green:C.red,_mgCor];
     kCols.forEach((cx,i)=>{
         const x=M+4+cx;
-        doc.setFont('helvetica','normal'); doc.setFontSize(5.8); doc.setTextColor(...C.muted); doc.text(kLbls[i],x,y+15);
-        doc.setFont('helvetica','bold'); doc.setFontSize(i===2?10:8.5); doc.setTextColor(...kCors[i]); doc.text(kVals[i],x,y+23);
+        doc.setFont('helvetica','normal'); doc.setFontSize(5.5); doc.setTextColor(...C.muted); doc.text(kLbls[i],x,y+15);
+        doc.setFont('helvetica','bold'); doc.setFontSize(i===2||i===5?9.5:8); doc.setTextColor(...kCors[i]); doc.text(kVals[i],x,y+23);
     });
     y+=35;
 
@@ -9361,7 +9365,7 @@ function _gerarPdfRanking(lojasData, mesLabel, diasDec, diasMes, ano, mesNum, pr
             if (fill>0.3){doc.setFillColor(...cor); doc.roundedRect(COL.pct,barY,fill,1.8,0.5,0.5,'F');}
             doc.setFillColor(...bgCor); doc.roundedRect(COL.pct,y+12.5,13,4,0.8,0.8,'F');
             doc.setFont('helvetica','bold'); doc.setFontSize(5); doc.setTextColor(...cor);
-            doc.text(bateu?'✓ Batida':'✗ Abaixo',COL.pct+6.5,y+15.2,{align:'center'});
+            doc.text(bateu?'Batida!':'Abaixo',COL.pct+6.5,y+15.2,{align:'center'});
         } else {
             doc.setFont('helvetica','normal'); doc.setFontSize(7); doc.setTextColor(...C.border); doc.text('—',COL.pct+3,y+8);
         }

@@ -9403,6 +9403,185 @@ function _gerarPdfRanking(lojasData, mesLabel, diasDec, diasMes, ano, mesNum, pr
     doc.save(`ranking-lojas-${mesLabel.replace(' ','-').toLowerCase()}.pdf`);
 }
 
+function _vendPdfMenu(evt) {
+    const old = document.getElementById('_vend-pdf-menu');
+    if (old) { old.remove(); return; }
+    const rect = evt.currentTarget.getBoundingClientRect();
+    const menu = document.createElement('div');
+    menu.id = '_vend-pdf-menu';
+    menu.style.cssText = 'position:fixed;z-index:20000;background:#1a0a3a;border:1px solid rgba(212,175,55,.3);border-radius:.75rem;padding:.4rem .3rem;min-width:160px;box-shadow:0 8px 32px rgba(0,0,0,.7);';
+    menu.style.top  = (rect.bottom + 6) + 'px';
+    menu.style.left = (rect.left - 60) + 'px';
+    const btn = document.createElement('button');
+    btn.textContent = '📅 Mês Atual';
+    btn.style.cssText = 'display:block;width:100%;text-align:left;padding:.35rem .75rem;font-size:.68rem;font-weight:600;background:transparent;border:none;color:#d4af37;cursor:pointer;border-radius:.4rem;transition:background .1s;';
+    btn.onmouseover  = () => btn.style.background = 'rgba(255,255,255,.06)';
+    btn.onmouseleave = () => btn.style.background = 'transparent';
+    btn.onclick = () => { menu.remove(); _imprimirRankingVendedores(); };
+    menu.appendChild(btn);
+    document.body.appendChild(menu);
+    setTimeout(() => document.addEventListener('click', function cl(e) {
+        if (!menu.contains(e.target)) { menu.remove(); document.removeEventListener('click', cl); }
+    }), 50);
+}
+
+function _imprimirRankingVendedores() {
+    if (!window.jspdf) { alert('jsPDF não carregado.'); return; }
+    const { jsPDF } = window.jspdf;
+    const d = _360D();
+    const lojas = d.lojas || {};
+    const diasDec = d.diasDecorridos || 1;
+    const diasMes = d.diasMes || 30;
+    const now = new Date();
+    const MESES = ['','Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+    const mesNum = now.getMonth() + 1;
+    const mesLabel = `${MESES[mesNum]} ${now.getFullYear()}`;
+    const NOMES_LOJA = {cariacica:'Cariacica',saomateus:'São Mateus',itabuna:'Itabuna',moxuara:'Moxuara',praiadacosta:'Praia da Costa',barreiras:'Barreiras',teixeira:'Teixeira',laranjeiras:'Laranjeiras',serra:'Serra',montserrat:'Montserrat',linhares:'Linhares',eunapolis:'Eunápolis'};
+    const SIGLAS = {cariacica:'CC',saomateus:'SM',itabuna:'IT',moxuara:'MX',praiadacosta:'PC',barreiras:'BR',teixeira:'TF',laranjeiras:'LJ',serra:'SR',montserrat:'MT',linhares:'LH',eunapolis:'EN'};
+    const SUBREDE = {cariacica:'T1',saomateus:'T3',itabuna:'T1',moxuara:'T1',praiadacosta:'T2',barreiras:'BR',teixeira:'T2',laranjeiras:'T2',serra:'T3',montserrat:'T3',linhares:'LH',eunapolis:'T2'};
+    const SUB_COR = {T1:[35,75,175],T2:[95,38,175],T3:[165,75,0]};
+
+    const allVend = [];
+    Object.entries(lojas).forEach(([lk, l]) => {
+        (l.top || []).forEach(v => {
+            const ex = allVend.find(x => x.i === v.i && x.n === v.n);
+            if (ex) { ex.t += v.t; } else allVend.push({...v, lojaKey: lk, lojaNome: NOMES_LOJA[lk] || lk});
+        });
+    });
+    allVend.sort((a,b) => b.t - a.t);
+
+    const PW=210, PH=297, M=12, W=PW-M*2;
+    const C = {
+        navy:[15,40,80], gold:[180,140,30], white:[255,255,255], gray1:[247,248,250],
+        text:[25,30,45], muted:[105,110,130], border:[215,217,225],
+        green:[18,140,70], greenBg:[230,248,238], amber:[170,120,0], amberBg:[253,245,220],
+        red:[195,45,45], redBg:[252,232,232], blue:[30,80,170],
+    };
+    const _fmt  = v => 'R$ '+(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+    const _fmtK = v => { const n=v||0; return n>=1000000?'R$'+(n/1000000).toFixed(2)+'M':n>=1000?'R$'+(n/1000).toFixed(1)+'K':'R$'+n.toFixed(0); };
+    const _pct  = v => (v||0).toFixed(1)+'%';
+    const _corPct = p => p>=100?C.green:p>=75?C.amber:C.red;
+    const _bgPct  = p => p>=100?C.greenBg:p>=75?C.amberBg:C.redBg;
+    const hoje  = new Date().toLocaleDateString('pt-BR');
+
+    const doc = new jsPDF({ orientation:'portrait', unit:'mm', format:'a4' });
+    function initPage() { doc.setFillColor(...C.white); doc.rect(0,0,PW,PH,'F'); }
+    initPage();
+
+    // Cabeçalho
+    doc.setFillColor(...C.navy); doc.rect(0,0,PW,33,'F');
+    doc.setFillColor(...C.gold); doc.rect(0,0,PW,4,'F');
+    doc.setFont('helvetica','bold'); doc.setFontSize(18); doc.setTextColor(...C.white);
+    doc.text('TITÃS SINERGY', M, 19);
+    doc.setFont('helvetica','normal'); doc.setFontSize(8); doc.setTextColor(175,195,225);
+    doc.text('Relatório de Desempenho — Ranking Geral de Vendedores', M, 26);
+    doc.setFontSize(7); doc.setTextColor(140,165,200);
+    doc.text(`${mesLabel}  ·  Dias: ${diasDec}/${diasMes}  ·  Emitido em: ${hoje}`, PW-M, 26, {align:'right'});
+
+    let y = 40;
+
+    // Resumo
+    const totalRede = allVend.reduce((s,v)=>s+(v.t||0),0);
+    doc.setFillColor(...C.gray1); doc.roundedRect(M,y,W,20,2,2,'F');
+    doc.setDrawColor(...C.border); doc.setLineWidth(0.25); doc.roundedRect(M,y,W,20,2,2,'S');
+    doc.setFont('helvetica','bold'); doc.setFontSize(6); doc.setTextColor(...C.muted);
+    doc.text('RESUMO', M+4, y+6.5);
+    doc.setDrawColor(...C.border); doc.setLineWidth(0.2); doc.line(M+4,y+8.5,M+W-4,y+8.5);
+    doc.setFont('helvetica','normal'); doc.setFontSize(5.8); doc.setTextColor(...C.muted); doc.text('Total Vendedores',M+4,y+14);
+    doc.setFont('helvetica','bold'); doc.setFontSize(8.5); doc.setTextColor(...C.navy); doc.text(String(allVend.length),M+4,y+19);
+    doc.setFont('helvetica','normal'); doc.setFontSize(5.8); doc.setTextColor(...C.muted); doc.text('Faturamento Total Rede',M+50,y+14);
+    doc.setFont('helvetica','bold'); doc.setFontSize(8.5); doc.setTextColor(...C.navy); doc.text(_fmt(totalRede),M+50,y+19);
+    doc.setFont('helvetica','normal'); doc.setFontSize(5.8); doc.setTextColor(...C.muted); doc.text('Dias Decorridos',M+130,y+14);
+    doc.setFont('helvetica','bold'); doc.setFontSize(8.5); doc.setTextColor(...C.blue); doc.text(`${diasDec} / ${diasMes}`,M+130,y+19);
+    y += 26;
+
+    // Cabeçalho tabela
+    const COL = {rank:M+5, nome:M+20, loja:M+95, fat:M+127, meta:M+153, pct:M+178};
+    function drawHeader(yh) {
+        doc.setFillColor(...C.navy); doc.rect(M,yh,W,7.5,'F');
+        doc.setFont('helvetica','bold'); doc.setFontSize(5.8); doc.setTextColor(...C.white);
+        doc.text('#',COL.rank,yh+5.2,{align:'center'});
+        doc.text('VENDEDOR',COL.nome,yh+5.2);
+        doc.text('LOJA',COL.loja,yh+5.2);
+        doc.text('FATURAMENTO',COL.fat,yh+5.2);
+        doc.text('META',COL.meta,yh+5.2);
+        doc.text('% META',COL.pct,yh+5.2);
+        return yh+7.5;
+    }
+    y = drawHeader(y);
+
+    const ROW_H = 14;
+    allVend.forEach((v,idx) => {
+        if (y+ROW_H > PH-15) { doc.addPage(); initPage(); y = drawHeader(M); }
+        const total = v.t || 0;
+        const meta  = getVendMeta(v.n, v.lojaKey) || 0;
+        const pct   = meta > 0 ? (total/meta*100) : 0;
+        const rank  = idx+1;
+        const cor   = meta > 0 ? _corPct(pct) : C.muted;
+        const bgCor = meta > 0 ? _bgPct(pct) : C.gray1;
+        const sub   = SUBREDE[v.lojaKey] || '';
+        const sc    = SUB_COR[sub] || C.navy;
+
+        doc.setFillColor(...(idx%2===0?C.white:C.gray1)); doc.rect(M,y,W,ROW_H,'F');
+        if (meta>0&&pct>=100) { doc.setFillColor(...C.green); doc.rect(M,y,2,ROW_H,'F'); }
+        doc.setDrawColor(...C.border); doc.setLineWidth(0.15); doc.line(M,y+ROW_H,M+W,y+ROW_H);
+
+        // Badge ranking
+        const bc = rank===1?[212,175,30]:rank===2?[155,160,170]:rank===3?[170,100,45]:C.border;
+        doc.setFillColor(...bc); doc.roundedRect(COL.rank-4,y+3,8,8,1,1,'F');
+        doc.setFont('helvetica','bold'); doc.setFontSize(7); doc.setTextColor(rank<=3?255:70,rank<=3?255:70,rank<=3?255:70);
+        doc.text(String(rank),COL.rank,y+8.5,{align:'center'});
+
+        // Nome
+        doc.setFont('helvetica','bold'); doc.setFontSize(8); doc.setTextColor(...C.text);
+        const nomeDisplay = (v.n||'').split(' ').slice(0,2).join(' ');
+        doc.text(nomeDisplay, COL.nome, y+8);
+
+        // Loja pill
+        const sigla = SIGLAS[v.lojaKey] || v.lojaKey?.toUpperCase()?.slice(0,2) || '??';
+        doc.setFillColor(sc[0],sc[1],sc[2]); doc.setGState&&doc.setGState({opacity:0.12});
+        doc.roundedRect(COL.loja,y+2.5,12,7,1,1,'F');
+        doc.setGState&&doc.setGState({opacity:1});
+        doc.setFont('helvetica','bold'); doc.setFontSize(6); doc.setTextColor(...sc);
+        doc.text(sigla,COL.loja+6,y+7.5,{align:'center'});
+        doc.setFont('helvetica','normal'); doc.setFontSize(6.5); doc.setTextColor(...C.muted);
+        doc.text(NOMES_LOJA[v.lojaKey]||v.lojaNome, COL.loja+14, y+7.5);
+
+        // Faturamento
+        doc.setFont('helvetica','bold'); doc.setFontSize(8.5); doc.setTextColor(...C.text);
+        doc.text(_fmtK(total), COL.fat, y+8);
+
+        // Meta
+        if (meta>0) {
+            doc.setFont('helvetica','normal'); doc.setFontSize(7.5); doc.setTextColor(...C.muted);
+            doc.text(_fmtK(meta), COL.meta, y+8);
+            doc.setFont('helvetica','bold'); doc.setFontSize(9); doc.setTextColor(...cor);
+            doc.text(_pct(pct), COL.pct, y+8);
+            const barW=13, barY=y+9.5;
+            doc.setFillColor(...C.border); doc.roundedRect(COL.pct,barY,barW,1.8,0.5,0.5,'F');
+            const fill=Math.min(pct,100)/100*barW;
+            if(fill>0.3){doc.setFillColor(...cor); doc.roundedRect(COL.pct,barY,fill,1.8,0.5,0.5,'F');}
+        } else {
+            doc.setFont('helvetica','normal'); doc.setFontSize(6.5); doc.setTextColor(...C.border);
+            doc.text('Sem meta', COL.meta, y+8);
+            doc.text('—', COL.pct, y+8);
+        }
+        y += ROW_H;
+    });
+
+    // Rodapé todas as páginas
+    const totalPages = doc.getNumberOfPages();
+    for (let p=1;p<=totalPages;p++) {
+        doc.setPage(p);
+        doc.setDrawColor(...C.border); doc.setLineWidth(0.25); doc.line(M,PH-11,M+W,PH-11);
+        doc.setFillColor(...C.gold); doc.rect(0,PH-3.5,PW,3.5,'F');
+        doc.setFont('helvetica','normal'); doc.setFontSize(6); doc.setTextColor(...C.muted);
+        doc.text(`Titãs Sinergy  ·  ${mesLabel}  ·  Confidencial`,M,PH-5.5);
+        doc.text(`Pág. ${p} / ${totalPages}`,PW-M,PH-5.5,{align:'right'});
+    }
+    doc.save(`ranking-vendedores-${mesLabel.replace(' ','-').toLowerCase()}.pdf`);
+}
+
 function _imprimirCurvaABC() {
     try {
         if (!window.jspdf) { alert('jsPDF não carregado.'); return; }
@@ -17302,6 +17481,9 @@ function render360(tipo, val) {
                         </button>
                         <button onclick="_rankModeVend='meta';render360('geral','')" style="${_btnRankStyle(_rankModeVend==='meta','#f59e0b')}" title="Ordenar por % da meta">
                             <i class="fas fa-bullseye"></i> % Meta
+                        </button>
+                        <button onclick="_vendPdfMenu(event)" title="Gerar relatório PDF dos vendedores" style="display:inline-flex;align-items:center;gap:.25rem;padding:.18rem .55rem;border-radius:999px;font-size:.58rem;font-weight:700;cursor:pointer;border:1px solid rgba(248,113,113,.4);background:rgba(248,113,113,.1);color:#f87171;transition:all .15s;">
+                            <i class="fas fa-print"></i> PDF
                         </button>
                     </span>
                 </h3>

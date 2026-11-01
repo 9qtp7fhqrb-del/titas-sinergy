@@ -9188,7 +9188,7 @@ function _imprimirRankingLojas(mesKey) {
         Promise.all([_fetchMes(mesKey), _fetchMes(antKey)]).then(([curr, prev]) => {
             if (!curr) { alert('Dados do mês não encontrados.'); return; }
             _gerarPdfRanking(curr.lojas, curr.mesLabel, curr.diasDec, curr.diasMes,
-                             curr.ano, curr.mesNum, prev?.lojas||null, prev?.mesLabel||null, curr.margemRede||0);
+                             curr.ano, curr.mesNum, prev?.lojas||null, prev?.mesLabel||null, curr.margemRede||0, _360D().margem_lojas||{});
         });
         return;
     }
@@ -9209,11 +9209,11 @@ function _imprimirRankingLojas(mesKey) {
     const antAno = mesNum===1?ano-1:ano;
     const margemRedeAtual = d.margem_mes || 0;
     _fetchMes(`${antAno}_${String(antMes).padStart(2,'0')}`).then(prev => {
-        _gerarPdfRanking(lojasData, mesLabel, diasDec, diasMes, ano, mesNum, prev?.lojas||null, prev?.mesLabel||null, margemRedeAtual);
+        _gerarPdfRanking(lojasData, mesLabel, diasDec, diasMes, ano, mesNum, prev?.lojas||null, prev?.mesLabel||null, margemRedeAtual, d.margem_lojas||{});
     });
 }
 
-function _gerarPdfRanking(lojasData, mesLabel, diasDec, diasMes, ano, mesNum, prevLojas, prevMesLabel, margemRede) {
+function _gerarPdfRanking(lojasData, mesLabel, diasDec, diasMes, ano, mesNum, prevLojas, prevMesLabel, margemRede, margemLojas) {
     if (!window.jspdf) { alert('jsPDF não carregado.'); return; }
     const { jsPDF } = window.jspdf;
     // ── Paisagem A4 — uma página garantida ──
@@ -9304,7 +9304,7 @@ function _gerarPdfRanking(lojasData, mesLabel, diasDec, diasMes, ano, mesNum, pr
     y += HDR_H;
 
     lojasList.forEach(([key,v],idx)=>{
-        const total = v.total||0, meta=v.meta||0, margem=v.margem||0;
+        const total = v.total||0, meta=v.meta||0, margem=(margemLojas&&margemLojas[key])||v.margem||0;
         const pct   = meta>0?(total/meta*100):0;
         const delta = meta>0?(pct-100):null;
         const proj  = diasDec>0?(total/diasDec*diasMes):0;

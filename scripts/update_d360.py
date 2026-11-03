@@ -152,6 +152,20 @@ def get_or_refresh_token(user, password):
     token = erp_login(user, password)
     return token, True
 
+def clear_erp_token_from_firestore():
+    """Apaga o token do Firestore para forçar novo login na próxima run."""
+    try:
+        url = (f'https://firestore.googleapis.com/v1/projects/{FIREBASE_PROJ}'
+               f'/databases/(default)/documents/ts_d360_config/erp_session?key={FIREBASE_KEY}')
+        payload = {'fields': {
+            'token':   {'stringValue': ''},
+            'savedAt': {'integerValue': '0'},
+        }}
+        requests.patch(url, json=payload, timeout=10)
+        print('  Token ERP limpo do Firestore — próxima run fará novo login')
+    except Exception:
+        pass
+
 def save_erp_token_to_firestore(token):
     """Salva o token ERP no Firestore para uso direto pelo browser (botão de atualização)."""
     try:
@@ -1812,6 +1826,26 @@ def main():
     token, is_new_token = get_or_refresh_token(erp_user, erp_password)
     print("Token OK")
 
+    def _gerencial_com_relogin(token_ref, *args, **kwargs):
+        """Chama fetch_gerencial; se 401 persiste, força novo login e tenta mais uma vez."""
+        try:
+            return fetch_gerencial(token_ref[0], *args, **kwargs)
+        except Exception as e:
+            if '401' not in str(e):
+                raise
+            print(f"  AVISO: fetch_gerencial 401 com token atual — forçando novo login...")
+            clear_erp_token_from_firestore()
+            try:
+                new_tok = erp_login(erp_user, erp_password)
+                save_erp_token_to_firestore(new_tok)
+                token_ref[0] = new_tok
+                return fetch_gerencial(new_tok, *args, retries=2, **kwargs)
+            except Exception as e2:
+                print(f"  AVISO: fetch_gerencial ainda falhou após re-login ({e2}) — usando fallback vazio")
+                return None
+
+    token_ref = [token]  # lista mutável para _gerencial_com_relogin atualizar o token
+
     # Salva token no Firestore apenas se é novo — evita criar nova sessão no ERP desnecessariamente
     if is_new_token:
         save_erp_token_to_firestore(token)
@@ -1844,25 +1878,29 @@ def main():
     print(f"  IDs encontrados: {fin_pm_ids}")
 
     print("Buscando financeiras do dia...")
-    fin_today_data = fetch_gerencial(token, today, today, payment_method_ids=fin_pm_ids)
+    fin_today_data = _gerencial_com_relogin(token_ref, today, today, payment_method_ids=fin_pm_ids)
+    token = token_ref[0]
 
     print("Buscando financeiras do mês...")
-    fin_mes_data = fetch_gerencial(token, start, today, payment_method_ids=fin_pm_ids)
+    fin_mes_data = _gerencial_com_relogin(token_ref, start, today, payment_method_ids=fin_pm_ids)
+    token = token_ref[0]
 
     print("Buscando IDs de lojas (para filtro gerencial por subrede)...")
     store_id_map = fetch_store_ids(token)
 
     print("Buscando Relatório Gerencial (margem bruta dia)...")
-    gerencial_dia = fetch_gerencial(token, today, today)
-    margem_dia = extract_margem_bruta(gerencial_dia)
+    gerencial_dia = _gerencial_com_relogin(token_ref, today, today)
+    token = token_ref[0]
+    margem_dia = extract_margem_bruta(gerencial_dia) if gerencial_dia else None
     if margem_dia is not None:
         print(f"  Margem Bruta dia: {margem_dia:.2f}%")
     else:
         print("  AVISO: margem_dia não extraída")
 
     print("Buscando Relatório Gerencial (margem bruta rede)...")
-    gerencial_rede = fetch_gerencial(token, start, today)
-    margem_rede = extract_margem_bruta(gerencial_rede)
+    gerencial_rede = _gerencial_com_relogin(token_ref, start, today)
+    token = token_ref[0]
+    margem_rede = extract_margem_bruta(gerencial_rede) if gerencial_rede else None
     if margem_rede is not None:
         print(f"  Margem Bruta rede: {margem_rede:.2f}%")
     else:
@@ -1923,7 +1961,10 @@ def main():
     print("Buscando breakdown por grupo de financeiras...")
     fin_groups_data = {}
     for grp in FINANCEIRAS_GROUPS:
-        fin_groups_data[grp['nm']] = fetch_gerencial(token, start, today, payment_method_ids=grp['ids'])
+        try:
+            fin_groups_data[grp['nm']] = fetch_gerencial(token, start, today, payment_method_ids=grp['ids'])
+        except Exception as e:
+            print(f"  AVISO: {grp['nm']} falhou ({e}) — ignorado")
 
     print("Buscando breakdown de agendamentos (canal 6) por loja...")
     agend_fin_by_store = {}
@@ -1939,8 +1980,16 @@ def main():
     print(f"  Cautelar — Proteção: R${top_cautelar['protecao']['total']:,.2f} | Garantia Estendida: R${top_cautelar['garantia']['total']:,.2f}")
 
     print("Buscando gerencial por grupo de produto (tickets médios)...")
-    gerencial_cel   = fetch_gerencial(token, start, today, group_ids=[PRODUCT_GROUP_CEL])
-    gerencial_acess = fetch_gerencial(token, start, today, group_ids=[PRODUCT_GROUP_ACESS])
+    try:
+        gerencial_cel   = fetch_gerencial(token, start, today, group_ids=[PRODUCT_GROUP_CEL])
+    except Exception as e:
+        print(f"  AVISO: gerencial_cel falhou ({e}) — tickets_cel não atualizados")
+        gerencial_cel = None
+    try:
+        gerencial_acess = fetch_gerencial(token, start, today, group_ids=[PRODUCT_GROUP_ACESS])
+    except Exception as e:
+        print(f"  AVISO: gerencial_acess falhou ({e}) — tickets_acess não atualizados")
+        gerencial_acess = None
 
     print("Calculando tickets médios por grupo...")
     tickets = process_tickets(sales_data, gerencial_cel, gerencial_acess)

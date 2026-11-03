@@ -1329,7 +1329,7 @@ def fetch_top_produtos_por_financeira(token, start, end, top_n=7, retries=3, wai
 
     if not all_items:
         print('  AVISO: fetch_top_produtos retornou 0 itens')
-        return {}, {}
+        return {}, {}, {}, {}, {}
 
     print(f'  {len(all_items)} itens coletados (celulares + acessórios)')
 
@@ -1385,6 +1385,94 @@ def fetch_top_produtos_por_financeira(token, start, end, top_n=7, retries=3, wai
                 lojas_caut[store_key][cat_c][pay]     += val
                 if seller:
                     lojas_caut[store_key][cat_c]['sellers'][seller] += val
+
+    # ── Totais corretos de financeiras (valor TOTAL da venda, não só parcela) ──
+    # Regra: se a venda tem PayJoy/OdresCred/etc., TODA a venda é financeira.
+    # Inclui Pix/cartão de entrada que acompanha o financiamento.
+    _fin_mes_raw = {}
+    for item in all_items:
+        if item.get('item_status') == 'returned':
+            continue
+        grupo = item.get('group_name', '')
+        if grupo not in ('SBON', 'ACESSÓRIOS'):
+            continue
+        val = float(item.get('net_value') or 0)
+        if val <= 0:
+            continue
+        pms_raw = item.get('payment_methods') or []
+        if not any(k in ' '.join(pms_raw).lower() for k in _FINANCEIRA_KEYWORDS):
+            continue
+        store_key = STORE_MAP.get(item.get('store_name', ''))
+        if not store_key:
+            continue
+        seller = (item.get('seller_name') or '').strip()
+        s = _fin_mes_raw.setdefault(store_key, {'total': 0.0, 'sellers': {}})
+        s['total'] += val
+        if seller:
+            s['sellers'][seller] = s['sellers'].get(seller, 0.0) + val
+
+    # fin_dia: busca itens apenas do dia se o período cobre mais de 1 dia
+    if start == end:
+        _fin_dia_raw = _fin_mes_raw
+    else:
+        _fin_dia_raw = {}
+        _url_dia = (f'{ERP_BASE}/reports/sales/product_sales'
+                    f'?min={end}&max={end}')
+        for _attempt in range(1, retries + 1):
+            try:
+                _res = subprocess.run(
+                    ['curl', '-sv', '--http1.1', _url_dia,
+                     '-H', f'Authorization: Bearer {token}',
+                     '-H', 'Accept: application/json',
+                     '--max-time', '90'],
+                    capture_output=True, timeout=95
+                )
+                if _res.returncode != 0 or not _res.stdout:
+                    raise RuntimeError(f'curl exit {_res.returncode}')
+                _dia_items = json.loads(_res.stdout).get('data', {}).get('detailed_items', [])
+                for item in _dia_items:
+                    if item.get('item_status') == 'returned':
+                        continue
+                    grupo = item.get('group_name', '')
+                    if grupo not in ('SBON', 'ACESSÓRIOS'):
+                        continue
+                    val = float(item.get('net_value') or 0)
+                    if val <= 0:
+                        continue
+                    pms_raw = item.get('payment_methods') or []
+                    if not any(k in ' '.join(pms_raw).lower() for k in _FINANCEIRA_KEYWORDS):
+                        continue
+                    store_key = STORE_MAP.get(item.get('store_name', ''))
+                    if not store_key:
+                        continue
+                    seller = (item.get('seller_name') or '').strip()
+                    s = _fin_dia_raw.setdefault(store_key, {'total': 0.0, 'sellers': {}})
+                    s['total'] += val
+                    if seller:
+                        s['sellers'][seller] = s['sellers'].get(seller, 0.0) + val
+                print(f'  fin_dia (itens hoje): {len(_dia_items)} itens, {len(_fin_dia_raw)} lojas c/ fin')
+                break
+            except Exception as _e:
+                if _attempt < retries:
+                    import time as _t; _t.sleep(wait)
+                else:
+                    print(f'  AVISO: fin_dia itens falhou ({_e}) — usando fin_mes como fin_dia')
+                    _fin_dia_raw = _fin_mes_raw
+
+    def _fmt_fin(d):
+        """Formata dict interno de fin para {store_key: {total, top}}."""
+        result = {}
+        for sk_f, v_f in d.items():
+            top_f = []
+            for nm_f, t_f in sorted(v_f['sellers'].items(), key=lambda x: -x[1])[:top_n]:
+                pts_f = nm_f.split()
+                ini_f = (pts_f[0][0]+pts_f[1][0]).upper() if len(pts_f)>=2 else nm_f[:2].upper()
+                top_f.append({'n': nm_f, 'i': ini_f, 't': round(t_f, 2)})
+            result[sk_f] = {'total': round(v_f['total'], 2), 'top': top_f}
+        return result
+
+    _fin_mes_out = _fmt_fin(_fin_mes_raw)
+    _fin_dia_out = _fmt_fin(_fin_dia_raw)
 
     def _top(d):
         return [{'nm': nm, 'qt': v['qt'], 'val': round(v['val'])}
@@ -1454,12 +1542,12 @@ def fetch_top_produtos_por_financeira(token, start, end, top_n=7, retries=3, wai
         }
 
     return (_build_cel(geral_cel, lojas_cel), _build_aces(geral_aces, lojas_aces),
-            _build_caut(geral_caut, lojas_caut))
+            _build_caut(geral_caut, lojas_caut), _fin_mes_out, _fin_dia_out)
 
 
 # mantém alias antigo caso haja referência direta
 def fetch_top_modelos_por_financeira(token, start, end, top_n=7, retries=3, wait=15):
-    tm, _, _ = fetch_top_produtos_por_financeira(token, start, end, top_n, retries, wait)
+    tm, _, _, _, _ = fetch_top_produtos_por_financeira(token, start, end, top_n, retries, wait)
     return tm
 
 
@@ -1992,7 +2080,7 @@ def main():
         print("  IDs de lojas não disponíveis — agend_fin não será atualizado")
 
     print("Buscando modelos/acessórios/cautelar por forma de pagamento...")
-    top_modelos, top_acessorios, top_cautelar = fetch_top_produtos_por_financeira(token, start, today)
+    top_modelos, top_acessorios, top_cautelar, fin_acum, fin = fetch_top_produtos_por_financeira(token, start, today)
     print(f"  Celulares — PayJoy: {len(top_modelos.get('payjoy',[]))} | OdresCred: {len(top_modelos.get('odrescred',[]))} | Salão: {len(top_modelos.get('salao',[]))}")
     print(f"  Acessórios — PayJoy: {len(top_acessorios.get('payjoy',[]))} | OdresCred: {len(top_acessorios.get('odrescred',[]))} | Salão: {len(top_acessorios.get('salao',[]))}")
     print(f"  Cautelar — Proteção: R${top_cautelar['protecao']['total']:,.2f} | Garantia Estendida: R${top_cautelar['garantia']['total']:,.2f}")
@@ -2061,8 +2149,8 @@ def main():
     caut_dia_total = sum(v['total'] for v in cautelar_dia.values())
     print(f"  Cautelar hoje: R${caut_dia_total:,.2f} em {len(cautelar_dia)} lojas")
     agend     = process(agend_data, lambda c: c.get('total_sold', 0))
-    fin      = process_gerencial(fin_today_data)
-    fin_acum = process_gerencial(fin_mes_data)
+    # fin e fin_acum vêm de fetch_top_produtos_por_financeira (valor TOTAL da venda)
+    # Não usar process_gerencial aqui — retorna só a parcela paga via fin, não o total
     print(f"  [fin_acum] lojas com financeiras no mês: { {k: round(v['total'],2) for k,v in fin_acum.items()} }")
     fin_grps = {nm: process_gerencial(d) for nm, d in fin_groups_data.items()}
 

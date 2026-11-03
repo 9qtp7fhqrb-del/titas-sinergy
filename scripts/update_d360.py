@@ -2299,6 +2299,28 @@ def main():
         else:
             print(f"  AVISO: campo {field} não encontrado no HTML")
 
+    # ── Salva HTML com dados de vendas ANTES do estoque (que pode ser lento) ──
+    # Sincroniza VEND_METAS_DB com as metas lançadas no Firestore (corrige fallback do ranking)
+    print("Sincronizando VEND_METAS_DB com metas do Firestore...")
+    firestore_metas = fetch_metas_firestore()
+    if firestore_metas:
+        content = update_vend_metas_db(content, firestore_metas)
+    else:
+        print("  Nenhuma meta encontrada no Firestore — VEND_METAS_DB mantido")
+
+    # Garante constantes de negócio críticas (evita reversão por corrida com GitHub Actions)
+    content = re.sub(r'(const _META_MARGEM\s*=\s*)\d+', r'\g<1>50', content)
+    content = re.sub(r'(const _META_MARGEM_DIA\s*=\s*)\d+', r'\g<1>50', content)
+    print("  _META_MARGEM/_META_MARGEM_DIA fixados em 50%")
+
+    from datetime import datetime as _dt
+    build_ts = _dt.now().strftime('%Y%m%d%H%M%S')
+    content = re.sub(r"(var BUILD\s*=\s*)'(?:20\d{12}|__BUILD_TS__)'", r"\g<1>'" + build_ts + "'", content)
+
+    with open(INDEX_HTML, 'w', encoding='utf-8') as f:
+        f.write(content)
+    print(f"\nindex.html salvo (vendas OK, build: {build_ts}) — buscando estoque...")
+
     # Atualiza estoque ERP (_ERP_ESTOQUE) — base para Sugestão de Pedido
     print("Buscando estoque por loja/produto no ERP...")
     estoque_erp = fetch_estoque(token)
@@ -2324,29 +2346,13 @@ def main():
         content = update_top_acessorios(content, top_acessorios)
         print("  top_acessorios atualizado no HTML")
 
-    # Sincroniza VEND_METAS_DB com as metas lançadas no Firestore (corrige fallback do ranking)
-    print("Sincronizando VEND_METAS_DB com metas do Firestore...")
-    firestore_metas = fetch_metas_firestore()
-    if firestore_metas:
-        content = update_vend_metas_db(content, firestore_metas)
-    else:
-        print("  Nenhuma meta encontrada no Firestore — VEND_METAS_DB mantido")
-
-    # Garante constantes de negócio críticas (evita reversão por corrida com GitHub Actions)
-    content = re.sub(r'(const _META_MARGEM\s*=\s*)\d+', r'\g<1>50', content)
-    content = re.sub(r'(const _META_MARGEM_DIA\s*=\s*)\d+', r'\g<1>50', content)
-    print("  _META_MARGEM/_META_MARGEM_DIA fixados em 50%")
-
-    # Atualiza o timestamp de build (força browsers a recarregar após deploy)
-    # Padrão restrito: só a atribuição JS 'var BUILD = ...' — não toca regex literals ou strings em funções
-    from datetime import datetime as _dt
-    build_ts = _dt.now().strftime('%Y%m%d%H%M%S')
-    content = re.sub(r"(var BUILD\s*=\s*)'(?:20\d{12}|__BUILD_TS__)'", r"\g<1>'" + build_ts + "'", content)
-
+    # Salva HTML final com estoque + precos + top_modelos
+    build_ts2 = _dt.now().strftime('%Y%m%d%H%M%S')
+    content = re.sub(r"(var BUILD\s*=\s*)'(?:20\d{12}|__BUILD_TS__)'", r"\g<1>'" + build_ts2 + "'", content)
     with open(INDEX_HTML, 'w', encoding='utf-8') as f:
         f.write(content)
 
-    print(f"\nindex.html salvo com sucesso! (build: {build_ts})")
+    print(f"\nindex.html salvo com sucesso! (build: {build_ts2})")
 
     # Gravar total do fat_dia para o check_threshold do próximo run
     fat_dia_total = sum(

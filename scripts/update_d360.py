@@ -289,8 +289,10 @@ def fetch_sales(token, start, end, channel_id=None, retries=4, wait=15):
             return r.json()
         except requests.exceptions.HTTPError as e:
             last_err = e
-            # 401 pode ser falha transitória do ERP mesmo com token válido — vale retry
             if e.response is not None and e.response.status_code < 500 and e.response.status_code != 401:
+                raise
+            # 401 em todas as tentativas = token realmente inválido → falhar rápido
+            if e.response is not None and e.response.status_code == 401 and attempt == retries:
                 raise
             print(f"  fetch_sales tentativa {attempt}/{retries} falhou ({e}). Aguardando {wait}s...")
             time.sleep(wait)
@@ -1864,14 +1866,30 @@ def main():
     dias_decorridos = min(_now_brt.day, _cal_main2.monthrange(_now_brt.year, _now_brt.month)[1])
     print(f"Período: {start} → {today} (BRT {_now_brt.strftime('%H:%M')}, dia {dias_decorridos})")
 
+    def _sales_com_relogin(tok_ref, *args, **kwargs):
+        try:
+            return fetch_sales(tok_ref[0], *args, **kwargs)
+        except Exception as e:
+            if '401' not in str(e):
+                raise
+            print(f"  AVISO: fetch_sales 401 — forçando novo login...")
+            clear_erp_token_from_firestore()
+            new_tok = erp_login(erp_user, erp_password)
+            save_erp_token_to_firestore(new_tok)
+            tok_ref[0] = new_tok
+            return fetch_sales(new_tok, *args, **kwargs)
+
     print("Buscando vendas gerais (acumulado)...")
-    sales_data = fetch_sales(token, start, today)
+    sales_data = _sales_com_relogin(token_ref, start, today)
+    token = token_ref[0]
 
     print("Buscando vendas do dia...")
-    today_data = fetch_sales(token, today, today)
+    today_data = _sales_com_relogin(token_ref, today, today)
+    token = token_ref[0]
 
     print("Buscando Central de Agendamentos (canal 6)...")
-    agend_data = fetch_sales(token, start, today, channel_id=6)
+    agend_data = _sales_com_relogin(token_ref, start, today, channel_id=6)
+    token = token_ref[0]
 
     print("Buscando IDs de financeiras...")
     fin_pm_ids = fetch_financeiras_ids(token)

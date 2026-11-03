@@ -69,33 +69,55 @@ def main():
     import tempfile
 
     def run_captured(cmd, timeout=600, cwd_override=None):
-        """subprocess sem pipes (evita deadlock macOS LaunchAgent)."""
+        """subprocess sem pipes (evita deadlock macOS LaunchAgent). Loga output mesmo em timeout."""
         import tempfile as _tf
         out_path = _tf.mktemp(suffix='.out')
         err_path = _tf.mktemp(suffix='.err')
+        out_fh = open(out_path, 'w')
+        err_fh = open(err_path, 'w')
+        rc = -1
+        timed_out = False
         try:
-            out_fh = open(out_path, 'w')
-            err_fh = open(err_path, 'w')
-            rc = subprocess.run(cmd, cwd=cwd_override or PROJECT, env=env,
-                                stdout=out_fh, stderr=err_fh,
-                                close_fds=True, timeout=timeout).returncode
+            proc = subprocess.Popen(cmd, cwd=cwd_override or PROJECT, env=env,
+                                    stdout=out_fh, stderr=err_fh, close_fds=True)
+            try:
+                rc = proc.wait(timeout=timeout)
+            except subprocess.TimeoutExpired:
+                proc.kill()
+                proc.wait()
+                timed_out = True
+        finally:
             out_fh.close()
             err_fh.close()
+        try:
             out = open(out_path).read()
+        except Exception:
+            out = ''
+        try:
             err = open(err_path).read()
-        finally:
-            for p in (out_path, err_path):
-                try: os.unlink(p)
-                except: pass
+        except Exception:
+            err = ''
+        for p in (out_path, err_path):
+            try: os.unlink(p)
+            except: pass
+        if timed_out:
+            raise subprocess.TimeoutExpired(cmd, timeout, output=out.encode(), stderr=err.encode())
         return rc, out, err
 
     # 1. Roda update_d360.py
     script = os.path.join(PROJECT, 'scripts', 'update_d360.py')
+    out, err = '', ''
     try:
         rc, out, err = run_captured([sys.executable, script], timeout=900)
+    except subprocess.TimeoutExpired as _te:
+        out = (_te.output or b'').decode(errors='replace')
+        err = (_te.stderr or b'').decode(errors='replace')
+        log(f'ERRO run_captured: timeout de 900s — output parcial abaixo')
     except Exception as _te:
         log(f'ERRO run_captured: {_te}')
         return
+    else:
+        rc = rc  # sucesso normal
     for line in out.strip().split('\n'):
         if line: log(f'  [update] {line}')
     for line in err.strip().split('\n'):

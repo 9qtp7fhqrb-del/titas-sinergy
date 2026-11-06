@@ -311,18 +311,14 @@ def fetch_financeiras_ids(token, retries=3, wait=10):
                 headers={'Authorization': f'Bearer {token}', 'Accept': 'application/json'},
                 timeout=20)
             r.raise_for_status()
-            pms = r.json().get('payment_methods', [])
-            ids = [pm['id'] for pm in pms
-                   if pm.get('active')
-                   and (pm.get('modality') or {}).get('key') == 'finance_company'
-                   and 'brasilcard' not in (pm.get('name') or '').lower()]
-            return ids
+            # Apenas OdresCred e PayJoy contam como financeiras
+            return [9, 8]
         except Exception as e:
             if attempt < retries:
                 time.sleep(wait)
             else:
                 print(f"  AVISO: falha ao buscar IDs financeiras ({e}), usando padrão [8,9]")
-                return [8, 9]  # OdresCred, PayJoy — fallback
+                return [9, 8]  # OdresCred, PayJoy
 
 def fetch_store_ids(token, retries=3, wait=10):
     """
@@ -1111,7 +1107,7 @@ def update_dia_a_dia_field(sec, dia_hoje, total_hoje):
         sec2, n = re.subn(r'(\bfat_dia:\d+(?:\.\d+)?)', f'\\1, {novo}', sec, count=1)
     return sec2
 
-def update_store(content, store_key, total, acess_total, agend_total, agend_top, fat_dia=0, top_dia=None, acess_dia=0, acess_dia_top=None, fin_dia=0, top_fin=None, fin_mes=0, top_fin_mes=None, fin_bd=None, sellers_top=None, sellers_today=None, agend_fin=0, agend_fin_bd=None, dia_hoje=None):
+def update_store(content, store_key, total, acess_total, agend_total, agend_top, fat_dia=0, top_dia=None, acess_dia=0, acess_dia_top=None, fin_dia=0, top_fin=None, fin_mes=0, top_fin_mes=None, fin_bd=None, sellers_top=None, sellers_today=None, agend_fin=0, agend_fin_bd=None, dia_hoje=None, cautelar_dia=None):
     start, end = find_section(content, store_key)
     if start is None:
         print(f"  AVISO: seção '{store_key}' não encontrada no HTML")
@@ -1148,6 +1144,18 @@ def update_store(content, store_key, total, acess_total, agend_total, agend_top,
             sec = re.sub(r'acess_dia_top:\[[^\]]*\]', f'acess_dia_top:{top_str}', sec, count=1)
         else:
             sec = re.sub(r'(\bacess_dia:\d+(?:\.\d+)?)', f'\\g<1>, acess_dia_top:{top_str}', sec, count=1)
+
+    # 2b4. cautelar_dia (proteção + garantia vendidos hoje)
+    if cautelar_dia is not None:
+        caut_total = round(cautelar_dia.get('total', 0), 2)
+        caut_top   = cautelar_dia.get('top', [])
+        caut_str   = f'cautelar_dia:{{total:{caut_total},top:{fmt_top(caut_top)}}}'
+        if re.search(r'cautelar_dia:', sec):
+            sec = re.sub(r'cautelar_dia:(?:null|\{total:\d+(?:\.\d+)?,top:\[[^\]]*\]\})', caut_str, sec, count=1)
+        elif re.search(r'acess_dia_top:\[', sec):
+            sec = re.sub(r'(acess_dia_top:\[[^\]]*\])', f'\\g<1>, {caut_str}', sec, count=1)
+        else:
+            sec = re.sub(r'(\bacess_dia:\d+(?:\.\d+)?)', f'\\g<1>, {caut_str}', sec, count=1)
 
     # 2c. top_dia (vendedores do dia)
     if top_dia is not None:
@@ -1291,7 +1299,7 @@ def fetch_top_produtos_por_financeira(token, start, end, top_n=7, retries=3, wai
     # Usa o STORE_MAP global (nomes reais do OdresTech) — o mapa local antigo
     # com prefixo "Odres " nunca batia com item.get('store_name') e deixava o
     # breakdown por loja de top_modelos/top_acessorios sempre vazio.
-    _FINANCEIRA_KEYWORDS = ('payjoy', 'odrescred', 'aiva pay', 'crefaz', 'parcelex', 'watu brasil')
+    _FINANCEIRA_KEYWORDS = ('payjoy', 'odrescred')
 
     def _is_financeira(payment_methods):
         pms = ' '.join(payment_methods or []).lower()
@@ -1896,7 +1904,21 @@ def update_top_acessorios(content, top_acessorios):
 
 # ── Main ──────────────────────────────────────────────────────────────────────
 
+def _check_connectivity(host='api.erp.odrestech.com.br', port=443, timeout=8):
+    """Verifica conectividade TCP com o ERP antes de iniciar. Falha rápida se offline."""
+    import socket
+    try:
+        socket.setdefaulttimeout(timeout)
+        with socket.create_connection((host, port), timeout=timeout):
+            return True
+    except (socket.timeout, socket.gaierror, OSError):
+        return False
+
 def main():
+    if not _check_connectivity():
+        print("ERRO: ERP inacessível (DNS/rede) — abortando sem retries")
+        sys.exit(1)
+
     erp_user     = os.environ.get('ERP_LOGIN', '')
     erp_password = os.environ.get('ERP_PASSWORD', '')
 
@@ -2084,6 +2106,18 @@ def main():
     print(f"  Celulares — PayJoy: {len(top_modelos.get('payjoy',[]))} | OdresCred: {len(top_modelos.get('odrescred',[]))} | Salão: {len(top_modelos.get('salao',[]))}")
     print(f"  Acessórios — PayJoy: {len(top_acessorios.get('payjoy',[]))} | OdresCred: {len(top_acessorios.get('odrescred',[]))} | Salão: {len(top_acessorios.get('salao',[]))}")
     print(f"  Cautelar — Proteção: R${top_cautelar['protecao']['total']:,.2f} | Garantia Estendida: R${top_cautelar['garantia']['total']:,.2f}")
+
+    # Substitui fin_acum/fin (product_sales — apenas parcela financiada por item)
+    # por dados do gerencial com filtro payment_method_ids (valor TOTAL da venda, igual ao ERP).
+    _fin_acum_ger = process_gerencial(fin_mes_data)
+    if _fin_acum_ger:
+        print(f"  [fin_acum gerencial] substituindo product_sales. Totais: { {k: round(v['total'],2) for k,v in _fin_acum_ger.items()} }")
+        fin_acum = _fin_acum_ger
+    else:
+        print("  AVISO: fin_mes_data (gerencial) vazio — mantendo fin_acum de product_sales")
+    _fin_ger = process_gerencial(fin_today_data)
+    if _fin_ger:
+        fin = _fin_ger
 
     print("Buscando gerencial por grupo de produto (tickets médios)...")
     try:
@@ -2283,6 +2317,7 @@ def main():
                     fin_bd=[{'nm': g['nm'], 't': 0} for g in FINANCEIRAS_GROUPS],
                     sellers_top=[], sellers_today=set(),
                     dia_hoje=1,
+                    cautelar_dia={'total': 0, 'top': []},
                 )
                 print(f"  {sk}: sem vendas — zerado (dia 1 do mês)")
             else:
@@ -2322,6 +2357,7 @@ def main():
             agend_fin      = _af.get('fin', 0),
             agend_fin_bd   = _af.get('fin_bd', [{'nm': g['nm'], 't': 0} for g in FINANCEIRAS_GROUPS]),
             dia_hoje       = dias_decorridos,
+            cautelar_dia   = cautelar_dia.get(sk),
         )
         print(f"  {sk}: atualizado")
 

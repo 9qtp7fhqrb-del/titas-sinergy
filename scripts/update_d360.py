@@ -31,7 +31,6 @@ FIREBASE_PROJ = 'titas-sinergy'
 FINANCEIRAS_GROUPS = [
     {'nm': 'PayJoy',    'ids': [8]},
     {'nm': 'OdresCred', 'ids': [9]},
-    {'nm': 'Outras',    'ids': [72, 74, 12, 76]},
 ]
 
 # IDs dos grupos de produto no ERP (endpoint /groups)

@@ -107,26 +107,32 @@ def main():
     # 1. Roda update_d360.py
     script = os.path.join(PROJECT, 'scripts', 'update_d360.py')
     out, err = '', ''
+    timed_out = False
     try:
         rc, out, err = run_captured([sys.executable, script], timeout=900)
     except subprocess.TimeoutExpired as _te:
         out = (_te.output or b'').decode(errors='replace')
         err = (_te.stderr or b'').decode(errors='replace')
-        log(f'ERRO run_captured: timeout de 900s — output parcial abaixo')
+        timed_out = True
+        log(f'AVISO run_captured: timeout de 900s (output parcial abaixo)')
+        rc = 1
     except Exception as _te:
         log(f'ERRO run_captured: {_te}')
         return
-    else:
-        rc = rc  # sucesso normal
     for line in out.strip().split('\n'):
         if line: log(f'  [update] {line}')
     for line in err.strip().split('\n'):
         if line and 'NotOpenSSLWarning' not in line and 'urllib3' not in line:
             log(f'  [update-err] {line}')
 
+    # Se timeout mas HTML já foi salvo (dados de vendas OK), ainda faz o deploy
+    html_salvo = 'index.html salvo' in out
     if rc != 0:
-        log(f'ERRO no update_d360.py (exit {rc})')
-        return
+        if timed_out and html_salvo:
+            log('timeout na fase de enriquecimento — vendas já salvas, prosseguindo com deploy')
+        else:
+            log(f'ERRO no update_d360.py (exit {rc}) — abortando')
+            return
 
     log('update OK — fazendo deploy...')
 

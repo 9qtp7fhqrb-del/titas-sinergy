@@ -1733,7 +1733,26 @@ def fetch_precos(token, retries=3, wait=10):
     Busca custo médio e preço de venda por produto no ERP.
     Tenta primeiro os endpoints de estoque (que têm custo_medio/preco_venda),
     depois cai no product_sales como fallback (só preço de venda).
+    Timeout global de 180s para não travar a automação.
     """
+    import time as _time, signal as _signal
+    from collections import defaultdict
+
+    class _Timeout(Exception): pass
+    def _handler(sig, frame): raise _Timeout()
+
+    _prev = _signal.signal(_signal.SIGALRM, _handler)
+    _signal.alarm(180)  # 3 minutos máximo para todo fetch_precos
+    try:
+        return _fetch_precos_inner(token, retries, wait)
+    except _Timeout:
+        print('  _ERP_PRECOS: timeout global de 180s — pulando enriquecimento de preços')
+        return {}
+    finally:
+        _signal.alarm(0)
+        _signal.signal(_signal.SIGALRM, _prev)
+
+def _fetch_precos_inner(token, retries=3, wait=10):
     import time as _time
     from collections import defaultdict
 
@@ -1784,8 +1803,8 @@ def fetch_precos(token, retries=3, wait=10):
                 res = subprocess.run(
                     ['curl', '-s', '--http1.1', url,
                      '-H', f'Authorization: Bearer {token}',
-                     '-H', 'Accept: application/json', '--max-time', '90'],
-                    capture_output=True, timeout=95)
+                     '-H', 'Accept: application/json', '--max-time', '25'],
+                    capture_output=True, timeout=30)
                 if res.returncode != 0 or not res.stdout:
                     raise RuntimeError(f'curl {res.returncode}')
                 chunk = _json.loads(res.stdout).get('data', {}).get('detailed_items', [])

@@ -2370,6 +2370,9 @@ def main():
     # Atualiza diasDecorridos e diasMes no HTML (garante projeção correta)
     import calendar as _cal_main
     dias_mes_atual = _cal_main.monthrange(_now_brt.year, _now_brt.month)[1]
+    # Novembro 2026: exclui dias 27-28 (Black Friday) das projeções
+    if _now_brt.year == 2026 and _now_brt.month == 11:
+        dias_mes_atual = 28
     content = update_dias_decorridos(content, dias_decorridos, dias_mes_atual, start, today)
     print(f"  diasDecorridos → {dias_decorridos}, diasMes → {dias_mes_atual}")
 

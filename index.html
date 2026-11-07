@@ -17038,6 +17038,10 @@ function render360(tipo, val) {
         // Cautelar do dia
         let _totalCautelarDia = 0;
         scope.forEach(function(l) { _totalCautelarDia += (l.cautelar_dia && l.cautelar_dia.total) || 0; });
+        // Agendamentos — média diária (agendFat acumulado / dias decorridos)
+        let _totalAgendFat = 0;
+        scope.forEach(function(l) { _totalAgendFat += l.agendFat || 0; });
+        const _agendDia = (_d.diasDecorridos > 0 && _totalAgendFat > 0) ? Math.round(_totalAgendFat / _d.diasDecorridos) : 0;
         // Margem do dia — usa _calcMargemDia definida no escopo do render (suporta margem_lojas)
         const _META_MARGEM_DIA = 50;
         const _mDia = (() => {
@@ -17084,6 +17088,13 @@ function render360(tipo, val) {
                     <span style="font-size:.58rem;color:#9ca3af;font-weight:600;">🛡️ Cautelar Dia</span>
                     ${_totalCautelarDia > 0
                         ? `<span style="font-size:.72rem;font-weight:800;color:#a78bfa;">${brl(_totalCautelarDia)}</span>`
+                        : `<span style="font-size:.65rem;color:#4b5563;font-style:italic;">sem dados</span>`
+                    }
+                </div>
+                <div style="display:flex;justify-content:space-between;align-items:center;padding:.22rem .6rem;border-radius:.45rem;background:rgba(56,189,248,.07);border:1px solid rgba(56,189,248,.22);margin-bottom:.25rem;">
+                    <span style="font-size:.58rem;color:#9ca3af;font-weight:600;">📅 Agendamentos Dia</span>
+                    ${_agendDia > 0
+                        ? `<span style="font-size:.72rem;font-weight:800;color:#38bdf8;">${brl(_agendDia)}</span>`
                         : `<span style="font-size:.65rem;color:#4b5563;font-style:italic;">sem dados</span>`
                     }
                 </div>

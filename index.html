@@ -17311,23 +17311,59 @@ function render360(tipo, val) {
         var _bfIsBF = user && (['diretoria','franqueado'].indexOf(user.cargo) >= 0);
         var _bfDiasRestantes = (function(){ var t=new Date(2026,10,27); var h=new Date(); t.setHours(0,0,0,0); h.setHours(0,0,0,0); return Math.max(0,Math.round((t-h)/(1000*60*60*24))); })();
         if (!_bfIsBF) {
+            var _bfFrases = [
+                { f: '"A Black Friday não se vence no dia 27. Ela se vence hoje, na consistência de cada atendimento."', a: 'Cultura Titãs' },
+                { f: '"O varejo recompensa quem serve bem todos os dias — não quem acorda na data especial."', a: 'Sam Walton' },
+                { f: '"Grandes resultados não surgem do acaso. São construídos tijolo por tijolo, venda por venda."', a: 'Jeff Bezos' },
+                { f: '"Excelência não é um ato isolado — é um hábito cultivado em cada dia de trabalho."', a: 'Aristóteles' },
+                { f: '"O cliente não esquece como foi tratado. Treine hoje para que ele volte na Black."', a: 'Maya Angelou' },
+                { f: '"Cada venda de hoje é um tijolo na fundação do melhor novembro da nossa história."', a: 'Cultura Titãs' },
+                { f: '"A diferença entre ordinário e extraordinário é aquele pequeno esforço extra — todo dia."', a: 'Jimmy Johnson' },
+                { f: '"Prepare-se com disciplina diária e quando a Black Friday chegar, você já estará pronto."', a: 'John Wooden' },
+                { f: '"No varejo, o sucesso é simples: sirva o cliente melhor do que qualquer concorrente faria."', a: 'Sam Walton' },
+                { f: '"A Black Friday é o palco. O ensaio começa agora, em cada atendimento do dia."', a: 'Cultura Titãs' },
+                { f: '"Sonhos não se realizam por acidente. Eles são o resultado de dedicação, trabalho duro e aprendizado."', a: 'Colin Powell' },
+                { f: '"O sucesso é a soma de pequenos esforços repetidos dia após dia."', a: 'Robert Collier' },
+                { f: '"Não espere por uma crise para descobrir o que é importante. Construa hoje o seu resultado de amanhã."', a: 'Platão' },
+                { f: '"A preparação distingue os campeões dos que apenas participam."', a: 'Bobby Knight' },
+                { f: '"Equipes vencedoras não constroem resultados em datas especiais — elas chegam nessas datas já prontas."', a: 'Cultura Titãs' },
+                { f: '"O varejo é gente servindo gente. Quanto melhor você serve hoje, mais forte chega na Black."', a: 'Luiza Trajano' },
+                { f: '"Cada dia é uma nova página do resultado que você lera no fechamento do mês."', a: 'Cultura Titãs' },
+                { f: '"O que você faz hoje em silêncio falará por você em voz alta amanhã."', a: 'Arnold Schwarzenegger' },
+                { f: '"A consistência é o segredo dos grandes varejistas. Não há atalho para o 27 de novembro."', a: 'Cultura Titãs' },
+                { f: '"Talento sem consistência é apenas potencial. Talento com disciplina diária é resultado."', a: 'Cultura Titãs' },
+                { f: '"Discipline is the bridge between goals and accomplishment." — Seja a ponte todo dia.', a: 'Jim Rohn' },
+                { f: '"Os clientes que você encanta hoje serão os que voltarão cheios na Black Friday."', a: 'Cultura Titãs' },
+                { f: '"A vitória ama a preparação. Cada dia bem trabalhado é um dia de vantagem sobre a concorrência."', a: 'Cultura Titãs' },
+                { f: '"No varejo moderno, a experiência do cliente é o único diferencial duradouro."', a: 'Philip Kotler' },
+                { f: '"Faltam poucos dias. O que você fizer agora definirá o que você poderá comemorar depois."', a: 'Cultura Titãs' },
+                { f: '"A Black Friday mais lucrativa da nossa história começa com o melhor atendimento de hoje."', a: 'Cultura Titãs' },
+                { f: '"27 de novembro: o palco está pronto. O elenco que chega preparado transforma em ouro cada minuto."', a: 'Cultura Titãs' },
+                { f: '"A maior Black Friday começa aqui, com você, neste momento. Dê o melhor de si agora."', a: 'Cultura Titãs' },
+            ];
+            var _bfFraseIdx = Math.min(new Date().getDate() - 1, _bfFrases.length - 1);
+            var _bfF = _bfFrases[Math.max(0, _bfFraseIdx)];
+            var _bfProgPct = Math.round(Math.min(100, ((28 - _bfDiasRestantes) / 28) * 100));
             _bfCard = '<div class="glass-360 rounded-2xl p-4 bf-card-wrap" style="background:linear-gradient(135deg,#0d0202,#1a0505,#0d0202);border:1px solid #7c2d00;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden;">'
                 + '<span class="bf-zap1">&#x26A1;</span><span class="bf-zap2">&#x26A1;</span><span class="bf-zap3">&#x26A1;</span><span class="bf-zap4">&#x26A1;</span>'
                 + '<div>'
-                + '<div style="display:flex;align-items:center;justify-content:space-between;gap:.5rem;margin-bottom:.3rem;">'
-                + '<div style="display:flex;align-items:center;gap:.5rem;"><div style="width:28px;height:28px;border-radius:8px;background:rgba(124,45,0,.2);border:1px solid rgba(124,45,0,.4);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.9rem;">&#x1F5A4;</div>'
+                + '<div style="display:flex;align-items:center;justify-content:space-between;gap:.5rem;margin-bottom:.35rem;">'
+                + '<div style="display:flex;align-items:center;gap:.5rem;"><div style="width:28px;height:28px;border-radius:8px;background:rgba(124,45,0,.2);border:1px solid rgba(124,45,0,.4);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.9rem;">&#x1F525;</div>'
                 + '<span style="font-size:.72rem;font-weight:900;color:#f97316;letter-spacing:.03em;text-transform:uppercase;">Black Friday</span></div>'
                 + '<span style="font-size:.6rem;font-weight:700;padding:.15rem .55rem;border-radius:999px;background:rgba(124,45,0,.2);color:#f97316;white-space:nowrap;">27-28/11 &#x26A1;</span>'
                 + '</div>'
-                + '<p style="font-size:1.25rem;font-weight:900;color:#ff6b00;line-height:1.2;margin:0 0 .25rem;">Em Breve</p>'
-                + '<div style="height:3px;background:#1f2937;border-radius:3px;margin-bottom:.25rem;"><div style="height:20%;background:linear-gradient(90deg,#c2410c,#ffd700);border-radius:3px;animation:pulse 2s infinite;"></div></div>'
-                + '<p style="font-size:.6rem;color:#9ca3af;margin:0;line-height:1.4;">Faltam <span style="color:#f97316;font-weight:700;">' + _bfDiasRestantes + ' dias</span> para a Black Friday</p>'
+                + '<p style="font-size:.68rem;font-style:italic;color:#fde68a;line-height:1.45;margin:0 0 .4rem;font-weight:500;">' + _bfF.f + '</p>'
+                + '<p style="font-size:.55rem;color:#f97316;font-weight:700;margin:0 0 .3rem;text-align:right;letter-spacing:.04em;">— ' + _bfF.a + '</p>'
                 + '</div>'
                 + '<div>'
-                + '<div style="display:flex;justify-content:space-between;align-items:center;padding:.22rem .6rem;border-radius:.45rem;background:rgba(124,45,0,.1);border:1px solid rgba(124,45,0,.2);margin-bottom:.2rem;">'
-                + '<span style="font-size:.58rem;color:#9ca3af;font-weight:600;">&#x1F525; chegara a melhor Black</span><span style="font-size:.58rem;color:#f97316;font-weight:700;">ever</span></div>'
-                + '<div style="display:flex;justify-content:space-between;align-items:center;padding:.22rem .6rem;border-radius:.45rem;background:rgba(124,45,0,.06);border:1px solid rgba(124,45,0,.12);margin-bottom:.2rem;">'
-                + '<span style="font-size:.58rem;color:#4b5563;font-weight:600;">&#x1F512; exclusivo para gestao</span></div>'
+                + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.18rem;">'
+                + '<span style="font-size:.55rem;color:#9ca3af;font-weight:600;">Contagem regressiva</span>'
+                + '<span style="font-size:.6rem;color:#f97316;font-weight:800;">Faltam ' + _bfDiasRestantes + ' dias</span>'
+                + '</div>'
+                + '<div style="height:5px;background:#1f2937;border-radius:3px;margin-bottom:.3rem;">'
+                + '<div style="height:100%;width:' + _bfProgPct + '%;background:linear-gradient(90deg,#c2410c,#ffd700);border-radius:3px;transition:width .4s;"></div>'
+                + '</div>'
+                + '<p style="font-size:.53rem;color:#78716c;margin:0;text-align:center;font-weight:500;letter-spacing:.02em;">&#x1F4C8; Construa o resultado hoje. Celebre no dia 27.</p>'
                 + '</div>'
                 + '</div>';
         } else {

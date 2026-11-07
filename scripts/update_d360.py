@@ -191,6 +191,9 @@ def save_d360_to_firestore(sales, acess, acess_dia, today_sellers_proc, fin, fin
     MESES = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez']
     periodo = f"{MESES[_now_brt.month - 1]} {_now_brt.year}"
     dias_mes = calendar.monthrange(_now_brt.year, _now_brt.month)[1]
+    # Novembro 2026: exclui dias 27-28 (Black Friday) das projeções
+    if _now_brt.year == 2026 and _now_brt.month == 11:
+        dias_mes = 28
     dias_decorridos = min(_now_brt.day, dias_mes)
 
     lojas_data = {}
@@ -565,8 +568,12 @@ def update_dias_decorridos(content, dias_decorridos, dias_mes, start_str, today_
         print(f"  AVISO: campo diasDecorridos não encontrado no HTML")
     else:
         content = updated
-    # diasMes
-    updated2 = re.sub(r'(diasMes\s*:\s*)\d+(?=\s*,)', f'\\g<1>{dias_mes}', content, count=1)
+    # diasMes — ancorado pelo diasDecorridos que vem imediatamente antes (evita substituir diasMes do mesAnterior)
+    updated2 = re.sub(
+        r'(diasDecorridos\s*:\s*\d+[^\n]*\n\s*diasMes\s*:\s*)\d+',
+        f'\\g<1>{dias_mes}',
+        content, count=1
+    )
     if updated2 != content:
         content = updated2
     # Comentário de fonte — mantém rastreabilidade do período dos dados

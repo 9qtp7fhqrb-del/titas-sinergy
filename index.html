@@ -12931,6 +12931,8 @@ function _renderHistAcessAbr26() {
 
     // Período e dias do mês calculados automaticamente
     D360.diasMes        = new Date(ano, mes + 1, 0).getDate();
+    // Novembro 2026: exclui dias 27-28 (Black Friday) das projeções
+    if (ano === 2026 && mes === 10) D360.diasMes = 28;
     // diasDecorridos: preserva o valor escrito pelo script de automação (Python).
     // Só usa now.getDate() como fallback se o valor ainda não foi definido (0 ou undefined).
     D360.diasDecorridos = D360.diasDecorridos || Math.min(now.getDate(), D360.diasMes);

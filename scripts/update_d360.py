@@ -28,6 +28,23 @@ INDEX_HTML    = os.environ.get('INDEX_HTML', 'index.html')
 FIREBASE_KEY  = 'AIzaSyDFrLshzqf8Ct9U1SkM9MSveDNPuy_2--8'
 FIREBASE_PROJ = 'titas-sinergy'
 
+import json as _json
+_AGEND_BL_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'agend_fat_baseline.json')
+
+def _load_agend_baseline():
+    try:
+        with open(_AGEND_BL_FILE) as _f:
+            return _json.load(_f)
+    except:
+        return {'date': '', 'stores': {}}
+
+def _save_agend_baseline(date_str, stores):
+    try:
+        with open(_AGEND_BL_FILE, 'w') as _f:
+            _json.dump({'date': date_str, 'stores': stores}, _f)
+    except Exception as _e:
+        print(f"  AVISO: não salvou baseline agend_fat: {_e}")
+
 FINANCEIRAS_GROUPS = [
     {'nm': 'PayJoy',    'ids': [8]},
     {'nm': 'OdresCred', 'ids': [9]},
@@ -185,7 +202,7 @@ def save_erp_token_to_firestore(token):
         print(f'  AVISO: erro ao salvar token ERP no Firestore: {e}')
 
 
-def save_d360_to_firestore(sales, acess, acess_dia, today_sellers_proc, fin, fin_acum, agend, top_fin_mes_bd_by_store=None, fin_bd_by_store=None, top_cautelar=None, cautelar_dia=None, html_preserved_totals=None):
+def save_d360_to_firestore(sales, acess, acess_dia, today_sellers_proc, fin, fin_acum, agend, top_fin_mes_bd_by_store=None, fin_bd_by_store=None, top_cautelar=None, cautelar_dia=None, html_preserved_totals=None, agend_dia=None):
     """Atualiza ts_d360/dados_360_atual no Firestore — dispara onSnapshot em todos os browsers abertos."""
     import time, calendar
     MESES = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez']
@@ -213,6 +230,7 @@ def save_d360_to_firestore(sales, acess, acess_dia, today_sellers_proc, fin, fin
             'top_fin_mes':   (top_fin_mes_bd_by_store or {}).get(sk, []),
             'fin_bd':        (fin_bd_by_store or {}).get(sk, [{'nm': g['nm'], 't': 0} for g in FINANCEIRAS_GROUPS]),
             'agendFat':      round(agend.get(sk, {}).get('total', 0), 2),
+            'agend_fat_dia': round((agend_dia or {}).get(sk, 0), 2),
             'agendamentos':  {
                 'total': round(agend.get(sk, {}).get('total', 0), 2),
                 'top':   [{'n': v['n'], 'i': v['i'], 't': v['t']} for v in agend.get(sk, {}).get('top', [])],
@@ -1113,7 +1131,7 @@ def update_dia_a_dia_field(sec, dia_hoje, total_hoje):
         sec2, n = re.subn(r'(\bfat_dia:\d+(?:\.\d+)?)', f'\\1, {novo}', sec, count=1)
     return sec2
 
-def update_store(content, store_key, total, acess_total, agend_total, agend_top, fat_dia=0, top_dia=None, acess_dia=0, acess_dia_top=None, fin_dia=0, top_fin=None, fin_mes=0, top_fin_mes=None, fin_bd=None, sellers_top=None, sellers_today=None, agend_fin=0, agend_fin_bd=None, dia_hoje=None, cautelar_dia=None):
+def update_store(content, store_key, total, acess_total, agend_total, agend_top, fat_dia=0, top_dia=None, acess_dia=0, acess_dia_top=None, fin_dia=0, top_fin=None, fin_mes=0, top_fin_mes=None, fin_bd=None, sellers_top=None, sellers_today=None, agend_fin=0, agend_fin_bd=None, dia_hoje=None, cautelar_dia=None, agend_fat_dia=0):
     start, end = find_section(content, store_key)
     if start is None:
         print(f"  AVISO: seção '{store_key}' não encontrada no HTML")
@@ -1131,11 +1149,20 @@ def update_store(content, store_key, total, acess_total, agend_total, agend_top,
     if dia_hoje:
         sec = update_dia_a_dia_field(sec, dia_hoje, total)
 
-    # 2. agendFat
-    sec = re.sub(r'\bagendFat:\d+(?:\.\d+)?', f'agendFat:{agend_total}', sec, count=1)
+    # 2. agendFat — nunca regride (protege contra snapshot do ERP antes de sincronizar)
+    _cur_agend_m = re.search(r'\bagendFat:(\d+(?:\.\d+)?)', sec)
+    _cur_agend = float(_cur_agend_m.group(1)) if _cur_agend_m else 0
+    _safe_agend = agend_total if agend_total >= _cur_agend else _cur_agend
+    sec = re.sub(r'\bagendFat:\d+(?:\.\d+)?', f'agendFat:{_safe_agend}', sec, count=1)
 
     # 2b. fat_dia (faturamento do dia vigente)
     sec = re.sub(r'\bfat_dia:\d+(?:\.\d+)?', f'fat_dia:{fat_dia}', sec, count=1)
+
+    # 2b1. agend_fat_dia (agendamentos do dia — canal 6)
+    if re.search(r'\bagend_fat_dia:\d+(?:\.\d+)?', sec):
+        sec = re.sub(r'\bagend_fat_dia:\d+(?:\.\d+)?', f'agend_fat_dia:{agend_fat_dia}', sec, count=1)
+    else:
+        sec = re.sub(r'(\bfat_dia:\d+(?:\.\d+)?)', f'\\g<1>, agend_fat_dia:{agend_fat_dia}', sec, count=1)
 
     # 2b2. acess_dia (acessórios do dia — total)
     if re.search(r'\bacess_dia:\d+(?:\.\d+)?', sec):
@@ -2321,6 +2348,22 @@ def main():
     with open(INDEX_HTML, 'r', encoding='utf-8') as f:
         content = f.read()
 
+    # Baseline agend_fat_dia: delta entre agendFat acumulado atual e valor no início do dia
+    _agend_bl = _load_agend_baseline()
+    if _agend_bl.get('date') != today:
+        # Novo dia: registra agendFat atual do HTML como baseline (fim do dia anterior)
+        _bl_stores = {}
+        for _bsk in STORE_KEYS_ORDER:
+            _bps, _bpe = find_section(content, _bsk)
+            if _bps is not None:
+                _bm = re.search(r'\bagendFat:(\d+(?:\.\d+)?)', content[_bps:_bpe])
+                _bl_stores[_bsk] = float(_bm.group(1)) if _bm else 0.0
+            else:
+                _bl_stores[_bsk] = 0.0
+        _save_agend_baseline(today, _bl_stores)
+        _agend_bl = {'date': today, 'stores': _bl_stores}
+        print(f"  Novo dia detectado — baseline agend_fat salvo: { {k: v for k,v in _bl_stores.items()} }")
+
     def _html_total(ct, loja_key):
         """Lê o total acumulado atual do HTML para uma loja (proteção contra sobreescrita com zero)."""
         _s, _e = find_section(ct, loja_key)
@@ -2383,6 +2426,7 @@ def main():
             agend_fin_bd   = _af.get('fin_bd', [{'nm': g['nm'], 't': 0} for g in FINANCEIRAS_GROUPS]),
             dia_hoje       = dias_decorridos,
             cautelar_dia   = cautelar_dia.get(sk),
+            agend_fat_dia  = max(0.0, round(agend.get(sk, {}).get('total', 0) - _agend_bl['stores'].get(sk, 0.0), 2)),
         )
         print(f"  {sk}: atualizado")
 
@@ -2526,7 +2570,9 @@ def main():
 
     # Atualiza Firestore em tempo real — dispara onSnapshot em todos os browsers abertos
     print("\nSincronizando com Firestore...")
-    save_d360_to_firestore(sales, acess, acess_dia, today_sellers_proc, fin, fin_acum, agend, top_fin_mes_bd_by_store, fin_bd_by_store, top_cautelar, cautelar_dia, html_preserved_totals=html_preserved_totals)
+    # Monta agend_fat_dia_by_store para Firestore (mesmo delta usado no HTML)
+    _agend_fat_dia_fs = {sk: max(0.0, round(agend.get(sk, {}).get('total', 0) - _agend_bl['stores'].get(sk, 0.0), 2)) for sk in STORE_KEYS_ORDER}
+    save_d360_to_firestore(sales, acess, acess_dia, today_sellers_proc, fin, fin_acum, agend, top_fin_mes_bd_by_store, fin_bd_by_store, top_cautelar, cautelar_dia, html_preserved_totals=html_preserved_totals, agend_dia=_agend_fat_dia_fs)
 
     # Apuração DEFY — Motorola DEFY (product_variation_id=1003) desde 01/10/2026
     # Acumulação incremental: busca apenas o dia atual e soma ao histórico no Firestore.

@@ -13332,6 +13332,70 @@ function _aplicarSnap360(data) {
         try { localStorage.setItem(_NS + key, '1'); setTimeout(() => { try { localStorage.removeItem(_NS + key); } catch(_){} }, ttlMs || 86400000); } catch(_) {}
     }
 
+    /* ── som de mola (boing) ── */
+    var _audioCtx = null;
+    var _audioUnlocked = false;
+
+    function _unlockAudio() {
+        if (_audioUnlocked) return;
+        try {
+            if (!_audioCtx) _audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (_audioCtx.state === 'suspended') _audioCtx.resume();
+            _audioUnlocked = true;
+        } catch(_) {}
+    }
+
+    // Desbloqueia no primeiro toque/clique do usuário (obrigatório no iOS Safari)
+    document.addEventListener('click', _unlockAudio, { once: false, passive: true });
+    document.addEventListener('touchstart', _unlockAudio, { once: false, passive: true });
+
+    function _boing() {
+        try {
+            if (!_audioCtx) _audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (_audioCtx.state === 'suspended') _audioCtx.resume();
+
+            var ctx = _audioCtx;
+            var now = ctx.currentTime;
+            var dur = 1.0;
+
+            // Oscilador principal — o tom da mola
+            var osc = ctx.createOscillator();
+            var gain = ctx.createGain();
+            osc.type = 'sine';
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+
+            // Pitch começa alto e cai (mola se soltando)
+            osc.frequency.setValueAtTime(950, now);
+            osc.frequency.exponentialRampToValueAtTime(110, now + dur);
+
+            // Envelope: ataque instantâneo, decaimento suave
+            gain.gain.setValueAtTime(0, now);
+            gain.gain.linearRampToValueAtTime(0.22, now + 0.015);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + dur);
+
+            // LFO — cria o "oin oin oin" (vibrato que vai amortecendo)
+            var lfo = ctx.createOscillator();
+            var lfoGain = ctx.createGain();
+            lfo.type = 'sine';
+            lfo.connect(lfoGain);
+            lfoGain.connect(osc.frequency);
+
+            // LFO começa rápido (mola vibrando) e vai devagar (amortecendo)
+            lfo.frequency.setValueAtTime(22, now);
+            lfo.frequency.exponentialRampToValueAtTime(3, now + dur);
+
+            // Profundidade do vibrato também diminui
+            lfoGain.gain.setValueAtTime(220, now);
+            lfoGain.gain.exponentialRampToValueAtTime(8, now + dur);
+
+            osc.start(now);
+            lfo.start(now);
+            osc.stop(now + dur);
+            lfo.stop(now + dur);
+        } catch(_) {}
+    }
+
     /* ── push do browser ── */
     function _push(title, body) {
         if (Notification.permission === 'granted') {
@@ -13359,6 +13423,7 @@ function _aplicarSnap360(data) {
         el.querySelector('.ts-toast-close').addEventListener('click', function() { _removeToast(el); });
         var t = setTimeout(function() { _removeToast(el); }, dur);
         el._toastTimer = t;
+        _boing();
         // máximo 4 toasts visíveis
         var all = wrap.querySelectorAll('.ts-toast');
         if (all.length > 4) _removeToast(all[0]);

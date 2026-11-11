@@ -13188,9 +13188,9 @@ function _aplicarSnap360(data) {
     var _NS   = 'ts_notif_';          // prefixo localStorage
     var _KEY  = 'ts_notif_items';     // lista salva
     var _VENDA_GRANDE = 3000;         // limiar R$ para "venda grande" no ciclo (30 min)
-    var _CAUT_HORA = 10;              // hora mínima para alertar cautelar zerada
     var _items = [];                  // cache em memória
-    var _prevFatDia = {};             // fat_dia anterior por loja (detecta saltos)
+    var _prevFatDia  = {};            // fat_dia anterior por loja (detecta saltos)
+    var _prevCautDia = {};            // cautelar_dia.total anterior por loja (detecta novas vendas)
     var _open = false;
 
     /* ── persistência ── */
@@ -13339,15 +13339,32 @@ function _aplicarSnap360(data) {
             }
             _prevFatDia[key] = fatAtual;
 
-            /* 5. CAUTELAR ZERADA — loja vendendo mas sem cautelar no dia */
-            if (hora >= _CAUT_HORA && fatAtual > 500) {
-                var cautTotal = (l.cautelar_dia && l.cautelar_dia.total) || 0;
-                if (cautTotal === 0 && !_already('caut0_' + key + '_' + diaSuffix)) {
-                    _markDone('caut0_' + key + '_' + diaSuffix, 86400000);
-                    _add('⚠️', '<strong>' + label + '</strong> sem vendas de cautelar hoje. Cobrar equipe — verificar se estão oferecendo proteção/garantia.');
-                    _push('Cautelar zerada — ' + label, 'Loja vendendo mas sem cautelar no dia. Cobrar equipe!');
+            /* 5. NOVA VENDA DE CAUTELAR — detecta delta positivo em cautelar_dia.total */
+            var cautAtual = (l.cautelar_dia && l.cautelar_dia.total) || 0;
+            var cautAntes = _prevCautDia[key] || 0;
+            var cautDelta = cautAtual - cautAntes;
+            if (cautAntes > 0 && cautDelta > 0) {
+                // dedup por valor inteiro para não repetir a mesma venda no próximo ciclo
+                var cautKey = 'caut_' + key + '_' + diaSuffix + '_' + Math.round(cautAtual);
+                if (!_already(cautKey)) {
+                    _markDone(cautKey, 1800000); // 30 min — deixa disparar novamente se nova venda
+                    var fmtCaut = 'R$ ' + cautDelta.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                    var fmtTotal = 'R$ ' + cautAtual.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                    var cargo = (window.user && window.user.cargo) || '';
+                    var isGestao = ['diretoria','franqueado','gerente-senior','gerente-senior-acess','gerente'].includes(cargo);
+                    var msgCaut, tituloCaut;
+                    if (isGestao) {
+                        msgCaut = '🛡️ Cautelar vendida em <strong>' + label + '</strong>: +' + fmtCaut + ' (acumulado hoje: ' + fmtTotal + ')';
+                        tituloCaut = 'Cautelar — ' + label;
+                    } else {
+                        msgCaut = '🛡️ Nova venda de cautelar: +' + fmtCaut + ' (total do dia: ' + fmtTotal + ')';
+                        tituloCaut = 'Cautelar vendida';
+                    }
+                    _add('🛡️', msgCaut);
+                    _push(tituloCaut, (isGestao ? label + ': ' : '') + '+' + fmtCaut + ' em cautelar hoje.');
                 }
             }
+            _prevCautDia[key] = cautAtual;
         });
     };
 

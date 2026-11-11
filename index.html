@@ -1001,6 +1001,52 @@
         }
         @keyframes _tsBar { from{width:100%} to{width:0} }
         .ts-toast { position:relative; overflow:hidden; }
+
+        /* ── CARD PERMISSÃO NOTIFICAÇÕES ── */
+        #ts-notif-perm {
+            position:fixed; bottom:20px; left:16px; z-index:99998;
+            width:min(320px, calc(100vw - 32px));
+            background:#16162a; border:1px solid rgba(124,106,247,.4);
+            border-radius:16px; box-shadow:0 16px 48px rgba(0,0,0,.65);
+            padding:18px 18px 16px;
+            animation:_tsSlideInL .32s cubic-bezier(.22,1,.36,1) both;
+            display:none;
+        }
+        #ts-notif-perm.show { display:block; }
+        @keyframes _tsSlideInL {
+            from { opacity:0; transform:translateX(calc(-100% - 20px)); }
+            to   { opacity:1; transform:translateX(0); }
+        }
+        #ts-notif-perm.removing {
+            animation:_tsSlideOutL .22s ease-in both;
+        }
+        @keyframes _tsSlideOutL {
+            from { opacity:1; transform:translateX(0); }
+            to   { opacity:0; transform:translateX(calc(-100% - 20px)); }
+        }
+        .ts-perm-head { display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+        .ts-perm-bell {
+            width:38px; height:38px; border-radius:10px;
+            background:rgba(124,106,247,.2); display:flex;
+            align-items:center; justify-content:center; font-size:20px; flex-shrink:0;
+        }
+        .ts-perm-title { font-size:13.5px; font-weight:700; color:#eeeef8; line-height:1.3; }
+        .ts-perm-sub   { font-size:12px; color:rgba(255,255,255,.45); margin-top:1px; }
+        .ts-perm-body  { font-size:12px; color:rgba(255,255,255,.55); line-height:1.5; margin-bottom:14px; }
+        .ts-perm-btns  { display:flex; gap:8px; }
+        .ts-perm-ok {
+            flex:1; padding:8px 0; border-radius:9px; border:none; cursor:pointer;
+            background:#7c6af7; color:#fff; font-size:12.5px; font-weight:700;
+            font-family:inherit; transition:background .15s;
+        }
+        .ts-perm-ok:hover { background:#9580ff; }
+        .ts-perm-skip {
+            padding:8px 14px; border-radius:9px; cursor:pointer;
+            background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.12);
+            color:rgba(255,255,255,.45); font-size:12px; font-family:inherit;
+            transition:background .15s;
+        }
+        .ts-perm-skip:hover { background:rgba(255,255,255,.12); color:rgba(255,255,255,.7); }
     </style>
 </head>
 <body>
@@ -1311,6 +1357,24 @@
 
     <!-- ── TOAST CONTAINER ── -->
     <div id="ts-toast-wrap" aria-live="polite" aria-label="Notificações em tempo real"></div>
+
+    <!-- ── CARD PERMISSÃO NOTIFICAÇÕES ── -->
+    <div id="ts-notif-perm" role="dialog" aria-label="Ativar notificações">
+        <div class="ts-perm-head">
+            <div class="ts-perm-bell">🔔</div>
+            <div>
+                <div class="ts-perm-title">Ativar notificações</div>
+                <div class="ts-perm-sub">Alertas em tempo real do Sinergy</div>
+            </div>
+        </div>
+        <div class="ts-perm-body">
+            Seja avisado na hora sobre cautelares vendidas, metas batidas, lojas em risco e grandes vendas — em qualquer dispositivo.
+        </div>
+        <div class="ts-perm-btns">
+            <button class="ts-perm-ok" id="ts-perm-ok-btn" onclick="_notifPermAllow()">Ativar agora</button>
+            <button class="ts-perm-skip" onclick="_notifPermSkip()">Agora não</button>
+        </div>
+    </div>
 
     <!-- ── TAB BAR ── -->
     <div class="glass border-b border-yellow-900/20 overflow-x-auto">
@@ -13368,12 +13432,48 @@ function _aplicarSnap360(data) {
         _render();
     };
 
-    /* ── solicita permissão de push (chamado no login) ── */
-    window._notifRequestPermission = function() {
-        if ('Notification' in window && Notification.permission === 'default') {
-            Notification.requestPermission();
-        }
+    /* ── card de permissão ── */
+    function _permCard() { return document.getElementById('ts-notif-perm'); }
+    function _permRemove() {
+        var el = _permCard();
+        if (!el) return;
+        el.classList.add('removing');
+        setTimeout(function() { el.classList.remove('show'); el.classList.remove('removing'); }, 230);
+    }
+
+    window._notifPermAllow = function() {
+        _permRemove();
+        if (!('Notification' in window)) return;
+        Notification.requestPermission().then(function(res) {
+            if (res === 'granted') {
+                _toast('🔔', 'Notificações ativadas', 'Você receberá alertas em tempo real neste dispositivo.', 4000);
+            } else if (res === 'denied') {
+                _toast('⚠️', 'Permissão negada', 'Para ativar depois: configurações do navegador → Notificações → Sinergy.', 7000);
+            }
+        });
     };
+
+    window._notifPermSkip = function() {
+        _permRemove();
+        // Marca que pulou nesta sessão — não volta a perguntar até próximo login
+        try { sessionStorage.setItem('ts_notif_skip', '1'); } catch(_) {}
+    };
+
+    /* ── exibe o card se necessário ── */
+    function _maybeAskPermission() {
+        if (!('Notification' in window)) return;
+        // Já concedido neste dispositivo — não perguntar
+        if (Notification.permission === 'granted') return;
+        // Usuário pulou nesta sessão
+        try { if (sessionStorage.getItem('ts_notif_skip')) return; } catch(_) {}
+        // Permissão bloqueada definitivamente — não perguntar (browser já bloqueou)
+        if (Notification.permission === 'denied') return;
+        // Mostra o card após 2s do login
+        setTimeout(function() {
+            var el = _permCard();
+            if (el) el.classList.add('show');
+        }, 2000);
+    }
 
     /* ── verificação principal — chamada a cada _aplicarSnap360 ── */
     window._notifCheck = function(D360) {
@@ -13462,7 +13562,7 @@ function _aplicarSnap360(data) {
     /* ── inicialização ── */
     window._notifInit = function() {
         _load();
-        _notifRequestPermission();
+        _maybeAskPermission();
     };
 
     /* ── auto-init quando D360 estiver pronto ── */

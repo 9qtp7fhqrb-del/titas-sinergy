@@ -8927,10 +8927,10 @@ const D360 = {
     // COMO ATUALIZAR: edite apenas margem_lojas com os valores do ERP por loja
     // ─────────────────────────────────────────────────────────────────────────────
     margem_dia: 0.00,              // rede hoje · zerado automaticamente à meia-noite
-    margem_dia_subredes: { t1: 0.00, t2: 0.00, t3: 0.00, ind: 0.00 },
+    margem_dia_subredes: { t1: 0.00, t2: 40.00, t3: 0.00, ind: 0.00 },
     margem_dia_lojas: {
         cariacica:47.60, itabuna:55.50, moxuara:56.89, praiadacosta:44.92,
-        barreiras:37.63, teixeira:46.17, laranjeiras:55.69, saomateus:44.97,
+        barreiras:37.63, teixeira:40.00, laranjeiras:55.69, saomateus:44.97,
         serra:52.98, montserrat:55.33, linhares:58.81, eunapolis:47.29,
     },
     margem_lojas: {
@@ -8941,7 +8941,7 @@ const D360 = {
         moxuara:     52.80,
         praiadacosta:46.77,
         barreiras:   46.09,
-        teixeira:    47.27,
+        teixeira:    47.18,
         laranjeiras: 50.82,
         saomateus:   49.01,
         serra:       49.58,
@@ -8950,7 +8950,7 @@ const D360 = {
         eunapolis:   48.74,
     },
     margem_subredes: {  // fallback quando margem_lojas estiver incompleta
-        t1: 49.66, t2: 48.12, t3: 49.73, ind: 48.74
+        t1: 49.66, t2: 48.09, t3: 49.73, ind: 48.74
     },
     // margem_mes: derivada automaticamente pelo _calcMargemPonderada (não editar)
     margem_mes: 49.27,

@@ -8918,7 +8918,7 @@ const D360 = {
     diasMes: 28,          // novembro tem 30 dias — 28 dias úteis excluindo Black Friday 27-28/11
     ticket_cel: 1716,        // ticket médio celulares (SBON) — atualizado pelo bot
     ticket_acess: 112,      // ticket médio acessórios — atualizado pelo bot
-    ped_cel: 451,           // pedidos celulares — atualizado pelo bot
+    ped_cel: 452,           // pedidos celulares — atualizado pelo bot
     ped_acess: 741,         // pedidos acessórios — atualizado pelo bot
 
     // ── Margem Bruta Mensal ──────────────────────────────────────────────────────
@@ -8926,11 +8926,11 @@ const D360 = {
     // O sistema deriva automaticamente: margem por loja → subrede → rede
     // COMO ATUALIZAR: edite apenas margem_lojas com os valores do ERP por loja
     // ─────────────────────────────────────────────────────────────────────────────
-    margem_dia: 0.00,              // rede hoje · zerado automaticamente à meia-noite
-    margem_dia_subredes: { t1: 0.00, t2: 0.00, t3: 0.00, ind: 0.00 },
+    margem_dia: 47.78,              // rede hoje · zerado automaticamente à meia-noite
+    margem_dia_subredes: { t1: 0.00, t2: 0.00, t3: 47.78, ind: 0.00 },
     margem_dia_lojas: {
         cariacica:46.67, itabuna:53.31, moxuara:55.35, praiadacosta:51.62,
-        barreiras:43.78, teixeira:51.70, laranjeiras:52.75, saomateus:48.25,
+        barreiras:43.78, teixeira:51.70, laranjeiras:52.75, saomateus:47.78,
         serra:50.50, montserrat:60.53, linhares:50.55, eunapolis:51.42,
     },
     margem_lojas: {
@@ -8943,14 +8943,14 @@ const D360 = {
         barreiras:   45.48,
         teixeira:    47.31,
         laranjeiras: 51.06,
-        saomateus:   48.90,
+        saomateus:   48.88,
         serra:       49.91,
         montserrat:  51.06,
         linhares:    50.36,
         eunapolis:   48.76,
     },
     margem_subredes: {  // fallback quando margem_lojas estiver incompleta
-        t1: 49.67, t2: 48.16, t3: 49.90, ind: 48.76
+        t1: 49.67, t2: 48.16, t3: 49.89, ind: 48.76
     },
     // margem_mes: derivada automaticamente pelo _calcMargemPonderada (não editar)
     margem_mes: 49.35,
@@ -8966,7 +8966,7 @@ const D360 = {
     },
     lojas: {
         // ── Totais acumulados 2026-11-01 a 2026-11-14 · Atualizado automaticamente ──
-        saomateus:   { label:'São Mateus',         sigla:'SM', sub:'t3', meta:345000,  total:155618.28, ped:181,  cancel:0, agend:0, agendCount:0, agendFat:43046.79,  fat_dia:0, agend_fat_dia:0.0, acess_dia:0, dia_a_dia:{"1":0.0,"3":22024.0,"5":66441.8,"6":66441.8,"7":99729.8,"9":102568.8,"10":119117.78,"11":128025.78,"12":134234.78,"13":155618.28,"14":155618.28}, acess_dia_top:[], cautelar_dia:{total:1172.5,top:[{n:'CLAUDENIO RAMOS DOS SANTOS JUNIOR',i:'CR',t:645.0}, {n:'RANDECLAY MARIANO GOMES',i:'RM',t:420.0}, {n:'ANTONIELLE SANTOS PEROBA',i:'AS',t:107.5}]}, top_dia:[], fin_dia:0, fin_mes:86439.98, top_fin_mes:[{n:'Ana Carolina Lisboa',i:'AC',t:24420.99,bd:[{nm:'PayJoy',t:14333.0},{nm:'OdresCred',t:10087.99}]},{n:'ANTONIELLE SANTOS PEROBA',i:'AS',t:21956.99,bd:[{nm:'PayJoy',t:5800.0},{nm:'OdresCred',t:16156.99}]},{n:'RANDECLAY MARIANO GOMES',i:'RM',t:17136.0,bd:[{nm:'PayJoy',t:5300.0},{nm:'OdresCred',t:11836.0}]},{n:'LEANDRO DA CRUZ SILVA',i:'LD',t:16926.0,bd:[{nm:'PayJoy',t:3450.0},{nm:'OdresCred',t:13476.0}]},{n:'Heloá Mercês Lazáro',i:'HM',t:6000.0,bd:[{nm:'PayJoy',t:3950.0},{nm:'OdresCred',t:2050.0}]}], fin_bd:[{nm:'PayJoy',t:32833.0},{nm:'OdresCred',t:53606.98}], top_fin:[], metaAcess:16000,
+        saomateus:   { label:'São Mateus',         sigla:'SM', sub:'t3', meta:345000,  total:158518.28, ped:183,  cancel:0, agend:0, agendCount:0, agendFat:43046.79,  fat_dia:2900.0, agend_fat_dia:0.0, acess_dia:0, dia_a_dia:{"1":0.0,"3":22024.0,"5":66441.8,"6":66441.8,"7":99729.8,"9":102568.8,"10":119117.78,"11":128025.78,"12":134234.78,"13":155618.28,"14":158518.28}, acess_dia_top:[], cautelar_dia:{total:1172.5,top:[{n:'CLAUDENIO RAMOS DOS SANTOS JUNIOR',i:'CR',t:645.0}, {n:'RANDECLAY MARIANO GOMES',i:'RM',t:420.0}, {n:'ANTONIELLE SANTOS PEROBA',i:'AS',t:107.5}]}, top_dia:[{n:'LEANDRO DA CRUZ SILVA',i:'LD',t:1600.0}, {n:'RANDECLAY MARIANO GOMES',i:'RM',t:1300.0}], fin_dia:0, fin_mes:86439.98, top_fin_mes:[{n:'Ana Carolina Lisboa',i:'AC',t:24420.99,bd:[{nm:'PayJoy',t:14333.0},{nm:'OdresCred',t:10087.99}]},{n:'ANTONIELLE SANTOS PEROBA',i:'AS',t:21956.99,bd:[{nm:'PayJoy',t:5800.0},{nm:'OdresCred',t:16156.99}]},{n:'RANDECLAY MARIANO GOMES',i:'RM',t:17136.0,bd:[{nm:'PayJoy',t:5300.0},{nm:'OdresCred',t:11836.0}]},{n:'LEANDRO DA CRUZ SILVA',i:'LD',t:16926.0,bd:[{nm:'PayJoy',t:3450.0},{nm:'OdresCred',t:13476.0}]},{n:'Heloá Mercês Lazáro',i:'HM',t:6000.0,bd:[{nm:'PayJoy',t:3950.0},{nm:'OdresCred',t:2050.0}]}], fin_bd:[{nm:'PayJoy',t:32833.0},{nm:'OdresCred',t:53606.98}], top_fin:[], metaAcess:16000,
             agendamentos:{total:43046.79, fin:40316.99, fin_bd:[{nm:'PayJoy',t:18183.0},{nm:'OdresCred',t:22133.99}], top:[{n:'Ana Carolina Lisboa',i:'AC',t:24420.99}, {n:'ANTONIELLE SANTOS PEROBA',i:'AS',t:8729.0}, {n:'RANDECLAY MARIANO GOMES',i:'RM',t:7287.0}, {n:'LEANDRO DA CRUZ SILVA',i:'LD',t:2100.0}, {n:'CLAUDENIO RAMOS DOS SANTOS JUNIOR',i:'CR',t:270.0}, {n:'CAUTELAR FRANQUIA',i:'CF',t:239.8}]},
             acessorios:{total:8652.5, top:[
                 {n:'Juliana Cristina dos Santos',i:'JC',t:2947,ds:12,ult:'12/06'},
@@ -8977,8 +8977,8 @@ const D360 = {
                 {n:'Randeclay Mariano Gomes',i:'RM',t:470,ds:12,ult:'12/06'}
             ], dias:[{d:'01/06',ac:2210,cel:13147},{d:'06/06',ac:1935,cel:69941},{d:'08/06',ac:495,cel:14645}]},
             cautelar:{protecao:{total:1605.0},garantia:{total:3381.0}},
-            top:[{n:'RANDECLAY MARIANO GOMES',i:'RM',p:53,t:48796.0,ds:20,ult:'14/11'},
-                {n:'LEANDRO DA CRUZ SILVA',i:'LD',p:44,t:40607.0,ds:20,ult:'14/11'},
+            top:[{n:'RANDECLAY MARIANO GOMES',i:'RM',p:54,t:50096.0,ds:20,ult:'14/11'},
+                {n:'LEANDRO DA CRUZ SILVA',i:'LD',p:45,t:42207.0,ds:20,ult:'14/11'},
                 {n:'ANTONIELLE SANTOS PEROBA',i:'AS',p:44,t:29761.99,ds:8,ult:'14/11'},
                 {n:'Ana Carolina Lisboa',i:'AC',p:22,t:26930.99,ds:7,ult:'14/11'},
                 {n:'Heloá Mercês Lazáro',i:'HM',p:11,t:7680.0,ds:5,ult:'12/11'},

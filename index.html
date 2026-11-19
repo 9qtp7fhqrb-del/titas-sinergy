@@ -8926,11 +8926,11 @@ const D360 = {
     // O sistema deriva automaticamente: margem por loja → subrede → rede
     // COMO ATUALIZAR: edite apenas margem_lojas com os valores do ERP por loja
     // ─────────────────────────────────────────────────────────────────────────────
-    margem_dia: 0.00,              // rede hoje · zerado automaticamente à meia-noite
-    margem_dia_subredes: { t1: 0.00, t2: 0.00, t3: 0.00, ind: 0.00 },
+    margem_dia: 51.14,              // rede hoje · zerado automaticamente à meia-noite
+    margem_dia_subredes: { t1: 0.00, t2: 51.14, t3: 0.00, ind: 0.00 },
     margem_dia_lojas: {
         cariacica:44.60, itabuna:56.97, moxuara:46.98, praiadacosta:48.74,
-        barreiras:49.52, teixeira:43.41, laranjeiras:49.41, saomateus:48.26,
+        barreiras:49.52, teixeira:51.14, laranjeiras:49.41, saomateus:48.26,
         serra:48.78, montserrat:51.70, linhares:47.10, eunapolis:45.17,
     },
     margem_lojas: {
@@ -8941,7 +8941,7 @@ const D360 = {
         moxuara:     50.63,
         praiadacosta:47.51,
         barreiras:   45.96,
-        teixeira:    47.13,
+        teixeira:    47.18,
         laranjeiras: 50.83,
         saomateus:   49.15,
         serra:       49.12,
@@ -8950,7 +8950,7 @@ const D360 = {
         eunapolis:   48.94,
     },
     margem_subredes: {  // fallback quando margem_lojas estiver incompleta
-        t1: 48.38, t2: 48.09, t3: 49.58, ind: 48.94
+        t1: 48.38, t2: 48.10, t3: 49.58, ind: 48.94
     },
     // margem_mes: derivada automaticamente pelo _calcMargemPonderada (não editar)
     margem_mes: 48.83,
@@ -9048,7 +9048,7 @@ const D360 = {
                 {n:'Liz Sophia Andrade Pereira',i:'LS',p:47,t:41527.0,ds:12,ult:'19/11'},
                 {n:'ANA CAROLINA DA SILVA',i:'AC',p:1,t:1500.0,ds:2,ult:'19/11'},
                 {n:'GABRIEL BARRETO PEREIRA',i:'GB',p:9,t:705.0,ds:4,ult:'14/11'}]},
-        teixeira:    { label:'Teixeira de Freitas',sigla:'TF', sub:'t2', meta:210000,  total:134129.71,  ped:132,  cancel:0, agend:0, agendCount:0, agendFat:45842.99,  fat_dia:0, agend_fat_dia:0.0, acess_dia:0, dia_a_dia:{"1":0.0,"3":12206.5,"5":32586.49,"6":32586.49,"7":49848.48,"9":52944.48,"10":67688.48,"11":73373.48,"12":88806.47,"13":94478.47,"14":106965.96,"15":106965.96,"16":116566.96,"17":124323.71,"18":134129.71,"19":134129.71}, acess_dia_top:[], cautelar_dia:{total:414.0,top:[{n:'CARINE FERREIRA FRANCO',i:'CF',t:240.0}, {n:'CARLA SANTOS LUIZ',i:'CS',t:174.0}]}, top_dia:[], fin_dia:0, fin_mes:94451.96, top_fin_mes:[{n:'CARINE FERREIRA FRANCO',i:'CF',t:44734.97,bd:[{nm:'PayJoy',t:22890.0},{nm:'OdresCred',t:21844.97}]},{n:'CARLA SANTOS LUIZ',i:'CS',t:25659.99,bd:[{nm:'PayJoy',t:21940.0},{nm:'OdresCred',t:3719.99}]},{n:'AMANDA GOULART ANDRADE',i:'AG',t:24057.0,bd:[{nm:'PayJoy',t:17150.0},{nm:'OdresCred',t:6907.0}]}], fin_bd:[{nm:'PayJoy',t:61980.0},{nm:'OdresCred',t:32471.96}], top_fin:[], metaAcess:7000,
+        teixeira:    { label:'Teixeira de Freitas',sigla:'TF', sub:'t2', meta:210000,  total:135629.71,  ped:133,  cancel:0, agend:0, agendCount:0, agendFat:45842.99,  fat_dia:1500.0, agend_fat_dia:0.0, acess_dia:0, dia_a_dia:{"1":0.0,"3":12206.5,"5":32586.49,"6":32586.49,"7":49848.48,"9":52944.48,"10":67688.48,"11":73373.48,"12":88806.47,"13":94478.47,"14":106965.96,"15":106965.96,"16":116566.96,"17":124323.71,"18":134129.71,"19":135629.71}, acess_dia_top:[], cautelar_dia:{total:414.0,top:[{n:'CARINE FERREIRA FRANCO',i:'CF',t:240.0}, {n:'CARLA SANTOS LUIZ',i:'CS',t:174.0}]}, top_dia:[{n:'CARINE FERREIRA FRANCO',i:'CF',t:1500.0}], fin_dia:1500.0, fin_mes:95951.96, top_fin_mes:[{n:'CARINE FERREIRA FRANCO',i:'CF',t:46234.97,bd:[{nm:'PayJoy',t:24390.0},{nm:'OdresCred',t:21844.97}]},{n:'CARLA SANTOS LUIZ',i:'CS',t:25659.99,bd:[{nm:'PayJoy',t:21940.0},{nm:'OdresCred',t:3719.99}]},{n:'AMANDA GOULART ANDRADE',i:'AG',t:24057.0,bd:[{nm:'PayJoy',t:17150.0},{nm:'OdresCred',t:6907.0}]}], fin_bd:[{nm:'PayJoy',t:63480.0},{nm:'OdresCred',t:32471.96}], top_fin:[{n:'CARINE FERREIRA FRANCO',i:'CF',t:1500.0}], metaAcess:7000,
             agendamentos:{total:45842.99, fin:44012.99, fin_bd:[{nm:'PayJoy',t:34180.0},{nm:'OdresCred',t:9832.99}], top:[{n:'AMANDA GOULART ANDRADE',i:'AG',t:22958.0}, {n:'CARINE FERREIRA FRANCO',i:'CF',t:11444.99}, {n:'CARLA SANTOS LUIZ',i:'CS',t:11440.0}]},
             acessorios:{total:3959.0, top:[
                 {n:'Amanda Goulart Andrade',i:'AG',t:740,ds:12,ult:'12/06'},
@@ -9059,7 +9059,7 @@ const D360 = {
                 {n:'Beatriz Hellen Fagundes',i:'BH',t:350,ds:12,ult:'12/06'}
             ], dias:[{d:'01/06',ac:200,cel:11060},{d:'06/06',ac:1331,cel:43146},{d:'08/06',ac:160,cel:10100}]},
             cautelar:{protecao:{total:1128.0},garantia:{total:1563.25}},
-            top:[{n:'CARINE FERREIRA FRANCO',i:'CF',p:59,t:63935.22,ds:14,ult:'19/11'},
+            top:[{n:'CARINE FERREIRA FRANCO',i:'CF',p:60,t:65435.22,ds:14,ult:'19/11'},
                 {n:'CARLA SANTOS LUIZ',i:'CS',p:43,t:42168.49,ds:25,ult:'19/11'},
                 {n:'AMANDA GOULART ANDRADE',i:'AG',p:29,t:27962.0,ds:12,ult:'19/11'},
                 {n:'WILGHYNER DE PADUA SOARES DE SOUZA',i:'WD',p:1,t:64.0,ds:2,ult:'11/11'}]},

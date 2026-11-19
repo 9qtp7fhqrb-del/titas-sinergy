@@ -8926,10 +8926,10 @@ const D360 = {
     // O sistema deriva automaticamente: margem por loja → subrede → rede
     // COMO ATUALIZAR: edite apenas margem_lojas com os valores do ERP por loja
     // ─────────────────────────────────────────────────────────────────────────────
-    margem_dia: 49.60,              // rede hoje · zerado automaticamente à meia-noite
-    margem_dia_subredes: { t1: 51.02, t2: 47.28, t3: 52.82, ind: 82.30 },
+    margem_dia: 49.94,              // rede hoje · zerado automaticamente à meia-noite
+    margem_dia_subredes: { t1: 51.62, t2: 47.28, t3: 52.82, ind: 82.30 },
     margem_dia_lojas: {
-        cariacica:45.98, itabuna:54.74, moxuara:46.98, praiadacosta:48.74,
+        cariacica:45.98, itabuna:54.22, moxuara:46.98, praiadacosta:48.74,
         barreiras:52.78, teixeira:45.44, laranjeiras:49.41, saomateus:52.66,
         serra:48.78, montserrat:64.87, linhares:47.10, eunapolis:82.30,
     },
@@ -8937,7 +8937,7 @@ const D360 = {
         // ── FONTE PRIMÁRIA — atualizar aqui com o Relatório Gerencial por Loja ──
         // atualizado pelo update_d360.py (por loja via API, fallback por subrede)
         cariacica:   46.39,
-        itabuna:     50.23,
+        itabuna:     50.27,
         moxuara:     50.63,
         praiadacosta:47.51,
         barreiras:   46.13,
@@ -8950,7 +8950,7 @@ const D360 = {
         eunapolis:   48.96,
     },
     margem_subredes: {  // fallback quando margem_lojas estiver incompleta
-        t1: 48.40, t2: 48.08, t3: 49.60, ind: 48.96
+        t1: 48.41, t2: 48.08, t3: 49.60, ind: 48.96
     },
     // margem_mes: derivada automaticamente pelo _calcMargemPonderada (não editar)
     margem_mes: 48.84,
@@ -9000,8 +9000,8 @@ const D360 = {
                 {n:'Bruno Dias Carvalho',i:'BD',p:71,t:58791.19,ds:14,ult:'19/11'},
                 {n:'ANA CAROLINA DA SILVA',i:'AC',p:4,t:480.0,ds:5,ult:'19/11'},
                 {n:'mirelly vieira portugal',i:'MV',p:1,t:100.0,ds:2,ult:'12/11'}]},
-        itabuna:     { label:'Itabuna',            sigla:'IT', sub:'t1', meta:310000,  total:144102.28,  ped:141,  cancel:0, agend:0, agendCount:0, agendFat:44656.43,  fat_dia:2850.0, agend_fat_dia:0.0, acess_dia:150.0, dia_a_dia:{"1":0.0,"3":13559.0,"5":37631.0,"6":37631.0,"7":59734.0,"9":59734.0,"10":80537.98,"11":85790.98,"12":99234.83,"13":113791.83,"14":117206.83,"15":117206.83,"16":124486.83,"17":129456.83,"18":141252.28,"19":144102.28}, acess_dia_top:[{n:'HERICLES LISBOA DE FREITAS',i:'HL',t:150.0}], cautelar_dia:{total:828.45,top:[{n:'ANDREZA DE JESUS SOUZA',i:'AD',t:509.7}, {n:'MIKAELLE SANTOS VIRGENS',i:'MS',t:318.75}]}, top_dia:[{n:'HERICLES LISBOA DE FREITAS',i:'HL',t:2850.0}], fin_dia:0, fin_mes:60582.83, top_fin_mes:[{n:'MIKAELLE SANTOS VIRGENS',i:'MS',t:31574.83,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:31574.83}]},{n:'ANDREZA DE JESUS SOUZA',i:'AD',t:9496.0,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:9496.0}]},{n:'SANDY DE ARAUJO SANTOS LIMA',i:'SD',t:6857.0,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:6857.0}]},{n:'HERICLES LISBOA DE FREITAS',i:'HL',t:6017.0,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:6017.0}]},{n:'Isabela Sousa da Silva Diger',i:'IS',t:4779.0,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:4779.0}]},{n:'jhonatas lucas machado pereira',i:'JL',t:1859.0,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:1859.0}]}], fin_bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:60582.83}], top_fin:[], metaAcess:17000,
-            agendamentos:{total:44656.43, fin:34312.83, fin_bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:34312.83}], top:[{n:'MIKAELLE SANTOS VIRGENS',i:'MS',t:38948.43}, {n:'HERICLES LISBOA DE FREITAS',i:'HL',t:1950.0}, {n:'SANDY DE ARAUJO SANTOS LIMA',i:'SD',t:1899.0}, {n:'jhonatas lucas machado pereira',i:'JL',t:1859.0}]},
+        itabuna:     { label:'Itabuna',            sigla:'IT', sub:'t1', meta:310000,  total:145802.28,  ped:142,  cancel:0, agend:0, agendCount:0, agendFat:46356.43,  fat_dia:4550.0, agend_fat_dia:1700.0, acess_dia:150.0, dia_a_dia:{"1":0.0,"3":13559.0,"5":37631.0,"6":37631.0,"7":59734.0,"9":59734.0,"10":80537.98,"11":85790.98,"12":99234.83,"13":113791.83,"14":117206.83,"15":117206.83,"16":124486.83,"17":129456.83,"18":141252.28,"19":145802.28}, acess_dia_top:[{n:'HERICLES LISBOA DE FREITAS',i:'HL',t:150.0}], cautelar_dia:{total:828.45,top:[{n:'ANDREZA DE JESUS SOUZA',i:'AD',t:509.7}, {n:'MIKAELLE SANTOS VIRGENS',i:'MS',t:318.75}]}, top_dia:[{n:'HERICLES LISBOA DE FREITAS',i:'HL',t:2850.0}, {n:'MIKAELLE SANTOS VIRGENS',i:'MS',t:1700.0}], fin_dia:1700.0, fin_mes:62282.83, top_fin_mes:[{n:'MIKAELLE SANTOS VIRGENS',i:'MS',t:33274.83,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:33274.83}]},{n:'ANDREZA DE JESUS SOUZA',i:'AD',t:9496.0,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:9496.0}]},{n:'SANDY DE ARAUJO SANTOS LIMA',i:'SD',t:6857.0,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:6857.0}]},{n:'HERICLES LISBOA DE FREITAS',i:'HL',t:6017.0,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:6017.0}]},{n:'Isabela Sousa da Silva Diger',i:'IS',t:4779.0,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:4779.0}]},{n:'jhonatas lucas machado pereira',i:'JL',t:1859.0,bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:1859.0}]}], fin_bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:62282.83}], top_fin:[{n:'MIKAELLE SANTOS VIRGENS',i:'MS',t:1700.0}], metaAcess:17000,
+            agendamentos:{total:46356.43, fin:36012.83, fin_bd:[{nm:'PayJoy',t:0},{nm:'OdresCred',t:36012.83}], top:[{n:'MIKAELLE SANTOS VIRGENS',i:'MS',t:40648.43}, {n:'HERICLES LISBOA DE FREITAS',i:'HL',t:1950.0}, {n:'SANDY DE ARAUJO SANTOS LIMA',i:'SD',t:1899.0}, {n:'jhonatas lucas machado pereira',i:'JL',t:1859.0}]},
             acessorios:{total:12098.8, top:[
                 {n:'Hericles Lisboa de Freitas',i:'HL',t:1792,ds:12,ult:'12/06'},
                 {n:'Andreza de Jesus Souza',i:'AJ',t:1365,ds:12,ult:'12/06'},
@@ -9011,7 +9011,7 @@ const D360 = {
                 {n:'Sandy de Araujo Santos Lima',i:'SA',t:240,ds:12,ult:'12/06'}
             ], dias:[{d:'01/06',ac:845,cel:8090},{d:'06/06',ac:2757,cel:51905},{d:'08/06',ac:320,cel:15339}]},
             cautelar:{protecao:{total:1661.7},garantia:{total:2554.8}},
-            top:[{n:'MIKAELLE SANTOS VIRGENS',i:'MS',p:29,t:40083.43,ds:13,ult:'19/11'},
+            top:[{n:'MIKAELLE SANTOS VIRGENS',i:'MS',p:30,t:41783.43,ds:13,ult:'19/11'},
                 {n:'ANDREZA DE JESUS SOUZA',i:'AD',p:36,t:33817.7,ds:24,ult:'19/11'},
                 {n:'HERICLES LISBOA DE FREITAS',i:'HL',p:25,t:29632.0,ds:24,ult:'19/11'},
                 {n:'Isabela Sousa da Silva Diger',i:'IS',p:13,t:14144.0,ds:3,ult:'07/11'},
